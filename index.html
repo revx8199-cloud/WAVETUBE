@@ -248,7 +248,7 @@ hr{border:none;border-top:1px solid #272727;margin:20px 0}
   <span style="font-size:19px;font-weight:800;letter-spacing:-0.6px;color:#fff">WaveTube</span>
 </div>
   <div class="search-bar">
-    <input type="text" id="search" placeholder="Szukaj filmów..." oninput="render()">
+    <input type="text" id="search" placeholder="Szukaj filmów..." data-i18n-placeholder="search_placeholder" oninput="render()">
     <button>🔍</button>
   </div>
   <div class="header-right">
@@ -266,14 +266,15 @@ hr{border:none;border-top:1px solid #272727;margin:20px 0}
       </button>
     </div>
     <div id="user-area" style="display:none">
-      <button class="btn-add" onclick="openForm()">+ Dodaj film</button>
+      <button class="btn-add" onclick="openForm()" data-i18n="btn_add_video">+ Dodaj film</button>
       <div class="user-menu">
         <div class="user-avatar-placeholder" id="user-av" onclick="toggleDropdown()"></div>
         <div class="dropdown" id="dropdown">
-          <div class="dropdown-item" onclick="showMyChannel()">👤 Mój kanał</div>
+          <div class="dropdown-item" onclick="showMyChannel()" data-i18n="dd_mychannel">👤 Mój kanał</div>
+          <div class="dropdown-item" onclick="openSettingsModal()" data-i18n="dd_settings">⚙️ Ustawienia</div>
           <div class="dropdown-item" id="admin-dropdown-item" onclick="openAdminPanel()" style="display:none">🛡 Panel administratora</div>
           <div class="dropdown-divider"></div>
-          <div class="dropdown-item red" onclick="logout()">🚪 Wyloguj</div>
+          <div class="dropdown-item red" onclick="logout()" data-i18n="dd_logout">🚪 Wyloguj</div>
         </div>
       </div>
     </div>
@@ -285,38 +286,38 @@ hr{border:none;border-top:1px solid #272727;margin:20px 0}
   <div class="sb-section">
     <div class="sb-item active" id="sb-home" onclick="setSbActive('sb-home');showHome()">
       <svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
-      <span>Strona główna</span>
+      <span data-i18n="nav_home">Strona główna</span>
     </div>
     <div class="sb-item" id="sb-shorts" onclick="setSbActive('sb-shorts');showShortsPage()">
       <svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor"><path d="M17.77 10.32l-1.2-.5L18 9.06c1.84-.96 2.56-3.22 1.6-5.06s-3.22-2.56-5.06-1.6L6 6.94c-1.29.68-2.07 2.04-2 3.49.07 1.42.93 2.67 2.22 3.25l1.2.5L6 14.94c-1.84.96-2.56 3.22-1.6 5.06.96 1.84 3.22 2.56 5.06 1.6l8.54-4.54c1.29-.68 2.07-2.04 2-3.49-.07-1.42-.93-2.67-2.23-3.25zM10 14.65v-5.3L14.35 12 10 14.65z"/></svg>
-      <span>Shorts</span>
+      <span data-i18n="nav_shorts">Shorts</span>
     </div>
     <div class="sb-item" id="sb-trending" onclick="setSbActive('sb-trending');showTrending()">
       <svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/></svg>
-      <span>Popularne</span>
+      <span data-i18n="nav_trending">Popularne</span>
     </div>
   </div>
   <div class="sb-section">
-    <div class="sb-title">Ty</div>
+    <div class="sb-title" data-i18n="nav_you">Ty</div>
     <div class="sb-item" id="sb-mychannel" onclick="setSbActive('sb-mychannel');showMyChannel()">
       <svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z"/></svg>
-      <span>Mój kanał</span>
+      <span data-i18n="nav_mychannel">Mój kanał</span>
     </div>
     <div class="sb-item" id="sb-subs-btn" onclick="setSbActive('sb-subs-btn');showSubscriptions()">
       <svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/><path d="M4.5 13.5c-.28 0-.5.22-.5.5s.22.5.5.5.5-.22.5-.5-.22-.5-.5-.5z" opacity="0"/><path d="M17 12.08V8h-2v2.26L17 12.08zM21 6.5c0 2.49-1.23 4.69-3.13 6.03L20 14.66c2.41-1.72 4-4.51 4-7.66v-1h-3v.5zM12 4c-1.48 0-2.86.44-4 1.2V3H6v6h6V7H8.53C9.43 6.38 10.67 6 12 6c3.31 0 6 2.69 6 6h2c0-4.42-3.58-8-8-8z"/></svg>
-      <span>Moje subskrypcje</span>
+      <span data-i18n="nav_subs">Moje subskrypcje</span>
     </div>
     <div class="sb-item" id="sb-history" onclick="setSbActive('sb-history');showHistory()">
       <svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor"><path d="M13 3c-4.97 0-9 4.03-9 9H1l3.89 3.89.07.14L9 12H6c0-3.87 3.13-7 7-7s7 3.13 7 7-3.13 7-7 7c-1.93 0-3.68-.79-4.94-2.06l-1.42 1.42C8.27 19.99 10.51 21 13 21c4.97 0 9-4.03 9-9s-4.03-9-9-9zm-1 5v5l4.28 2.54.72-1.21-3.5-2.08V8H12z"/></svg>
-      <span>Historia oglądania</span>
+      <span data-i18n="nav_history">Historia oglądania</span>
     </div>
     <div class="sb-item" id="sb-messages" onclick="setSbActive('sb-messages');showMessages()">
       <svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H6l-2 2V4h16v12z"/></svg>
-      <span>Wiadomości</span>
+      <span data-i18n="nav_messages">Wiadomości</span>
     </div>
   </div>
   <div class="sb-section" id="sb-subs-section" style="display:none">
-    <div class="sb-title">Subskrypcje</div>
+    <div class="sb-title" data-i18n="nav_subscriptions">Subskrypcje</div>
     <div id="sb-subs-list"></div>
   </div>
 </div>
@@ -665,6 +666,24 @@ hr{border:none;border-top:1px solid #272727;margin:20px 0}
   </div>
 </div>
 
+<!-- USTAWIENIA -->
+<div class="fmbg" id="settings-modal">
+  <div class="fbox" style="max-width:380px">
+    <h3>⚙️ Ustawienia</h3>
+    <div class="field">
+      <label>Język / Язык</label>
+      <div style="display:flex;flex-direction:column;gap:8px;margin-top:8px">
+        <button onclick="setLanguage('pl')" id="lang-btn-pl" style="display:flex;align-items:center;gap:10px;padding:12px 14px;border-radius:10px;cursor:pointer;font-size:14px;text-align:left;background:#0f0f0f;border:1px solid #303030;color:#fff">🇵🇱 Polski</button>
+        <button onclick="setLanguage('ru')" id="lang-btn-ru" style="display:flex;align-items:center;gap:10px;padding:12px 14px;border-radius:10px;cursor:pointer;font-size:14px;text-align:left;background:#0f0f0f;border:1px solid #303030;color:#fff">🇷🇺 Русский</button>
+      </div>
+      <p style="color:#666;font-size:11px;margin-top:10px">Zmienia język interfejsu (menu, przyciski, nagłówki). Treści dodane przez użytkowników (komentarze, tytuły filmów) pozostają w oryginalnym języku.</p>
+    </div>
+    <div class="fbbtns">
+      <button class="fcancel" onclick="closeSettingsModal()">Zamknij</button>
+    </div>
+  </div>
+</div>
+
 <!-- PANEL ADMINISTRATORA -->
 <div class="fmbg" id="admin-panel-modal" style="align-items:flex-start;padding-top:40px">
   <div class="fbox" style="max-width:640px;width:92%;max-height:85vh;display:flex;flex-direction:column;padding:0">
@@ -754,6 +773,63 @@ function showConfirm(title,subtitle,okLabel){
     cancelBtn.addEventListener('click',onCancel);
     modal.addEventListener('click',onBg);
   });
+}
+
+// ── JĘZYK / i18n ─────────────────────────────────────────────────────────
+const TRANSLATIONS={
+  pl:{
+    nav_home:'Strona główna',nav_shorts:'Shorts',nav_trending:'Popularne',nav_you:'Ty',
+    nav_mychannel:'Mój kanał',nav_subs:'Moje subskrypcje',nav_history:'Historia oglądania',
+    nav_messages:'Wiadomości',nav_subscriptions:'Subskrypcje',
+    search_placeholder:'Szukaj filmów...',btn_add_video:'+ Dodaj film',
+    dd_mychannel:'👤 Mój kanał',dd_settings:'⚙️ Ustawienia',dd_logout:'🚪 Wyloguj'
+  },
+  ru:{
+    nav_home:'Главная',nav_shorts:'Shorts',nav_trending:'В тренде',nav_you:'Вы',
+    nav_mychannel:'Мой канал',nav_subs:'Мои подписки',nav_history:'История просмотров',
+    nav_messages:'Сообщения',nav_subscriptions:'Подписки',
+    search_placeholder:'Поиск видео...',btn_add_video:'+ Добавить видео',
+    dd_mychannel:'👤 Мой канал',dd_settings:'⚙️ Настройки',dd_logout:'🚪 Выйти'
+  }
+};
+
+function getLang(){return localStorage.getItem('wt_lang')||'pl';}
+
+function applyTranslations(){
+  const lang=getLang();
+  const dict=TRANSLATIONS[lang]||TRANSLATIONS.pl;
+  document.querySelectorAll('[data-i18n]').forEach(el=>{
+    const key=el.getAttribute('data-i18n');
+    if(dict[key])el.textContent=dict[key];
+  });
+  document.querySelectorAll('[data-i18n-placeholder]').forEach(el=>{
+    const key=el.getAttribute('data-i18n-placeholder');
+    if(dict[key])el.placeholder=dict[key];
+  });
+}
+
+function openSettingsModal(){
+  document.getElementById('settings-modal').classList.add('open');
+  updateLangButtons();
+}
+
+function closeSettingsModal(){
+  document.getElementById('settings-modal').classList.remove('open');
+}
+
+function updateLangButtons(){
+  const lang=getLang();
+  const plBtn=document.getElementById('lang-btn-pl');
+  const ruBtn=document.getElementById('lang-btn-ru');
+  if(plBtn)plBtn.style.cssText=lang==='pl'?'display:flex;align-items:center;gap:10px;padding:12px 14px;border-radius:10px;cursor:pointer;font-size:14px;text-align:left;background:rgba(62,166,255,.15);border:1px solid #3ea6ff;color:#fff':'display:flex;align-items:center;gap:10px;padding:12px 14px;border-radius:10px;cursor:pointer;font-size:14px;text-align:left;background:#0f0f0f;border:1px solid #303030;color:#fff';
+  if(ruBtn)ruBtn.style.cssText=lang==='ru'?'display:flex;align-items:center;gap:10px;padding:12px 14px;border-radius:10px;cursor:pointer;font-size:14px;text-align:left;background:rgba(62,166,255,.15);border:1px solid #3ea6ff;color:#fff':'display:flex;align-items:center;gap:10px;padding:12px 14px;border-radius:10px;cursor:pointer;font-size:14px;text-align:left;background:#0f0f0f;border:1px solid #303030;color:#fff';
+}
+
+function setLanguage(lang){
+  localStorage.setItem('wt_lang',lang);
+  applyTranslations();
+  updateLangButtons();
+  toast(lang==='ru'?'Язык изменён 🌐':'Język zmieniony 🌐');
 }
 
 function toast(msg){
@@ -886,6 +962,39 @@ async function checkIfBanned(){
 
 // ── PANEL ADMINISTRATORA ────────────────────────────────────────────────
 let adminTab='videos';
+let adminUsersCache=[];
+let adminUsersBanMap={};
+
+function renderAdminUsersList(banMap){
+  if(banMap)adminUsersBanMap=banMap;
+  const body=document.getElementById('admin-panel-body');
+  const q=(document.getElementById('admin-user-search')?.value||'').trim().toLowerCase();
+  const filtered=q?adminUsersCache.filter(u=>(u.name||'').toLowerCase().includes(q)||(u.email||'').toLowerCase().includes(q)):adminUsersCache;
+  const listHtml=!filtered.length
+    ?`<p style="color:#888;padding:20px;text-align:center">${q?'Brak wyników dla "'+q+'"':'Brak użytkowników'}</p>`
+    :filtered.map(u=>{
+      const ban=adminUsersBanMap[u.id];
+      return`<div style="display:flex;align-items:center;gap:12px;padding:10px 14px;border-bottom:1px solid #272727">
+        ${u.avatar?`<img src="${u.avatar}" style="width:34px;height:34px;border-radius:50%;object-fit:cover;flex-shrink:0">`:`<div style="width:34px;height:34px;border-radius:50%;background:#cc0000;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;flex-shrink:0">${(u.name||'?')[0].toUpperCase()}</div>`}
+        <div style="flex:1;min-width:0">
+          <div style="font-size:13px;font-weight:600">${u.name}${ban?' <span style="color:#ff6b6b;font-size:11px">🚫 zablokowany</span>':''}</div>
+          <div style="font-size:11px;color:#888">${u.email}</div>
+        </div>
+        ${ban?
+          `<button onclick="adminUnbanUser('${u.id}')" style="background:#14301a;border:1px solid #1f5c2a;color:#7fe08a;padding:6px 12px;border-radius:8px;cursor:pointer;font-size:12px;flex-shrink:0">Odblokuj</button>`
+          :`<div style="position:relative;flex-shrink:0">
+            <button onclick="toggleAdminBanMenu('${u.id}',this)" style="background:#3a1414;border:1px solid #5c1f1f;color:#ff6b6b;padding:6px 12px;border-radius:8px;cursor:pointer;font-size:12px">🚫 Zablokuj</button>
+          </div>`}
+      </div>`;
+    }).join('');
+  body.innerHTML=`
+    <div style="padding:12px 14px;position:sticky;top:0;background:#282828;z-index:5">
+      <input id="admin-user-search" type="text" placeholder="🔍 Szukaj po nicku lub e-mailu..." value="${q}" oninput="renderAdminUsersList()" style="width:100%;background:#0f0f0f;border:1px solid #303030;border-radius:8px;color:#fff;padding:10px 14px;font-size:13px;outline:none">
+    </div>
+    <div>${listHtml}</div>`;
+  const inp=document.getElementById('admin-user-search');
+  if(inp){inp.focus();inp.setSelectionRange(inp.value.length,inp.value.length);}
+}
 
 function openAdminPanel(){
   if(!isAdmin()){toast('Brak uprawnień');return;}
@@ -935,23 +1044,8 @@ async function renderAdminPanel(){
     const{data:bans}=await sb.from('banned_users').select('*');
     const banMap={};
     if(bans)bans.forEach(b=>{if(!b.expires_at||new Date(b.expires_at)>new Date())banMap[b.user_id]=b;});
-    const usersList=Object.values(usersMap).filter(u=>u.email!==ADMIN_EMAIL);
-    if(!usersList.length){body.innerHTML='<p style="color:#888;padding:20px;text-align:center">Brak użytkowników</p>';return;}
-    body.innerHTML=usersList.map(u=>{
-      const ban=banMap[u.id];
-      return`<div style="display:flex;align-items:center;gap:12px;padding:10px 14px;border-bottom:1px solid #272727">
-        ${u.avatar?`<img src="${u.avatar}" style="width:34px;height:34px;border-radius:50%;object-fit:cover;flex-shrink:0">`:`<div style="width:34px;height:34px;border-radius:50%;background:#cc0000;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;flex-shrink:0">${(u.name||'?')[0].toUpperCase()}</div>`}
-        <div style="flex:1;min-width:0">
-          <div style="font-size:13px;font-weight:600">${u.name}${ban?' <span style="color:#ff6b6b;font-size:11px">🚫 zablokowany</span>':''}</div>
-          <div style="font-size:11px;color:#888">${u.email}</div>
-        </div>
-        ${ban?
-          `<button onclick="adminUnbanUser('${u.id}')" style="background:#14301a;border:1px solid #1f5c2a;color:#7fe08a;padding:6px 12px;border-radius:8px;cursor:pointer;font-size:12px;flex-shrink:0">Odblokuj</button>`
-          :`<div style="position:relative;flex-shrink:0">
-            <button onclick="toggleAdminBanMenu('${u.id}',this)" style="background:#3a1414;border:1px solid #5c1f1f;color:#ff6b6b;padding:6px 12px;border-radius:8px;cursor:pointer;font-size:12px">🚫 Zablokuj</button>
-          </div>`}
-      </div>`;
-    }).join('');
+    adminUsersCache=Object.values(usersMap).filter(u=>u.email!==ADMIN_EMAIL);
+    renderAdminUsersList(banMap);
   }
 
   if(adminTab==='reports'){
@@ -3124,6 +3218,7 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeP();closeForm(
   const{data:{session}}=await sb.auth.getSession();
   if(session)currentUser=session.user;
   updateAuthUI();
+  applyTranslations();
   if(currentUser){
     const banned=await checkIfBanned();
     if(!banned){
