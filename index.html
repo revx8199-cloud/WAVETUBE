@@ -6,7 +6,7 @@
 <title>WaveTube</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Bangers&family=Pacifico&family=Orbitron:wght@700&family=Press+Start+2P&family=Permanent+Marker&family=Russo+One&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Bangers&family=Pacifico&family=Orbitron:wght@700&family=Press+Start+2P&family=Permanent+Marker&family=Russo+One&family=Lobster&family=Anton&family=Caveat:wght@700&family=Fredoka:wght@600&family=Righteous&family=VT323&family=Shadows+Into+Light&family=Bungee&family=Comfortaa:wght@700&family=Rubik+Mono+One&display=swap" rel="stylesheet">
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 45 32'%3E%3Crect width='45' height='32' rx='9' fill='%233ea6ff'/%3E%3Cpolygon points='18,10 31,16 18,22' fill='%23fff'/%3E%3C/svg%3E">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
@@ -678,6 +678,14 @@ hr{border:none;border-top:1px solid #272727;margin:20px 0}
 <div class="fmbg" id="settings-modal">
   <div class="fbox" style="max-width:380px">
     <h3>⚙️ Ustawienia</h3>
+    <div class="field" style="margin-bottom:24px;padding-bottom:20px;border-bottom:1px solid #303030">
+      <label>Twój nick</label>
+      <div style="display:flex;gap:10px;margin-top:8px">
+        <input id="settings-nick-inp" placeholder="Twój nick" style="flex:1;background:#0f0f0f;border:1px solid #303030;border-radius:8px;color:#fff;padding:10px 14px;font-size:13px;outline:none">
+        <button onclick="saveMySettingsNick()" style="background:#3ea6ff;border:none;color:#0f0f0f;padding:10px 16px;border-radius:8px;cursor:pointer;font-size:13px;font-weight:700;white-space:nowrap">Zapisz</button>
+      </div>
+      <p style="color:#666;font-size:11px;margin-top:8px">Zmienia Twoją nazwę wyświetlaną w aplikacji.</p>
+    </div>
     <div class="field">
       <label>Język / Язык</label>
       <div style="display:flex;flex-direction:column;gap:8px;margin-top:8px">
@@ -817,12 +825,28 @@ function applyTranslations(){
 }
 
 function openSettingsModal(){
+  if(!currentUser){toast('Zaloguj się żeby zmienić ustawienia!');return;}
   document.getElementById('settings-modal').classList.add('open');
+  const meta=currentUser.user_metadata;
+  const inp=document.getElementById('settings-nick-inp');
+  if(inp)inp.value=meta?.full_name||currentUser.email?.split('@')[0]||'';
   updateLangButtons();
 }
 
 function closeSettingsModal(){
   document.getElementById('settings-modal').classList.remove('open');
+}
+
+async function saveMySettingsNick(){
+  if(!currentUser)return;
+  const newNick=document.getElementById('settings-nick-inp').value.trim();
+  if(!newNick){toast('Wpisz nick');return;}
+  const{error:authErr}=await sb.auth.updateUser({data:{full_name:newNick}});
+  if(authErr){toast('Błąd: '+authErr.message);return;}
+  const{error}=await sb.from('profiles').upsert([{id:currentUser.id,name:newNick}],{onConflict:'id'});
+  if(error){toast('Błąd zapisu: '+error.message);return;}
+  toast('Nick zmieniony! ✏️');
+  updateAuthUI();
 }
 
 function updateLangButtons(){
@@ -937,7 +961,17 @@ const FONT_OPTIONS=[
   {id:'Orbitron',label:'Orbitron',css:"'Orbitron', sans-serif"},
   {id:'Press Start 2P',label:'Press Start 2P',css:"'Press Start 2P', monospace"},
   {id:'Permanent Marker',label:'Permanent Marker',css:"'Permanent Marker', cursive"},
-  {id:'Russo One',label:'Russo One',css:"'Russo One', sans-serif"}
+  {id:'Russo One',label:'Russo One',css:"'Russo One', sans-serif"},
+  {id:'Lobster',label:'Lobster',css:"'Lobster', cursive"},
+  {id:'Anton',label:'Anton',css:"'Anton', sans-serif"},
+  {id:'Caveat',label:'Caveat',css:"'Caveat', cursive"},
+  {id:'Fredoka',label:'Fredoka',css:"'Fredoka', sans-serif"},
+  {id:'Righteous',label:'Righteous',css:"'Righteous', cursive"},
+  {id:'VT323',label:'VT323',css:"'VT323', monospace"},
+  {id:'Shadows Into Light',label:'Shadows Into Light',css:"'Shadows Into Light', cursive"},
+  {id:'Bungee',label:'Bungee',css:"'Bungee', cursive"},
+  {id:'Comfortaa',label:'Comfortaa',css:"'Comfortaa', sans-serif"},
+  {id:'Rubik Mono One',label:'Rubik Mono One',css:"'Rubik Mono One', sans-serif"}
 ];
 
 function fontCssFor(fontId){
@@ -1011,6 +1045,42 @@ let adminTab='videos';
 let adminUsersCache=[];
 let adminUsersBanMap={};
 
+function toggleRenameUser(userId,btnEl){
+  const existing=document.getElementById('admin-rename-popup');
+  if(existing){existing.remove();if(existing.dataset.user===userId)return;}
+  const user=adminUsersCache.find(u=>u.id===userId);
+  const rect=btnEl.getBoundingClientRect();
+  const popup=document.createElement('div');
+  popup.id='admin-rename-popup';
+  popup.dataset.user=userId;
+  popup.style.cssText=`position:fixed;top:${rect.bottom+4}px;left:${Math.min(rect.left-200,window.innerWidth-260)}px;background:#212121;border:1px solid #303030;border-radius:10px;padding:12px;min-width:240px;z-index:2000;box-shadow:0 4px 20px rgba(0,0,0,.5)`;
+  popup.innerHTML=`
+    <div style="font-size:11px;color:#888;margin-bottom:8px">Nowy nick dla ${user?.email||''}</div>
+    <input id="rename-inp-${userId}" value="${user?.name||''}" style="width:100%;background:#0f0f0f;border:1px solid #303030;border-radius:6px;color:#fff;padding:8px 10px;font-size:13px;outline:none;margin-bottom:10px" onkeydown="if(event.key==='Enter')saveRenameUser('${userId}')">
+    <div style="display:flex;gap:8px;justify-content:flex-end">
+      <button onclick="document.getElementById('admin-rename-popup').remove()" style="background:none;border:none;color:#888;padding:6px 12px;border-radius:8px;cursor:pointer;font-size:12px">Anuluj</button>
+      <button onclick="saveRenameUser('${userId}')" style="background:#3ea6ff;border:none;color:#0f0f0f;padding:6px 14px;border-radius:8px;cursor:pointer;font-size:12px;font-weight:700">Zapisz</button>
+    </div>`;
+  document.body.appendChild(popup);
+  const inp=document.getElementById(`rename-inp-${userId}`);
+  if(inp){inp.focus();inp.select();}
+}
+
+async function saveRenameUser(userId){
+  const inp=document.getElementById(`rename-inp-${userId}`);
+  const newName=inp?.value.trim();
+  if(!newName){toast('Wpisz nick');return;}
+  const{error}=await sb.from('profiles').upsert([{id:userId,name:newName}],{onConflict:'id'});
+  const popup=document.getElementById('admin-rename-popup');
+  if(popup)popup.remove();
+  if(error){toast('Błąd: '+error.message);return;}
+  const user=adminUsersCache.find(u=>u.id===userId);
+  if(user)user.name=newName;
+  const nameEl=document.getElementById(`uname-${userId}`);
+  if(nameEl)nameEl.textContent=newName;
+  toast('Nick zmieniony! ✏️');
+}
+
 function renderAdminUsersList(banMap){
   if(banMap)adminUsersBanMap=banMap;
   const body=document.getElementById('admin-panel-body');
@@ -1023,9 +1093,10 @@ function renderAdminUsersList(banMap){
       return`<div style="display:flex;align-items:center;gap:12px;padding:10px 14px;border-bottom:1px solid #272727">
         ${u.avatar?`<img src="${u.avatar}" style="width:34px;height:34px;border-radius:50%;object-fit:cover;flex-shrink:0">`:`<div style="width:34px;height:34px;border-radius:50%;background:#cc0000;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;flex-shrink:0">${(u.name||'?')[0].toUpperCase()}</div>`}
         <div style="flex:1;min-width:0">
-          <div style="font-size:13px;font-weight:600">${u.name}${ban?' <span style="color:#ff6b6b;font-size:11px">🚫 zablokowany</span>':''}</div>
+          <div style="font-size:13px;font-weight:600" id="uname-${u.id}">${u.name}${ban?' <span style="color:#ff6b6b;font-size:11px">🚫 zablokowany</span>':''}</div>
           <div style="font-size:11px;color:#888">${u.email}</div>
         </div>
+        <button onclick="toggleRenameUser('${u.id}',this)" title="Zmień nick" style="background:#272727;border:none;color:#fff;padding:6px 10px;border-radius:8px;cursor:pointer;font-size:12px;flex-shrink:0">✏️</button>
         ${ban?
           `<button onclick="adminUnbanUser('${u.id}')" style="background:#14301a;border:1px solid #1f5c2a;color:#7fe08a;padding:6px 12px;border-radius:8px;cursor:pointer;font-size:12px;flex-shrink:0">Odblokuj</button>`
           :`<div style="position:relative;flex-shrink:0">
@@ -1634,6 +1705,9 @@ function showHome(){
 }
 
 function render(){
+  const g0=document.getElementById('grid');
+  g0.style.display='grid';
+  g0.style.gridTemplateColumns='repeat(auto-fill,minmax(250px,1fr))';
   const q=(document.getElementById('search').value||'').toLowerCase();
   const allVids=q?videos.filter(v=>v.title.toLowerCase().includes(q)):videos;
   const shorts=allVids.filter(v=>v.is_short===true);
@@ -1924,6 +1998,8 @@ function showSubscriptions(){
   });
 }
 
+let announcementsCache=[];
+
 async function showAnnouncementsPage(){
   showHome();
   const shortsSection=document.getElementById('shorts-section');
@@ -1942,23 +2018,109 @@ async function showAnnouncementsPage(){
     g.innerHTML=`<div class="empty"><div style="font-size:48px;margin-bottom:12px">📢</div><p style="font-size:15px">Nie udało się wczytać ogłoszeń</p></div>`;
     return;
   }
-  if(!data||!data.length){
+  announcementsCache=data||[];
+  renderAnnouncementsList();
+}
+
+function renderAnnouncementsList(){
+  const g=document.getElementById('grid');
+  if(!announcementsCache.length){
     g.innerHTML=`<div class="empty"><div style="font-size:48px;margin-bottom:12px">📢</div><p style="font-size:15px">Brak ogłoszeń</p><p style="font-size:13px;color:#444;margin-top:6px">Tutaj pojawią się wiadomości od twórcy WaveTube</p></div>`;
     return;
   }
   g.innerHTML=`<div style="max-width:640px;margin:0 auto;display:flex;flex-direction:column;gap:14px">
-    ${data.map(a=>`
-      <div style="background:#181818;border:1px solid #272727;border-radius:12px;padding:18px 20px">
-        <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">
-          <svg width="30" height="22" viewBox="0 0 45 32" fill="none"><rect width="45" height="32" rx="9" fill="#3ea6ff"/><polygon points="18,10 31,16 18,22" fill="#fff"/></svg>
-          <div>
-            <div style="font-size:13px;font-weight:700">WaveTube · Twórca</div>
-            <div style="font-size:11px;color:#888">${new Date(a.created_at).toLocaleString('pl-PL')}</div>
-          </div>
-        </div>
-        <div style="font-size:14px;color:#eee;line-height:1.6;white-space:pre-wrap">${a.message}</div>
-      </div>`).join('')}
+    ${announcementsCache.map(a=>renderAnnouncementCard(a)).join('')}
   </div>`;
+}
+
+function renderAnnouncementCard(a){
+  const voters=a.voters||{};
+  const myVote=currentUser?voters[currentUser.id]:null;
+  const likes=a.likes||0;
+  const dislikes=a.dislikes||0;
+  const comments=a.comments||[];
+  return`<div style="background:#181818;border:1px solid #272727;border-radius:12px;padding:18px 20px" id="ann-${a.id}">
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">
+      <svg width="30" height="22" viewBox="0 0 45 32" fill="none"><rect width="45" height="32" rx="9" fill="#3ea6ff"/><polygon points="18,10 31,16 18,22" fill="#fff"/></svg>
+      <div>
+        <div style="font-size:13px;font-weight:700">WaveTube · Twórca</div>
+        <div style="font-size:11px;color:#888">${new Date(a.created_at).toLocaleString('pl-PL')}</div>
+      </div>
+    </div>
+    <div style="font-size:14px;color:#eee;line-height:1.6;white-space:pre-wrap;margin-bottom:12px">${a.message}</div>
+    <div style="display:flex;align-items:center;gap:14px">
+      <button onclick="voteAnnouncement(${a.id},'like')" style="display:flex;align-items:center;gap:6px;background:none;border:none;color:${myVote==='like'?'#3ea6ff':'#aaa'};cursor:pointer;font-size:13px">
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M1 21h4V9H1v12zm22-11c0-1.1-.9-2-2-2h-6.31l.95-4.57.03-.32c0-.41-.17-.79-.44-1.06L14.17 1 7.59 7.59C7.22 7.95 7 8.45 7 9v10c0 1.1.9 2 2 2h9c.83 0 1.54-.5 1.84-1.22l3.02-7.05c.09-.23.14-.47.14-.73v-2z"/></svg>
+        ${likes}
+      </button>
+      <button onclick="voteAnnouncement(${a.id},'dislike')" style="display:flex;align-items:center;gap:6px;background:none;border:none;color:${myVote==='dislike'?'#ff6b6b':'#aaa'};cursor:pointer;font-size:13px">
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor" style="transform:scaleX(-1) scaleY(-1)"><path d="M1 21h4V9H1v12zm22-11c0-1.1-.9-2-2-2h-6.31l.95-4.57.03-.32c0-.41-.17-.79-.44-1.06L14.17 1 7.59 7.59C7.22 7.95 7 8.45 7 9v10c0 1.1.9 2 2 2h9c.83 0 1.54-.5 1.84-1.22l3.02-7.05c.09-.23.14-.47.14-.73v-2z"/></svg>
+        ${dislikes}
+      </button>
+      <button onclick="toggleAnnouncementComments(${a.id})" style="display:flex;align-items:center;gap:6px;background:none;border:none;color:#aaa;cursor:pointer;font-size:13px">
+        💬 ${comments.length}
+      </button>
+    </div>
+    <div id="ann-comments-${a.id}" style="display:none;margin-top:14px;padding-top:14px;border-top:1px solid #272727">
+      <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:12px">
+        ${comments.map(c=>`<div style="display:flex;gap:8px">
+          ${c.avatar?`<img src="${c.avatar}" style="width:28px;height:28px;border-radius:50%;object-fit:cover;flex-shrink:0">`:`<div style="width:28px;height:28px;border-radius:50%;background:#cc0000;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0">${(c.user||'?')[0].toUpperCase()}</div>`}
+          <div>
+            <div style="font-size:12px;font-weight:600${c.name_color?`;color:${c.name_color}`:''}${c.name_font?`;font-family:${fontCssFor(c.name_font)}`:''}">${c.user}</div>
+            <div style="font-size:13px;color:#ccc">${c.text}</div>
+          </div>
+        </div>`).join('')||'<p style="color:#666;font-size:12px">Brak komentarzy — bądź pierwszy!</p>'}
+      </div>
+      ${currentUser?`<div style="display:flex;gap:8px">
+        <input id="ann-cinp-${a.id}" placeholder="Napisz komentarz..." style="flex:1;background:#0f0f0f;border:1px solid #303030;border-radius:8px;color:#fff;padding:8px 12px;font-size:13px;outline:none" onkeydown="if(event.key==='Enter')addAnnouncementComment(${a.id})">
+        <button onclick="addAnnouncementComment(${a.id})" style="background:#3ea6ff;border:none;color:#0f0f0f;padding:8px 16px;border-radius:8px;cursor:pointer;font-size:12px;font-weight:700">Wyślij</button>
+      </div>`:'<p style="color:#666;font-size:12px">Zaloguj się żeby komentować</p>'}
+    </div>
+  </div>`;
+}
+
+function toggleAnnouncementComments(id){
+  const el=document.getElementById(`ann-comments-${id}`);
+  if(el)el.style.display=el.style.display==='none'?'block':'none';
+}
+
+async function voteAnnouncement(id,type){
+  if(!currentUser){toast('Zaloguj się żeby ocenić!');return;}
+  const a=announcementsCache.find(x=>x.id===id);
+  if(!a)return;
+  const voters=a.voters||{};
+  const prev=voters[currentUser.id];
+  if(prev===type){
+    delete voters[currentUser.id];
+    a[type+'s']=Math.max(0,(a[type+'s']||0)-1);
+  } else {
+    if(prev){a[prev+'s']=Math.max(0,(a[prev+'s']||0)-1);}
+    voters[currentUser.id]=type;
+    a[type+'s']=(a[type+'s']||0)+1;
+  }
+  a.voters=voters;
+  await sb.from('announcements').update({likes:a.likes||0,dislikes:a.dislikes||0,voters}).eq('id',id);
+  renderAnnouncementsList();
+}
+
+async function addAnnouncementComment(id){
+  if(!currentUser)return;
+  const inp=document.getElementById(`ann-cinp-${id}`);
+  const text=inp?.value.trim();
+  if(!text)return;
+  const a=announcementsCache.find(x=>x.id===id);
+  if(!a)return;
+  const meta=currentUser.user_metadata;
+  const comments=[...(a.comments||[]),{
+    user:meta?.full_name||currentUser.email?.split('@')[0],
+    text,ts:Date.now(),avatar:meta?.avatar_url||'',
+    user_id:currentUser.id,name_color:myNameColor||'',name_font:myNameFont||''
+  }];
+  a.comments=comments;
+  await sb.from('announcements').update({comments}).eq('id',id);
+  renderAnnouncementsList();
+  const el=document.getElementById(`ann-comments-${id}`);
+  if(el)el.style.display='block';
 }
 
 async function checkNewAnnouncements(){
