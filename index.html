@@ -66,9 +66,9 @@ header{background:#0f0f0f;border-bottom:1px solid #272727;padding:12px 20px;disp
 .loading{text-align:center;padding:60px;color:#555;grid-column:1/-1}
 
 /* PLAYER */
-.mbg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.95);z-index:500;overflow-y:auto}
+.mbg{display:none;position:fixed;inset:0;background:#0f0f0f;z-index:500;overflow-y:auto}
 .mbg.open{display:block}
-.minner{max-width:1100px;margin:0 auto;padding:14px 20px 60px}
+.minner{max-width:1280px;margin:0 auto;padding:24px 24px 80px}
 .mclose{display:flex;justify-content:flex-end;margin-bottom:8px}
 .mclose button{background:none;border:none;color:#fff;font-size:30px;cursor:pointer;opacity:.7}
 .mclose button:hover{opacity:1}
@@ -97,19 +97,19 @@ header{background:#0f0f0f;border-bottom:1px solid #272727;padding:12px 20px;disp
 .dislike-btn.liked{background:#383838}
 .like-divider{width:1px;height:20px;background:#444}
 hr{border:none;border-top:1px solid #272727;margin:20px 0}
-.comments h3{font-size:15px;font-weight:600;margin-bottom:18px}
+.comments h3{font-size:20px;font-weight:600;margin-bottom:18px}
 .nc{display:flex;gap:12px;margin-bottom:24px}
-.av{width:36px;height:36px;border-radius:50%;background:#cc0000;color:#fff;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;flex-shrink:0;overflow:hidden}
+.av{width:44px;height:44px;border-radius:50%;background:#cc0000;color:#fff;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:700;flex-shrink:0;overflow:hidden}
 .av img{width:100%;height:100%;object-fit:cover}
 .ci{flex:1}
-.ci input{width:100%;background:transparent;border:none;border-bottom:1px solid #444;color:#fff;padding:7px 0;font-size:14px;outline:none}
+.ci input{width:100%;background:transparent;border:none;border-bottom:1px solid #444;color:#fff;padding:9px 0;font-size:15px;outline:none}
 .ci input:focus{border-bottom-color:#fff}
 .ci input::placeholder{color:#555}
 .cbtns{display:flex;justify-content:flex-end;gap:8px;margin-top:8px}
 .bcancel{background:none;border:none;color:#aaa;padding:8px 14px;border-radius:20px;cursor:pointer;font-size:13px}
 .bpost{background:#3ea6ff;border:none;color:#0f0f0f;padding:8px 16px;border-radius:20px;cursor:pointer;font-size:13px;font-weight:700}
 .citem{display:flex;gap:12px;margin-bottom:18px}
-.cav{width:36px;height:36px;border-radius:50%;color:#fff;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;flex-shrink:0;overflow:hidden}
+.cav{width:44px;height:44px;border-radius:50%;color:#fff;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:700;flex-shrink:0;overflow:hidden}
 .cav img{width:100%;height:100%;object-fit:cover}
 .cbody .cname{font-size:13px;font-weight:600;margin-bottom:4px}
 .cbody .cname span{font-weight:400;color:#aaa;font-size:11px;margin-left:8px}
@@ -2396,7 +2396,7 @@ function renderC(){
       <div class="cbody" style="flex:1;min-width:0">
         <div class="cname" style="display:flex;align-items:center;gap:4px;flex-wrap:wrap;justify-content:space-between;margin-bottom:4px">
           <div style="display:flex;align-items:center;gap:4px;flex-wrap:wrap">
-            <span style="cursor:pointer;font-weight:600${c.name_color?`;color:${c.name_color}`:''}${c.name_font?`;font-family:${fontCssFor(c.name_font)}`:''}" onclick="closeP();showChannel('${uid}','${c.user}','${uavatar}','${uemail}')">${c.user}</span>${verifiedBadge(uemail||'')}
+            <span style="cursor:pointer;font-weight:600;font-size:14px${c.name_color?`;color:${c.name_color}`:''}${c.name_font?`;font-family:${fontCssFor(c.name_font)}`:''}" onclick="closeP();showChannel('${uid}','${c.user}','${uavatar}','${uemail}')">${c.user}</span>${verifiedBadge(uemail||'')}
             <span style="color:#aaa;font-weight:400;font-size:11px">${displayTime}${c.edited?' <span style=\"color:#666\">(edytowano)</span>':''}</span>
           </div>
           <div style="display:flex;gap:4px">
@@ -2406,7 +2406,7 @@ function renderC(){
             ${isAdmin()&&!isAuthor&&uid?`<button onclick="event.stopPropagation();toggleMuteMenu('${uid}',this)" title="Wycisz użytkownika" style="background:none;border:none;color:#555;cursor:pointer;font-size:13px;padding:2px 4px;border-radius:4px">🔇</button>`:''}
           </div>
         </div>
-        <div class="ctext" id="ctext-${i}" style="margin-bottom:8px">${c.text}</div>
+        <div class="ctext" id="ctext-${i}" style="margin-bottom:8px;font-size:15px;line-height:1.5">${c.text}</div>
         <div id="cedit-${i}" style="display:none;margin-bottom:8px">
           <input id="cedit-inp-${i}" value="${(c.text||'').replace(/"/g,'&quot;')}" style="width:100%;background:transparent;border:none;border-bottom:1px solid #444;color:#fff;padding:6px 0;font-size:14px;outline:none">
           <div style="display:flex;justify-content:flex-end;gap:8px;margin-top:6px">
