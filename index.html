@@ -86,6 +86,10 @@ header{background:#0f0f0f;border-bottom:1px solid #272727;padding:12px 20px;disp
 .btn-sub.subscribed{background:#272727;color:#fff}
 .btn-sub.subscribed:hover{background:#cc0000}
 .acts{display:flex;gap:10px;margin:14px 0;flex-wrap:wrap;align-items:center}
+.acts.shorts-acts{position:absolute;right:-68px;top:50%;transform:translateY(-50%);display:flex;flex-direction:column;gap:16px;margin:0;width:56px;flex-wrap:nowrap}
+.acts.shorts-acts .like-group{flex-direction:column;background:none;border-radius:0;gap:12px}
+.acts.shorts-acts .like-btn,.acts.shorts-acts .dislike-btn,.acts.shorts-acts .abtn{flex-direction:column;background:rgba(255,255,255,.1);border-radius:50%;width:48px;height:48px;justify-content:center;align-items:center;padding:0;font-size:10px;gap:2px;white-space:nowrap}
+.acts.shorts-acts .like-divider{display:none}
 .abtn{display:flex;align-items:center;gap:6px;background:#272727;border:none;color:#fff;padding:9px 16px;border-radius:20px;cursor:pointer;font-size:13px;font-weight:500}
 .abtn:hover{background:#383838}
 .like-group{display:flex;align-items:center;background:#272727;border-radius:20px;overflow:hidden}
@@ -2004,6 +2008,12 @@ async function showChannel(userId,nameIn,avatar,email){
   const bannerBg=_bannerRaw?(_bannerRaw.startsWith('url(')?_bannerRaw:'url('+_bannerRaw+')'):'linear-gradient(135deg,#1a1a2e,#16213e)';
   const savedDesc=localStorage.getItem('desc_'+(userId||email))||'';
   const{count:subCount}=await sb.from('subscriptions').select('*',{count:'exact',head:true}).eq('channel_id',userId||email);
+  let chNameColor='',chNameFont='';
+  if(userId){
+    const{data:profStyle}=await sb.from('profiles').select('name_color,name_font').eq('id',userId).single();
+    chNameColor=profStyle?.name_color||'';
+    chNameFont=profStyle?.name_font||'';
+  }
   cc.innerHTML=`
     <div style="position:relative">
       <div id="channel-banner" style="height:120px;background:${bannerBg};background-size:cover;background-position:center;position:relative">
@@ -2020,7 +2030,7 @@ async function showChannel(userId,nameIn,avatar,email){
     <div class="channel-header">
       <div class="channel-big-av">${avHtml}</div>
       <div class="channel-big-info" style="flex:1">
-        <h2 style="margin-bottom:2px;display:flex;align-items:center">${name}${verifiedBadge(email)}</h2>
+        <h2 style="margin-bottom:2px;display:flex;align-items:center;${chNameColor?`color:${chNameColor};`:''}${chNameFont?`font-family:${fontCssFor(chNameFont)};`:''}">${name}${verifiedBadge(email)}</h2>
         <div style="font-size:12px;color:#aaa;margin-bottom:6px">${makeNick(name,email)}</div>
         <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:4px">
           <span style="font-size:13px;color:#aaa"><span id="sub-count-big">${subCount}</span> subskrybentów · ${userVideos.length} filmów</span>
@@ -2482,6 +2492,22 @@ function showTrending(){
 }
 
 // ── PLAYER ────────────────────────────────────────────────────────────────────
+function layoutActsForShorts(isShort){
+  const acts=document.querySelector('#pm .acts');
+  const pw=document.getElementById('pw');
+  const hr=document.querySelector('#pm hr');
+  if(!acts||!pw||!hr)return;
+  if(isShort){
+    pw.style.position='relative';
+    pw.appendChild(acts);
+    acts.classList.add('shorts-acts');
+  } else {
+    pw.style.position='';
+    acts.classList.remove('shorts-acts');
+    hr.parentNode.insertBefore(acts,hr);
+  }
+}
+
 function openP(id){
   const v=videos.find(x=>x.id===id);if(!v)return;
   cur=v;updateVideo(v.id,{views:(v.views||0)+1});v.views=(v.views||0)+1;
@@ -2491,13 +2517,15 @@ function openP(id){
   if(isShort){
     document.getElementById('pw').style.aspectRatio='9/16';
     document.getElementById('pw').style.maxHeight='80vh';
-    document.getElementById('pw').style.maxWidth='400px';
+    document.getElementById('pw').style.maxWidth='360px';
     document.getElementById('pw').style.margin='0 auto';
+    document.getElementById('pw').style.overflow='visible';
   } else {
     document.getElementById('pw').style.aspectRatio='16/9';
     document.getElementById('pw').style.maxHeight='';
     document.getElementById('pw').style.maxWidth='';
     document.getElementById('pw').style.margin='';
+    document.getElementById('pw').style.overflow='';
   }
   const{type,src}=getPlayer(v.url);
   let html='';
@@ -2506,6 +2534,7 @@ function openP(id){
   else if(type==='mp4')html=`<video src="${src}" controls autoplay></video>`;
   else html=`<div style="display:flex;align-items:center;justify-content:center;height:100%;flex-direction:column;gap:12px;color:#555;padding:20px;text-align:center"><div style="font-size:48px">⚠️</div><p>Nie można odtworzyć</p><a href="${src}" target="_blank" style="color:#3ea6ff;font-size:13px">Otwórz zewnętrznie ↗</a></div>`;
   document.getElementById('pw').innerHTML=html;
+  layoutActsForShorts(isShort);
   document.getElementById('vt').textContent=v.title;
   document.getElementById('vm').innerHTML=`${v.views} wyświetleń · ${v.date||''}${v.category?' · <span style="background:#272727;padding:2px 8px;border-radius:10px;font-size:11px">'+v.category+'</span>':''}${v.description?'<div style="margin-top:8px;color:#ccc;font-size:13px;line-height:1.5">'+v.description+'</div>':''}`;
   // handle comments enabled
