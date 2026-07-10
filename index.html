@@ -275,6 +275,7 @@ hr{border:none;border-top:1px solid #272727;margin:20px 0}
         <div class="dropdown" id="dropdown">
           <div class="dropdown-item" onclick="showMyChannel()" data-i18n="dd_mychannel">👤 Mój kanał</div>
           <div class="dropdown-item" onclick="openSettingsModal()" data-i18n="dd_settings">⚙️ Ustawienia</div>
+          <div class="dropdown-item" id="vip-dropdown-item" onclick="openVipPanel()" style="display:none">⭐ Panel VIP</div>
           <div class="dropdown-item" id="admin-dropdown-item" onclick="openAdminPanel()" style="display:none">🛡 Panel administratora</div>
           <div class="dropdown-divider"></div>
           <div class="dropdown-item red" onclick="logout()" data-i18n="dd_logout">🚪 Wyloguj</div>
@@ -396,11 +397,11 @@ hr{border:none;border-top:1px solid #272727;margin:20px 0}
     <hr>
     <div class="comments" id="comments-section">
       <div style="display:flex;align-items:center;gap:20px;margin-bottom:18px">
-        <h3 id="ctitle" style="margin:0">Komentarze (0)</h3>
+        <h3 id="ctitle" style="margin:0" data-i18n="comments_label_zero">Komentarze (0)</h3>
         <div style="position:relative">
           <button id="sort-toggle-btn" onclick="toggleSortMenu()" style="background:none;border:none;color:#fff;cursor:pointer;font-size:13px;font-weight:600;display:flex;align-items:center;gap:6px;padding:4px 6px">
             <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M3 18h6v-2H3v2zM3 6v2h18V6H3zm0 7h12v-2H3v2z"/></svg>
-            <span id="sort-label">Najtrafniejsze</span>
+            <span id="sort-label" data-i18n="sort_top">Najtrafniejsze</span>
           </button>
           <div id="sort-menu" style="display:none;position:absolute;top:32px;left:0;background:#212121;border:1px solid #303030;border-radius:10px;min-width:180px;z-index:50;overflow:hidden">
             <div onclick="setCommentSort('top')" style="padding:11px 16px;cursor:pointer;font-size:13px" onmouseover="this.style.background='#303030'" onmouseout="this.style.background='none'">Najpierw najtrafniejsze</div>
@@ -411,11 +412,11 @@ hr{border:none;border-top:1px solid #272727;margin:20px 0}
       <div class="nc">
         <div class="av" id="com-av">?</div>
         <div class="ci">
-          <input type="text" id="cinp" placeholder="Napisz komentarz...">
+          <input type="text" id="cinp" placeholder="Napisz komentarz..." data-i18n-placeholder="comment_placeholder">
           <div class="cbtns">
             <button onclick="toggleEmojiPicker('cinp',this)" style="background:none;border:none;color:#aaa;cursor:pointer;font-size:18px;margin-right:auto" title="Emotki">😊</button>
-            <button class="bcancel" onclick="document.getElementById('cinp').value=''">Anuluj</button>
-            <button class="bpost" onclick="postC()">Wyślij</button>
+            <button class="bcancel" onclick="document.getElementById('cinp').value=''" data-i18n="btn_cancel">Anuluj</button>
+            <button class="bpost" onclick="postC()" data-i18n="btn_send">Wyślij</button>
           </div>
         </div>
       </div>
@@ -677,17 +678,17 @@ hr{border:none;border-top:1px solid #272727;margin:20px 0}
 <!-- USTAWIENIA -->
 <div class="fmbg" id="settings-modal">
   <div class="fbox" style="max-width:380px">
-    <h3>⚙️ Ustawienia</h3>
+    <h3 data-i18n="settings_title">⚙️ Ustawienia</h3>
     <div class="field" style="margin-bottom:24px;padding-bottom:20px;border-bottom:1px solid #303030">
-      <label>Twój nick</label>
+      <label data-i18n="settings_nick">Twój nick</label>
       <div style="display:flex;gap:10px;margin-top:8px">
-        <input id="settings-nick-inp" placeholder="Twój nick" style="flex:1;background:#0f0f0f;border:1px solid #303030;border-radius:8px;color:#fff;padding:10px 14px;font-size:13px;outline:none">
-        <button onclick="saveMySettingsNick()" style="background:#3ea6ff;border:none;color:#0f0f0f;padding:10px 16px;border-radius:8px;cursor:pointer;font-size:13px;font-weight:700;white-space:nowrap">Zapisz</button>
+        <input id="settings-nick-inp" placeholder="Twój nick" data-i18n-placeholder="settings_nick" style="flex:1;background:#0f0f0f;border:1px solid #303030;border-radius:8px;color:#fff;padding:10px 14px;font-size:13px;outline:none">
+        <button onclick="saveMySettingsNick()" data-i18n="btn_save" style="background:#3ea6ff;border:none;color:#0f0f0f;padding:10px 16px;border-radius:8px;cursor:pointer;font-size:13px;font-weight:700;white-space:nowrap">Zapisz</button>
       </div>
       <p style="color:#666;font-size:11px;margin-top:8px">Zmienia Twoją nazwę wyświetlaną w aplikacji.</p>
     </div>
     <div class="field">
-      <label>Język / Язык</label>
+      <label data-i18n="settings_lang">Język / Язык</label>
       <div style="display:flex;flex-direction:column;gap:8px;margin-top:8px">
         <button onclick="setLanguage('pl')" id="lang-btn-pl" style="display:flex;align-items:center;gap:10px;padding:12px 14px;border-radius:10px;cursor:pointer;font-size:14px;text-align:left;background:#0f0f0f;border:1px solid #303030;color:#fff">🇵🇱 Polski</button>
         <button onclick="setLanguage('ru')" id="lang-btn-ru" style="display:flex;align-items:center;gap:10px;padding:12px 14px;border-radius:10px;cursor:pointer;font-size:14px;text-align:left;background:#0f0f0f;border:1px solid #303030;color:#fff">🇷🇺 Русский</button>
@@ -695,7 +696,19 @@ hr{border:none;border-top:1px solid #272727;margin:20px 0}
       <p style="color:#666;font-size:11px;margin-top:10px">Zmienia język interfejsu (menu, przyciski, nagłówki). Treści dodane przez użytkowników (komentarze, tytuły filmów) pozostają w oryginalnym języku.</p>
     </div>
     <div class="fbbtns">
-      <button class="fcancel" onclick="closeSettingsModal()">Zamknij</button>
+      <button class="fcancel" onclick="closeSettingsModal()" data-i18n="btn_close">Zamknij</button>
+    </div>
+  </div>
+</div>
+
+<!-- PANEL VIP -->
+<div class="fmbg" id="vip-panel-modal">
+  <div class="fbox" style="max-width:420px;max-height:85vh;overflow-y:auto">
+    <h3>⭐ Panel VIP</h3>
+    <p class="sub" style="margin-bottom:20px">Twój specjalny status — dostosuj swój wygląd w aplikacji.</p>
+    <div id="vip-panel-body"></div>
+    <div class="fbbtns">
+      <button class="fcancel" onclick="closeVipPanel()">Zamknij</button>
     </div>
   </div>
 </div>
@@ -798,16 +811,39 @@ const TRANSLATIONS={
     nav_mychannel:'Mój kanał',nav_subs:'Moje subskrypcje',nav_history:'Historia oglądania',
     nav_messages:'Wiadomości',nav_subscriptions:'Subskrypcje',nav_announcements:'Ogłoszenia',
     search_placeholder:'Szukaj filmów...',btn_add_video:'+ Dodaj film',
-    dd_mychannel:'👤 Mój kanał',dd_settings:'⚙️ Ustawienia',dd_logout:'🚪 Wyloguj'
+    dd_mychannel:'👤 Mój kanał',dd_settings:'⚙️ Ustawienia',dd_logout:'🚪 Wyloguj',
+    btn_subscribe:'Subskrybuj',btn_subscribed:'Subskrybujesz',btn_share:'Udostępnij',
+    btn_download:'Pobierz',btn_support:'Wesprzyj autora',btn_report:'Zgłoś',
+    comments_label:'Komentarze',comment_placeholder:'Napisz komentarz...',comments_label_zero:'Komentarze (0)',
+    btn_send:'Wyślij',btn_cancel:'Anuluj',btn_reply:'Odpowiedz',
+    sort_top:'Najtrafniejsze',sort_newest:'Najnowsze',
+    settings_title:'Ustawienia',settings_nick:'Twój nick',settings_lang:'Język',
+    btn_save:'Zapisz',btn_close:'Zamknij',btn_publish:'Opublikuj',
+    tab_videos:'Filmy',tab_shorts:'Shorts',tab_posts:'Posty',
+    login_google:'Zaloguj się',logged_in_as:'Zalogowano jako'
   },
   ru:{
     nav_home:'Главная',nav_shorts:'Shorts',nav_trending:'В тренде',nav_you:'Вы',
     nav_mychannel:'Мой канал',nav_subs:'Мои подписки',nav_history:'История просмотров',
     nav_messages:'Сообщения',nav_subscriptions:'Подписки',nav_announcements:'Объявления',
     search_placeholder:'Поиск видео...',btn_add_video:'+ Добавить видео',
-    dd_mychannel:'👤 Мой канал',dd_settings:'⚙️ Настройки',dd_logout:'🚪 Выйти'
+    dd_mychannel:'👤 Мой канал',dd_settings:'⚙️ Настройки',dd_logout:'🚪 Выйти',
+    btn_subscribe:'Подписаться',btn_subscribed:'Вы подписаны',btn_share:'Поделиться',
+    btn_download:'Скачать',btn_support:'Поддержать автора',btn_report:'Пожаловаться',
+    comments_label:'Комментарии',comment_placeholder:'Напишите комментарий...',comments_label_zero:'Комментарии (0)',
+    btn_send:'Отправить',btn_cancel:'Отмена',btn_reply:'Ответить',
+    sort_top:'По значимости',sort_newest:'Сначала новые',
+    settings_title:'Настройки',settings_nick:'Ваш никнейм',settings_lang:'Язык',
+    btn_save:'Сохранить',btn_close:'Закрыть',btn_publish:'Опубликовать',
+    tab_videos:'Видео',tab_shorts:'Shorts',tab_posts:'Посты',
+    login_google:'Войти',logged_in_as:'Вы вошли как'
   }
 };
+
+function t(key){
+  const lang=getLang();
+  return(TRANSLATIONS[lang]&&TRANSLATIONS[lang][key])||TRANSLATIONS.pl[key]||key;
+}
 
 function getLang(){return localStorage.getItem('wt_lang')||'pl';}
 
@@ -829,7 +865,7 @@ function openSettingsModal(){
   document.getElementById('settings-modal').classList.add('open');
   const meta=currentUser.user_metadata;
   const inp=document.getElementById('settings-nick-inp');
-  if(inp)inp.value=meta?.full_name||currentUser.email?.split('@')[0]||'';
+  if(inp)inp.value=getMyDisplayName()||'';
   updateLangButtons();
 }
 
@@ -845,6 +881,7 @@ async function saveMySettingsNick(){
   if(authErr){toast('Błąd: '+authErr.message);return;}
   const{error}=await sb.from('profiles').upsert([{id:currentUser.id,name:newNick}],{onConflict:'id'});
   if(error){toast('Błąd zapisu: '+error.message);return;}
+  myDisplayNick=newNick;
   toast('Nick zmieniony! ✏️');
   updateAuthUI();
 }
@@ -923,6 +960,8 @@ function updateAuthUI(){
     // update admin panel link visibility
     const adminItem=document.getElementById('admin-dropdown-item');
     if(adminItem)adminItem.style.display=isAdmin()?'flex':'none';
+    const vipItem=document.getElementById('vip-dropdown-item');
+    if(vipItem)vipItem.style.display=isVIP()?'flex':'none';
   } else {
     authArea.style.display='block';
     userArea.style.display='none';
@@ -947,11 +986,135 @@ async function saveProfile(user){
   await sb.from('profiles').upsert([profile],{onConflict:'id'});
 }
 
+const VIP_BADGE_COLORS_ADMIN=['#3ea6ff','#ffd700','#ff6b35','#c084fc','#4ade80','#f472b6','#fb7185','#a78bfa'];
+
+async function saveAdminBadgeColor(color){
+  if(!isAdmin())return;
+  const{error}=await sb.from('profiles').upsert([{id:currentUser.id,email:currentUser.email,vip_badge_color:color}],{onConflict:'id'});
+  if(error){toast('Błąd: '+error.message);return;}
+  adminBadgeColor=color;
+  renderAdminPanel();
+  toast('Kolor plakietki zapisany! 🏅');
+}
+
+// ── PANEL VIP ────────────────────────────────────────────────────────────
+const VIP_BADGE_COLORS=['#ffd700','#ff6b35','#c084fc','#4ade80','#f472b6','#fb7185','#facc15','#a78bfa'];
+
+function openVipPanel(){
+  if(!isVIP()){toast('Brak uprawnień');return;}
+  document.getElementById('vip-panel-modal').classList.add('open');
+  renderVipPanel();
+}
+
+function closeVipPanel(){
+  document.getElementById('vip-panel-modal').classList.remove('open');
+}
+
+function renderVipPanel(){
+  const body=document.getElementById('vip-panel-body');
+  const meta=currentUser.user_metadata;
+  const myDisplayName=getMyDisplayName();
+  const current=myNameColor||'#ffd700';
+  body.innerHTML=`
+    <div style="margin-bottom:24px;padding-bottom:20px;border-bottom:1px solid #303030">
+      <div style="font-size:13px;font-weight:700;color:#fff;margin-bottom:4px">🏅 Kolor plakietki VIP</div>
+      <p style="color:#aaa;font-size:12px;margin-bottom:12px">Wybierz kolor swojej plakietki widocznej obok nicku (niebieski zarezerwowany dla administratora).</p>
+      <div style="display:flex;flex-wrap:wrap;gap:10px;margin-bottom:10px">
+        ${VIP_BADGE_COLORS.map(c=>`<div onclick="saveVipBadgeColor('${c}')" style="width:34px;height:34px;border-radius:50%;background:${c};cursor:pointer;border:3px solid ${vipBadgeColor===c?'#fff':'transparent'};display:flex;align-items:center;justify-content:center">${vipBadgeColor===c?'<svg viewBox="0 0 24 24" width="14" height="14" fill="#000"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/></svg>':''}</div>`).join('')}
+      </div>
+      <div style="display:flex;align-items:center;gap:8px;font-size:14px;font-weight:700">
+        <span>${myDisplayName}</span>
+        ${verifiedBadge(VIP_EMAIL)}
+      </div>
+    </div>
+
+    <div style="margin-bottom:24px;padding-bottom:20px;border-bottom:1px solid #303030">
+      <div style="font-size:13px;font-weight:700;color:#fff;margin-bottom:4px">🎨 Kolor nicku</div>
+      <p style="color:#aaa;font-size:12px;margin-bottom:14px">Kolor Twojej nazwy w komentarzach, na filmach i postach.</p>
+      <div style="display:flex;align-items:center;gap:16px;margin-bottom:16px">
+        <input type="color" id="vip-color-inp" value="${current}" style="width:56px;height:56px;border:none;border-radius:10px;cursor:pointer;background:none;padding:0">
+        <div id="vip-color-preview" style="font-size:16px;font-weight:700;color:${myNameColor||'#fff'};font-family:${fontCssFor(myNameFont)}">${myDisplayName}</div>
+      </div>
+      <div style="display:flex;gap:10px">
+        <button onclick="saveVipColor()" style="background:#ffd700;border:none;color:#000;padding:10px 20px;border-radius:20px;cursor:pointer;font-size:13px;font-weight:700">Zapisz kolor</button>
+        <button onclick="resetVipColor()" style="background:#272727;border:none;color:#fff;padding:10px 20px;border-radius:20px;cursor:pointer;font-size:13px">Resetuj</button>
+      </div>
+    </div>
+
+    <div>
+      <div style="font-size:13px;font-weight:700;color:#fff;margin-bottom:4px">🔤 Czcionka nicku</div>
+      <p style="color:#aaa;font-size:12px;margin-bottom:14px">Wybierz styl czcionki dla swojego nicku.</p>
+      <div style="display:flex;flex-direction:column;gap:8px">
+        ${FONT_OPTIONS.map(f=>`
+          <div onclick="saveVipFont('${f.id}')" style="display:flex;align-items:center;justify-content:space-between;padding:12px 16px;border-radius:10px;cursor:pointer;background:${myNameFont===f.id?'rgba(255,215,0,.12)':'#0f0f0f'};border:1px solid ${myNameFont===f.id?'#ffd700':'#303030'}">
+            <span style="font-family:${f.css};font-size:16px;color:${myNameColor||'#fff'}">${myDisplayName||f.label}</span>
+            <span style="font-size:11px;color:#888">${f.label}${myNameFont===f.id?' ✓':''}</span>
+          </div>`).join('')}
+      </div>
+    </div>
+    <p style="color:#666;font-size:11px;margin-top:20px">Zmiany obejmą nowe komentarze, filmy i posty — starsze wpisy zachowają dotychczasowy wygląd.</p>
+  `;
+}
+
+async function saveVipBadgeColor(color){
+  if(!isVIP())return;
+  const{error}=await sb.from('profiles').upsert([{id:currentUser.id,email:currentUser.email,vip_badge_color:color}],{onConflict:'id'});
+  if(error){toast('Błąd: '+error.message);return;}
+  vipBadgeColor=color;
+  renderVipPanel();
+  toast('Kolor plakietki zapisany! 🏅');
+}
+
+async function saveVipColor(){
+  if(!isVIP())return;
+  const hex=document.getElementById('vip-color-inp').value;
+  const{error}=await sb.from('profiles').upsert([{id:currentUser.id,name_color:hex}],{onConflict:'id'});
+  if(error){toast('Błąd: '+error.message);return;}
+  myNameColor=hex;
+  renderVipPanel();
+  toast('Kolor nicku zapisany! 🎨');
+}
+
+async function resetVipColor(){
+  if(!isVIP())return;
+  await sb.from('profiles').upsert([{id:currentUser.id,name_color:''}],{onConflict:'id'});
+  myNameColor='';
+  renderVipPanel();
+  toast('Kolor zresetowany');
+}
+
+async function saveVipFont(fontId){
+  if(!isVIP())return;
+  const{error}=await sb.from('profiles').upsert([{id:currentUser.id,name_font:fontId}],{onConflict:'id'});
+  if(error){toast('Błąd: '+error.message);return;}
+  myNameFont=fontId;
+  renderVipPanel();
+  toast('Czcionka zapisana! 🔤');
+}
+
 // ── ADMIN ────────────────────────────────────────────────────────────────
 const ADMIN_EMAIL='revx8199@gmail.com';
 function isAdmin(){return!!(currentUser&&currentUser.email===ADMIN_EMAIL);}
 
 let myNameColor='';
+let myDisplayNick='';
+let vipBadgeColor='';
+let adminBadgeColor='';
+
+async function loadVipBadgeColor(){
+  const{data}=await sb.from('profiles').select('vip_badge_color').eq('email',VIP_EMAIL).single();
+  vipBadgeColor=data?.vip_badge_color||'#ffd700';
+}
+
+async function loadAdminBadgeColor(){
+  const{data}=await sb.from('profiles').select('vip_badge_color').eq('email',ADMIN_EMAIL).single();
+  adminBadgeColor=data?.vip_badge_color||'#3ea6ff';
+}
+
+function getMyDisplayName(){
+  if(!currentUser)return'';
+  return myDisplayNick||currentUser.user_metadata?.full_name||currentUser.email?.split('@')[0]||'Anonim';
+}
 let myNameFont='';
 
 const FONT_OPTIONS=[
@@ -980,10 +1143,11 @@ function fontCssFor(fontId){
 }
 
 async function loadMyNameColor(){
-  if(!currentUser){myNameColor='';myNameFont='';return;}
-  const{data}=await sb.from('profiles').select('name_color,name_font').eq('id',currentUser.id).single();
+  if(!currentUser){myNameColor='';myNameFont='';myDisplayNick='';return;}
+  const{data}=await sb.from('profiles').select('name_color,name_font,name').eq('id',currentUser.id).single();
   myNameColor=data?.name_color||'';
   myNameFont=data?.name_font||'';
+  myDisplayNick=data?.name||'';
 }
 
 async function saveMyNickname(){
@@ -993,6 +1157,7 @@ async function saveMyNickname(){
   await sb.auth.updateUser({data:{full_name:newNick}});
   const{error}=await sb.from('profiles').upsert([{id:currentUser.id,name:newNick}],{onConflict:'id'});
   if(error){toast('Błąd zapisu nicku: '+error.message);return;}
+  myDisplayNick=newNick;
   toast('Nick zmieniony! ✏️');
   renderAdminPanel();
 }
@@ -1181,7 +1346,7 @@ async function renderAdminPanel(){
   if(adminTab==='color'){
     const current=myNameColor||'#3ea6ff';
     const meta=currentUser.user_metadata;
-    const myDisplayName=meta?.full_name||currentUser.email?.split('@')[0]||'Ty';
+    const myDisplayName=getMyDisplayName()||'Ty';
     body.innerHTML=`
       <div style="padding:24px">
 
@@ -1191,6 +1356,18 @@ async function renderAdminPanel(){
           <div style="display:flex;gap:10px">
             <input id="admin-nick-inp" value="${myDisplayName}" placeholder="Twój nick" style="flex:1;background:#0f0f0f;border:1px solid #303030;border-radius:8px;color:#fff;padding:10px 14px;font-size:13px;outline:none">
             <button onclick="saveMyNickname()" style="background:#3ea6ff;border:none;color:#0f0f0f;padding:10px 18px;border-radius:8px;cursor:pointer;font-size:13px;font-weight:700;white-space:nowrap">Zapisz nick</button>
+          </div>
+        </div>
+
+        <div style="margin-bottom:28px;padding-bottom:24px;border-bottom:1px solid #303030">
+          <div style="font-size:13px;font-weight:700;color:#fff;margin-bottom:4px">🏅 Kolor plakietki</div>
+          <p style="color:#aaa;font-size:12px;margin-bottom:12px">Kolor Twojej plakietki "ADMIN" widocznej obok nicku.</p>
+          <div style="display:flex;flex-wrap:wrap;gap:10px;margin-bottom:12px">
+            ${VIP_BADGE_COLORS_ADMIN.map(c=>`<div onclick="saveAdminBadgeColor('${c}')" style="width:34px;height:34px;border-radius:50%;background:${c};cursor:pointer;border:3px solid ${adminBadgeColor===c?'#fff':'transparent'};display:flex;align-items:center;justify-content:center">${adminBadgeColor===c?'<svg viewBox="0 0 24 24" width="14" height="14" fill="#fff"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/></svg>':''}</div>`).join('')}
+          </div>
+          <div style="display:flex;align-items:center;gap:8px;font-size:14px;font-weight:700">
+            <span>${myDisplayName}</span>
+            ${verifiedBadge(ADMIN_EMAIL)}
           </div>
         </div>
 
@@ -1571,7 +1748,7 @@ async function addVideo(v){
     const meta=currentUser.user_metadata;
     const{data:subs}=await sb.from('subscriptions').select('subscriber_id').eq('channel_id',currentUser.id);
     if(subs&&subs.length){
-      const notifs=subs.map(s=>({user_id:s.subscriber_id,message:`<b>${meta?.full_name||currentUser.email?.split('@')[0]}</b> dodał nowy film 🎬`,avatar:meta?.avatar_url||''}));
+      const notifs=subs.map(s=>({user_id:s.subscriber_id,message:`<b>${getMyDisplayName()}</b> dodał nowy film 🎬`,avatar:meta?.avatar_url||''}));
       await sb.from('notifications').insert(notifs);
     }
   }
@@ -1611,9 +1788,19 @@ function makeNick(name,email){
   return '@'+(base||email?.split('@')[0]||'user');
 }
 
+const VIP_EMAIL='solarenkoaleksandr5@gmail.com';
+function isVIP(){return!!(currentUser&&currentUser.email===VIP_EMAIL);}
+
 function verifiedBadge(email){
-  const verified=['revx8199@gmail.com'];
-  return verified.includes(email)?'<span title="Zweryfikowany kanał" style="display:inline-flex;align-items:center;justify-content:center;background:#3ea6ff;border-radius:50%;width:16px;height:16px;margin-left:5px;flex-shrink:0"><svg viewBox="0 0 24 24" width="10" height="10" fill="#fff"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/></svg></span>':'';
+  if(email===ADMIN_EMAIL){
+    const badgeColor=adminBadgeColor||'#3ea6ff';
+    return`<span title="Administrator" style="display:inline-flex;align-items:center;gap:3px;margin-left:5px;flex-shrink:0"><span style="display:inline-flex;align-items:center;justify-content:center;background:${badgeColor};border-radius:50%;width:16px;height:16px;flex-shrink:0"><svg viewBox="0 0 24 24" width="10" height="10" fill="#fff"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/></svg></span><span style="font-size:10px;font-weight:800;color:${badgeColor};letter-spacing:.5px">ADMIN</span></span>`;
+  }
+  if(email===VIP_EMAIL){
+    const badgeColor=vipBadgeColor||'#ffd700';
+    return`<span title="VIP" style="display:inline-flex;align-items:center;gap:3px;margin-left:5px;flex-shrink:0"><span style="display:inline-flex;align-items:center;justify-content:center;background:${badgeColor};border-radius:50%;width:16px;height:16px;flex-shrink:0"><svg viewBox="0 0 24 24" width="10" height="10" fill="#000"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/></svg></span><span style="font-size:10px;font-weight:800;color:${badgeColor};letter-spacing:.5px">VIP</span></span>`;
+  }
+  return'';
 }
 function getUserColor(email){
   if(!email)return colors[0];
@@ -1824,7 +2011,7 @@ async function showChannel(userId,nameIn,avatar,email){
         <div style="font-size:12px;color:#aaa;margin-bottom:6px">${makeNick(name,email)}</div>
         <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:4px">
           <span style="font-size:13px;color:#aaa"><span id="sub-count-big">${subCount}</span> subskrybentów · ${userVideos.length} filmów</span>
-          ${!isOwner?`<button class="btn-sub-big${isSub?' subscribed':''}" onclick="toggleSub('${userId||email}','${name}')" id="sub-big-btn" style="margin-left:0">${isSub?'✓ Subskrybujesz':'Subskrybuj'}</button>
+          ${!isOwner?`<button class="btn-sub-big${isSub?' subscribed':''}" onclick="toggleSub('${userId||email}','${name}')" id="sub-big-btn" style="margin-left:0">${isSub?'✓ '+t('btn_subscribed'):t('btn_subscribe')}</button>
           <button onclick="openMsg('${name}','${email}','${userId}')" style="background:#272727;border:none;color:#fff;padding:8px 16px;border-radius:20px;cursor:pointer;font-size:13px;display:flex;align-items:center;gap:6px">✉️ Wiadomość</button>`
           :`<button class="btn-sub-big subscribed" style="margin-left:0;cursor:default">To Twój kanał</button>`}
         </div>
@@ -1876,7 +2063,7 @@ async function showChannel(userId,nameIn,avatar,email){
 function showMyChannel(){
   if(!currentUser)return;
   const meta=currentUser.user_metadata;
-  showChannel(currentUser.id,meta?.full_name||currentUser.email,meta?.avatar_url||'',currentUser.email);
+  showChannel(currentUser.id,getMyDisplayName(),meta?.avatar_url||'',currentUser.email);
   toggleDropdown(true);
 }
 
@@ -1899,7 +2086,7 @@ async function toggleSub(key,name){
   }
   const count=await getSubCount(key);
   const btn=document.getElementById('sub-big-btn');
-  if(btn){btn.className='btn-sub-big'+(subscribedSet.has(key)?' subscribed':'');btn.textContent=subscribedSet.has(key)?'✓ Subskrybujesz':'Subskrybuj';}
+  if(btn){btn.className='btn-sub-big'+(subscribedSet.has(key)?' subscribed':'');btn.textContent=subscribedSet.has(key)?'✓ '+t('btn_subscribed'):t('btn_subscribe');}
   const sc=document.getElementById('sub-count-big');
   if(sc)sc.textContent=count;
 }
@@ -2112,7 +2299,7 @@ async function addAnnouncementComment(id){
   if(!a)return;
   const meta=currentUser.user_metadata;
   const comments=[...(a.comments||[]),{
-    user:meta?.full_name||currentUser.email?.split('@')[0],
+    user:getMyDisplayName(),
     text,ts:Date.now(),avatar:meta?.avatar_url||'',
     user_id:currentUser.id,name_color:myNameColor||'',name_font:myNameFont||''
   }];
@@ -2248,7 +2435,7 @@ function openP(id){
     <div class="ch-info">
       <div class="ch-name" onclick="closeP();showChannel('${v.user_id||''}','${uname}','${v.user_avatar||''}','${v.user_email||''}')">${uname}</div>
     </div>
-    <button class="btn-sub${isSub?' subscribed':''}" id="sub-btn" onclick="toggleSubInPlayer('${v.user_id||v.user_email||''}','${uname}')">${isSub?'✓ Subskrybujesz':'Subskrybuj'}</button>`;
+    <button class="btn-sub${isSub?' subscribed':''}" id="sub-btn" onclick="toggleSubInPlayer('${v.user_id||v.user_email||''}','${uname}')">${isSub?'✓ '+t('btn_subscribed'):t('btn_subscribe')}</button>`;
 
   renderC();
   document.getElementById('pm').classList.add('open');
@@ -2272,7 +2459,7 @@ async function toggleSubInPlayer(key,name){
     toast(`Subskrybujesz: ${name} 🔔`);
   }
   const btn=document.getElementById('sub-btn');
-  if(btn){btn.className='btn-sub'+(subscribedSet.has(key)?' subscribed':'');btn.textContent=subscribedSet.has(key)?'✓ Subskrybujesz':'Subskrybuj';}
+  if(btn){btn.className='btn-sub'+(subscribedSet.has(key)?' subscribed':'');btn.textContent=subscribedSet.has(key)?'✓ '+t('btn_subscribed'):t('btn_subscribe');}
 }
 
 function closeP(){
@@ -2341,7 +2528,7 @@ function toggleSortMenu(){
 
 function setCommentSort(mode){
   commentSortMode=mode;
-  document.getElementById('sort-label').textContent=mode==='top'?'Najtrafniejsze':'Najnowsze';
+  document.getElementById('sort-label').textContent=mode==='top'?t('sort_top'):t('sort_newest');
   document.getElementById('sort-menu').style.display='none';
   renderC();
 }
@@ -2362,7 +2549,7 @@ function renderC(){
   closeEmojiPicker();
   if(!cur)return;
   const list=cur.comments||[];
-  document.getElementById('ctitle').textContent=`Komentarze (${list.length})`;
+  document.getElementById('ctitle').textContent=`${t('comments_label')} (${list.length})`;
   const isVideoOwner=currentUser&&cur&&currentUser.id===cur.user_id;
   const likedComments=new Set(JSON.parse(localStorage.getItem('liked_comments')||'[]'));
   const dislikedComments=new Set(JSON.parse(localStorage.getItem('disliked_comments')||'[]'));
@@ -2531,7 +2718,7 @@ async function postReply(index){
   if(!c)return;
   const origIdx=(cur.comments||[]).findIndex(x=>x.user===c.user&&x.text===c.text&&x.time===c.time);
   if(!cur.comments[origIdx].replies)cur.comments[origIdx].replies=[];
-  cur.comments[origIdx].replies.push({user:meta?.full_name||currentUser.email?.split('@')[0],text:txt,time:now,ts:Date.now(),avatar:meta?.avatar_url||'',user_email:currentUser.email,user_id:currentUser.id,name_color:myNameColor||'',name_font:myNameFont||''});
+  cur.comments[origIdx].replies.push({user:getMyDisplayName(),text:txt,time:now,ts:Date.now(),avatar:meta?.avatar_url||'',user_email:currentUser.email,user_id:currentUser.id,name_color:myNameColor||'',name_font:myNameFont||''});
   inp.value='';
   await updateVideo(cur.id,{comments:cur.comments});
   const v=videos.find(x=>x.id===cur.id);if(v)v.comments=cur.comments;
@@ -2641,7 +2828,7 @@ async function postC(){
   if(!t)return;
   const meta=currentUser.user_metadata;
   const now=new Date().toLocaleString('pl-PL',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'});
-  const newC={user:meta?.full_name||currentUser.email,text:t,time:now,ts:Date.now(),col:'#cc0000',avatar:meta?.avatar_url||'',user_id:currentUser.id||'',user_email:currentUser.email||'',name_color:myNameColor||'',name_font:myNameFont||''};
+  const newC={user:getMyDisplayName(),text:t,time:now,ts:Date.now(),col:'#cc0000',avatar:meta?.avatar_url||'',user_id:currentUser.id||'',user_email:currentUser.email||'',name_color:myNameColor||'',name_font:myNameFont||''};
   const list=[newC,...(cur.comments||[])];
   cur.comments=list;
   document.getElementById('cinp').value='';
@@ -2690,7 +2877,7 @@ async function submitForm(){
     comments:[],
     user_id:currentUser?.id||'',
     user_email:currentUser?.email||'',
-    user_name:meta?.full_name||currentUser?.email||'Anonim',
+    user_name:getMyDisplayName()||'Anonim',
     user_avatar:meta?.avatar_url||'',
     user_color:myNameColor||'',
     user_font:myNameFont||''
@@ -3153,7 +3340,7 @@ async function sendChatMsg(){
   await sb.from('messages').insert([{
     conv_id:currentConvId,
     sender_id:currentUser.id,
-    sender_name:meta?.full_name||currentUser.email?.split('@')[0],
+    sender_name:getMyDisplayName(),
     sender_avatar:meta?.avatar_url||'',
     receiver_id:currentOtherUser.id,
     receiver_name:currentOtherUser.name||'',
@@ -3393,7 +3580,7 @@ async function addPostComment(postId){
   const now=new Date().toLocaleString('pl-PL',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'});
   const{data:post}=await sb.from('posts').select('comments').eq('id',postId).single();
   if(!post)return;
-  const comments=[...(post.comments||[]),{user:meta?.full_name||currentUser.email?.split('@')[0],text:inp.value.trim(),time:now,ts:Date.now(),col:'#cc0000',avatar:meta?.avatar_url||'',email:currentUser.email||'',user_id:currentUser.id,name_color:myNameColor||'',name_font:myNameFont||''}];
+  const comments=[...(post.comments||[]),{user:getMyDisplayName(),text:inp.value.trim(),time:now,ts:Date.now(),col:'#cc0000',avatar:meta?.avatar_url||'',email:currentUser.email||'',user_id:currentUser.id,name_color:myNameColor||'',name_font:myNameFont||''}];
   await sb.from('posts').update({comments}).eq('id',postId);
   renderPosts();
 }
@@ -3481,7 +3668,7 @@ async function submitPost(){
     const{error}=await sb.from('posts').insert([{
       user_id:currentUser.id,
       user_email:currentUser.email,
-      user_name:meta?.full_name||currentUser.email?.split('@')[0],
+      user_name:getMyDisplayName(),
       user_avatar:meta?.avatar_url||'',
       user_color:myNameColor||'',
       user_font:myNameFont||'',
@@ -3499,7 +3686,7 @@ async function submitPost(){
     // notify subscribers
     const{data:subs}=await sb.from('subscriptions').select('subscriber_id').eq('channel_id',currentUser.id);
     if(subs&&subs.length){
-      const notifs=subs.map(s=>({user_id:s.subscriber_id,message:`<b>${meta?.full_name||currentUser.email?.split('@')[0]}</b> dodał nowy post 📝`,avatar:meta?.avatar_url||''}));
+      const notifs=subs.map(s=>({user_id:s.subscriber_id,message:`<b>${getMyDisplayName()}</b> dodał nowy post 📝`,avatar:meta?.avatar_url||''}));
       await sb.from('notifications').insert(notifs);
     }
     document.getElementById('post-text-inp').value='';
@@ -3527,6 +3714,8 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeP();closeForm(
   updateAuthUI();
   applyTranslations();
   checkNewAnnouncements();
+  loadVipBadgeColor();
+  loadAdminBadgeColor();
   if(currentUser){
     const banned=await checkIfBanned();
     if(!banned){
