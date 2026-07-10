@@ -3189,10 +3189,10 @@ async function loadConvList(){
     const time=new Date(m.created_at).toLocaleString('pl-PL',{hour:'2-digit',minute:'2-digit'});
     const isBlocked=!!blockedUsers[otherId];
     return`<div class="msg-conv-item${currentConvId===m.conv_id?' active':''}" onclick="openConv('${m.conv_id}','${otherId}','${name}','${avatar}','${email}')" style="${isBlocked?'opacity:.5':''}">
-      ${avatar?`<img class="msg-conv-av" src="${avatar}" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">`:''}
-      <div class="msg-conv-av-ph" style="background:#cc0000;${avatar?'display:none':''}">${(name||'?')[0].toUpperCase()}</div>
+      ${avatar?`<img class="msg-conv-av" src="${avatar}" style="cursor:pointer" onclick="event.stopPropagation();closeMessages();showChannel('${otherId}','${name}','${avatar}','${email}')" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">`:''}
+      <div class="msg-conv-av-ph" style="background:#cc0000;cursor:pointer;${avatar?'display:none':''}" onclick="event.stopPropagation();closeMessages();showChannel('${otherId}','${name}','${avatar}','${email}')">${(name||'?')[0].toUpperCase()}</div>
       <div class="msg-conv-info">
-        <div class="msg-conv-name">${name}${verifiedBadge(email)}${isBlocked?' <span style="color:#cc0000;font-size:11px">🚫 zablokowany</span>':''}</div>
+        <div class="msg-conv-name" style="cursor:pointer" onclick="event.stopPropagation();closeMessages();showChannel('${otherId}','${name}','${avatar}','${email}')">${name}${verifiedBadge(email)}${isBlocked?' <span style="color:#cc0000;font-size:11px">🚫 zablokowany</span>':''}</div>
         <div class="msg-conv-last">${m.text.substring(0,40)}</div>
       </div>
       <div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px">
@@ -3231,9 +3231,9 @@ function renderChatHeader(){
   const expiresAt=blockedUsers[o.id];
   area.innerHTML=`
     <div class="msg-chat-header" style="position:relative">
-      ${avatar?`<img class="msg-conv-av" src="${avatar}" style="width:36px;height:36px" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">`:''}
-      <div class="msg-conv-av-ph" style="background:#cc0000;width:36px;height:36px;font-size:14px;${avatar?'display:none':''}">${(name||'?')[0].toUpperCase()}</div>
-      <div class="msg-chat-name" style="flex:1">${name}${verifiedBadge(email)}</div>
+      ${avatar?`<img class="msg-conv-av" src="${avatar}" style="width:36px;height:36px;cursor:pointer" onclick="closeMessages();showChannel('${o.id}','${name}','${avatar}','${email}')" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">`:''}
+      <div class="msg-conv-av-ph" style="background:#cc0000;width:36px;height:36px;font-size:14px;cursor:pointer;${avatar?'display:none':''}" onclick="closeMessages();showChannel('${o.id}','${name}','${avatar}','${email}')">${(name||'?')[0].toUpperCase()}</div>
+      <div class="msg-chat-name" style="flex:1;cursor:pointer" onclick="closeMessages();showChannel('${o.id}','${name}','${avatar}','${email}')">${name}${verifiedBadge(email)}</div>
       <button onclick="toggleChatMenu()" style="background:none;border:none;color:#fff;cursor:pointer;font-size:20px;padding:4px 10px;border-radius:50%" onmouseover="this.style.background='#272727'" onmouseout="this.style.background='none'">⋮</button>
       <div id="chat-menu" style="display:none;position:absolute;top:44px;right:0;background:#212121;border:1px solid #303030;border-radius:10px;min-width:210px;z-index:80;overflow:hidden">
         <div onclick="deleteConversation()" style="padding:12px 16px;cursor:pointer;font-size:13px;display:flex;align-items:center;gap:10px;color:#ff6b6b" onmouseover="this.style.background='#303030'" onmouseout="this.style.background='none'">🗑 Usuń czat</div>
