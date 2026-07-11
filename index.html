@@ -732,6 +732,7 @@ hr{border:none;border-top:1px solid #272727;margin:20px 0}
       <div id="admin-tab-reports" onclick="setAdminTab('reports')" style="padding:10px 16px;cursor:pointer;font-size:13px;font-weight:600">🚩 Zgłoszenia</div>
       <div id="admin-tab-color" onclick="setAdminTab('color')" style="padding:10px 16px;cursor:pointer;font-size:13px;font-weight:600">🎨 Kolor nicku</div>
       <div id="admin-tab-announce" onclick="setAdminTab('announce')" style="padding:10px 16px;cursor:pointer;font-size:13px;font-weight:600">📢 Ogłoszenia</div>
+      <div id="admin-tab-logs" onclick="setAdminTab('logs')" style="padding:10px 16px;cursor:pointer;font-size:13px;font-weight:600">📝 Logi</div>
     </div>
     <div id="admin-panel-body" style="overflow-y:auto;flex:1"></div>
   </div>
@@ -1279,6 +1280,7 @@ async function saveRenameUser(userId){
   if(popup)popup.remove();
   if(error){toast('Błąd: '+error.message);return;}
   const user=adminUsersCache.find(u=>u.id===userId);
+  logAdminAction('rename_user',`Zmieniono nick ${user?.email||userId} na "${newName}"`);
   if(user)user.name=newName;
   const nameEl=document.getElementById(`uname-${userId}`);
   if(nameEl)nameEl.textContent=newName;
@@ -1334,6 +1336,11 @@ function setAdminTab(tab){
   renderAdminPanel();
 }
 
+async function logAdminAction(action,details){
+  if(!isAdmin())return;
+  await sb.from('admin_logs').insert([{action,details,admin_email:currentUser.email}]);
+}
+
 async function renderAdminPanel(){
   const body=document.getElementById('admin-panel-body');
   document.getElementById('admin-tab-videos').style.cssText=adminTab==='videos'?'border-bottom:2px solid #3ea6ff;color:#fff':'border-bottom:2px solid transparent;color:#888';
@@ -1341,23 +1348,14 @@ async function renderAdminPanel(){
   document.getElementById('admin-tab-reports').style.cssText=adminTab==='reports'?'border-bottom:2px solid #3ea6ff;color:#fff':'border-bottom:2px solid transparent;color:#888';
   document.getElementById('admin-tab-color').style.cssText=adminTab==='color'?'border-bottom:2px solid #3ea6ff;color:#fff':'border-bottom:2px solid transparent;color:#888';
   document.getElementById('admin-tab-announce').style.cssText=adminTab==='announce'?'border-bottom:2px solid #3ea6ff;color:#fff':'border-bottom:2px solid transparent;color:#888';
+  document.getElementById('admin-tab-logs').style.cssText=adminTab==='logs'?'border-bottom:2px solid #3ea6ff;color:#fff':'border-bottom:2px solid transparent;color:#888';
 
   if(adminTab==='videos'){
-    if(!videos.length){body.innerHTML='<p style="color:#888;padding:20px;text-align:center">Brak filmów</p>';return;}
-    body.innerHTML=videos.map(v=>`
-      <div style="display:flex;align-items:center;gap:12px;padding:10px 14px;border-bottom:1px solid #272727">
-        <div style="width:64px;height:38px;background:#1a1a1a;border-radius:6px;overflow:hidden;flex-shrink:0">${thumbFor(v)?`<img src="${thumbFor(v)}" style="width:100%;height:100%;object-fit:cover">`:''}</div>
-        <div style="flex:1;min-width:0">
-          <div style="font-size:13px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(v.title)}</div>
-          <div style="font-size:11px;color:#888">${getUserName(v)} · ${v.user_email||''}</div>
-        </div>
-        <button onclick="closeAdminPanel();openEditModal(${v.id})" style="background:#142a3a;border:1px solid #1f4a5c;color:#7fd3ff;padding:6px 12px;border-radius:8px;cursor:pointer;font-size:12px;flex-shrink:0">✏️ Edytuj</button>
-        <button onclick="adminDeleteVideo(${v.id})" style="background:#3a1414;border:1px solid #5c1f1f;color:#ff6b6b;padding:6px 12px;border-radius:8px;cursor:pointer;font-size:12px;flex-shrink:0">🗑 Usuń</button>
-      </div>`).join('');
+    renderAdminVideosList();
   }
 
-  if(adminTab==='users'){
-    body.innerHTML='<p style="color:#888;padding:20px;text-align:center">Ładowanie użytkowników...</p>';
+if(adminTab==='users'){
+  body.innerHTML='<p style="color:#888;padding:20px;text-align:center">Ładowanie użytkowników...</p>';
     const usersMap={};
     videos.forEach(v=>{if(v.user_id)usersMap[v.user_id]={id:v.user_id,name:getUserName(v),email:v.user_email||'',avatar:v.user_avatar||''};});
     const{data:profs}=await sb.from('profiles').select('*');
@@ -1462,6 +1460,46 @@ async function renderAdminPanel(){
         <div id="admin-announce-status" style="margin-top:12px;font-size:12px;color:#888"></div>
       </div>`;
   }
+
+  if(adminTab==='logs'){
+    body.innerHTML='<p style="color:#888;padding:20px;text-align:center">Ładowanie logów...</p>';
+    const{data:logs}=await sb.from('admin_logs').select('*').order('created_at',{ascending:false}).limit(200);
+    if(!logs||!logs.length){body.innerHTML='<p style="color:#888;padding:20px;text-align:center">Brak zapisanych akcji</p>';return;}
+    const ACTION_ICONS={ban:'🚫',unban:'✅',mute:'🔇',unmute:'🔊',delete_video:'🗑',edit_video:'✏️',delete_report:'🚩',rename_user:'✏️'};
+    body.innerHTML=logs.map(l=>`
+      <div style="padding:10px 14px;border-bottom:1px solid #272727;display:flex;gap:10px;align-items:flex-start">
+        <div style="font-size:16px;flex-shrink:0">${ACTION_ICONS[l.action]||'📝'}</div>
+        <div style="flex:1;min-width:0">
+          <div style="font-size:13px;color:#eee">${esc(l.details)}</div>
+          <div style="font-size:11px;color:#666;margin-top:2px">${new Date(l.created_at).toLocaleString('pl-PL')}</div>
+        </div>
+      </div>`).join('');
+  }
+}
+
+function renderAdminVideosList(){
+  const body=document.getElementById('admin-panel-body');
+  const q=(document.getElementById('admin-video-search')?.value||'').trim().toLowerCase();
+  const filtered=q?videos.filter(v=>(v.title||'').toLowerCase().includes(q)||(getUserName(v)||'').toLowerCase().includes(q)||(v.user_email||'').toLowerCase().includes(q)):videos;
+  const listHtml=!filtered.length
+    ?`<p style="color:#888;padding:20px;text-align:center">${q?'Brak wyników dla "'+esc(q)+'"':'Brak filmów'}</p>`
+    :filtered.map(v=>`
+      <div style="display:flex;align-items:center;gap:12px;padding:10px 14px;border-bottom:1px solid #272727">
+        <div style="width:64px;height:38px;background:#1a1a1a;border-radius:6px;overflow:hidden;flex-shrink:0">${thumbFor(v)?`<img src="${thumbFor(v)}" style="width:100%;height:100%;object-fit:cover">`:''}</div>
+        <div style="flex:1;min-width:0">
+          <div style="font-size:13px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(v.title)}</div>
+          <div style="font-size:11px;color:#888">${esc(getUserName(v))} · ${esc(v.user_email)}</div>
+        </div>
+        <button onclick="closeAdminPanel();openEditModal(${v.id})" style="background:#142a3a;border:1px solid #1f4a5c;color:#7fd3ff;padding:6px 12px;border-radius:8px;cursor:pointer;font-size:12px;flex-shrink:0">✏️ Edytuj</button>
+        <button onclick="adminDeleteVideo(${v.id})" style="background:#3a1414;border:1px solid #5c1f1f;color:#ff6b6b;padding:6px 12px;border-radius:8px;cursor:pointer;font-size:12px;flex-shrink:0">🗑 Usuń</button>
+      </div>`).join('');
+  body.innerHTML=`
+    <div style="padding:12px 14px;position:sticky;top:0;background:#282828;z-index:5">
+      <input id="admin-video-search" type="text" placeholder="🔍 Szukaj po tytule, autorze lub e-mailu..." value="${esc(q)}" oninput="renderAdminVideosList()" style="width:100%;background:#0f0f0f;border:1px solid #303030;border-radius:8px;color:#fff;padding:10px 14px;font-size:13px;outline:none">
+    </div>
+    <div>${listHtml}</div>`;
+  const inp=document.getElementById('admin-video-search');
+  if(inp){inp.focus();inp.setSelectionRange(inp.value.length,inp.value.length);}
 }
 
 async function sendAnnouncement(){
@@ -1511,6 +1549,7 @@ async function deleteReport(id){
   if(!await showConfirm('Usunąć to zgłoszenie?','Zniknie z listy zgłoszeń.'))return;
   const{error}=await sb.from('reports').delete().eq('id',id);
   if(error){toast('Błąd: '+error.message);return;}
+  logAdminAction('delete_report',`Usunięto zgłoszenie #${id}`);
   renderAdminPanel();
   toast('Zgłoszenie usunięte 🗑');
 }
@@ -1518,6 +1557,8 @@ async function deleteReport(id){
 async function adminDeleteVideo(id){
   if(!isAdmin())return;
   if(!await showConfirm('Usunąć ten film?','Usuwasz go jako administrator. Tej czynności nie można cofnąć.'))return;
+  const v=videos.find(x=>x.id===id);
+  logAdminAction('delete_video',`Usunięto film "${v?.title||id}" (autor: ${getUserName(v)||'?'})`);
   await deleteVideo(id);
   renderAdminPanel();
   toast('Film usunięty przez administratora 🛡');
@@ -1550,6 +1591,8 @@ async function adminBanUser(userId,hours){
   const expires_at=hours?new Date(Date.now()+hours*3600*1000).toISOString():null;
   await sb.from('banned_users').delete().eq('user_id',userId);
   await sb.from('banned_users').insert([{user_id:userId,expires_at,banned_by:currentUser.id}]);
+  const targetEmail=adminUsersCache.find(u=>u.id===userId)?.email||userId;
+  logAdminAction('ban',`Zbanowano ${targetEmail} na ${hours?hours+'h':'zawsze'}`);
   const menu=document.getElementById('admin-ban-menu');
   if(menu)menu.remove();
   renderAdminPanel();
@@ -1559,6 +1602,8 @@ async function adminBanUser(userId,hours){
 async function adminUnbanUser(userId){
   if(!isAdmin())return;
   await sb.from('banned_users').delete().eq('user_id',userId);
+  const targetEmail=adminUsersCache.find(u=>u.id===userId)?.email||userId;
+  logAdminAction('unban',`Odbanowano ${targetEmail}`);
   renderAdminPanel();
   toast('Użytkownik odblokowany ✅');
 }
@@ -1616,6 +1661,7 @@ async function muteUser(userId,hours){
   const expires_at=hours?new Date(Date.now()+hours*3600*1000).toISOString():null;
   await sb.from('muted_users').delete().eq('user_id',userId);
   await sb.from('muted_users').insert([{user_id:userId,expires_at,muted_by:currentUser.id}]);
+  logAdminAction('mute',`Wyciszono użytkownika (ID: ${userId}) na ${hours?hours+'h':'zawsze'}`);
   const menu=document.getElementById('admin-mute-menu');
   if(menu)menu.remove();
   toast('Użytkownik wyciszony 🔇');
@@ -1624,6 +1670,7 @@ async function muteUser(userId,hours){
 async function unmuteUser(userId){
   if(!isAdmin())return;
   await sb.from('muted_users').delete().eq('user_id',userId);
+  logAdminAction('unmute',`Cofnięto wyciszenie użytkownika (ID: ${userId})`);
   const menu=document.getElementById('admin-mute-menu');
   if(menu)menu.remove();
   toast('Wyciszenie cofnięte 🔊');
@@ -2617,6 +2664,7 @@ async function toggleSubInPlayer(key,name){
 }
 
 function closeP(){
+  layoutActsForShorts(false); // przywróć pasek akcji na miejsce, zanim wyczyścimy zawartość playera
   document.getElementById('pm').classList.remove('open');
   document.getElementById('pw').innerHTML='';
   document.body.style.overflow='';cur=null;
@@ -3235,12 +3283,19 @@ function toggleEmojiPicker(targetId,btnEl){
   const picker=document.createElement('div');
   picker.id='emoji-picker';
   picker.dataset.target=targetId;
-  picker.style.cssText='position:absolute;bottom:calc(100% + 6px);left:0;background:#212121;border:1px solid #303030;border-radius:12px;padding:10px;display:grid;grid-template-columns:repeat(8,1fr);gap:2px;z-index:300;max-width:280px;box-shadow:0 4px 20px rgba(0,0,0,.5)';
   picker.innerHTML=EMOJI_LIST.map(e=>`<span onclick="insertEmoji('${targetId}','${e}')" style="cursor:pointer;font-size:20px;padding:5px;border-radius:6px;text-align:center" onmouseover="this.style.background='#303030'" onmouseout="this.style.background='none'">${e}</span>`).join('');
-  const parent=btnEl.parentElement;
-  const computedPos=getComputedStyle(parent).position;
-  if(computedPos==='static')parent.style.position='relative';
-  parent.appendChild(picker);
+
+  const rect=btnEl.getBoundingClientRect();
+  const pickerHeight=240; // przybliżona wysokość (8 kolumn x ~8 wierszy)
+  const pickerWidth=280;
+  const spaceAbove=rect.top;
+  const spaceBelow=window.innerHeight-rect.bottom;
+  const openUpward=spaceAbove>pickerHeight||spaceAbove>spaceBelow;
+  const top=openUpward?Math.max(8,rect.top-pickerHeight-8):rect.bottom+8;
+  const left=Math.min(Math.max(8,rect.left-pickerWidth+28),window.innerWidth-pickerWidth-8);
+
+  picker.style.cssText=`position:fixed;top:${top}px;left:${left}px;background:#212121;border:1px solid #303030;border-radius:12px;padding:10px;display:grid;grid-template-columns:repeat(8,1fr);gap:2px;z-index:2000;max-width:${pickerWidth}px;box-shadow:0 4px 20px rgba(0,0,0,.6)`;
+  document.body.appendChild(picker);
   setTimeout(()=>{
     emojiOutsideListener=function(e){
       if(!picker.contains(e.target)&&e.target!==btnEl){
