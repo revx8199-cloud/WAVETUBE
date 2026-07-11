@@ -6,7 +6,7 @@
 <title>WaveTube</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Bangers&family=Pacifico&family=Orbitron:wght@700&family=Press+Start+2P&family=Permanent+Marker&family=Russo+One&family=Lobster&family=Anton&family=Caveat:wght@700&family=Fredoka:wght@600&family=Righteous&family=VT323&family=Shadows+Into+Light&family=Bungee&family=Comfortaa:wght@700&family=Rubik+Mono+One&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Bangers&family=Pacifico&family=Orbitron:wght@700&family=Press+Start+2P&family=Permanent+Marker&family=Russo+One&family=Lobster&family=Anton&family=Caveat:wght@700&family=Fredoka:wght@600&family=Righteous&family=VT323&family=Shadows+Into+Light&family=Bungee&family=Comfortaa:wght@700&family=Rubik+Mono+One&family=Playfair+Display:wght@700&family=Chewy&family=Great+Vibes&family=Audiowide&family=Monoton&family=Bebas+Neue&family=Creepster&family=Satisfy&family=Amatic+SC:wght@700&family=Black+Ops+One&display=swap" rel="stylesheet">
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 45 32'%3E%3Crect width='45' height='32' rx='9' fill='%233ea6ff'/%3E%3Cpolygon points='18,10 31,16 18,22' fill='%23fff'/%3E%3C/svg%3E">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
@@ -565,19 +565,6 @@ hr{border:none;border-top:1px solid #272727;margin:20px 0}
   </div>
 </div>
 
-<div class="pmbg" id="passmodal">
-  <div class="pbox">
-    <h3>🔒 Hasło admina</h3>
-    <p>Tylko admin może usuwać filmy</p>
-    <input type="password" id="passinp" placeholder="••••••••" onkeydown="if(event.key==='Enter')confirmDelete()">
-    <div class="perr" id="perr">Złe hasło!</div>
-    <div class="pbtns">
-      <button class="pcancel" onclick="closePassModal()">Anuluj</button>
-      <button class="pconfirm" onclick="confirmDelete()">Usuń</button>
-    </div>
-  </div>
-</div>
-
 <div class="toast" id="toast"></div>
 
 <!-- EDYCJA FILMU -->
@@ -773,7 +760,6 @@ hr{border:none;border-top:1px solid #272727;margin:20px 0}
 <script>
 const SUPABASE_URL='https://qasfdynmzeatkkfphaqi.supabase.co';
 const SUPABASE_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFhc2ZkeW5temVhdGtrZnBoYXFpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODI1ODc3MjEsImV4cCI6MjA5ODE2MzcyMX0.piwZ0v0UnoOo5L6Q53l6P1hTOfDE6uPr0lNILzehCSo';
-const ADMIN_PASS='2CERREV$5Y^7U*@R%%5334$';
 const SITE_URL=window.location.origin+window.location.pathname;
 const sb=supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
 
@@ -913,6 +899,30 @@ function setLanguage(lang){
   toast(lang==='ru'?'Язык изменён 🌐':'Język zmieniony 🌐');
 }
 
+// ── BEZPIECZEŃSTWO: zabezpieczenie przed XSS ────────────────────────────
+function esc(str){
+  if(str===null||str===undefined)return'';
+  return String(str)
+    .replace(/&/g,'&amp;')
+    .replace(/</g,'&lt;')
+    .replace(/>/g,'&gt;')
+    .replace(/"/g,'&quot;')
+    .replace(/'/g,'&#039;');
+}
+
+// Bezpieczne wstawianie tekstu użytkownika do onclick="...('${x}')" - zapobiega "wyrwaniu się" z apostrofu
+function jsesc(str){
+  if(str===null||str===undefined)return'';
+  return String(str)
+    .replace(/\\/g,'\\\\')
+    .replace(/'/g,"\\'")
+    .replace(/"/g,'&quot;')
+    .replace(/\n/g,'\\n')
+    .replace(/\r/g,'')
+    .replace(/</g,'&lt;')
+    .replace(/>/g,'&gt;');
+}
+
 function toast(msg){
   const t=document.getElementById('toast');
   t.textContent=msg;t.style.display='block';
@@ -998,7 +1008,7 @@ async function saveProfile(user){
   await sb.from('profiles').upsert([profile],{onConflict:'id'});
 }
 
-const VIP_BADGE_COLORS_ADMIN=['#3ea6ff','#ffd700','#ff6b35','#c084fc','#4ade80','#f472b6','#fb7185','#a78bfa'];
+const VIP_BADGE_COLORS_ADMIN=['#3ea6ff','#ffd700','#ff6b35','#c084fc','#4ade80','#f472b6','#fb7185','#a78bfa','#22d3ee','#ef4444','#84cc16','#e879f9','#fb923c','#14b8a6','#eab308','#f43f5e'];
 
 async function saveAdminBadgeColor(color){
   if(!isAdmin())return;
@@ -1010,7 +1020,7 @@ async function saveAdminBadgeColor(color){
 }
 
 // ── PANEL VIP ────────────────────────────────────────────────────────────
-const VIP_BADGE_COLORS=['#ffd700','#ff6b35','#c084fc','#4ade80','#f472b6','#fb7185','#facc15','#a78bfa'];
+const VIP_BADGE_COLORS=['#ffd700','#ff6b35','#c084fc','#4ade80','#f472b6','#fb7185','#facc15','#a78bfa','#22d3ee','#ef4444','#84cc16','#e879f9','#fb923c','#14b8a6','#eab308','#f43f5e'];
 
 function openVipPanel(){
   if(!isVIP()){toast('Brak uprawnień');return;}
@@ -1146,7 +1156,17 @@ const FONT_OPTIONS=[
   {id:'Shadows Into Light',label:'Shadows Into Light',css:"'Shadows Into Light', cursive"},
   {id:'Bungee',label:'Bungee',css:"'Bungee', cursive"},
   {id:'Comfortaa',label:'Comfortaa',css:"'Comfortaa', sans-serif"},
-  {id:'Rubik Mono One',label:'Rubik Mono One',css:"'Rubik Mono One', sans-serif"}
+  {id:'Rubik Mono One',label:'Rubik Mono One',css:"'Rubik Mono One', sans-serif"},
+  {id:'Playfair Display',label:'Playfair Display',css:"'Playfair Display', serif"},
+  {id:'Chewy',label:'Chewy',css:"'Chewy', cursive"},
+  {id:'Great Vibes',label:'Great Vibes',css:"'Great Vibes', cursive"},
+  {id:'Audiowide',label:'Audiowide',css:"'Audiowide', sans-serif"},
+  {id:'Monoton',label:'Monoton',css:"'Monoton', cursive"},
+  {id:'Bebas Neue',label:'Bebas Neue',css:"'Bebas Neue', sans-serif"},
+  {id:'Creepster',label:'Creepster',css:"'Creepster', cursive"},
+  {id:'Satisfy',label:'Satisfy',css:"'Satisfy', cursive"},
+  {id:'Amatic SC',label:'Amatic SC',css:"'Amatic SC', cursive"},
+  {id:'Black Ops One',label:'Black Ops One',css:"'Black Ops One', cursive"}
 ];
 
 function fontCssFor(fontId){
@@ -1233,7 +1253,7 @@ function toggleRenameUser(userId,btnEl){
   popup.style.cssText=`position:fixed;top:${rect.bottom+4}px;left:${Math.min(rect.left-200,window.innerWidth-260)}px;background:#212121;border:1px solid #303030;border-radius:10px;padding:12px;min-width:240px;z-index:2000;box-shadow:0 4px 20px rgba(0,0,0,.5)`;
   popup.innerHTML=`
     <div style="font-size:11px;color:#888;margin-bottom:8px">Nowy nick dla ${user?.email||''}</div>
-    <input id="rename-inp-${userId}" value="${user?.name||''}" style="width:100%;background:#0f0f0f;border:1px solid #303030;border-radius:6px;color:#fff;padding:8px 10px;font-size:13px;outline:none;margin-bottom:10px" onkeydown="if(event.key==='Enter')saveRenameUser('${userId}')">
+    <input id="rename-inp-${userId}" value="${esc(user?.name||'')}" style="width:100%;background:#0f0f0f;border:1px solid #303030;border-radius:6px;color:#fff;padding:8px 10px;font-size:13px;outline:none;margin-bottom:10px" onkeydown="if(event.key==='Enter')saveRenameUser('${userId}')">
     <div style="display:flex;gap:8px;justify-content:flex-end">
       <button onclick="document.getElementById('admin-rename-popup').remove()" style="background:none;border:none;color:#888;padding:6px 12px;border-radius:8px;cursor:pointer;font-size:12px">Anuluj</button>
       <button onclick="saveRenameUser('${userId}')" style="background:#3ea6ff;border:none;color:#0f0f0f;padding:6px 14px;border-radius:8px;cursor:pointer;font-size:12px;font-weight:700">Zapisz</button>
@@ -1321,7 +1341,7 @@ async function renderAdminPanel(){
       <div style="display:flex;align-items:center;gap:12px;padding:10px 14px;border-bottom:1px solid #272727">
         <div style="width:64px;height:38px;background:#1a1a1a;border-radius:6px;overflow:hidden;flex-shrink:0">${thumbFor(v)?`<img src="${thumbFor(v)}" style="width:100%;height:100%;object-fit:cover">`:''}</div>
         <div style="flex:1;min-width:0">
-          <div style="font-size:13px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${v.title}</div>
+          <div style="font-size:13px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(v.title)}</div>
           <div style="font-size:11px;color:#888">${getUserName(v)} · ${v.user_email||''}</div>
         </div>
         <button onclick="closeAdminPanel();openEditModal(${v.id})" style="background:#142a3a;border:1px solid #1f4a5c;color:#7fd3ff;padding:6px 12px;border-radius:8px;cursor:pointer;font-size:12px;flex-shrink:0">✏️ Edytuj</button>
@@ -1881,7 +1901,7 @@ function showShortsPage(){
       <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;opacity:0;background:rgba(0,0,0,.3);transition:opacity .2s" onmouseover="this.style.opacity=1" onmouseout="this.style.opacity=0"><div style="width:54px;height:54px;background:rgba(0,0,0,.75);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:22px">▶</div></div>
       <div style="position:absolute;top:8px;left:8px;background:#ff0000;color:#fff;font-size:10px;font-weight:700;padding:2px 6px;border-radius:4px">SHORT</div>
       <div style="position:absolute;bottom:0;left:0;right:0;background:linear-gradient(transparent,rgba(0,0,0,.8));padding:12px 10px 10px">
-        <div style="font-size:13px;font-weight:600;color:#fff;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden">${v.title}</div>
+        <div style="font-size:13px;font-weight:600;color:#fff;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden">${esc(v.title)}</div>
         <div style="font-size:11px;color:rgba(255,255,255,.7);margin-top:3px">${v.likes||0} ❤ · ${v.views||0} wyśw.</div>
       </div>
     </div>`;
@@ -1910,11 +1930,11 @@ function renderVideoCards(list,g){
     const th=thumbFor(v);
     const uname=getUserName(v);
     const ucol=getUserColor(v.user_email);
-    const uav=v.user_avatar?`<img src="${v.user_avatar}" style="width:36px;height:36px;border-radius:50%;object-fit:cover;cursor:pointer" onclick="event.stopPropagation();showChannel('${v.user_id||''}','${uname}','${v.user_avatar||''}','${v.user_email||''}')">`:`<div class="card-avatar-placeholder" style="background:${ucol}" onclick="event.stopPropagation();showChannel('${v.user_id||''}','${uname}','','${v.user_email||''}')">${uname[0].toUpperCase()}</div>`;
+    const uav=v.user_avatar?`<img src="${v.user_avatar}" style="width:36px;height:36px;border-radius:50%;object-fit:cover;cursor:pointer" onclick="event.stopPropagation();showChannel('${v.user_id||''}','${jsesc(uname)}','${v.user_avatar||''}','${v.user_email||''}')">`:`<div class="card-avatar-placeholder" style="background:${ucol}" onclick="event.stopPropagation();showChannel('${v.user_id||''}','${jsesc(uname)}','','${v.user_email||''}')">${uname[0].toUpperCase()}</div>`;
     const el=document.createElement('div');
     el.className='card';
     el.innerHTML=`<div class="thumb">
-      ${th?`<img src="${th}" alt="${v.title}" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"><div class="no-thumb" style="display:none">🎬</div>`:'<div class="no-thumb">🎬</div>'}
+      ${th?`<img src="${th}" alt="${esc(v.title)}" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"><div class="no-thumb" style="display:none">🎬</div>`:'<div class="no-thumb">🎬</div>'}
       <div class="play-ov"><div class="pb">▶</div></div>
       ${v.dur?`<div class="dur">${v.dur}</div>`:''}
       <button class="del" onclick="event.stopPropagation();askDelete(${v.id})">🗑</button>
@@ -1924,8 +1944,8 @@ function renderVideoCards(list,g){
     <div class="card-bottom">
       ${uav}
       <div class="card-info">
-        <h3>${v.title}</h3>
-        <div class="channel-name" style="${v.user_color?`color:${v.user_color};font-weight:700;`:''}${v.user_font?`font-family:${fontCssFor(v.user_font)};`:''}" onclick="event.stopPropagation();showChannel('${v.user_id||''}','${uname}','${v.user_avatar||''}','${v.user_email||''}')">${uname}</div>
+        <h3>${esc(v.title)}</h3>
+        <div class="channel-name" style="${v.user_color?`color:${v.user_color};font-weight:700;`:''}${v.user_font?`font-family:${fontCssFor(v.user_font)};`:''}" onclick="event.stopPropagation();showChannel('${v.user_id||''}','${jsesc(uname)}','${v.user_avatar||''}','${v.user_email||''}')">${esc(uname)}</div>
         <p>${v.likes||0} ❤ · ${(v.comments||[]).length} komentarzy</p>
       </div>
     </div>`;
@@ -1956,7 +1976,7 @@ function render(){
       el.innerHTML=`<div style="position:relative;width:160px;height:284px;background:#1a1a1a;border-radius:12px;overflow:hidden">
         ${th?`<img src="${th}" style="width:100%;height:100%;object-fit:cover">`:'<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;color:#333;font-size:36px">📱</div>'}
         <div style="position:absolute;bottom:8px;left:8px;right:8px">
-          <div style="font-size:12px;font-weight:600;color:#fff;text-shadow:0 1px 3px rgba(0,0,0,.8);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden">${v.title}</div>
+          <div style="font-size:12px;font-weight:600;color:#fff;text-shadow:0 1px 3px rgba(0,0,0,.8);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden">${esc(v.title)}</div>
           <div style="font-size:11px;color:rgba(255,255,255,.7)">${v.likes||0} ❤</div>
         </div>
         <div style="position:absolute;top:8px;left:8px;background:#ff0000;color:#fff;font-size:10px;font-weight:700;padding:2px 6px;border-radius:4px">SHORT</div>
@@ -2030,18 +2050,18 @@ async function showChannel(userId,nameIn,avatar,email){
     <div class="channel-header">
       <div class="channel-big-av">${avHtml}</div>
       <div class="channel-big-info" style="flex:1">
-        <h2 style="margin-bottom:2px;display:flex;align-items:center;${chNameColor?`color:${chNameColor};`:''}${chNameFont?`font-family:${fontCssFor(chNameFont)};`:''}">${name}${verifiedBadge(email)}</h2>
+        <h2 style="margin-bottom:2px;display:flex;align-items:center;${chNameColor?`color:${chNameColor};`:''}${chNameFont?`font-family:${fontCssFor(chNameFont)};`:''}">${esc(name)}${verifiedBadge(email)}</h2>
         <div style="font-size:12px;color:#aaa;margin-bottom:6px">${makeNick(name,email)}</div>
         <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:4px">
           <span style="font-size:13px;color:#aaa"><span id="sub-count-big">${subCount}</span> subskrybentów · ${userVideos.length} filmów</span>
-          ${!isOwner?`<button class="btn-sub-big${isSub?' subscribed':''}" onclick="toggleSub('${userId||email}','${name}')" id="sub-big-btn" style="margin-left:0">${isSub?'✓ '+t('btn_subscribed'):t('btn_subscribe')}</button>
-          <button onclick="openMsg('${name}','${email}','${userId}')" style="background:#272727;border:none;color:#fff;padding:8px 16px;border-radius:20px;cursor:pointer;font-size:13px;display:flex;align-items:center;gap:6px">✉️ Wiadomość</button>`
+          ${!isOwner?`<button class="btn-sub-big${isSub?' subscribed':''}" onclick="toggleSub('${userId||email}','${jsesc(name)}')" id="sub-big-btn" style="margin-left:0">${isSub?'✓ '+t('btn_subscribed'):t('btn_subscribe')}</button>
+          <button onclick="openMsg('${jsesc(name)}','${email}','${userId}')" style="background:#272727;border:none;color:#fff;padding:8px 16px;border-radius:20px;cursor:pointer;font-size:13px;display:flex;align-items:center;gap:6px">✉️ Wiadomość</button>`
           :`<button class="btn-sub-big subscribed" style="margin-left:0;cursor:default">To Twój kanał</button>`}
         </div>
         <div id="ch-desc-wrap">
           ${isOwner
             ?`<div id="ch-desc-text" style="font-size:13px;color:#aaa;cursor:pointer" onclick="editDesc('${userId||email}')">${savedDesc||'<span style="color:#555">+ Dodaj opis kanału</span>'}</div>`
-            :`<div style="font-size:13px;color:#aaa">${savedDesc}</div>`
+            :`<div style="font-size:13px;color:#aaa">${esc(savedDesc)}</div>`
           }
         </div>
       </div>
@@ -2066,12 +2086,12 @@ async function showChannel(userId,nameIn,avatar,email){
     const el=document.createElement('div');
     el.className='card';
     el.innerHTML=`<div class="thumb">
-      ${th?`<img src="${th}" alt="${v.title}" onerror="this.style.display='none'">`:'<div class="no-thumb">🎬</div>'}
+      ${th?`<img src="${th}" alt="${esc(v.title)}" onerror="this.style.display='none'">`:'<div class="no-thumb">🎬</div>'}
       <div class="play-ov"><div class="pb">▶</div></div>
       ${v.dur?`<div class="dur">${v.dur}</div>`:''}
     </div>
     <div class="card-info" style="padding:10px 4px">
-      <h3>${v.title}</h3>
+      <h3>${esc(v.title)}</h3>
       <p>${v.category?`<span style="color:#aaa;font-size:11px">${v.category} · </span>`:''} ${v.likes_enabled!==false?v.likes||0+' ❤ · ':''} ${v.comments_enabled!==false?(v.comments||[]).length+' komentarzy':' 🔒 Komentarze wyłączone'}</p>
       ${v.tags&&v.tags.length?`<div style="margin-top:4px;display:flex;flex-wrap:wrap;gap:4px">${v.tags.slice(0,3).map(t=>`<span style="background:#1a1a1a;color:#aaa;font-size:10px;padding:2px 6px;border-radius:8px">#${t}</span>`).join('')}</div>`:''
       }
@@ -2142,10 +2162,10 @@ function renderSidebarSubs(subs){
     const name=rawName&&!rawName.match(/^[0-9a-f-]{8,}$/i)?rawName:'Kanał';
     const avatar=vid?.user_avatar||s.channel_avatar||'';
     const email=vid?.user_email||'';
-    return`<div class="sb-item" onclick="showChannel('${s.channel_id}','${name}','${avatar}','${email}')">
+    return`<div class="sb-item" onclick="showChannel('${s.channel_id}','${jsesc(name)}','${avatar}','${email}')">
       ${avatar?`<img class="sb-av" src="${avatar}" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">`:''}
-      <div class="sb-av" style="background:#cc0000;${avatar?'display:none':''}">${name[0].toUpperCase()}</div>
-      <span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${name}</span>
+      <div class="sb-av" style="background:#cc0000;${avatar?'display:none':''}">${esc(name[0].toUpperCase())}</div>
+      <span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(name)}</span>
     </div>`;
   }).join('');
 }
@@ -2330,10 +2350,10 @@ function renderAnnouncementCard(a){
     <div id="ann-comments-${a.id}" style="display:none;margin-top:14px;padding-top:14px;border-top:1px solid #272727">
       <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:12px">
         ${comments.map(c=>`<div style="display:flex;gap:8px">
-          ${c.avatar?`<img src="${c.avatar}" style="width:28px;height:28px;border-radius:50%;object-fit:cover;flex-shrink:0;cursor:pointer" onclick="showChannel('${c.user_id||''}','${c.user}','${c.avatar||''}','')">`:`<div style="width:28px;height:28px;border-radius:50%;background:#cc0000;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0;cursor:pointer" onclick="showChannel('${c.user_id||''}','${c.user}','','')">${(c.user||'?')[0].toUpperCase()}</div>`}
+          ${c.avatar?`<img src="${c.avatar}" style="width:28px;height:28px;border-radius:50%;object-fit:cover;flex-shrink:0;cursor:pointer" onclick="showChannel('${c.user_id||''}','${jsesc(c.user)}','${c.avatar||''}','')">`:`<div style="width:28px;height:28px;border-radius:50%;background:#cc0000;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0;cursor:pointer" onclick="showChannel('${c.user_id||''}','${jsesc(c.user)}','','')">${(c.user||'?')[0].toUpperCase()}</div>`}
           <div>
-            <div style="font-size:12px;font-weight:600;cursor:pointer${c.name_color?`;color:${c.name_color}`:''}${c.name_font?`;font-family:${fontCssFor(c.name_font)}`:''}" onclick="showChannel('${c.user_id||''}','${c.user}','${c.avatar||''}','')">${c.user}</div>
-            <div style="font-size:13px;color:#ccc">${c.text}</div>
+            <div style="font-size:12px;font-weight:600;cursor:pointer${c.name_color?`;color:${c.name_color}`:''}${c.name_font?`;font-family:${fontCssFor(c.name_font)}`:''}" onclick="showChannel('${c.user_id||''}','${jsesc(c.user)}','${c.avatar||''}','')">${esc(c.user)}</div>
+            <div style="font-size:13px;color:#ccc">${esc(c.text)}</div>
           </div>
         </div>`).join('')||'<p style="color:#666;font-size:12px">Brak komentarzy — bądź pierwszy!</p>'}
       </div>
@@ -2433,14 +2453,14 @@ async function showHistory(){
     const el=document.createElement('div');
     el.className='card';
     el.innerHTML=`<div class="thumb">
-      ${th?`<img src="${th}" alt="${v.title}" onerror="this.style.display='none'">`:'<div class="no-thumb">🎬</div>'}
+      ${th?`<img src="${th}" alt="${esc(v.title)}" onerror="this.style.display='none'">`:'<div class="no-thumb">🎬</div>'}
       <div class="play-ov"><div class="pb">▶</div></div>
       ${v.dur?`<div class="dur">${v.dur}</div>`:''}
     </div>
     <div class="card-bottom">
       <div class="card-avatar-placeholder" style="background:#cc0000;width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:#fff;flex-shrink:0">${(getUserName(v)||'?')[0]}</div>
       <div class="card-info">
-        <h3>${v.title}</h3>
+        <h3>${esc(v.title)}</h3>
         <div class="channel-name">${getUserName(v)||'Anonim'}</div>
         <p style="font-size:11px;color:#666">Oglądano: ${new Date(v.watched_at).toLocaleString('pl-PL',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'})}</p>
       </div>
@@ -2475,16 +2495,16 @@ function showTrending(){
     const el=document.createElement('div');
     el.className='card';
     el.innerHTML=`<div class="thumb">
-      ${th?`<img src="${th}" alt="${v.title}" onerror="this.style.display='none'">`:'<div class="no-thumb">🎬</div>'}
+      ${th?`<img src="${th}" alt="${esc(v.title)}" onerror="this.style.display='none'">`:'<div class="no-thumb">🎬</div>'}
       <div class="play-ov"><div class="pb">▶</div></div>
       ${v.dur?`<div class="dur">${v.dur}</div>`:''}
     </div>
     <div class="card-bottom">
       ${avatarUrl
-        ?`<img src="${avatarUrl}" style="width:36px;height:36px;border-radius:50%;object-fit:cover;flex-shrink:0;cursor:pointer" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'" onclick="event.stopPropagation();showChannel('${v.user_id||''}','${uname}','${avatarUrl}','${v.user_email||''}')"><div class="card-avatar-placeholder" style="background:${ucol};display:none;cursor:pointer" onclick="event.stopPropagation();showChannel('${v.user_id||''}','${uname}','','${v.user_email||''}')">${uname[0].toUpperCase()}</div>`
-        :`<div class="card-avatar-placeholder" style="background:${ucol};cursor:pointer" onclick="event.stopPropagation();showChannel('${v.user_id||''}','${uname}','','${v.user_email||''}')">${uname[0].toUpperCase()}</div>`
+        ?`<img src="${avatarUrl}" style="width:36px;height:36px;border-radius:50%;object-fit:cover;flex-shrink:0;cursor:pointer" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'" onclick="event.stopPropagation();showChannel('${v.user_id||''}','${jsesc(uname)}','${avatarUrl}','${v.user_email||''}')"><div class="card-avatar-placeholder" style="background:${ucol};display:none;cursor:pointer" onclick="event.stopPropagation();showChannel('${v.user_id||''}','${jsesc(uname)}','','${v.user_email||''}')">${uname[0].toUpperCase()}</div>`
+        :`<div class="card-avatar-placeholder" style="background:${ucol};cursor:pointer" onclick="event.stopPropagation();showChannel('${v.user_id||''}','${jsesc(uname)}','','${v.user_email||''}')">${uname[0].toUpperCase()}</div>`
       }
-      <div class="card-info"><h3>${v.title}</h3><div class="channel-name">${uname}</div><p>${v.views||0} wyśw.</p></div>
+      <div class="card-info"><h3>${esc(v.title)}</h3><div class="channel-name">${esc(uname)}</div><p>${v.views||0} wyśw.</p></div>
     </div>`;
     el.onclick=()=>openP(v.id);
     g.appendChild(el);
@@ -2552,9 +2572,9 @@ function openP(id){
   document.getElementById('channel-row').innerHTML=`
     ${avHtml}
     <div class="ch-info">
-      <div class="ch-name" onclick="closeP();showChannel('${v.user_id||''}','${uname}','${v.user_avatar||''}','${v.user_email||''}')">${uname}</div>
+      <div class="ch-name" onclick="closeP();showChannel('${v.user_id||''}','${jsesc(uname)}','${v.user_avatar||''}','${v.user_email||''}')">${esc(uname)}</div>
     </div>
-    <button class="btn-sub${isSub?' subscribed':''}" id="sub-btn" onclick="toggleSubInPlayer('${v.user_id||v.user_email||''}','${uname}')">${isSub?'✓ '+t('btn_subscribed'):t('btn_subscribe')}</button>`;
+    <button class="btn-sub${isSub?' subscribed':''}" id="sub-btn" onclick="toggleSubInPlayer('${v.user_id||v.user_email||''}','${jsesc(uname)}')">${isSub?'✓ '+t('btn_subscribed'):t('btn_subscribe')}</button>`;
 
   renderC();
   document.getElementById('pm').classList.add('open');
@@ -2698,11 +2718,11 @@ function renderC(){
     const displayTime=c.ts?timeAgo(c.ts):(c.time||'');
     return`<div class="citem" id="citem-${i}" style="${isPinned?'background:#1a2a1a;border-radius:8px;padding:8px 8px 4px;margin-bottom:8px':'margin-bottom:16px'}">
       ${isPinned?`<div style="color:#3ea6ff;font-size:11px;margin-bottom:6px;display:flex;align-items:center;gap:4px"><svg viewBox="0 0 24 24" width="12" height="12" fill="currentColor"><path d="M17 4v7l2 3H5l2-3V4h10m0-2H7c-.55 0-1 .45-1 1v1H5v2h1v5.5L4 14v2h7v5h2v-5h7v-2l-2-2.5V6h1V4h-1V3c0-.55-.45-1-1-1z"/></svg> Przypięty komentarz</div>`:''}
-      <div class="cav" style="${c.avatar?'':'background:'+( c.col||colors[i%colors.length])};cursor:pointer;flex-shrink:0" onclick="closeP();showChannel('${uid}','${c.user}','${uavatar}','${uemail}')">${av}</div>
+      <div class="cav" style="${c.avatar?'':'background:'+( c.col||colors[i%colors.length])};cursor:pointer;flex-shrink:0" onclick="closeP();showChannel('${uid}','${jsesc(c.user)}','${uavatar}','${uemail}')">${av}</div>
       <div class="cbody" style="flex:1;min-width:0">
         <div class="cname" style="display:flex;align-items:center;gap:4px;flex-wrap:wrap;justify-content:space-between;margin-bottom:4px">
           <div style="display:flex;align-items:center;gap:4px;flex-wrap:wrap">
-            <span style="cursor:pointer;font-weight:600;font-size:14px${c.name_color?`;color:${c.name_color}`:''}${c.name_font?`;font-family:${fontCssFor(c.name_font)}`:''}" onclick="closeP();showChannel('${uid}','${c.user}','${uavatar}','${uemail}')">${c.user}</span>${verifiedBadge(uemail||'')}
+            <span style="cursor:pointer;font-weight:600;font-size:14px${c.name_color?`;color:${c.name_color}`:''}${c.name_font?`;font-family:${fontCssFor(c.name_font)}`:''}" onclick="closeP();showChannel('${uid}','${jsesc(c.user)}','${uavatar}','${uemail}')">${esc(c.user)}</span>${verifiedBadge(uemail||'')}
             <span style="color:#aaa;font-weight:400;font-size:11px">${displayTime}${c.edited?' <span style=\"color:#666\">(edytowano)</span>':''}</span>
           </div>
           <div style="display:flex;gap:4px">
@@ -2712,7 +2732,7 @@ function renderC(){
             ${isAdmin()&&!isAuthor&&uid?`<button onclick="event.stopPropagation();toggleMuteMenu('${uid}',this)" title="Wycisz użytkownika" style="background:none;border:none;color:#555;cursor:pointer;font-size:13px;padding:2px 4px;border-radius:4px">🔇</button>`:''}
           </div>
         </div>
-        <div class="ctext" id="ctext-${i}" style="margin-bottom:8px;font-size:15px;line-height:1.5">${c.text}</div>
+        <div class="ctext" id="ctext-${i}" style="margin-bottom:8px;font-size:15px;line-height:1.5">${esc(c.text)}</div>
         <div id="cedit-${i}" style="display:none;margin-bottom:8px">
           <input id="cedit-inp-${i}" value="${(c.text||'').replace(/"/g,'&quot;')}" style="width:100%;background:transparent;border:none;border-bottom:1px solid #444;color:#fff;padding:6px 0;font-size:14px;outline:none">
           <div style="display:flex;justify-content:flex-end;gap:8px;margin-top:6px">
@@ -2756,13 +2776,13 @@ function renderC(){
               ${r.avatar?`<img src="${r.avatar}" style="width:28px;height:28px;border-radius:50%;object-fit:cover;flex-shrink:0">`:`<div style="width:28px;height:28px;border-radius:50%;background:#cc0000;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#fff;flex-shrink:0">${(r.user||'?')[0]}</div>`}
               <div style="flex:1">
                 <div style="font-size:12px;font-weight:600;display:flex;align-items:center;gap:4px;justify-content:space-between">
-                  <span style="display:flex;align-items:center;gap:4px"><span style="${r.name_color?`color:${r.name_color};`:''}${r.name_font?`font-family:${fontCssFor(r.name_font)};`:''}">${r.user}</span>${verifiedBadge(r.user_email||'')} <span style="color:#aaa;font-weight:400;font-size:11px">${r.ts?timeAgo(r.ts):(r.time||'')}</span></span>
+                  <span style="display:flex;align-items:center;gap:4px"><span style="${r.name_color?`color:${r.name_color};`:''}${r.name_font?`font-family:${fontCssFor(r.name_font)};`:''}">${esc(r.user)}</span>${verifiedBadge(r.user_email||'')} <span style="color:#aaa;font-weight:400;font-size:11px">${r.ts?timeAgo(r.ts):(r.time||'')}</span></span>
                   <span style="display:flex;gap:2px">
                     ${isAdmin()&&!replyIsAuthor&&r.user_id?`<button onclick="event.stopPropagation();toggleMuteMenu('${r.user_id}',this)" title="Wycisz użytkownika" style="background:none;border:none;color:#555;cursor:pointer;font-size:12px;padding:2px 4px">🔇</button>`:''}
                     ${replyCanDelete?`<button onclick="deleteReply(${i},${ri})" title="Usuń" style="background:none;border:none;color:#555;cursor:pointer;font-size:12px;padding:2px 4px">🗑</button>`:''}
                   </span>
                 </div>
-                <div style="font-size:13px;color:#ccc;margin-top:2px">${r.text}</div>
+                <div style="font-size:13px;color:#ccc;margin-top:2px">${esc(r.text)}</div>
               </div>
             </div>`;
             }).join('')}
@@ -3009,22 +3029,13 @@ async function submitForm(){
 }
 
 // ── DELETE ────────────────────────────────────────────────────────────────────
-function askDelete(id){
-  pendingDeleteId=id;
-  document.getElementById('passinp').value='';
-  document.getElementById('perr').style.display='none';
-  document.getElementById('passmodal').classList.add('open');
-  setTimeout(()=>document.getElementById('passinp').focus(),100);
-}
-function closePassModal(){document.getElementById('passmodal').classList.remove('open');pendingDeleteId=null;}
-async function confirmDelete(){
-  if(document.getElementById('passinp').value!==ADMIN_PASS){
-    document.getElementById('perr').style.display='block';
-    document.getElementById('passinp').value='';return;
-  }
-  closePassModal();
-  await deleteVideo(pendingDeleteId);
-  pendingDeleteId=null;
+async function askDelete(id){
+  const v=videos.find(x=>x.id===id);
+  if(!currentUser){toast('Zaloguj się!');return;}
+  if(!v||(currentUser.id!==v.user_id&&!isAdmin())){toast('Możesz usuwać tylko swoje filmy');return;}
+  if(!await showConfirm('Usunąć ten film?','Tej czynności nie można cofnąć.'))return;
+  await deleteVideo(id);
+  toast('Film usunięty');
 }
 
 // ── INIT ──────────────────────────────────────────────────────────────────────
@@ -3307,11 +3318,11 @@ async function loadConvList(){
     const email=theirVideo?.user_email||'';
     const time=new Date(m.created_at).toLocaleString('pl-PL',{hour:'2-digit',minute:'2-digit'});
     const isBlocked=!!blockedUsers[otherId];
-    return`<div class="msg-conv-item${currentConvId===m.conv_id?' active':''}" onclick="openConv('${m.conv_id}','${otherId}','${name}','${avatar}','${email}')" style="${isBlocked?'opacity:.5':''}">
-      ${avatar?`<img class="msg-conv-av" src="${avatar}" style="cursor:pointer" onclick="event.stopPropagation();closeMessages();showChannel('${otherId}','${name}','${avatar}','${email}')" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">`:''}
-      <div class="msg-conv-av-ph" style="background:#cc0000;cursor:pointer;${avatar?'display:none':''}" onclick="event.stopPropagation();closeMessages();showChannel('${otherId}','${name}','${avatar}','${email}')">${(name||'?')[0].toUpperCase()}</div>
+    return`<div class="msg-conv-item${currentConvId===m.conv_id?' active':''}" onclick="openConv('${m.conv_id}','${otherId}','${jsesc(name)}','${avatar}','${email}')" style="${isBlocked?'opacity:.5':''}">
+      ${avatar?`<img class="msg-conv-av" src="${avatar}" style="cursor:pointer" onclick="event.stopPropagation();closeMessages();showChannel('${otherId}','${jsesc(name)}','${avatar}','${email}')" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">`:''}
+      <div class="msg-conv-av-ph" style="background:#cc0000;cursor:pointer;${avatar?'display:none':''}" onclick="event.stopPropagation();closeMessages();showChannel('${otherId}','${jsesc(name)}','${avatar}','${email}')">${(name||'?')[0].toUpperCase()}</div>
       <div class="msg-conv-info">
-        <div class="msg-conv-name" style="cursor:pointer" onclick="event.stopPropagation();closeMessages();showChannel('${otherId}','${name}','${avatar}','${email}')">${name}${verifiedBadge(email)}${isBlocked?' <span style="color:#cc0000;font-size:11px">🚫 zablokowany</span>':''}</div>
+        <div class="msg-conv-name" style="cursor:pointer" onclick="event.stopPropagation();closeMessages();showChannel('${otherId}','${jsesc(name)}','${avatar}','${email}')">${esc(name)}${verifiedBadge(email)}${isBlocked?' <span style="color:#cc0000;font-size:11px">🚫 zablokowany</span>':''}</div>
         <div class="msg-conv-last">${m.text.substring(0,40)}</div>
       </div>
       <div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px">
@@ -3350,9 +3361,9 @@ function renderChatHeader(){
   const expiresAt=blockedUsers[o.id];
   area.innerHTML=`
     <div class="msg-chat-header" style="position:relative">
-      ${avatar?`<img class="msg-conv-av" src="${avatar}" style="width:36px;height:36px;cursor:pointer" onclick="closeMessages();showChannel('${o.id}','${name}','${avatar}','${email}')" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">`:''}
-      <div class="msg-conv-av-ph" style="background:#cc0000;width:36px;height:36px;font-size:14px;cursor:pointer;${avatar?'display:none':''}" onclick="closeMessages();showChannel('${o.id}','${name}','${avatar}','${email}')">${(name||'?')[0].toUpperCase()}</div>
-      <div class="msg-chat-name" style="flex:1;cursor:pointer" onclick="closeMessages();showChannel('${o.id}','${name}','${avatar}','${email}')">${name}${verifiedBadge(email)}</div>
+      ${avatar?`<img class="msg-conv-av" src="${avatar}" style="width:36px;height:36px;cursor:pointer" onclick="closeMessages();showChannel('${o.id}','${jsesc(name)}','${avatar}','${email}')" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">`:''}
+      <div class="msg-conv-av-ph" style="background:#cc0000;width:36px;height:36px;font-size:14px;cursor:pointer;${avatar?'display:none':''}" onclick="closeMessages();showChannel('${o.id}','${jsesc(name)}','${avatar}','${email}')">${(name||'?')[0].toUpperCase()}</div>
+      <div class="msg-chat-name" style="flex:1;cursor:pointer" onclick="closeMessages();showChannel('${o.id}','${jsesc(name)}','${avatar}','${email}')">${esc(name)}${verifiedBadge(email)}</div>
       <button onclick="toggleChatMenu()" style="background:none;border:none;color:#fff;cursor:pointer;font-size:20px;padding:4px 10px;border-radius:50%" onmouseover="this.style.background='#272727'" onmouseout="this.style.background='none'">⋮</button>
       <div id="chat-menu" style="display:none;position:absolute;top:44px;right:0;background:#212121;border:1px solid #303030;border-radius:10px;min-width:210px;z-index:80;overflow:hidden">
         <div onclick="deleteConversation()" style="padding:12px 16px;cursor:pointer;font-size:13px;display:flex;align-items:center;gap:10px;color:#ff6b6b" onmouseover="this.style.background='#303030'" onmouseout="this.style.background='none'">🗑 Usuń czat</div>
@@ -3438,7 +3449,7 @@ async function loadMessages(){
     const isSent=m.sender_id===currentUser.id;
     const time=new Date(m.created_at).toLocaleString('pl-PL',{hour:'2-digit',minute:'2-digit'});
     return`<div class="msg-bubble-wrap ${isSent?'sent':'received'}">
-      <div class="msg-bubble ${isSent?'sent':'received'}">${m.text}</div>
+      <div class="msg-bubble ${isSent?'sent':'received'}">${esc(m.text)}</div>
       <div class="msg-bubble-time">${time}</div>
     </div>`;
   }).join('');
@@ -3529,7 +3540,7 @@ function renderChannelHome(){
         <div style="position:relative;width:130px;height:231px;background:#1a1a1a;border-radius:10px;overflow:hidden">
           ${th?`<img src="${th}" style="width:100%;height:100%;object-fit:cover">`:'<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;color:#333;font-size:28px">📱</div>'}
         </div>
-        <div style="font-size:12px;font-weight:500;margin-top:6px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden">${v.title}</div>
+        <div style="font-size:12px;font-weight:500;margin-top:6px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden">${esc(v.title)}</div>
       </div>`;
     });
     html+='</div>';
@@ -3544,7 +3555,7 @@ function renderChannelHome(){
           ${th?`<img src="${th}" style="width:100%;height:100%;object-fit:cover">`:'<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;color:#333;font-size:32px">🎬</div>'}
           ${v.dur?`<div style="position:absolute;bottom:5px;right:7px;background:rgba(0,0,0,.85);font-size:11px;padding:2px 6px;border-radius:4px">${v.dur}</div>`:''}
         </div>
-        <div style="font-size:13px;font-weight:500;margin-top:7px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden">${v.title}</div>
+        <div style="font-size:13px;font-weight:500;margin-top:7px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden">${esc(v.title)}</div>
         <div style="font-size:12px;color:#aaa">${v.views||0} wyśw.</div>
       </div>`;
     });
@@ -3568,7 +3579,7 @@ function renderChannelShorts(){
         ${th?`<img src="${th}" style="width:100%;height:100%;object-fit:cover">`:'<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;color:#333;font-size:36px">📱</div>'}
         <div style="position:absolute;top:8px;left:8px;background:#ff0000;color:#fff;font-size:10px;font-weight:700;padding:2px 6px;border-radius:4px">SHORT</div>
       </div>
-      <div style="font-size:12px;font-weight:500;margin-top:6px">${v.title}</div>
+      <div style="font-size:12px;font-weight:500;margin-top:6px">${esc(v.title)}</div>
     </div>`;
   });
   html+='</div>';
@@ -3598,12 +3609,12 @@ async function renderPosts(){
         <div class="post-header">
           ${avHtml}
           <div>
-            <div class="post-user" style="${p.user_color?`color:${p.user_color};`:''}${p.user_font?`font-family:${fontCssFor(p.user_font)};`:''}">${uname}${verifiedBadge(p.user_email||'')}</div>
+            <div class="post-user" style="${p.user_color?`color:${p.user_color};`:''}${p.user_font?`font-family:${fontCssFor(p.user_font)};`:''}">${esc(uname)}${verifiedBadge(p.user_email||'')}</div>
             <div class="post-time">${p.created_at?new Date(p.created_at).toLocaleString('pl-PL',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'}):p.time||''}</div>
           </div>
           ${isOwner?`<button onclick="deletePost(${p.id})" style="margin-left:auto;background:none;border:none;color:#555;cursor:pointer;font-size:16px" title="Usuń post">🗑</button>`:''}
         </div>
-        ${p.text?`<div class="post-text">${p.text}</div>`:''}
+        ${p.text?`<div class="post-text">${esc(p.text)}</div>`:''}
         ${p.image?`<img class="post-img" src="${p.image}" alt="post">`:''}
         ${p.poll?renderPoll(p):''}
         <div class="post-actions">
@@ -3619,7 +3630,7 @@ async function renderPosts(){
           ${(p.comments||[]).map(c=>`
             <div style="display:flex;gap:8px;margin-bottom:10px">
               ${c.avatar?`<img src="${c.avatar}" style="width:28px;height:28px;border-radius:50%;object-fit:cover;flex-shrink:0">`:`<div style="width:28px;height:28px;border-radius:50%;background:${c.col||'#cc0000'};display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0">${(c.user||'?')[0]}</div>`}
-              <div><div style="font-size:12px;font-weight:600;display:flex;align-items:center">${c.user}${verifiedBadge(c.email||'')} <span style="color:#666;font-weight:400;margin-left:6px">${c.time||''}</span></div><div style="font-size:13px;color:#ccc">${c.text}</div></div>
+              <div><div style="font-size:12px;font-weight:600;display:flex;align-items:center">${esc(c.user)}${verifiedBadge(c.email||'')} <span style="color:#666;font-weight:400;margin-left:6px">${c.time||''}</span></div><div style="font-size:13px;color:#ccc">${esc(c.text)}</div></div>
             </div>`).join('')}
           ${currentUser?`<div style="display:flex;gap:8px;margin-top:8px;align-items:center">
             ${currentUser.user_metadata?.avatar_url?`<img src="${currentUser.user_metadata.avatar_url}" style="width:28px;height:28px;border-radius:50%;object-fit:cover;flex-shrink:0">`:`<div style="width:28px;height:28px;border-radius:50%;background:#cc0000;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0">${(currentUser.user_metadata?.full_name||currentUser.email||'?')[0].toUpperCase()}</div>`}
@@ -3825,7 +3836,7 @@ async function submitPost(){
 }
 
 document.getElementById('pm').addEventListener('click',function(e){if(e.target===this)closeP();});
-document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeP();closeForm();closePassModal();closeEditModal();closeMessages();document.getElementById('add-post-modal').classList.remove('open');}});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeP();closeForm();closeEditModal();closeMessages();document.getElementById('add-post-modal').classList.remove('open');}});
 
 (async()=>{
   const{data:{session}}=await sb.auth.getSession();
