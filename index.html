@@ -1367,11 +1367,14 @@ async function renderAdminPanel(){
     const{data:reports}=await sb.from('reports').select('*').order('created_at',{ascending:false});
     if(!reports||!reports.length){body.innerHTML='<p style="color:#888;padding:20px;text-align:center">Brak zgłoszeń</p>';return;}
     body.innerHTML=reports.map(r=>`
-      <div style="padding:12px 14px;border-bottom:1px solid #272727">
-        <div style="font-size:13px;font-weight:600">${r.video_title||'(usunięty film)'}</div>
-        <div style="font-size:12px;color:#ff8a8a;margin:3px 0">${r.reason||''}</div>
-        ${r.details?`<div style="font-size:12px;color:#aaa;margin-bottom:4px">${r.details}</div>`:''}
-        <div style="font-size:11px;color:#666">Zgłosił: ${r.reporter_email||''} · ${new Date(r.created_at).toLocaleString('pl-PL')}</div>
+      <div style="padding:12px 14px;border-bottom:1px solid #272727;display:flex;justify-content:space-between;gap:12px">
+        <div style="flex:1;min-width:0">
+          <div style="font-size:13px;font-weight:600">${esc(r.video_title)||'(usunięty film)'}</div>
+          <div style="font-size:12px;color:#ff8a8a;margin:3px 0">${esc(r.reason)}</div>
+          ${r.details?`<div style="font-size:12px;color:#aaa;margin-bottom:4px">${esc(r.details)}</div>`:''}
+          <div style="font-size:11px;color:#666">Zgłosił: ${esc(r.reporter_email)} · ${new Date(r.created_at).toLocaleString('pl-PL')}</div>
+        </div>
+        <button onclick="deleteReport(${r.id})" title="Usuń zgłoszenie" style="background:#3a1414;border:1px solid #5c1f1f;color:#ff6b6b;padding:6px 12px;border-radius:8px;cursor:pointer;font-size:12px;flex-shrink:0;height:fit-content">🗑 Usuń</button>
       </div>`).join('');
   }
 
@@ -1493,6 +1496,15 @@ async function sendAnnouncement(){
     toast('Ogłoszenie wysłane! 📢');
   }
   btn.disabled=false;btn.style.opacity='1';btn.textContent='📢 Wyślij do wszystkich';
+}
+
+async function deleteReport(id){
+  if(!isAdmin())return;
+  if(!await showConfirm('Usunąć to zgłoszenie?','Zniknie z listy zgłoszeń.'))return;
+  const{error}=await sb.from('reports').delete().eq('id',id);
+  if(error){toast('Błąd: '+error.message);return;}
+  renderAdminPanel();
+  toast('Zgłoszenie usunięte 🗑');
 }
 
 async function adminDeleteVideo(id){
@@ -2530,9 +2542,13 @@ function layoutActsForShorts(isShort){
 
 function openP(id){
   const v=videos.find(x=>x.id===id);if(!v)return;
-  cur=v;updateVideo(v.id,{views:(v.views||0)+1});v.views=(v.views||0)+1;
-  updateSaveButtonUI(v.id);
-  addToWatchHistory(v);
+  const isUpcoming=v.premiere&&new Date(v.premiere)>new Date();
+  cur=v;
+  if(!isUpcoming){
+    updateVideo(v.id,{views:(v.views||0)+1});v.views=(v.views||0)+1;
+    updateSaveButtonUI(v.id);
+    addToWatchHistory(v);
+  }
   const isShort=v.is_short===true;
   if(isShort){
     document.getElementById('pw').style.aspectRatio='9/16';
@@ -2547,16 +2563,25 @@ function openP(id){
     document.getElementById('pw').style.margin='';
     document.getElementById('pw').style.overflow='';
   }
-  const{type,src}=getPlayer(v.url);
   let html='';
-  if(type==='yt'||type==='gd')html=`<iframe src="${src}" allow="autoplay;encrypted-media;fullscreen" allowfullscreen></iframe>`;
-  else if(type==='tt')html=`<iframe src="${src}" allow="encrypted-media" allowfullscreen style="border:none;width:100%;height:100%"></iframe>`;
-  else if(type==='mp4')html=`<video src="${src}" controls autoplay></video>`;
-  else html=`<div style="display:flex;align-items:center;justify-content:center;height:100%;flex-direction:column;gap:12px;color:#555;padding:20px;text-align:center"><div style="font-size:48px">⚠️</div><p>Nie można odtworzyć</p><a href="${src}" target="_blank" style="color:#3ea6ff;font-size:13px">Otwórz zewnętrznie ↗</a></div>`;
+  if(isUpcoming){
+    const premDate=new Date(v.premiere).toLocaleString('pl-PL',{day:'numeric',month:'long',hour:'2-digit',minute:'2-digit'});
+    html=`<div style="display:flex;align-items:center;justify-content:center;height:100%;flex-direction:column;gap:12px;color:#ccc;padding:20px;text-align:center;background:#000">
+      <div style="font-size:48px">🔴</div>
+      <p style="font-size:16px;font-weight:600">Premiera jeszcze się nie odbyła</p>
+      <p style="font-size:14px;color:#888">Ten film będzie dostępny od:<br><b style="color:#fff">${premDate}</b></p>
+    </div>`;
+  } else {
+    const{type,src}=getPlayer(v.url);
+    if(type==='yt'||type==='gd')html=`<iframe src="${src}" allow="autoplay;encrypted-media;fullscreen" allowfullscreen></iframe>`;
+    else if(type==='tt')html=`<iframe src="${src}" allow="encrypted-media" allowfullscreen style="border:none;width:100%;height:100%"></iframe>`;
+    else if(type==='mp4')html=`<video src="${src}" controls autoplay></video>`;
+    else html=`<div style="display:flex;align-items:center;justify-content:center;height:100%;flex-direction:column;gap:12px;color:#555;padding:20px;text-align:center"><div style="font-size:48px">⚠️</div><p>Nie można odtworzyć</p><a href="${src}" target="_blank" style="color:#3ea6ff;font-size:13px">Otwórz zewnętrznie ↗</a></div>`;
+  }
   document.getElementById('pw').innerHTML=html;
   layoutActsForShorts(isShort);
   document.getElementById('vt').textContent=v.title;
-  document.getElementById('vm').innerHTML=`${v.views} wyświetleń · ${v.date||''}${v.category?' · <span style="background:#272727;padding:2px 8px;border-radius:10px;font-size:11px">'+v.category+'</span>':''}${v.description?'<div style="margin-top:8px;color:#ccc;font-size:13px;line-height:1.5">'+v.description+'</div>':''}`;
+  document.getElementById('vm').innerHTML=`${v.views} wyświetleń · ${v.date||''}${v.category?' · <span style="background:#272727;padding:2px 8px;border-radius:10px;font-size:11px">'+esc(v.category)+'</span>':''}${v.description?'<div style="margin-top:8px;color:#ccc;font-size:13px;line-height:1.5">'+esc(v.description)+'</div>':''}`;
   // handle comments enabled
   const commSec=document.getElementById('comments-section');
   if(commSec)commSec.style.display=v.comments_enabled===false?'none':'block';
