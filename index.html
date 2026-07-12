@@ -202,6 +202,10 @@ hr{border:none;border-top:1px solid #272727;margin:20px 0}
 .notif-empty{padding:40px 20px;text-align:center;color:#555;font-size:13px}
 .cmt-icon-btn{background:none;border:none;color:#aaa;cursor:pointer;width:30px;height:30px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:14px;transition:background .15s,color .15s}
 .cmt-icon-btn:hover{background:#3a3a3a;color:#fff}
+@keyframes discoHue{from{filter:hue-rotate(0deg) saturate(1.4)}to{filter:hue-rotate(360deg) saturate(1.4)}}
+body.disco-mode{animation:discoHue 3s linear infinite}
+#console-output::-webkit-scrollbar{width:8px}
+#console-output::-webkit-scrollbar-thumb{background:#333;border-radius:4px}
 
 /* MESSAGES */
 .messages-page{display:none;position:fixed;inset:0;background:#0f0f0f;z-index:400;flex-direction:column}
@@ -573,6 +577,19 @@ hr{border:none;border-top:1px solid #272727;margin:20px 0}
 </div>
 
 <div class="toast" id="toast"></div>
+
+<!-- KONSOLA ADMINA -->
+<div id="admin-console" style="display:none;position:fixed;bottom:0;left:0;right:0;height:280px;background:rgba(8,8,8,.97);border-top:2px solid #3ea6ff;z-index:9999;font-family:'Courier New',monospace;flex-direction:column;box-shadow:0 -8px 30px rgba(0,0,0,.6)">
+  <div style="display:flex;align-items:center;justify-content:space-between;padding:6px 12px;border-bottom:1px solid #222;background:#111">
+    <span style="color:#3ea6ff;font-size:12px;font-weight:700">🛡 WAVETUBE ADMIN CONSOLE</span>
+    <span style="color:#555;font-size:11px">[ ~ ] aby zamknąć</span>
+  </div>
+  <div id="console-output" style="flex:1;overflow-y:auto;padding:10px 14px;font-size:13px;color:#0f0;line-height:1.6"></div>
+  <div style="display:flex;align-items:center;border-top:1px solid #222;padding:10px 14px;gap:8px">
+    <span style="color:#3ea6ff;font-weight:700">wavetube&gt;</span>
+    <input id="console-input" style="flex:1;background:none;border:none;color:#0f0;font-family:'Courier New',monospace;font-size:13px;outline:none" autocomplete="off" spellcheck="false">
+  </div>
+</div>
 
 <!-- EDYCJA FILMU -->
 <div class="fmbg" id="edit-modal">
@@ -1335,6 +1352,121 @@ function setAdminTab(tab){
   adminTab=tab;
   renderAdminPanel();
 }
+
+// ── KONSOLA ADMINA ───────────────────────────────────────────────────────
+let adminConsoleOpen=false;
+
+function toggleAdminConsole(){
+  if(!isAdmin()){toast('Brak uprawnień');return;}
+  adminConsoleOpen=!adminConsoleOpen;
+  const el=document.getElementById('admin-console');
+  el.style.display=adminConsoleOpen?'flex':'none';
+  if(adminConsoleOpen){
+    const out=document.getElementById('console-output');
+    if(!out.dataset.greeted){
+      consoleLog('WaveTube Admin Console v1.0');
+      consoleLog('Wpisz "help" żeby zobaczyć dostępne komendy.');
+      out.dataset.greeted='1';
+    }
+    document.getElementById('console-input').focus();
+  }
+}
+
+function consoleLog(msg,color){
+  const out=document.getElementById('console-output');
+  const line=document.createElement('div');
+  line.textContent=msg;
+  if(color)line.style.color=color;
+  out.appendChild(line);
+  out.scrollTop=out.scrollHeight;
+}
+
+async function runConsoleCommand(raw){
+  const cmd=raw.trim();
+  if(!cmd)return;
+  consoleLog('wavetube> '+cmd,'#3ea6ff');
+  const parts=cmd.split(' ');
+  const base=parts[0].toLowerCase();
+
+  if(base==='disco'){
+    document.body.classList.toggle('disco-mode');
+    const on=document.body.classList.contains('disco-mode');
+    consoleLog(on?'🕺 DISCO MODE: ON — impreza się zaczyna':'Disco mode: OFF');
+  }
+  else if(base==='help'){
+    consoleLog('Dostępne komendy:');
+    consoleLog('  disco              - włącz/wyłącz tryb disco 🕺');
+    consoleLog('  ban <email> <godz>  - zbanuj użytkownika (0 = na zawsze)');
+    consoleLog('  unban <email>       - odbanuj użytkownika');
+    consoleLog('  mute <email> <godz>  - wycisz użytkownika (0 = na zawsze)');
+    consoleLog('  unmute <email>      - cofnij wyciszenie');
+    consoleLog('  stats              - statystyki appki');
+    consoleLog('  announce <tekst>    - wyślij ogłoszenie do wszystkich');
+    consoleLog('  clear              - wyczyść konsolę');
+  }
+  else if(base==='clear'){
+    document.getElementById('console-output').innerHTML='';
+  }
+  else if(base==='stats'){
+    consoleLog('Ładowanie statystyk...');
+    const{count:userCount}=await sb.from('profiles').select('*',{count:'exact',head:true});
+    const{count:reportCount}=await sb.from('reports').select('*',{count:'exact',head:true});
+    consoleLog(`👥 Użytkownicy: ${userCount||0}`);
+    consoleLog(`🎬 Filmy: ${videos.length}`);
+    consoleLog(`🚩 Zgłoszenia: ${reportCount||0}`);
+  }
+  else if(base==='ban'||base==='unban'||base==='mute'||base==='unmute'){
+    const email=parts[1];
+    if(!email){consoleLog('Podaj e-mail, np: ban jan@gmail.com 24','#ff6b6b');return;}
+    const{data:prof}=await sb.from('profiles').select('id').eq('email',email).single();
+    if(!prof){consoleLog('Nie znaleziono użytkownika o tym e-mailu','#ff6b6b');return;}
+    if(base==='ban'){
+      const hours=parseInt(parts[2])||0;
+      await adminBanUser(prof.id,hours||null);
+      consoleLog(`🚫 Zbanowano ${email}`,'#4ade80');
+    } else if(base==='unban'){
+      await adminUnbanUser(prof.id);
+      consoleLog(`✅ Odbanowano ${email}`,'#4ade80');
+    } else if(base==='mute'){
+      const hours=parseInt(parts[2])||0;
+      await muteUser(prof.id,hours||null);
+      consoleLog(`🔇 Wyciszono ${email}`,'#4ade80');
+    } else if(base==='unmute'){
+      await unmuteUser(prof.id);
+      consoleLog(`🔊 Cofnięto wyciszenie ${email}`,'#4ade80');
+    }
+  }
+  else if(base==='announce'){
+    const text=parts.slice(1).join(' ');
+    if(!text){consoleLog('Podaj treść ogłoszenia','#ff6b6b');return;}
+    await sb.from('announcements').insert([{message:text,created_by:currentUser.id}]);
+    consoleLog('📢 Ogłoszenie wysłane','#4ade80');
+  }
+  else{
+    consoleLog(`Nieznana komenda: "${base}". Wpisz "help".`,'#ff6b6b');
+  }
+}
+
+document.addEventListener('keydown',e=>{
+  if((e.key==='`'||e.key==='~')&&isAdmin()){
+    const activeTag=document.activeElement.tagName;
+    const activeId=document.activeElement.id;
+    if((activeTag==='INPUT'||activeTag==='TEXTAREA')&&activeId!=='console-input')return;
+    e.preventDefault();
+    toggleAdminConsole();
+  }
+});
+
+document.addEventListener('DOMContentLoaded',()=>{
+  const inp=document.getElementById('console-input');
+  if(inp)inp.addEventListener('keydown',e=>{
+    if(e.key==='Enter'){
+      const val=inp.value;
+      inp.value='';
+      runConsoleCommand(val);
+    }
+  });
+});
 
 async function logAdminAction(action,details){
   if(!isAdmin())return;
