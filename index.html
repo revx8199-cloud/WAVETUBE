@@ -202,7 +202,7 @@ hr{border:none;border-top:1px solid #272727;margin:20px 0}
 .notif-empty{padding:40px 20px;text-align:center;color:#555;font-size:13px}
 .cmt-icon-btn{background:none;border:none;color:#aaa;cursor:pointer;width:30px;height:30px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:14px;transition:background .15s,color .15s}
 .cmt-icon-btn:hover{background:#3a3a3a;color:#fff}
-#disco-overlay{display:none;position:fixed;inset:0;z-index:8000;pointer-events:none;mix-blend-mode:hue;background:linear-gradient(45deg,#ff0000,#ff8800,#ffee00,#00ff44,#00ccff,#4400ff,#ff00cc,#ff0000);background-size:400% 400%;animation:discoGradient 3s linear infinite}
+#disco-overlay{display:none;position:fixed;inset:0;z-index:8000;pointer-events:none;mix-blend-mode:screen;opacity:.5;background:linear-gradient(45deg,#ff0000,#ff8800,#ffee00,#00ff44,#00ccff,#4400ff,#ff00cc,#ff0000);background-size:400% 400%;animation:discoGradient 3s linear infinite}
 #disco-overlay.active{display:block}
 @keyframes discoGradient{0%{background-position:0% 50%}100%{background-position:100% 50%}}
 @keyframes snowFall{from{transform:translateY(-20px) rotate(0deg)}to{transform:translateY(105vh) rotate(360deg)}}
@@ -278,7 +278,10 @@ body.shake-effect{animation:shakeEffect .6s ease-in-out}
         <span class="notif-badge" id="notif-badge" style="display:none">0</span>
       </button>
       <div class="notif-dropdown" id="notif-dropdown">
-        <div style="padding:16px;font-size:16px;font-weight:700;border-bottom:1px solid #303030">Powiadomienia</div>
+        <div style="padding:16px;font-size:16px;font-weight:700;border-bottom:1px solid #303030;display:flex;align-items:center;justify-content:space-between">
+          <span>Powiadomienia</span>
+          <button onclick="clearAllNotifications()" style="background:none;border:none;color:#3ea6ff;font-size:12px;font-weight:600;cursor:pointer;padding:4px 8px;border-radius:6px" onmouseover="this.style.background='#272727'" onmouseout="this.style.background='none'">Wyczyść</button>
+        </div>
         <div id="notif-list"><div class="notif-empty">Brak powiadomień</div></div>
       </div>
     </div>
@@ -1377,15 +1380,18 @@ async function checkDiscoState(){
 }
 
 async function setActiveEffect(effect){
-  const{data}=await sb.from('site_state').select('active_effect').eq('id',1).single();
+  const{data,error:selErr}=await sb.from('site_state').select('active_effect').eq('id',1).single();
+  if(selErr){consoleLog('Błąd odczytu stanu: '+selErr.message,'#ff6b6b');return null;}
   const newEffect=data?.active_effect===effect?null:effect;
-  await sb.from('site_state').upsert([{id:1,active_effect:newEffect,updated_at:new Date().toISOString()}]);
+  const{error:upErr}=await sb.from('site_state').upsert([{id:1,active_effect:newEffect,updated_at:new Date().toISOString()}]);
+  if(upErr){consoleLog('Błąd zapisu stanu: '+upErr.message,'#ff6b6b');return null;}
   checkDiscoState();
   return newEffect;
 }
 
 async function fireGlobalBurst(effect){
-  await sb.from('site_state').upsert([{id:1,last_burst:effect,last_burst_at:new Date().toISOString()}]);
+  const{error}=await sb.from('site_state').upsert([{id:1,last_burst:effect,last_burst_at:new Date().toISOString()}]);
+  if(error)consoleLog('Błąd: '+error.message,'#ff6b6b');
 }
 
 // ── ŚNIEG ────────────────────────────────────────────────────────────────
@@ -1410,7 +1416,7 @@ let matrixCanvasEl=null,matrixAnimFrame=null;
 function toggleMatrixEffect(on){
   if(on&&!matrixCanvasEl){
     matrixCanvasEl=document.createElement('canvas');
-    matrixCanvasEl.style.cssText='position:fixed;inset:0;z-index:8400;pointer-events:none;opacity:.35';
+    matrixCanvasEl.style.cssText='position:fixed;inset:0;z-index:8400;pointer-events:none;opacity:.55';
     document.body.appendChild(matrixCanvasEl);
     const ctx=matrixCanvasEl.getContext('2d');
     const resize=()=>{matrixCanvasEl.width=window.innerWidth;matrixCanvasEl.height=window.innerHeight;};
@@ -3468,6 +3474,17 @@ function updateNotifBadge(){
   const unread=notificationsList.filter(n=>!n.read).length;
   const badge=document.getElementById('notif-badge');
   if(badge){badge.style.display=unread>0?'flex':'none';badge.textContent=unread>9?'9+':unread;}
+}
+
+async function clearAllNotifications(){
+  if(!currentUser)return;
+  if(!notificationsList.length){toast('Brak powiadomień do wyczyszczenia');return;}
+  if(!await showConfirm('Wyczyścić powiadomienia?','Wszystkie powiadomienia zostaną usunięte.','Wyczyść'))return;
+  await sb.from('notifications').delete().eq('user_id',currentUser.id);
+  notificationsList=[];
+  updateNotifBadge();
+  renderNotifications();
+  toast('Powiadomienia wyczyszczone 🔔');
 }
 
 async function toggleNotifications(){
