@@ -202,8 +202,9 @@ hr{border:none;border-top:1px solid #272727;margin:20px 0}
 .notif-empty{padding:40px 20px;text-align:center;color:#555;font-size:13px}
 .cmt-icon-btn{background:none;border:none;color:#aaa;cursor:pointer;width:30px;height:30px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:14px;transition:background .15s,color .15s}
 .cmt-icon-btn:hover{background:#3a3a3a;color:#fff}
-@keyframes discoHue{from{filter:hue-rotate(0deg) saturate(1.4)}to{filter:hue-rotate(360deg) saturate(1.4)}}
-body.disco-mode{animation:discoHue 3s linear infinite}
+#disco-overlay{display:none;position:fixed;inset:0;z-index:8000;pointer-events:none;mix-blend-mode:hue;background:linear-gradient(45deg,#ff0000,#ff8800,#ffee00,#00ff44,#00ccff,#4400ff,#ff00cc,#ff0000);background-size:400% 400%;animation:discoGradient 3s linear infinite}
+#disco-overlay.active{display:block}
+@keyframes discoGradient{0%{background-position:0% 50%}100%{background-position:100% 50%}}
 #console-output::-webkit-scrollbar{width:8px}
 #console-output::-webkit-scrollbar-thumb{background:#333;border-radius:4px}
 
@@ -577,6 +578,7 @@ body.disco-mode{animation:discoHue 3s linear infinite}
 </div>
 
 <div class="toast" id="toast"></div>
+<div id="disco-overlay"></div>
 
 <!-- KONSOLA ADMINA -->
 <div id="admin-console" style="display:none;position:fixed;bottom:0;left:0;right:0;height:280px;background:rgba(8,8,8,.97);border-top:2px solid #3ea6ff;z-index:9999;font-family:'Courier New',monospace;flex-direction:column;box-shadow:0 -8px 30px rgba(0,0,0,.6)">
@@ -1354,6 +1356,12 @@ function setAdminTab(tab){
 }
 
 // ── KONSOLA ADMINA ───────────────────────────────────────────────────────
+async function checkDiscoState(){
+  const{data}=await sb.from('site_state').select('disco_active').eq('id',1).single();
+  const overlay=document.getElementById('disco-overlay');
+  if(overlay)overlay.classList.toggle('active',!!data?.disco_active);
+}
+
 let adminConsoleOpen=false;
 
 function toggleAdminConsole(){
@@ -1389,9 +1397,11 @@ async function runConsoleCommand(raw){
   const base=parts[0].toLowerCase();
 
   if(base==='disco'){
-    document.body.classList.toggle('disco-mode');
-    const on=document.body.classList.contains('disco-mode');
-    consoleLog(on?'🕺 DISCO MODE: ON — impreza się zaczyna':'Disco mode: OFF');
+    const{data:state}=await sb.from('site_state').select('disco_active').eq('id',1).single();
+    const newState=!(state?.disco_active);
+    await sb.from('site_state').upsert([{id:1,disco_active:newState,updated_at:new Date().toISOString()}]);
+    document.getElementById('disco-overlay').classList.toggle('active',newState);
+    consoleLog(newState?'🕺 DISCO MODE: ON dla WSZYSTKICH — impreza się zaczyna':'Disco mode: OFF dla wszystkich');
   }
   else if(base==='help'){
     consoleLog('Dostępne komendy:');
@@ -4046,6 +4056,8 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeP();closeForm(
   updateAuthUI();
   applyTranslations();
   checkNewAnnouncements();
+  checkDiscoState();
+  setInterval(checkDiscoState,4000);
   loadVipBadgeColor();
   loadAdminBadgeColor();
   if(currentUser){
