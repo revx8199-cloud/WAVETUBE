@@ -1363,16 +1363,82 @@ function setAdminTab(tab){
 }
 
 // ── KONSOLA ADMINA / EFEKTY GLOBALNE ────────────────────────────────────
-let lastSeenBurstAt='';
+let lastSeenBurstAt=null; // null = jeszcze nie sprawdzone w tej sesji
+
+// ── MUZYKA DISCO (generowana na żywo, bez praw autorskich) ─────────────
+let discoAudioCtx=null,discoAudioInterval=null;
+
+function startDiscoMusic(){
+  if(discoAudioInterval)return;
+  try{
+    discoAudioCtx=discoAudioCtx||new(window.AudioContext||window.webkitAudioContext)();
+    if(discoAudioCtx.state==='suspended')discoAudioCtx.resume();
+    let step=0;
+    const bpm=124;
+    const stepTime=(60/bpm/2)*1000;
+    discoAudioInterval=setInterval(()=>{
+      const t=discoAudioCtx.currentTime;
+      if(step%4===0){ // stopa (kick) na każdą ćwiartkę
+        const osc=discoAudioCtx.createOscillator();
+        const gain=discoAudioCtx.createGain();
+        osc.frequency.setValueAtTime(150,t);
+        osc.frequency.exponentialRampToValueAtTime(45,t+.15);
+        gain.gain.setValueAtTime(.55,t);
+        gain.gain.exponentialRampToValueAtTime(.01,t+.15);
+        osc.connect(gain);gain.connect(discoAudioCtx.destination);
+        osc.start(t);osc.stop(t+.16);
+      }
+      if(step%2===1){ // hi-hat na ósemkach
+        const bufSize=discoAudioCtx.sampleRate*.03;
+        const buf=discoAudioCtx.createBuffer(1,bufSize,discoAudioCtx.sampleRate);
+        const d=buf.getChannelData(0);
+        for(let i=0;i<bufSize;i++)d[i]=(Math.random()*2-1)*.25;
+        const noise=discoAudioCtx.createBufferSource();
+        noise.buffer=buf;
+        const hp=discoAudioCtx.createBiquadFilter();
+        hp.type='highpass';hp.frequency.value=7000;
+        const hg=discoAudioCtx.createGain();
+        hg.gain.setValueAtTime(.25,t);
+        hg.gain.exponentialRampToValueAtTime(.01,t+.03);
+        noise.connect(hp);hp.connect(hg);hg.connect(discoAudioCtx.destination);
+        noise.start(t);
+      }
+      if(step===2||step===6){ // basowa nutka w kontrze
+        const osc=discoAudioCtx.createOscillator();
+        const gain=discoAudioCtx.createGain();
+        osc.type='sawtooth';
+        osc.frequency.setValueAtTime([98,110,123][Math.floor(Math.random()*3)],t);
+        gain.gain.setValueAtTime(.12,t);
+        gain.gain.exponentialRampToValueAtTime(.01,t+.2);
+        osc.connect(gain);gain.connect(discoAudioCtx.destination);
+        osc.start(t);osc.stop(t+.2);
+      }
+      step=(step+1)%8;
+    },stepTime);
+  }catch(e){/* autoplay zablokowany przez przeglądarkę - trudno, zadziała po pierwszej interakcji usera */}
+}
+
+function stopDiscoMusic(){
+  if(discoAudioInterval){clearInterval(discoAudioInterval);discoAudioInterval=null;}
+}
 
 async function checkDiscoState(){
   const{data,error}=await sb.from('site_state').select('*').eq('id',1).single();
   if(error||!data)return; // nie zmieniamy stanu przy przejściowym błędzie - to psuło disco po ~4s
   const overlay=document.getElementById('disco-overlay');
-  if(overlay)overlay.classList.toggle('active',data.active_effect==='disco');
+  if(overlay){
+    const wasActive=overlay.classList.contains('active');
+    const nowActive=data.active_effect==='disco';
+    overlay.classList.toggle('active',nowActive);
+    if(nowActive&&!wasActive)startDiscoMusic();
+    if(!nowActive&&wasActive)stopDiscoMusic();
+  }
   toggleSnowEffect(data.active_effect==='snow');
   toggleMatrixEffect(data.active_effect==='matrix');
-  if(data.last_burst_at&&data.last_burst_at!==lastSeenBurstAt){
+  if(lastSeenBurstAt===null){
+    // pierwsze sprawdzenie w tej sesji - zapamiętaj ostatni wybuch, ale go NIE odpalaj (to stary event sprzed wejścia do appki)
+    lastSeenBurstAt=data.last_burst_at||'';
+  } else if(data.last_burst_at&&data.last_burst_at!==lastSeenBurstAt){
     lastSeenBurstAt=data.last_burst_at;
     if(data.last_burst==='confetti')fireConfetti();
     if(data.last_burst==='shake')fireShake();
@@ -2214,6 +2280,7 @@ function showShortsPage(){
   document.getElementById('slabel').textContent='Shorts';
   const shorts=videos.filter(v=>v.is_short===true);
   const g=document.getElementById('grid');
+  g.style.display='block';
   if(!shorts.length){
     g.innerHTML='<div class="empty"><div style="font-size:48px;margin-bottom:12px">📱</div><p style="font-size:15px">Brak Shorts</p></div>';
     return;
@@ -3536,7 +3603,13 @@ function getConvId(uid1,uid2){return [uid1,uid2].sort().join('_');}
 // ── EMOTKI ────────────────────────────────────────────────────────────────
 const EMOJI_LIST=['😀','😂','🥹','😊','😍','😘','😉','😎','🤔','😴','😭','😡','🥳','😱','🤯','🤗','😏','🙄','😅','😇',
 '👍','👎','👏','🙌','🙏','💪','👌','✌️','🤝','👋','🔥','💯','✨','⭐','🎉','❤️','💔','💕','😻','💀',
-'🎬','🎮','⚽','🎵','📸','🍕','☕','🍺','🚀','💡','⏰','📌','✅','❌','😆','🥰','😢','🤤','🫡','🙈'];
+'🎬','🎮','⚽','🎵','📸','🍕','☕','🍺','🚀','💡','⏰','📌','✅','❌','😆','🥰','😢','🤤','🫡','🙈',
+'😜','🤪','🤨','🧐','🥸','😬','🙃','😐','😶','🤐','😮','😯','😲','🥶','🥵','🤢','🤮','🤧','😷','🤒',
+'🤕','🤠','😈','👿','👹','👻','👽','🤖','🎃','😹','😽','🙉','🙊','💩','🤡','👑','💍','👀','🧠','🫀',
+'🦴','💋','👅','👄','🖕','👊','✊','🤙','🖖','🤟','🫶','👐','🤲','🤜','🤛','💅','🦵','🦶','👣','🎯',
+'🏆','🥇','🥈','🥉','🎖️','🎗️','🎫','🎟️','🎪','🎨','🎭','🎤','🎧','🎸','🥁','🎹','🎺','🎷','🪕','🎲',
+'🃏','🀄','🧩','🪄','🔮','💎','⚡','☀️','🌙','⭐','🌈','☁️','⛈️','❄️','🔥','💥','🌊','🌪️','🍀','🌹',
+'🌸','🌻','🍎','🍌','🍇','🍓','🍑','🍒','🥑','🌮','🍔','🍟','🌭','🍿','🍩','🍪','🎂','🍫','🍬','🧋'];
 
 let emojiOutsideListener=null;
 
