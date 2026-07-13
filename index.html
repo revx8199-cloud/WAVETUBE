@@ -209,6 +209,13 @@ hr{border:none;border-top:1px solid #272727;margin:20px 0}
 @keyframes confettiFall{from{transform:translateY(-20px) rotate(0deg);opacity:1}to{transform:translateY(105vh) rotate(720deg);opacity:.3}}
 @keyframes shakeEffect{0%,100%{transform:translate(0,0)}10%{transform:translate(-10px,-6px)}20%{transform:translate(10px,6px)}30%{transform:translate(-8px,6px)}40%{transform:translate(8px,-6px)}50%{transform:translate(-6px,-4px)}60%{transform:translate(6px,4px)}70%{transform:translate(-4px,4px)}80%{transform:translate(4px,-4px)}90%{transform:translate(-2px,2px)}}
 body.shake-effect{animation:shakeEffect .6s ease-in-out}
+@keyframes earthquakeShake{0%,100%{transform:translate(0,0) rotate(0deg)}25%{transform:translate(-4px,3px) rotate(-.3deg)}50%{transform:translate(4px,-3px) rotate(.3deg)}75%{transform:translate(-3px,-4px) rotate(-.2deg)}}
+body.earthquake-mode header,body.earthquake-mode .sidebar-left,body.earthquake-mode #main-content{animation:earthquakeShake .35s infinite}
+body.upsidedown-mode header,body.upsidedown-mode .sidebar-left,body.upsidedown-mode #main-content{transform:rotate(180deg);transition:transform .6s}
+@keyframes zoomPulse{0%,100%{transform:scale(1)}50%{transform:scale(1.04)}}
+body.zoom-mode header,body.zoom-mode .sidebar-left,body.zoom-mode #main-content{animation:zoomPulse 1.6s ease-in-out infinite}
+@keyframes fireworkBurst{0%{transform:translate(0,0) scale(1);opacity:1}100%{transform:translate(var(--fx),var(--fy)) scale(.3);opacity:0}}
+@keyframes heartFloat{from{transform:translateY(0) scale(1);opacity:1}to{transform:translateY(-105vh) scale(1.3);opacity:0}}
 #console-output::-webkit-scrollbar{width:8px}
 #console-output::-webkit-scrollbar-thumb{background:#333;border-radius:4px}
 
@@ -1435,6 +1442,9 @@ async function checkDiscoState(){
   }
   toggleSnowEffect(data.active_effect==='snow');
   toggleMatrixEffect(data.active_effect==='matrix');
+  toggleEarthquakeEffect(data.active_effect==='earthquake');
+  toggleUpsidedownEffect(data.active_effect==='upsidedown');
+  toggleZoomEffect(data.active_effect==='zoom');
   if(lastSeenBurstAt===null){
     // pierwsze sprawdzenie w tej sesji - zapamiętaj ostatni wybuch, ale go NIE odpalaj (to stary event sprzed wejścia do appki)
     lastSeenBurstAt=data.last_burst_at||'';
@@ -1442,6 +1452,8 @@ async function checkDiscoState(){
     lastSeenBurstAt=data.last_burst_at;
     if(data.last_burst==='confetti')fireConfetti();
     if(data.last_burst==='shake')fireShake();
+    if(data.last_burst==='fireworks')fireFireworks();
+    if(data.last_burst==='hearts')fireHearts();
   }
 }
 
@@ -1530,6 +1542,45 @@ function fireShake(){
   setTimeout(()=>document.body.classList.remove('shake-effect'),600);
 }
 
+// ── EFEKTY CIĄGŁE (bezpieczne - nie dotykają <body> transformem/filtrem) ──
+function toggleEarthquakeEffect(on){document.body.classList.toggle('earthquake-mode',on);}
+function toggleUpsidedownEffect(on){document.body.classList.toggle('upsidedown-mode',on);}
+function toggleZoomEffect(on){document.body.classList.toggle('zoom-mode',on);}
+
+// ── FAJERWERKI (jednorazowy wybuch) ────────────────────────────────────
+function fireFireworks(){
+  const colors=['#ff4757','#ffa502','#2ed573','#1e90ff','#eccc68','#a55eea','#ff6b81','#00ffff'];
+  const points=5;
+  for(let p=0;p<points;p++){
+    const cx=10+Math.random()*80;
+    const cy=15+Math.random()*50;
+    setTimeout(()=>{
+      for(let i=0;i<40;i++){
+        const angle=(Math.PI*2*i)/40;
+        const dist=60+Math.random()*80;
+        const dot=document.createElement('div');
+        const size=4+Math.random()*4;
+        dot.style.cssText=`position:fixed;top:${cy}vh;left:${cx}vw;width:${size}px;height:${size}px;border-radius:50%;background:${colors[Math.floor(Math.random()*colors.length)]};z-index:8600;pointer-events:none;--fx:${Math.cos(angle)*dist}px;--fy:${Math.sin(angle)*dist}px;animation:fireworkBurst ${.8+Math.random()*.4}s ease-out forwards`;
+        document.body.appendChild(dot);
+        setTimeout(()=>dot.remove(),1300);
+      }
+    },p*300);
+  }
+}
+
+// ── SERDUSZKA (jednorazowy wybuch) ─────────────────────────────────────
+function fireHearts(){
+  for(let i=0;i<40;i++){
+    setTimeout(()=>{
+      const heart=document.createElement('div');
+      heart.textContent=['❤️','💕','💖','💗','💓'][Math.floor(Math.random()*5)];
+      heart.style.cssText=`position:fixed;bottom:-30px;left:${Math.random()*100}vw;font-size:${16+Math.random()*20}px;z-index:8600;pointer-events:none;animation:heartFloat ${3+Math.random()*2}s ease-in forwards`;
+      document.body.appendChild(heart);
+      setTimeout(()=>heart.remove(),5500);
+    },i*80);
+  }
+}
+
 let adminConsoleOpen=false;
 
 function toggleAdminConsole(){
@@ -1576,6 +1627,18 @@ async function runConsoleCommand(raw){
     const on=await setActiveEffect('matrix');
     consoleLog(on?'💻 MATRIX: ON dla wszystkich':'Matrix: OFF dla wszystkich');
   }
+  else if(base==='earthquake'){
+    const on=await setActiveEffect('earthquake');
+    consoleLog(on?'🌍 EARTHQUAKE: ON dla wszystkich':'Earthquake: OFF dla wszystkich');
+  }
+  else if(base==='upsidedown'){
+    const on=await setActiveEffect('upsidedown');
+    consoleLog(on?'🙃 UPSIDEDOWN: ON dla wszystkich':'Upsidedown: OFF dla wszystkich');
+  }
+  else if(base==='zoom'){
+    const on=await setActiveEffect('zoom');
+    consoleLog(on?'🔍 ZOOM PULSE: ON dla wszystkich':'Zoom: OFF dla wszystkich');
+  }
   else if(base==='confetti'){
     await fireGlobalBurst('confetti');
     consoleLog('🎉 Konfetti wystrzelone u wszystkich!');
@@ -1584,13 +1647,26 @@ async function runConsoleCommand(raw){
     await fireGlobalBurst('shake');
     consoleLog('💥 Ekran zatrząsł się u wszystkich!');
   }
+  else if(base==='fireworks'){
+    await fireGlobalBurst('fireworks');
+    consoleLog('🎆 Fajerwerki wystrzelone u wszystkich!');
+  }
+  else if(base==='hearts'){
+    await fireGlobalBurst('hearts');
+    consoleLog('💕 Serduszka wysłane do wszystkich!');
+  }
   else if(base==='help'){
     consoleLog('Dostępne komendy:');
     consoleLog('  disco              - włącz/wyłącz tryb disco 🕺');
     consoleLog('  snow               - włącz/wyłącz padający śnieg ❄️');
     consoleLog('  matrix             - włącz/wyłącz deszcz znaków (Matrix) 💻');
+    consoleLog('  earthquake         - włącz/wyłącz trzęsienie ekranu 🌍');
+    consoleLog('  upsidedown         - włącz/wyłącz odwrócenie strony 🙃');
+    consoleLog('  zoom               - włącz/wyłącz pulsowanie zoomu 🔍');
     consoleLog('  confetti           - jednorazowy wybuch konfetti 🎉');
     consoleLog('  shake              - jednorazowe zatrzęsienie ekranem 💥');
+    consoleLog('  fireworks          - jednorazowe fajerwerki 🎆');
+    consoleLog('  hearts             - jednorazowe serduszka 💕');
     consoleLog('  ban <email> <godz>  - zbanuj użytkownika (0 = na zawsze)');
     consoleLog('  unban <email>       - odbanuj użytkownika');
     consoleLog('  mute <email> <godz>  - wycisz użytkownika (0 = na zawsze)');
