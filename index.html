@@ -851,7 +851,7 @@ const TRANSLATIONS={
     sort_top:'Najtrafniejsze',sort_newest:'Najnowsze',
     settings_title:'Ustawienia',settings_nick:'Twój nick',settings_lang:'Język',
     btn_save:'Zapisz',btn_close:'Zamknij',btn_publish:'Opublikuj',
-    tab_videos:'Filmy',tab_shorts:'Shorts',tab_posts:'Posty',
+    tab_videos:'Filmy',tab_shorts:'Shorts',tab_posts:'Posty',subscribers_label:'subskrybentów',videos_label:'filmów',your_channel_label:'To Twój kanał',
     login_google:'Zaloguj się',logged_in_as:'Zalogowano jako'
   },
   ru:{
@@ -867,7 +867,7 @@ const TRANSLATIONS={
     sort_top:'По значимости',sort_newest:'Сначала новые',
     settings_title:'Настройки',settings_nick:'Ваш никнейм',settings_lang:'Язык',
     btn_save:'Сохранить',btn_close:'Закрыть',btn_publish:'Опубликовать',
-    tab_videos:'Видео',tab_shorts:'Shorts',tab_posts:'Посты',
+    tab_videos:'Видео',tab_shorts:'Shorts',tab_posts:'Посты',subscribers_label:'подписчиков',videos_label:'видео',your_channel_label:'Это ваш канал',
     login_google:'Войти',logged_in_as:'Вы вошли как'
   }
 };
@@ -2431,10 +2431,10 @@ async function showChannel(userId,nameIn,avatar,email){
         <h2 style="margin-bottom:2px;display:flex;align-items:center;${chNameColor?`color:${chNameColor};`:''}${chNameFont?`font-family:${fontCssFor(chNameFont)};`:''}">${esc(name)}${verifiedBadge(email)}</h2>
         <div style="font-size:12px;color:#aaa;margin-bottom:6px">${makeNick(name,email)}</div>
         <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:4px">
-          <span style="font-size:13px;color:#aaa"><span id="sub-count-big">${subCount}</span> subskrybentów · ${userVideos.length} filmów</span>
+          <span style="font-size:13px;color:#aaa"><span id="sub-count-big">${subCount}</span> ${t('subscribers_label')} · ${userVideos.length} ${t('videos_label')}</span>
           ${!isOwner?`<button class="btn-sub-big${isSub?' subscribed':''}" onclick="toggleSub('${userId||email}','${jsesc(name)}')" id="sub-big-btn" style="margin-left:0">${isSub?'✓ '+t('btn_subscribed'):t('btn_subscribe')}</button>
           <button onclick="openMsg('${jsesc(name)}','${email}','${userId}')" style="background:#272727;border:none;color:#fff;padding:8px 16px;border-radius:20px;cursor:pointer;font-size:13px;display:flex;align-items:center;gap:6px">✉️ Wiadomość</button>`
-          :`<button class="btn-sub-big subscribed" style="margin-left:0;cursor:default">To Twój kanał</button>`}
+          :`<button class="btn-sub-big subscribed" style="margin-left:0;cursor:default">${t('your_channel_label')}</button>`}
         </div>
         <div id="ch-desc-wrap">
           ${isOwner
@@ -2445,10 +2445,10 @@ async function showChannel(userId,nameIn,avatar,email){
       </div>
     </div>
     <div class="channel-tabs">
-      <div class="ch-tab active" id="tab-home" onclick="switchChannelTab('home')">Strona główna</div>
-      <div class="ch-tab" id="tab-videos" onclick="switchChannelTab('videos')">Filmy</div>
-      <div class="ch-tab" id="tab-shorts" onclick="switchChannelTab('shorts')">Shorts</div>
-      <div class="ch-tab" id="tab-posts" onclick="switchChannelTab('posts')">Posty</div>
+      <div class="ch-tab active" id="tab-home" onclick="switchChannelTab('home')">${t('nav_home')}</div>
+      <div class="ch-tab" id="tab-videos" onclick="switchChannelTab('videos')">${t('tab_videos')}</div>
+      <div class="ch-tab" id="tab-shorts" onclick="switchChannelTab('shorts')">${t('tab_shorts')}</div>
+      <div class="ch-tab" id="tab-posts" onclick="switchChannelTab('posts')">${t('tab_posts')}</div>
     </div>
     <div id="channel-home-container"></div>
     <div class="channel-grid" id="channel-grid" style="display:none"></div>
@@ -3966,7 +3966,7 @@ function renderChannelHome(){
     html+='</div>';
   }
   if(userVideos.length){
-    html+=`<div style="font-size:15px;font-weight:600;margin-bottom:12px">Filmy</div>
+    html+=`<div style="font-size:15px;font-weight:600;margin-bottom:12px">${t('tab_videos')}</div>
     <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:16px;margin-bottom:24px">`;
     userVideos.slice(0,6).forEach(v=>{
       const th=thumbFor(v);
