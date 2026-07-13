@@ -2837,10 +2837,11 @@ async function showHistory(){
       ${v.dur?`<div class="dur">${v.dur}</div>`:''}
     </div>
     <div class="card-bottom">
-      <div class="card-avatar-placeholder" style="background:#cc0000;width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:#fff;flex-shrink:0">${(getUserName(v)||'?')[0]}</div>
+      ${v.user_avatar?`<img src="${v.user_avatar}" class="card-avatar" style="width:36px;height:36px" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">`:''}
+      <div class="card-avatar-placeholder" style="background:${getUserColor(v.user_email)};width:36px;height:36px;border-radius:50%;display:${v.user_avatar?'none':'flex'};align-items:center;justify-content:center;font-size:13px;font-weight:700;color:#fff;flex-shrink:0">${esc((getUserName(v)||'?')[0])}</div>
       <div class="card-info">
         <h3>${esc(v.title)}</h3>
-        <div class="channel-name">${getUserName(v)||'Anonim'}</div>
+        <div class="channel-name">${esc(getUserName(v)||'Anonim')}</div>
         <p style="font-size:11px;color:#666">Oglądano: ${new Date(v.watched_at).toLocaleString('pl-PL',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'})}</p>
       </div>
     </div>`;
@@ -3633,15 +3634,17 @@ function toggleEmojiPicker(targetId,btnEl){
   picker.innerHTML=EMOJI_LIST.map(e=>`<span onclick="insertEmoji('${targetId}','${e}')" style="cursor:pointer;font-size:20px;padding:5px;border-radius:6px;text-align:center" onmouseover="this.style.background='#303030'" onmouseout="this.style.background='none'">${e}</span>`).join('');
 
   const rect=btnEl.getBoundingClientRect();
-  const pickerHeight=240; // przybliżona wysokość (8 kolumn x ~8 wierszy)
+  const maxPickerHeight=Math.min(320,window.innerHeight-32); // nie więcej niż ekran minus margines
   const pickerWidth=280;
   const spaceAbove=rect.top;
   const spaceBelow=window.innerHeight-rect.bottom;
-  const openUpward=spaceAbove>pickerHeight||spaceAbove>spaceBelow;
-  const top=openUpward?Math.max(8,rect.top-pickerHeight-8):rect.bottom+8;
+  const openUpward=spaceAbove>maxPickerHeight||spaceAbove>spaceBelow;
+  const availableSpace=(openUpward?spaceAbove:spaceBelow)-16;
+  const pickerHeight=Math.max(160,Math.min(maxPickerHeight,availableSpace));
+  const top=openUpward?Math.max(8,rect.top-pickerHeight-8):Math.min(rect.bottom+8,window.innerHeight-pickerHeight-8);
   const left=Math.min(Math.max(8,rect.left-pickerWidth+28),window.innerWidth-pickerWidth-8);
 
-  picker.style.cssText=`position:fixed;top:${top}px;left:${left}px;background:#212121;border:1px solid #303030;border-radius:12px;padding:10px;display:grid;grid-template-columns:repeat(8,1fr);gap:2px;z-index:2000;max-width:${pickerWidth}px;box-shadow:0 4px 20px rgba(0,0,0,.6)`;
+  picker.style.cssText=`position:fixed;top:${top}px;left:${left}px;background:#212121;border:1px solid #303030;border-radius:12px;padding:10px;display:grid;grid-template-columns:repeat(8,1fr);gap:2px;z-index:2000;max-width:${pickerWidth}px;max-height:${pickerHeight}px;overflow-y:auto;box-shadow:0 4px 20px rgba(0,0,0,.6)`;
   document.body.appendChild(picker);
   setTimeout(()=>{
     emojiOutsideListener=function(e){
