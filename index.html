@@ -1875,6 +1875,16 @@ if(adminTab==='users'){
           <textarea id="admin-announce-text" placeholder="Np. Dodaliśmy nowe funkcje! Sprawdź co nowego 🎉" style="width:100%;background:#0f0f0f;border:1px solid #303030;border-radius:8px;color:#fff;padding:10px 14px;font-size:13px;outline:none;resize:none;height:90px"></textarea>
           <button onclick="toggleEmojiPicker('admin-announce-text',this)" style="position:absolute;right:8px;bottom:8px;background:none;border:none;color:#aaa;cursor:pointer;font-size:18px" title="Emotki">😊</button>
         </div>
+        <div class="field" style="margin-bottom:14px">
+          <label style="display:flex;align-items:center;gap:8px;cursor:pointer;text-transform:none;font-size:13px;color:#ccc">
+            <input type="checkbox" id="ann-poll-toggle" onchange="toggleAnnPollFields()" style="width:auto"> 📊 Dodaj ankietę
+          </label>
+          <div id="ann-poll-fields" style="display:none;margin-top:12px">
+            <input id="ann-poll-question" placeholder="Zadaj pytanie..." style="width:100%;background:#0f0f0f;border:1px solid #303030;border-radius:8px;color:#fff;padding:10px 14px;font-size:13px;outline:none;margin-bottom:10px">
+            <div id="ann-poll-options-list"></div>
+            <button type="button" onclick="addAnnPollOption()" id="ann-poll-add-btn" style="background:none;border:1px dashed #444;color:#aaa;padding:7px 14px;border-radius:8px;cursor:pointer;font-size:12px;margin-top:4px">+ Dodaj opcję</button>
+          </div>
+        </div>
         <button onclick="sendAnnouncement()" id="admin-announce-btn" style="background:#3ea6ff;border:none;color:#0f0f0f;padding:10px 22px;border-radius:20px;cursor:pointer;font-size:13px;font-weight:700">📢 Wyślij do wszystkich</button>
         <div id="admin-announce-status" style="margin-top:12px;font-size:12px;color:#888"></div>
       </div>`;
@@ -1884,7 +1894,7 @@ if(adminTab==='users'){
     body.innerHTML='<p style="color:#888;padding:20px;text-align:center">Ładowanie logów...</p>';
     const{data:logs}=await sb.from('admin_logs').select('*').order('created_at',{ascending:false}).limit(200);
     if(!logs||!logs.length){body.innerHTML='<p style="color:#888;padding:20px;text-align:center">Brak zapisanych akcji</p>';return;}
-    const ACTION_ICONS={ban:'🚫',unban:'✅',mute:'🔇',unmute:'🔊',delete_video:'🗑',edit_video:'✏️',delete_report:'🚩',rename_user:'✏️'};
+    const ACTION_ICONS={ban:'🚫',unban:'✅',mute:'🔇',unmute:'🔊',delete_video:'🗑',edit_video:'✏️',delete_report:'🚩',rename_user:'✏️',delete_announcement:'📢'};
     body.innerHTML=logs.map(l=>`
       <div style="padding:10px 14px;border-bottom:1px solid #272727;display:flex;gap:10px;align-items:flex-start">
         <div style="font-size:16px;flex-shrink:0">${ACTION_ICONS[l.action]||'📝'}</div>
@@ -1921,10 +1931,46 @@ function renderAdminVideosList(){
   if(inp){inp.focus();inp.setSelectionRange(inp.value.length,inp.value.length);}
 }
 
+function toggleAnnPollFields(){
+  const on=document.getElementById('ann-poll-toggle').checked;
+  document.getElementById('ann-poll-fields').style.display=on?'block':'none';
+  const list=document.getElementById('ann-poll-options-list');
+  if(on&&!list.children.length){addAnnPollOption();addAnnPollOption();}
+}
+
+function addAnnPollOption(){
+  const list=document.getElementById('ann-poll-options-list');
+  if(list.children.length>=4){toast('Maksymalnie 4 opcje');return;}
+  const idx=list.children.length;
+  const row=document.createElement('div');
+  row.style.cssText='display:flex;gap:6px;margin-bottom:8px;align-items:center';
+  row.innerHTML=`<input class="ann-poll-opt-inp" placeholder="Opcja ${idx+1}" style="flex:1;background:#0f0f0f;border:1px solid #303030;border-radius:8px;color:#fff;padding:8px 12px;font-size:13px;outline:none">
+    <button type="button" onclick="this.parentElement.remove()" style="background:none;border:none;color:#666;cursor:pointer;font-size:16px">✕</button>`;
+  list.appendChild(row);
+  if(list.children.length>=4)document.getElementById('ann-poll-add-btn').style.display='none';
+}
+
+function resetAnnPollForm(){
+  document.getElementById('ann-poll-toggle').checked=false;
+  document.getElementById('ann-poll-fields').style.display='none';
+  document.getElementById('ann-poll-question').value='';
+  document.getElementById('ann-poll-options-list').innerHTML='';
+  document.getElementById('ann-poll-add-btn').style.display='block';
+}
+
 async function sendAnnouncement(){
   if(!isAdmin())return;
   const text=document.getElementById('admin-announce-text').value.trim();
-  if(!text){toast('Napisz treść ogłoszenia');return;}
+  const pollOn=document.getElementById('ann-poll-toggle').checked;
+  let poll=null;
+  if(pollOn){
+    const question=document.getElementById('ann-poll-question').value.trim();
+    const opts=[...document.querySelectorAll('.ann-poll-opt-inp')].map(i=>i.value.trim()).filter(Boolean);
+    if(!question){toast('Wpisz pytanie ankiety!');return;}
+    if(opts.length<2){toast('Dodaj przynajmniej 2 opcje!');return;}
+    poll={question,options:opts.map(t=>({text:t,votes:0})),voters:{}};
+  }
+  if(!text&&!poll){toast('Napisz treść ogłoszenia lub dodaj ankietę');return;}
   if(!await showConfirm('Wysłać ogłoszenie?','Wiadomość trafi do WSZYSTKICH zarejestrowanych użytkowników.','Wyślij'))return;
   const btn=document.getElementById('admin-announce-btn');
   const status=document.getElementById('admin-announce-status');
@@ -1932,7 +1978,7 @@ async function sendAnnouncement(){
   status.textContent='Zbieranie listy użytkowników...';
 
   status.textContent='Publikowanie ogłoszenia...';
-  await sb.from('announcements').insert([{message:text,created_by:currentUser.id}]);
+  await sb.from('announcements').insert([{message:text,created_by:currentUser.id,poll}]);
 
   const userIds=new Set();
   const{data:profs}=await sb.from('profiles').select('id');
@@ -1948,7 +1994,7 @@ async function sendAnnouncement(){
 
   const notifs=[...userIds].map(uid=>({
     user_id:uid,
-    message:`📢 <b>Ogłoszenie:</b> ${text}`,
+    message:`📢 <b>Ogłoszenie:</b> ${text||poll.question}`,
     avatar:''
   }));
   status.textContent=`Wysyłanie do ${notifs.length} użytkowników...`;
@@ -1958,6 +2004,7 @@ async function sendAnnouncement(){
   } else {
     status.textContent=`✅ Wysłano do ${notifs.length} użytkowników!`;
     document.getElementById('admin-announce-text').value='';
+    resetAnnPollForm();
     toast('Ogłoszenie wysłane! 📢');
   }
   btn.disabled=false;btn.style.opacity='1';btn.textContent='📢 Wyślij do wszystkich';
@@ -2798,13 +2845,15 @@ function renderAnnouncementCard(a){
   return`<div style="background:#181818;border:1px solid #272727;border-radius:12px;padding:18px 20px" id="ann-${a.id}">
     <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">
       <svg width="30" height="22" viewBox="0 0 45 32" fill="none"><rect width="45" height="32" rx="9" fill="#3ea6ff"/><polygon points="18,10 31,16 18,22" fill="#fff"/></svg>
-      <div>
+      <div style="flex:1">
         <div style="font-size:13px;font-weight:700">WaveTube · Twórca</div>
         <div style="font-size:11px;color:#888">${new Date(a.created_at).toLocaleString('pl-PL')}</div>
       </div>
+      ${isAdmin()?`<button onclick="deleteAnnouncement(${a.id})" title="Usuń ogłoszenie" style="background:none;border:none;color:#666;cursor:pointer;width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px" onmouseover="this.style.background='#3a1414';this.style.color='#ff6b6b'" onmouseout="this.style.background='none';this.style.color='#666'">🗑</button>`:''}
     </div>
-    <div style="font-size:14px;color:#eee;line-height:1.6;white-space:pre-wrap;margin-bottom:12px">${a.message}</div>
-    <div style="display:flex;align-items:center;gap:14px">
+    ${a.message?`<div style="font-size:14px;color:#eee;line-height:1.6;white-space:pre-wrap;margin-bottom:12px">${esc(a.message)}</div>`:''}
+    ${a.poll?renderAnnouncementPoll(a):''}
+    <div style="display:flex;align-items:center;gap:14px;margin-top:12px">
       <button onclick="voteAnnouncement(${a.id},'like')" style="display:flex;align-items:center;gap:6px;background:none;border:none;color:${myVote==='like'?'#3ea6ff':'#aaa'};cursor:pointer;font-size:13px">
         <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M1 21h4V9H1v12zm22-11c0-1.1-.9-2-2-2h-6.31l.95-4.57.03-.32c0-.41-.17-.79-.44-1.06L14.17 1 7.59 7.59C7.22 7.95 7 8.45 7 9v10c0 1.1.9 2 2 2h9c.83 0 1.54-.5 1.84-1.22l3.02-7.05c.09-.23.14-.47.14-.73v-2z"/></svg>
         ${likes}
@@ -2834,6 +2883,55 @@ function renderAnnouncementCard(a){
       </div>`:'<p style="color:#666;font-size:12px">Zaloguj się żeby komentować</p>'}
     </div>
   </div>`;
+}
+
+function renderAnnouncementPoll(a){
+  const poll=a.poll;
+  if(!poll)return'';
+  const totalVotes=poll.options.reduce((s,o)=>s+(o.votes||0),0);
+  const myVote=currentUser?poll.voters?.[currentUser.id]:undefined;
+  const hasVoted=myVote!==undefined;
+  return`<div style="margin-bottom:12px;background:#0f0f0f;border:1px solid #272727;border-radius:10px;padding:14px">
+    <div style="font-size:14px;font-weight:600;margin-bottom:12px">📊 ${esc(poll.question)}</div>
+    ${poll.options.map((o,oi)=>{
+      const pct=totalVotes?Math.round((o.votes||0)/totalVotes*100):0;
+      const isMine=hasVoted&&myVote===oi;
+      return`<div onclick="voteAnnouncementPoll(${a.id},${oi})" style="position:relative;margin-bottom:8px;cursor:pointer;border-radius:8px;overflow:hidden;background:#181818;border:1px solid ${isMine?'#3ea6ff':'#303030'}">
+        ${hasVoted?`<div style="position:absolute;inset:0;width:${pct}%;background:${isMine?'rgba(62,166,255,.25)':'rgba(255,255,255,.08)'};transition:width .3s"></div>`:''}
+        <div style="position:relative;display:flex;justify-content:space-between;align-items:center;padding:9px 12px;font-size:13px">
+          <span style="display:flex;align-items:center;gap:6px">${isMine?'✓ ':''}${esc(o.text)}</span>
+          ${hasVoted?`<span style="color:#aaa;font-size:12px">${pct}% (${o.votes||0})</span>`:''}
+        </div>
+      </div>`;
+    }).join('')}
+    <div style="font-size:11px;color:#666;margin-top:4px">${totalVotes} ${totalVotes===1?'głos':'głosów'}${!currentUser?' · Zaloguj się żeby głosować':''}</div>
+  </div>`;
+}
+
+async function voteAnnouncementPoll(id,optionIndex){
+  if(!currentUser){toast('Zaloguj się żeby zagłosować!');return;}
+  const a=announcementsCache.find(x=>x.id===id);
+  if(!a||!a.poll)return;
+  const poll=a.poll;
+  if(!poll.voters)poll.voters={};
+  const prevVote=poll.voters[currentUser.id];
+  if(prevVote===optionIndex)return;
+  if(prevVote!==undefined)poll.options[prevVote].votes=Math.max(0,(poll.options[prevVote].votes||0)-1);
+  poll.options[optionIndex].votes=(poll.options[optionIndex].votes||0)+1;
+  poll.voters[currentUser.id]=optionIndex;
+  await sb.from('announcements').update({poll}).eq('id',id);
+  renderAnnouncementsList();
+}
+
+async function deleteAnnouncement(id){
+  if(!isAdmin())return;
+  if(!await showConfirm('Usunąć to ogłoszenie?','Zniknie dla wszystkich użytkowników.'))return;
+  const{error}=await sb.from('announcements').delete().eq('id',id);
+  if(error){toast('Błąd: '+error.message);return;}
+  announcementsCache=announcementsCache.filter(a=>a.id!==id);
+  renderAnnouncementsList();
+  logAdminAction('delete_announcement',`Usunięto ogłoszenie #${id}`);
+  toast('Ogłoszenie usunięte 🗑');
 }
 
 function toggleAnnouncementComments(id){
