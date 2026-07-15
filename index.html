@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="pl">
+<script>if(localStorage.getItem('wt_theme')==='light')document.documentElement.classList.add('light-mode');</script>
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -10,6 +11,9 @@
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 45 32'%3E%3Crect width='45' height='32' rx='9' fill='%233ea6ff'/%3E%3Cpolygon points='18,10 31,16 18,22' fill='%23fff'/%3E%3C/svg%3E">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
+html.light-mode{filter:invert(1) hue-rotate(180deg)}
+html.light-mode img,html.light-mode video,html.light-mode iframe,html.light-mode canvas,
+html.light-mode .card .thumb img,html.light-mode .post-img{filter:invert(1) hue-rotate(180deg)}
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:Arial,sans-serif;background:#0f0f0f;color:#fff;min-height:100vh}
 header{background:#0f0f0f;border-bottom:1px solid #272727;padding:12px 20px;display:flex;align-items:center;gap:16px;position:sticky;top:0;z-index:100}
@@ -735,6 +739,13 @@ body.zoom-mode header,body.zoom-mode .sidebar-left,body.zoom-mode #main-content{
       </div>
       <p style="color:#666;font-size:11px;margin-top:10px">Zmienia język interfejsu (menu, przyciski, nagłówki). Treści dodane przez użytkowników (komentarze, tytuły filmów) pozostają w oryginalnym języku.</p>
     </div>
+    <div class="field" style="margin-top:24px;padding-top:20px;border-top:1px solid #303030">
+      <label>Motyw</label>
+      <div style="display:flex;gap:8px;margin-top:8px">
+        <button onclick="setTheme('dark')" id="theme-btn-dark" style="flex:1;display:flex;align-items:center;justify-content:center;gap:8px;padding:12px 14px;border-radius:10px;cursor:pointer;font-size:14px;background:#0f0f0f;border:1px solid #303030;color:#fff">🌙 Ciemny</button>
+        <button onclick="setTheme('light')" id="theme-btn-light" style="flex:1;display:flex;align-items:center;justify-content:center;gap:8px;padding:12px 14px;border-radius:10px;cursor:pointer;font-size:14px;background:#0f0f0f;border:1px solid #303030;color:#fff">☀️ Jasny</button>
+      </div>
+    </div>
     <div class="fbbtns">
       <button class="fcancel" onclick="closeSettingsModal()" data-i18n="btn_close">Zamknij</button>
     </div>
@@ -901,12 +912,17 @@ function applyTranslations(){
 }
 
 function openSettingsModal(){
-  if(!currentUser){toast('Zaloguj się żeby zmienić ustawienia!');return;}
   document.getElementById('settings-modal').classList.add('open');
-  const meta=currentUser.user_metadata;
-  const inp=document.getElementById('settings-nick-inp');
-  if(inp)inp.value=getMyDisplayName()||'';
+  const nickField=document.getElementById('settings-nick-inp')?.closest('.field');
+  if(currentUser){
+    if(nickField)nickField.style.display='block';
+    const inp=document.getElementById('settings-nick-inp');
+    if(inp)inp.value=getMyDisplayName()||'';
+  } else if(nickField){
+    nickField.style.display='none';
+  }
   updateLangButtons();
+  updateThemeButtons();
 }
 
 function closeSettingsModal(){
@@ -924,6 +940,31 @@ async function saveMySettingsNick(){
   myDisplayNick=newNick;
   toast('Nick zmieniony! ✏️');
   updateAuthUI();
+}
+
+// ── MOTYW (jasny/ciemny) ─────────────────────────────────────────────────
+function getTheme(){return localStorage.getItem('wt_theme')||'dark';}
+
+function applyTheme(){
+  const theme=getTheme();
+  document.documentElement.classList.toggle('light-mode',theme==='light');
+}
+
+function setTheme(theme){
+  localStorage.setItem('wt_theme',theme);
+  applyTheme();
+  updateThemeButtons();
+  toast(theme==='light'?'Jasny motyw włączony ☀️':'Ciemny motyw włączony 🌙');
+}
+
+function updateThemeButtons(){
+  const theme=getTheme();
+  const darkBtn=document.getElementById('theme-btn-dark');
+  const lightBtn=document.getElementById('theme-btn-light');
+  const activeStyle='flex:1;display:flex;align-items:center;justify-content:center;gap:8px;padding:12px 14px;border-radius:10px;cursor:pointer;font-size:14px;background:rgba(62,166,255,.15);border:1px solid #3ea6ff;color:#fff';
+  const inactiveStyle='flex:1;display:flex;align-items:center;justify-content:center;gap:8px;padding:12px 14px;border-radius:10px;cursor:pointer;font-size:14px;background:#0f0f0f;border:1px solid #303030;color:#fff';
+  if(darkBtn)darkBtn.style.cssText=theme==='dark'?activeStyle:inactiveStyle;
+  if(lightBtn)lightBtn.style.cssText=theme==='light'?activeStyle:inactiveStyle;
 }
 
 function updateLangButtons(){
