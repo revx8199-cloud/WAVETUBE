@@ -1387,16 +1387,16 @@ function renderAdminUsersList(banMap){
     :filtered.map(u=>{
       const ban=adminUsersBanMap[u.id];
       return`<div style="display:flex;align-items:center;gap:12px;padding:10px 14px;border-bottom:1px solid #272727">
-        ${u.avatar?`<img src="${u.avatar}" style="width:34px;height:34px;border-radius:50%;object-fit:cover;flex-shrink:0">`:`<div style="width:34px;height:34px;border-radius:50%;background:#cc0000;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;flex-shrink:0">${(u.name||'?')[0].toUpperCase()}</div>`}
-        <div style="flex:1;min-width:0">
-          <div style="font-size:13px;font-weight:600" id="uname-${u.id}">${u.name}${ban?' <span style="color:#ff6b6b;font-size:11px">🚫 zablokowany</span>':''}</div>
-          <div style="font-size:11px;color:#888">${u.email}</div>
+        ${u.avatar?`<img src="${u.avatar}" style="width:34px;height:34px;border-radius:50%;object-fit:cover;flex-shrink:0;cursor:pointer" onclick="closeAdminPanel();showChannel('${u.id}','${jsesc(u.name)}','${u.avatar}','${u.email||''}')">`:`<div style="width:34px;height:34px;border-radius:50%;background:#cc0000;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;flex-shrink:0;cursor:pointer" onclick="closeAdminPanel();showChannel('${u.id}','${jsesc(u.name)}','','${u.email||''}')">${esc((u.name||'?')[0].toUpperCase())}</div>`}
+        <div style="flex:1;min-width:0;cursor:pointer" onclick="closeAdminPanel();showChannel('${u.id}','${jsesc(u.name)}','${u.avatar||''}','${u.email||''}')">
+          <div style="font-size:13px;font-weight:600" id="uname-${u.id}">${esc(u.name)}${ban?' <span style="color:#ff6b6b;font-size:11px">🚫 zablokowany</span>':''}</div>
+          <div style="font-size:11px;color:#888">${esc(u.email)}</div>
         </div>
-        <button onclick="toggleRenameUser('${u.id}',this)" title="Zmień nick" style="background:#272727;border:none;color:#fff;padding:6px 10px;border-radius:8px;cursor:pointer;font-size:12px;flex-shrink:0">✏️</button>
+        <button onclick="event.stopPropagation();toggleRenameUser('${u.id}',this)" title="Zmień nick" style="background:#272727;border:none;color:#fff;padding:6px 10px;border-radius:8px;cursor:pointer;font-size:12px;flex-shrink:0">✏️</button>
         ${ban?
-          `<button onclick="adminUnbanUser('${u.id}')" style="background:#14301a;border:1px solid #1f5c2a;color:#7fe08a;padding:6px 12px;border-radius:8px;cursor:pointer;font-size:12px;flex-shrink:0">Odblokuj</button>`
+          `<button onclick="event.stopPropagation();adminUnbanUser('${u.id}')" style="background:#14301a;border:1px solid #1f5c2a;color:#7fe08a;padding:6px 12px;border-radius:8px;cursor:pointer;font-size:12px;flex-shrink:0">Odblokuj</button>`
           :`<div style="position:relative;flex-shrink:0">
-            <button onclick="toggleAdminBanMenu('${u.id}',this)" style="background:#3a1414;border:1px solid #5c1f1f;color:#ff6b6b;padding:6px 12px;border-radius:8px;cursor:pointer;font-size:12px">🚫 Zablokuj</button>
+            <button onclick="event.stopPropagation();toggleAdminBanMenu('${u.id}',this)" style="background:#3a1414;border:1px solid #5c1f1f;color:#ff6b6b;padding:6px 12px;border-radius:8px;cursor:pointer;font-size:12px">🚫 Zablokuj</button>
           </div>`}
       </div>`;
     }).join('');
