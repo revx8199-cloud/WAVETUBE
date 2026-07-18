@@ -30,8 +30,15 @@ header{background:#0f0f0f;border-bottom:1px solid #272727;padding:12px 20px;disp
 .user-menu{position:relative}
 .user-avatar{width:34px;height:34px;border-radius:50%;cursor:pointer;object-fit:cover;border:2px solid #cc0000}
 .user-avatar-placeholder{width:34px;height:34px;border-radius:50%;cursor:pointer;background:#cc0000;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;border:2px solid #cc0000}
-.dropdown{display:none;position:absolute;right:0;top:42px;background:#212121;border:1px solid #303030;border-radius:10px;min-width:200px;z-index:200;overflow:hidden}
+.dropdown{display:none;position:absolute;right:0;top:46px;background:#212121;border:1px solid #303030;border-radius:14px;width:300px;z-index:200;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,.55);padding:8px 0}
 .dropdown.open{display:block}
+.dropdown-header{display:flex;align-items:center;gap:12px;padding:14px 16px 16px}
+.dropdown-header-av{width:48px;height:48px;border-radius:50%;overflow:hidden;flex-shrink:0;display:flex;align-items:center;justify-content:center;background:#cc0000;font-weight:700;font-size:18px;color:#fff}
+.dropdown-header-av img{width:100%;height:100%;object-fit:cover;display:block}
+.dropdown-header-info{min-width:0;flex:1}
+.dropdown-header-name{font-size:15px;font-weight:600;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.dropdown-header-email{font-size:12px;color:#aaa;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:2px}
+.dropdown-item svg{flex-shrink:0;opacity:.8}
 .dropdown-item{padding:12px 16px;cursor:pointer;font-size:13px;display:flex;align-items:center;gap:10px;color:#fff}
 .dropdown-item:hover{background:#303030}
 .dropdown-item.red{color:#cc0000}
@@ -315,12 +322,35 @@ body.zoom-mode header,body.zoom-mode .sidebar-left,body.zoom-mode #main-content{
       <div class="user-menu">
         <div class="user-avatar-placeholder" id="user-av" onclick="toggleDropdown()"></div>
         <div class="dropdown" id="dropdown">
-          <div class="dropdown-item" onclick="showMyChannel()" data-i18n="dd_mychannel">👤 Mój kanał</div>
-          <div class="dropdown-item" onclick="openSettingsModal()" data-i18n="dd_settings">⚙️ Ustawienia</div>
-          <div class="dropdown-item" id="vip-dropdown-item" onclick="openVipPanel()" style="display:none">⭐ Panel VIP</div>
-          <div class="dropdown-item" id="admin-dropdown-item" onclick="openAdminPanel()" style="display:none">🛡 Panel administratora</div>
+          <div class="dropdown-header">
+            <div class="dropdown-header-av" id="dropdown-header-av"></div>
+            <div class="dropdown-header-info">
+              <div class="dropdown-header-name" id="dropdown-header-name"></div>
+              <div class="dropdown-header-email" id="dropdown-header-email"></div>
+            </div>
+          </div>
           <div class="dropdown-divider"></div>
-          <div class="dropdown-item red" onclick="logout()" data-i18n="dd_logout">🚪 Wyloguj</div>
+          <div class="dropdown-item" onclick="showMyChannel()">
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M12 12c2.7 0 8 1.34 8 4v2H4v-2c0-2.66 5.3-4 8-4zm0-2c-2.21 0-4-1.79-4-4s1.79-4 4-4 4 1.79 4 4-1.79 4-4 4z"/></svg>
+            <span data-i18n="dd_mychannel">Mój kanał</span>
+          </div>
+          <div class="dropdown-item" onclick="openSettingsModal()">
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/></svg>
+            <span data-i18n="dd_settings">Ustawienia</span>
+          </div>
+          <div class="dropdown-item" id="vip-dropdown-item" onclick="openVipPanel()" style="display:none">
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
+            <span>Panel VIP</span>
+          </div>
+          <div class="dropdown-item" id="admin-dropdown-item" onclick="openAdminPanel()" style="display:none">
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm0 10.99h7c-.53 4.12-3.28 7.79-7 8.94V12H5V6.3l7-3.11v8.8z"/></svg>
+            <span>Panel administratora</span>
+          </div>
+          <div class="dropdown-divider"></div>
+          <div class="dropdown-item red" onclick="logout()">
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M17 7l-1.41 1.41L18.17 11H8v2h10.17l-2.58 2.58L17 17l5-5zM4 5h8V3H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h8v-2H4V5z"/></svg>
+            <span data-i18n="dd_logout">Wyloguj</span>
+          </div>
         </div>
       </div>
     </div>
@@ -869,7 +899,7 @@ const TRANSLATIONS={
     nav_mychannel:'Mój kanał',nav_subs:'Moje subskrypcje',nav_history:'Historia oglądania',
     nav_messages:'Wiadomości',nav_subscriptions:'Subskrypcje',nav_announcements:'Ogłoszenia',nav_saved:'Zapisane filmy',
     search_placeholder:'Szukaj filmów...',btn_add_video:'+ Dodaj film',
-    dd_mychannel:'👤 Mój kanał',dd_settings:'⚙️ Ustawienia',dd_logout:'🚪 Wyloguj',
+    dd_mychannel:'Mój kanał',dd_settings:'Ustawienia',dd_logout:'Wyloguj',
     btn_subscribe:'Subskrybuj',btn_subscribed:'Subskrybujesz',btn_share:'Udostępnij',
     btn_download:'Pobierz',btn_support:'Wesprzyj autora',btn_report:'Zgłoś',
     comments_label:'Komentarze',comment_placeholder:'Napisz komentarz...',comments_label_zero:'Komentarze (0)',
@@ -885,7 +915,7 @@ const TRANSLATIONS={
     nav_mychannel:'Мой канал',nav_subs:'Мои подписки',nav_history:'История просмотров',
     nav_messages:'Сообщения',nav_subscriptions:'Подписки',nav_announcements:'Объявления',nav_saved:'Сохранённые',
     search_placeholder:'Поиск видео...',btn_add_video:'+ Добавить видео',
-    dd_mychannel:'👤 Мой канал',dd_settings:'⚙️ Настройки',dd_logout:'🚪 Выйти',
+    dd_mychannel:'Мой канал',dd_settings:'Настройки',dd_logout:'Выйти',
     btn_subscribe:'Подписаться',btn_subscribed:'Вы подписаны',btn_share:'Поделиться',
     btn_download:'Скачать',btn_support:'Поддержать автора',btn_report:'Пожаловаться',
     comments_label:'Комментарии',comment_placeholder:'Напишите комментарий...',comments_label_zero:'Комментарии (0)',
@@ -1067,6 +1097,14 @@ function updateAuthUI(){
     } else {
       av.textContent=(meta&&meta.full_name?meta.full_name[0]:(currentUser.email?currentUser.email[0]:'?')).toUpperCase();
     }
+    // wypełniamy nagłówek dropdownu (avatar/nick/email)
+    const dispName=getMyDisplayName()||currentUser.email||'';
+    const headerAv=document.getElementById('dropdown-header-av');
+    const headerName=document.getElementById('dropdown-header-name');
+    const headerEmail=document.getElementById('dropdown-header-email');
+    if(headerAv)headerAv.innerHTML=meta&&meta.avatar_url?`<img src="${meta.avatar_url}">`:esc((dispName[0]||'?').toUpperCase());
+    if(headerName)headerName.textContent=dispName;
+    if(headerEmail)headerEmail.textContent=currentUser.email||'';
     // update comment avatar
     const comAv=document.getElementById('com-av');
     if(meta&&meta.avatar_url){
@@ -3819,7 +3857,7 @@ async function toggleNotifications(){
 
 function renderNotifications(){
   const list=document.getElementById('notif-list');
-  if(!notificationsList.length){list.innerHTML='<div class="notif-empty">Brak powiadomień 🔔</div>';return;}
+  if(!notificationsList.length){list.innerHTML='<div class="notif-empty">Brak powiadomień</div>';return;}
   list.innerHTML=notificationsList.map(n=>`
     <div class="notif-item${n.read?'':' unread'}" onclick="handleNotifClick('${n.id}','${n.sender_id||''}','${n.sender_name||''}','${n.sender_avatar||''}','${n.sender_email||''}')">
       ${n.avatar?`<img class="notif-av" src="${n.avatar}">`:`<div class="notif-av-ph" style="background:#cc0000">🔔</div>`}
