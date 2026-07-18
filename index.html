@@ -99,11 +99,18 @@ header{background:#0f0f0f;border-bottom:1px solid #272727;padding:12px 20px;disp
 .abtn:hover{background:#383838}
 .like-group{display:flex;align-items:center;background:#272727;border-radius:20px;overflow:hidden}
 .like-btn{border-radius:20px 0 0 20px;padding:9px 16px;background:transparent;border:none;color:#fff;cursor:pointer;display:flex;align-items:center;gap:6px;font-size:13px}
-.like-btn:hover{background:#383838}
-.like-btn.liked{background:#cc0000;color:#fff}
+.like-btn svg,.dislike-btn svg{fill:none;stroke:currentColor;stroke-width:1.6;stroke-linejoin:round;transition:transform .18s}
+.like-btn.liked svg,.dislike-btn.liked svg{fill:currentColor;stroke:none}
+.like-btn.pop svg,.dislike-btn.pop svg{animation:likePop .32s cubic-bezier(.34,1.56,.64,1)}
+@keyframes likePop{0%{transform:scale(1)}45%{transform:scale(1.4)}100%{transform:scale(1)}}
+#lc{display:inline-block;transition:transform .15s}
+#lc.pop{animation:countPop .3s ease}
+@keyframes countPop{0%{transform:scale(1)}50%{transform:scale(1.25);color:#3ea6ff}100%{transform:scale(1)}}
+.like-btn.liked{background:transparent;color:#3ea6ff}
 .dislike-btn{border-radius:0 20px 20px 0;padding:9px 14px;background:transparent;border:none;color:#fff;cursor:pointer;display:flex;align-items:center;}
+.dislike-btn.liked{background:transparent;color:#fff}
+.like-btn:hover{background:#383838}
 .dislike-btn:hover{background:#383838}
-.dislike-btn.liked{background:#383838}
 .like-divider{width:1px;height:20px;background:#444}
 hr{border:none;border-top:1px solid #272727;margin:20px 0}
 .comments h3{font-size:20px;font-weight:600;margin-bottom:18px}
@@ -3242,7 +3249,15 @@ function toggleLike(){
   document.getElementById('lc').textContent=cur.likes;
   document.getElementById('lbtn').className='like-btn'+(likedSet.has(cur.id)?' liked':'');
   document.getElementById('dbtn').className='dislike-btn'+(dislikedSet.has(cur.id)?' liked':'');
+  if(!liked)popEffect('lbtn','lc');
   const v=videos.find(x=>x.id===cur.id);if(v){v.likes=cur.likes;v.dislikes=cur.dislikes||0;}render();
+}
+
+function popEffect(btnId,countId){
+  const btn=document.getElementById(btnId);
+  const count=countId?document.getElementById(countId):null;
+  if(btn){btn.classList.remove('pop');void btn.offsetWidth;btn.classList.add('pop');setTimeout(()=>btn.classList.remove('pop'),320);}
+  if(count){count.classList.remove('pop');void count.offsetWidth;count.classList.add('pop');setTimeout(()=>count.classList.remove('pop'),300);}
 }
 
 function toggleDislike(){
@@ -3255,6 +3270,7 @@ function toggleDislike(){
   document.getElementById('lc').textContent=cur.likes||0;
   document.getElementById('lbtn').className='like-btn'+(likedSet.has(cur.id)?' liked':'');
   document.getElementById('dbtn').className='dislike-btn'+(dislikedSet.has(cur.id)?' liked':'');
+  if(!disliked)popEffect('dbtn',null);
   const v=videos.find(x=>x.id===cur.id);if(v){v.likes=cur.likes||0;v.dislikes=cur.dislikes;}render();
 }
 
