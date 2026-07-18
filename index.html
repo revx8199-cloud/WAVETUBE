@@ -636,6 +636,21 @@ body.zoom-mode header,body.zoom-mode .sidebar-left,body.zoom-mode #main-content{
 <div class="toast" id="toast"></div>
 <div id="disco-overlay"></div>
 
+<!-- EKRAN BANA -->
+<div id="ban-screen" style="display:none;position:fixed;inset:0;background:#0a0a0a;z-index:99999;align-items:center;justify-content:center;flex-direction:column;text-align:center;padding:24px">
+  <div style="font-size:72px;margin-bottom:20px">🚫</div>
+  <h1 style="font-size:26px;font-weight:800;color:#fff;margin-bottom:12px">Twoje konto zostało zablokowane</h1>
+  <p id="ban-reason-text" style="color:#aaa;font-size:15px;max-width:480px;margin-bottom:24px;line-height:1.5"></p>
+  <div id="ban-countdown-box" style="display:none;background:#181818;border:1px solid #303030;border-radius:14px;padding:18px 32px;margin-bottom:24px">
+    <div style="font-size:12px;color:#888;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px">Blokada wygaśnie za</div>
+    <div id="ban-countdown" style="font-size:28px;font-weight:800;color:#3ea6ff;font-variant-numeric:tabular-nums"></div>
+  </div>
+  <div id="ban-forever-box" style="display:none;background:#2a1414;border:1px solid #5c1f1f;border-radius:14px;padding:14px 28px;margin-bottom:24px;color:#ff6b6b;font-size:14px;font-weight:600">
+    Blokada jest bezterminowa
+  </div>
+  <p style="color:#555;font-size:12px">Jeśli uważasz, że to pomyłka, skontaktuj się z administratorem WaveTube.</p>
+</div>
+
 <!-- KONSOLA ADMINA -->
 <div id="admin-console" style="display:none;position:fixed;bottom:0;left:0;right:0;height:280px;background:rgba(8,8,8,.97);border-top:2px solid #3ea6ff;z-index:9999;font-family:'Courier New',monospace;flex-direction:column;box-shadow:0 -8px 30px rgba(0,0,0,.6)">
   <div style="display:flex;align-items:center;justify-content:space-between;padding:6px 12px;border-bottom:1px solid #222;background:#111">
@@ -1371,13 +1386,55 @@ async function checkIfBanned(){
   if(!data||!data.length)return false;
   const active=data.find(b=>!b.expires_at||new Date(b.expires_at)>new Date());
   if(active){
-    alert('Twoje konto zostało zablokowane przez administratora.'+(active.reason?(' Powód: '+active.reason):''));
     await sb.auth.signOut();
     currentUser=null;
     updateAuthUI();
+    showBanScreen(active);
     return true;
   }
   return false;
+}
+
+let banCountdownInterval=null;
+
+function showBanScreen(ban){
+  const screen=document.getElementById('ban-screen');
+  const reasonText=document.getElementById('ban-reason-text');
+  const countdownBox=document.getElementById('ban-countdown-box');
+  const foreverBox=document.getElementById('ban-forever-box');
+  const countdownEl=document.getElementById('ban-countdown');
+
+  reasonText.textContent=ban.reason?`Powód: ${ban.reason}`:'Twoje konto narusza zasady WaveTube.';
+  screen.style.display='flex';
+  document.body.style.overflow='hidden';
+
+  if(banCountdownInterval)clearInterval(banCountdownInterval);
+
+  if(!ban.expires_at){
+    foreverBox.style.display='block';
+    countdownBox.style.display='none';
+    return;
+  }
+  foreverBox.style.display='none';
+  countdownBox.style.display='block';
+
+  const updateCountdown=()=>{
+    const diff=new Date(ban.expires_at)-new Date();
+    if(diff<=0){
+      clearInterval(banCountdownInterval);
+      countdownEl.textContent='Możesz już spróbować się zalogować ponownie';
+      return;
+    }
+    const days=Math.floor(diff/86400000);
+    const hours=Math.floor((diff%86400000)/3600000);
+    const mins=Math.floor((diff%3600000)/60000);
+    const secs=Math.floor((diff%60000)/1000);
+    countdownEl.textContent=days>0
+      ?`${days}d ${String(hours).padStart(2,'0')}:${String(mins).padStart(2,'0')}:${String(secs).padStart(2,'0')}`
+      :`${String(hours).padStart(2,'0')}:${String(mins).padStart(2,'0')}:${String(secs).padStart(2,'0')}`;
+  };
+  updateCountdown();
+  banCountdownInterval=setInterval(updateCountdown,1000);
 }
 
 // ── PANEL ADMINISTRATORA ────────────────────────────────────────────────
