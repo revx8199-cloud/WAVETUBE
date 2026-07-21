@@ -1944,18 +1944,18 @@ if(adminTab==='users'){
   }
 
   if(adminTab==='reports'){
-    body.innerHTML='<p style="color:#888;padding:20px;text-align:center">Ładowanie zgłoszeń...</p>';
+    body.innerHTML='<p style="color:#888;padding:30px 20px;text-align:center">Ładowanie zgłoszeń...</p>';
     const{data:reports}=await sb.from('reports').select('*').order('created_at',{ascending:false});
-    if(!reports||!reports.length){body.innerHTML='<p style="color:#888;padding:20px;text-align:center">Brak zgłoszeń</p>';return;}
+    if(!reports||!reports.length){body.innerHTML='<p style="color:#888;padding:30px 20px;text-align:center">Brak zgłoszeń</p>';return;}
     body.innerHTML=reports.map(r=>`
-      <div style="padding:12px 14px;border-bottom:1px solid #272727;display:flex;justify-content:space-between;gap:12px">
+      <div class="admin-row" style="align-items:flex-start">
         <div style="flex:1;min-width:0">
           <div style="font-size:13px;font-weight:600">${esc(r.video_title)||'(usunięty film)'}</div>
           <div style="font-size:12px;color:#ff8a8a;margin:3px 0">${esc(r.reason)}</div>
           ${r.details?`<div style="font-size:12px;color:#aaa;margin-bottom:4px">${esc(r.details)}</div>`:''}
           <div style="font-size:11px;color:#666">Zgłosił: ${esc(r.reporter_email)} · ${new Date(r.created_at).toLocaleString('pl-PL')}</div>
         </div>
-        <button onclick="deleteReport(${r.id})" title="Usuń zgłoszenie" style="background:#3a1414;border:1px solid #5c1f1f;color:#ff6b6b;padding:6px 12px;border-radius:8px;cursor:pointer;font-size:12px;flex-shrink:0;height:fit-content">🗑 Usuń</button>
+        <button onclick="deleteReport(${r.id})" title="Usuń zgłoszenie" class="admin-btn admin-btn-red">🗑 Usuń</button>
       </div>`).join('');
   }
 
@@ -2048,12 +2048,12 @@ if(adminTab==='users'){
   }
 
   if(adminTab==='logs'){
-    body.innerHTML='<p style="color:#888;padding:20px;text-align:center">Ładowanie logów...</p>';
+    body.innerHTML='<p style="color:#888;padding:30px 20px;text-align:center">Ładowanie logów...</p>';
     const{data:logs}=await sb.from('admin_logs').select('*').order('created_at',{ascending:false}).limit(200);
-    if(!logs||!logs.length){body.innerHTML='<p style="color:#888;padding:20px;text-align:center">Brak zapisanych akcji</p>';return;}
+    if(!logs||!logs.length){body.innerHTML='<p style="color:#888;padding:30px 20px;text-align:center">Brak zapisanych akcji</p>';return;}
     const ACTION_ICONS={ban:'🚫',unban:'✅',mute:'🔇',unmute:'🔊',delete_video:'🗑',edit_video:'✏️',delete_report:'🚩',rename_user:'✏️',delete_announcement:'📢'};
     body.innerHTML=logs.map(l=>`
-      <div style="padding:10px 14px;border-bottom:1px solid #272727;display:flex;gap:10px;align-items:flex-start">
+      <div class="admin-row" style="align-items:flex-start">
         <div style="font-size:16px;flex-shrink:0">${ACTION_ICONS[l.action]||'📝'}</div>
         <div style="flex:1;min-width:0">
           <div style="font-size:13px;color:#eee">${esc(l.details)}</div>
