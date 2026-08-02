@@ -227,6 +227,19 @@ hr{border:none;border-top:1px solid #272727;margin:20px 0}
 .cmt-dropdown-item svg{flex-shrink:0;opacity:.85}
 .cmt-dropdown-item-red{color:#ff6b6b}
 .cmt-dropdown-item-red:hover{background:#3a1414}
+.admin-nav-item{display:flex;align-items:center;gap:12px;padding:11px 12px;border-radius:8px;cursor:pointer;font-size:13px;font-weight:600;color:#aaa;margin-bottom:2px;transition:background .15s,color .15s}
+.admin-nav-item svg{flex-shrink:0;opacity:.85}
+.admin-nav-item:hover{background:#1f1f1f;color:#eee}
+.admin-nav-item.active{background:#272727;color:#fff}
+.admin-nav-item.active svg{opacity:1;color:#3ea6ff}
+.admin-row{display:flex;align-items:center;gap:12px;padding:12px 20px;border-bottom:1px solid #232323;transition:background .12s}
+.admin-row:hover{background:#1f1f1f}
+.admin-btn{border:none;padding:7px 14px;border-radius:8px;cursor:pointer;font-size:12px;font-weight:600;flex-shrink:0;transition:filter .12s}
+.admin-btn:hover{filter:brightness(1.15)}
+.admin-btn-blue{background:#142a3a;color:#7fd3ff}
+.admin-btn-red{background:#3a1414;color:#ff6b6b}
+.admin-btn-green{background:#14301a;color:#7fe08a}
+.admin-btn-grey{background:#272727;color:#fff}
 #disco-overlay{display:none;position:fixed;inset:0;z-index:8000;pointer-events:none;mix-blend-mode:screen;opacity:.5;background:linear-gradient(45deg,#ff0000,#ff8800,#ffee00,#00ff44,#00ccff,#4400ff,#ff00cc,#ff0000);background-size:400% 400%;animation:discoGradient 3s linear infinite}
 #disco-overlay.active{display:block}
 @keyframes discoGradient{0%{background-position:0% 50%}100%{background-position:100% 50%}}
@@ -824,21 +837,48 @@ body.zoom-mode header,body.zoom-mode .sidebar-left,body.zoom-mode #main-content{
 </div>
 
 <!-- PANEL ADMINISTRATORA -->
-<div class="fmbg" id="admin-panel-modal" style="align-items:flex-start;padding-top:40px">
-  <div class="fbox" style="max-width:640px;width:92%;max-height:85vh;display:flex;flex-direction:column;padding:0">
-    <div style="display:flex;align-items:center;justify-content:space-between;padding:20px 24px 0">
-      <h3 style="margin:0">🛡 Panel administratora</h3>
-      <button onclick="closeAdminPanel()" style="background:none;border:none;color:#888;font-size:22px;cursor:pointer;line-height:1">✕</button>
+<div class="fmbg" id="admin-panel-modal" style="align-items:center">
+  <div class="fbox" style="max-width:820px;width:94%;height:80vh;display:flex;padding:0;border-radius:12px;overflow:hidden">
+    <div style="width:220px;flex-shrink:0;background:#0f0f0f;border-right:1px solid #272727;display:flex;flex-direction:column">
+      <div style="display:flex;align-items:center;gap:10px;padding:20px 18px;border-bottom:1px solid #272727">
+        <svg viewBox="0 0 24 24" width="22" height="22" fill="#3ea6ff"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm0 10.99h7c-.53 4.12-3.28 7.79-7 8.94V12H5V6.3l7-3.11v8.8z"/></svg>
+        <span style="font-size:15px;font-weight:700">Admin Studio</span>
+      </div>
+      <div style="flex:1;overflow-y:auto;padding:10px 8px">
+        <div id="admin-tab-videos" class="admin-nav-item" onclick="setAdminTab('videos')">
+          <svg viewBox="0 0 24 24" width="19" height="19" fill="currentColor"><path d="M18 4l2 4h-3l-2-4h-2l2 4h-3l-2-4H8l2 4H7L5 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2h-2z"/></svg>
+          <span>Filmy</span>
+        </div>
+        <div id="admin-tab-users" class="admin-nav-item" onclick="setAdminTab('users')">
+          <svg viewBox="0 0 24 24" width="19" height="19" fill="currentColor"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>
+          <span>Użytkownicy</span>
+        </div>
+        <div id="admin-tab-reports" class="admin-nav-item" onclick="setAdminTab('reports')">
+          <svg viewBox="0 0 24 24" width="19" height="19" fill="currentColor"><path d="M14.4 6L14 4H5v17h2v-7h5.6l.4 2h7V6z"/></svg>
+          <span>Zgłoszenia</span>
+        </div>
+        <div id="admin-tab-color" class="admin-nav-item" onclick="setAdminTab('color')">
+          <svg viewBox="0 0 24 24" width="19" height="19" fill="currentColor"><path d="M12 2C6.49 2 2 6.49 2 12s4.49 10 10 10c1.38 0 2.5-1.12 2.5-2.5 0-.61-.23-1.2-.64-1.67-.08-.09-.13-.21-.13-.33 0-.28.22-.5.5-.5H16c3.31 0 6-2.69 6-6 0-4.96-4.49-9-10-9zm5.5 11c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zm-3-4C13.67 9 13 8.33 13 7.5S13.67 6 14.5 6s1.5.67 1.5 1.5S15.33 9 14.5 9zm-5 0C8.67 9 8 8.33 8 7.5S8.67 6 9.5 6s1.5.67 1.5 1.5S10.33 9 9.5 9zm-3 4C5.67 13 5 12.33 5 11.5S5.67 10 6.5 10s1.5.67 1.5 1.5S7.33 13 6.5 13z"/></svg>
+          <span>Kolor nicku</span>
+        </div>
+        <div id="admin-tab-announce" class="admin-nav-item" onclick="setAdminTab('announce')">
+          <svg viewBox="0 0 24 24" width="19" height="19" fill="currentColor"><path d="M18 11V6c0-2.21-1.79-4-4-4S10 3.79 10 6v5c-1.66 0-3 1.34-3 3v2h14v-2c0-1.66-1.34-3-3-3zM4 15h2v-4H4v4zm14.66-8.83l1.41-1.41C21.29 6.03 22 7.94 22 10h-2c0-1.42-.51-2.72-1.34-3.83zM2 10h2c0-2.06.71-3.97 1.93-5.24L4.52 3.34C3.29 4.66 2.55 6.24 2.29 8H2v2z"/></svg>
+          <span>Ogłoszenia</span>
+        </div>
+        <div id="admin-tab-logs" class="admin-nav-item" onclick="setAdminTab('logs')">
+          <svg viewBox="0 0 24 24" width="19" height="19" fill="currentColor"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM9 17H7v-7h2v7zm4 0h-2V7h2v10zm4 0h-2v-4h2v4z"/></svg>
+          <span>Logi</span>
+        </div>
+      </div>
     </div>
-    <div style="display:flex;gap:4px;padding:16px 24px 0;border-bottom:1px solid #272727">
-      <div id="admin-tab-videos" onclick="setAdminTab('videos')" style="padding:10px 16px;cursor:pointer;font-size:13px;font-weight:600">🎬 Filmy</div>
-      <div id="admin-tab-users" onclick="setAdminTab('users')" style="padding:10px 16px;cursor:pointer;font-size:13px;font-weight:600">👥 Użytkownicy</div>
-      <div id="admin-tab-reports" onclick="setAdminTab('reports')" style="padding:10px 16px;cursor:pointer;font-size:13px;font-weight:600">🚩 Zgłoszenia</div>
-      <div id="admin-tab-color" onclick="setAdminTab('color')" style="padding:10px 16px;cursor:pointer;font-size:13px;font-weight:600">🎨 Kolor nicku</div>
-      <div id="admin-tab-announce" onclick="setAdminTab('announce')" style="padding:10px 16px;cursor:pointer;font-size:13px;font-weight:600">📢 Ogłoszenia</div>
-      <div id="admin-tab-logs" onclick="setAdminTab('logs')" style="padding:10px 16px;cursor:pointer;font-size:13px;font-weight:600">📝 Logi</div>
+    <div style="flex:1;display:flex;flex-direction:column;min-width:0">
+      <div style="display:flex;align-items:center;justify-content:flex-end;padding:14px 18px;border-bottom:1px solid #272727;flex-shrink:0">
+        <button onclick="closeAdminPanel()" style="background:none;border:none;color:#aaa;cursor:pointer;width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;transition:background .15s" onmouseover="this.style.background='#272727';this.style.color='#fff'" onmouseout="this.style.background='none';this.style.color='#aaa'">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </div>
+      <div id="admin-panel-body" style="overflow-y:auto;flex:1;background:#1a1a1a"></div>
     </div>
-    <div id="admin-panel-body" style="overflow-y:auto;flex:1"></div>
   </div>
 </div>
 
@@ -1919,12 +1959,10 @@ async function logAdminAction(action,details){
 
 async function renderAdminPanel(){
   const body=document.getElementById('admin-panel-body');
-  document.getElementById('admin-tab-videos').style.cssText=adminTab==='videos'?'border-bottom:2px solid #3ea6ff;color:#fff':'border-bottom:2px solid transparent;color:#888';
-  document.getElementById('admin-tab-users').style.cssText=adminTab==='users'?'border-bottom:2px solid #3ea6ff;color:#fff':'border-bottom:2px solid transparent;color:#888';
-  document.getElementById('admin-tab-reports').style.cssText=adminTab==='reports'?'border-bottom:2px solid #3ea6ff;color:#fff':'border-bottom:2px solid transparent;color:#888';
-  document.getElementById('admin-tab-color').style.cssText=adminTab==='color'?'border-bottom:2px solid #3ea6ff;color:#fff':'border-bottom:2px solid transparent;color:#888';
-  document.getElementById('admin-tab-announce').style.cssText=adminTab==='announce'?'border-bottom:2px solid #3ea6ff;color:#fff':'border-bottom:2px solid transparent;color:#888';
-  document.getElementById('admin-tab-logs').style.cssText=adminTab==='logs'?'border-bottom:2px solid #3ea6ff;color:#fff':'border-bottom:2px solid transparent;color:#888';
+  ['videos','users','reports','color','announce','logs'].forEach(tab=>{
+    const el=document.getElementById('admin-tab-'+tab);
+    if(el)el.classList.toggle('active',adminTab===tab);
+  });
 
   if(adminTab==='videos'){
     renderAdminVideosList();
