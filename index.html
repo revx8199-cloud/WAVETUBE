@@ -1264,7 +1264,7 @@ function renderVipPanel(){
       </div>
       <div style="display:flex;align-items:center;gap:8px;font-size:14px;font-weight:700">
         <span>${myDisplayName}</span>
-        ${verifiedBadge(VIP_EMAIL)}
+        ${verifiedBadge(currentUser.email)}
       </div>
     </div>
 
@@ -1301,6 +1301,7 @@ async function saveVipBadgeColor(color){
   const{error}=await sb.from('profiles').upsert([{id:currentUser.id,email:currentUser.email,vip_badge_color:color}],{onConflict:'id'});
   if(error){toast('Błąd: '+error.message);return;}
   vipBadgeColor=color;
+  vipEmailsMap.set(currentUser.email,color);
   renderVipPanel();
   toast('Kolor plakietki zapisany! 🏅');
 }
@@ -1341,9 +1342,12 @@ let myDisplayNick='';
 let vipBadgeColor='';
 let adminBadgeColor='';
 
-async function loadVipBadgeColor(){
-  const{data}=await sb.from('profiles').select('vip_badge_color').eq('email',VIP_EMAIL).single();
-  vipBadgeColor=data?.vip_badge_color||'#ffd700';
+async function loadVipEmails(){
+  const{data}=await sb.from('profiles').select('email,vip_badge_color').eq('is_vip',true);
+  vipEmailsMap=new Map((data||[]).map(p=>[p.email,p.vip_badge_color||'#ffd700']));
+  vipBadgeColor=currentUser?(vipEmailsMap.get(currentUser.email)||'#ffd700'):'';
+  const vipItem=document.getElementById('vip-dropdown-item');
+  if(vipItem)vipItem.style.display=isVIP()?'flex':'none';
 }
 
 async function loadAdminBadgeColor(){
@@ -1572,6 +1576,9 @@ function renderAdminUsersList(banMap){
           <div style="font-size:11px;color:#888">${esc(u.email)}</div>
         </div>
         <button onclick="event.stopPropagation();toggleRenameUser('${u.id}',this)" title="Zmień nick" style="background:#272727;border:none;color:#fff;padding:6px 10px;border-radius:8px;cursor:pointer;font-size:12px;flex-shrink:0">✏️</button>
+        ${u.is_vip?
+          `<button onclick="event.stopPropagation();adminSetVip('${u.id}','${jsesc(u.email||'')}',false)" style="background:#332a0a;border:1px solid #5c4a0f;color:#ffd700;padding:6px 12px;border-radius:8px;cursor:pointer;font-size:12px;flex-shrink:0">⭐ Odbierz VIP</button>`
+          :`<button onclick="event.stopPropagation();adminSetVip('${u.id}','${jsesc(u.email||'')}',true)" style="background:#272727;border:1px solid #3a3a3a;color:#ccc;padding:6px 12px;border-radius:8px;cursor:pointer;font-size:12px;flex-shrink:0">⭐ Nadaj VIP</button>`}
         ${ban?
           `<button onclick="event.stopPropagation();adminUnbanUser('${u.id}')" style="background:#14301a;border:1px solid #1f5c2a;color:#7fe08a;padding:6px 12px;border-radius:8px;cursor:pointer;font-size:12px;flex-shrink:0">Odblokuj</button>`
           :`<div style="position:relative;flex-shrink:0">
@@ -1994,9 +2001,9 @@ async function renderAdminPanel(){
 if(adminTab==='users'){
   body.innerHTML='<p style="color:#888;padding:20px;text-align:center">Ładowanie użytkowników...</p>';
     const usersMap={};
-    videos.forEach(v=>{if(v.user_id)usersMap[v.user_id]={id:v.user_id,name:getUserName(v),email:v.user_email||'',avatar:v.user_avatar||''};});
+    videos.forEach(v=>{if(v.user_id)usersMap[v.user_id]={id:v.user_id,name:getUserName(v),email:v.user_email||'',avatar:v.user_avatar||'',is_vip:false};});
     const{data:profs}=await sb.from('profiles').select('*');
-    if(profs)profs.forEach(p=>{if(p.id)usersMap[p.id]={id:p.id,name:p.name||'Użytkownik',email:p.email||'',avatar:p.avatar||''};});
+    if(profs)profs.forEach(p=>{if(p.id)usersMap[p.id]={id:p.id,name:p.name||'Użytkownik',email:p.email||'',avatar:p.avatar||'',is_vip:!!p.is_vip};});
     const{data:bans}=await sb.from('banned_users').select('*');
     const banMap={};
     if(bans)bans.forEach(b=>{if(!b.expires_at||new Date(b.expires_at)>new Date())banMap[b.user_id]=b;});
@@ -2288,11 +2295,61 @@ async function adminBanUser(userId,hours){
   await sb.from('banned_users').delete().eq('user_id',userId);
   await sb.from('banned_users').insert([{user_id:userId,expires_at,banned_by:currentUser.id}]);
   const targetEmail=adminUsersCache.find(u=>u.id===userId)?.email||userId;
-  logAdminAction('ban',`Zbanowano ${targetEmail} na ${hours?hours+'h':'zawsze'}`);
+  await purgeUserTraces(userId,targetEmail);
+  logAdminAction('ban',`Zbanowano ${targetEmail} na ${hours?hours+'h':'zawsze'} (dane wyczyszczone)`);
   const menu=document.getElementById('admin-ban-menu');
   if(menu)menu.remove();
   renderAdminPanel();
   toast('Użytkownik zablokowany 🚫');
+}
+
+// Usuwa ślady zbanowanego użytkownika: jego komentarze (filmy/posty/ogłoszenia) i powiadomienia
+async function purgeUserTraces(userId,email){
+  const isHim=c=>c&&((c.user_id&&c.user_id===userId)||(c.user_email&&email&&c.user_email===email)||(c.email&&email&&c.email===email));
+  // 1) komentarze pod filmami (+ odpowiedzi)
+  for(const v of videos){
+    if(!Array.isArray(v.comments)||!v.comments.length)continue;
+    let changed=false;
+    const cleaned=v.comments.filter(c=>{
+      if(isHim(c)){changed=true;return false;}
+      return true;
+    }).map(c=>{
+      if(Array.isArray(c.replies)&&c.replies.some(isHim)){
+        changed=true;
+        return{...c,replies:c.replies.filter(r=>!isHim(r))};
+      }
+      return c;
+    });
+    if(changed){
+      await updateVideo(v.id,{comments:cleaned});
+      v.comments=cleaned;
+    }
+  }
+  // 2) komentarze pod postami
+  const{data:allPosts}=await sb.from('posts').select('id,comments');
+  if(allPosts){
+    for(const p of allPosts){
+      if(!Array.isArray(p.comments)||!p.comments.length)continue;
+      if(p.comments.some(isHim)){
+        const cleaned=p.comments.filter(c=>!isHim(c));
+        await sb.from('posts').update({comments:cleaned}).eq('id',p.id);
+      }
+    }
+  }
+  // 3) komentarze pod ogłoszeniami
+  const{data:allAnn}=await sb.from('announcements').select('id,comments');
+  if(allAnn){
+    for(const a of allAnn){
+      if(!Array.isArray(a.comments)||!a.comments.length)continue;
+      if(a.comments.some(isHim)){
+        const cleaned=a.comments.filter(c=>!isHim(c));
+        await sb.from('announcements').update({comments:cleaned}).eq('id',a.id);
+      }
+    }
+  }
+  // 4) powiadomienia (otrzymane i wysłane przez niego)
+  await sb.from('notifications').delete().eq('user_id',userId);
+  await sb.from('notifications').delete().eq('sender_id',userId);
 }
 
 async function adminUnbanUser(userId){
@@ -2617,16 +2674,26 @@ function makeNick(name,email){
   return '@'+(base||email?.split('@')[0]||'user');
 }
 
-const VIP_EMAIL='solarenkoaleksandr5@gmail.com';
-function isVIP(){return!!(currentUser&&currentUser.email===VIP_EMAIL);}
+let vipEmailsMap=new Map(); // email -> vip_badge_color, wypełniane z profiles.is_vip=true
+function isVIP(){return!!(currentUser&&vipEmailsMap.has(currentUser.email));}
+
+async function adminSetVip(userId,email,makeVip){
+  if(!isAdmin())return;
+  const{error}=await sb.from('profiles').upsert([{id:userId,email:email||null,is_vip:makeVip}],{onConflict:'id'});
+  if(error){toast('Błąd: '+error.message);return;}
+  await loadVipEmails();
+  logAdminAction(makeVip?'grant_vip':'revoke_vip',`${makeVip?'Nadano':'Odebrano'} VIP: ${email||userId}`);
+  renderAdminPanel();
+  toast(makeVip?'Nadano status VIP ⭐':'Odebrano status VIP');
+}
 
 function verifiedBadge(email){
   if(email===ADMIN_EMAIL){
     const badgeColor=adminBadgeColor||'#3ea6ff';
     return`<span title="Administrator" style="display:inline-flex;align-items:center;gap:3px;margin-left:5px;flex-shrink:0"><span style="display:inline-flex;align-items:center;justify-content:center;background:${badgeColor};border-radius:50%;width:16px;height:16px;flex-shrink:0"><svg viewBox="0 0 24 24" width="10" height="10" fill="#fff"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/></svg></span><span style="font-size:10px;font-weight:800;color:${badgeColor};letter-spacing:.5px">ADMIN</span></span>`;
   }
-  if(email===VIP_EMAIL){
-    const badgeColor=vipBadgeColor||'#ffd700';
+  if(email&&vipEmailsMap.has(email)){
+    const badgeColor=vipEmailsMap.get(email)||'#ffd700';
     return`<span title="VIP" style="display:inline-flex;align-items:center;gap:3px;margin-left:5px;flex-shrink:0"><span style="display:inline-flex;align-items:center;justify-content:center;background:${badgeColor};border-radius:50%;width:16px;height:16px;flex-shrink:0"><svg viewBox="0 0 24 24" width="10" height="10" fill="#000"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/></svg></span><span style="font-size:10px;font-weight:800;color:${badgeColor};letter-spacing:.5px">VIP</span></span>`;
   }
   return'';
@@ -4477,6 +4544,7 @@ function renderChannelShorts(){
       <div style="position:relative;width:160px;height:284px;background:#1a1a1a;border-radius:12px;overflow:hidden">
         ${th?`<img src="${th}" style="width:100%;height:100%;object-fit:cover">`:'<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;color:#333;font-size:36px">📱</div>'}
         <div style="position:absolute;top:8px;left:8px;background:#ff0000;color:#fff;font-size:10px;font-weight:700;padding:2px 6px;border-radius:4px">SHORT</div>
+        <div style="position:absolute;bottom:0;left:0;right:0;background:linear-gradient(transparent,rgba(0,0,0,.85));padding:16px 10px 8px;font-size:11px;color:rgba(255,255,255,.85)">${v.views||0} wyśw. · ${v.likes||0} ${likeIcon()}</div>
       </div>
       <div style="font-size:12px;font-weight:500;margin-top:6px">${esc(v.title)}</div>
     </div>`;
@@ -4819,7 +4887,7 @@ document.addEventListener('keydown',e=>{
   checkNewAnnouncements();
   checkDiscoState();
   setInterval(checkDiscoState,4000);
-  loadVipBadgeColor();
+  loadVipEmails();
   loadAdminBadgeColor();
   if(currentUser){
     const banned=await checkIfBanned();
@@ -4845,6 +4913,7 @@ document.addEventListener('keydown',e=>{
         await loadMyNameColor();
       await checkIfMuted();
       await loadSavedVideos();
+      await loadVipEmails();
       }
     }
   });
