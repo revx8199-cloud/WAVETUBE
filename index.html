@@ -196,6 +196,23 @@ hr{border:none;border-top:1px solid #272727;margin:20px 0}
 .post-time{font-size:11px;color:#666;margin-top:2px}
 .post-text{font-size:14px;line-height:1.6;color:#e0e0e0;margin-bottom:12px;white-space:pre-wrap}
 .post-img{width:100%;border-radius:8px;margin-bottom:12px;max-height:400px;object-fit:cover;display:block}
+.post-img-grid{display:grid;gap:4px;margin-bottom:12px;border-radius:8px;overflow:hidden}
+.post-img-grid.n1{grid-template-columns:1fr}
+.post-img-grid.n2{grid-template-columns:1fr 1fr}
+.post-img-grid.n3{grid-template-columns:1fr 1fr}
+.post-img-grid.n3 .pig-item:first-child{grid-row:span 2}
+.post-img-grid.n4plus{grid-template-columns:1fr 1fr}
+.pig-item{position:relative;cursor:pointer;overflow:hidden;background:#0f0f0f}
+.pig-item img{width:100%;height:100%;object-fit:cover;display:block;min-height:100px;max-height:280px}
+.pig-item .pig-more{position:absolute;inset:0;background:rgba(0,0,0,.55);color:#fff;display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:700}
+#post-img-lightbox{display:none;position:fixed;inset:0;background:rgba(0,0,0,.92);z-index:99999;align-items:center;justify-content:center;flex-direction:column}
+#post-img-lightbox.open{display:flex}
+#post-img-lightbox img{max-width:92vw;max-height:82vh;object-fit:contain;border-radius:6px}
+#post-img-lightbox .plb-close{position:absolute;top:16px;right:20px;background:none;border:none;color:#fff;font-size:28px;cursor:pointer}
+#post-img-lightbox .plb-nav{position:absolute;top:50%;transform:translateY(-50%);background:rgba(255,255,255,.1);border:none;color:#fff;font-size:22px;width:44px;height:44px;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center}
+#post-img-lightbox .plb-prev{left:16px}
+#post-img-lightbox .plb-next{right:16px}
+#post-img-lightbox .plb-count{margin-top:10px;color:#aaa;font-size:13px}
 .post-actions{display:flex;gap:12px;align-items:center}
 .post-btn{background:none;border:none;color:#aaa;cursor:pointer;font-size:13px;display:flex;align-items:center;gap:5px;padding:6px 10px;border-radius:20px}
 .post-btn:hover{background:#272727;color:#fff}
@@ -751,12 +768,9 @@ body.zoom-mode header,body.zoom-mode .sidebar-left,body.zoom-mode #main-content{
       <textarea id="post-text-inp" style="width:100%;background:#0f0f0f;border:1px solid #303030;border-radius:8px;color:#fff;padding:10px 14px;font-size:14px;outline:none;resize:none;height:120px" placeholder="Co chcesz napisać?"></textarea>
     </div>
     <div class="field">
-      <label>Zdjęcie (opcjonalnie)</label>
-      <input type="file" id="post-img-inp" accept="image/*" style="color:#aaa" onchange="previewPostImg(this)">
-      <div id="post-img-preview" style="display:none;margin-top:10px;position:relative">
-        <img id="post-img-preview-img" style="width:100%;border-radius:10px;max-height:300px;object-fit:cover;display:block">
-        <button onclick="removePostImg()" style="position:absolute;top:8px;right:8px;background:rgba(0,0,0,0.7);border:none;color:#fff;border-radius:50%;width:28px;height:28px;cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center">✕</button>
-      </div>
+      <label>Zdjęcia (opcjonalnie, max 6)</label>
+      <input type="file" id="post-img-inp" accept="image/*" multiple style="color:#aaa" onchange="previewPostImg(this)">
+      <div id="post-img-preview" style="display:none;margin-top:10px;grid-template-columns:repeat(3,1fr);gap:8px"></div>
     </div>
     <div class="field">
       <label style="display:flex;align-items:center;gap:8px;cursor:pointer;text-transform:none;font-size:13px;color:#ccc">
@@ -773,6 +787,15 @@ body.zoom-mode header,body.zoom-mode .sidebar-left,body.zoom-mode #main-content{
       <button class="fsubmit" id="post-submit-btn" onclick="submitPost()">Opublikuj</button>
     </div>
   </div>
+</div>
+
+<!-- LIGHTBOX ZDJĘĆ POSTA -->
+<div id="post-img-lightbox" onclick="if(event.target===this)closeLightbox()">
+  <button class="plb-close" onclick="closeLightbox()">✕</button>
+  <button class="plb-nav plb-prev" onclick="lightboxNav(-1)">‹</button>
+  <img id="plb-img" src="" alt="post">
+  <button class="plb-nav plb-next" onclick="lightboxNav(1)">›</button>
+  <div class="plb-count" id="plb-count"></div>
 </div>
 
 <!-- msg modal replaced by full page -->
@@ -2088,9 +2111,12 @@ if(adminTab==='users'){
   if(adminTab==='logs'){
     body.innerHTML='<p style="color:#888;padding:30px 20px;text-align:center">Ładowanie logów...</p>';
     const{data:logs}=await sb.from('admin_logs').select('*').order('created_at',{ascending:false}).limit(200);
-    if(!logs||!logs.length){body.innerHTML='<p style="color:#888;padding:30px 20px;text-align:center">Brak zapisanych akcji</p>';return;}
+    const clearBtnHtml=`<div style="padding:14px 20px;border-bottom:1px solid #272727;display:flex;justify-content:flex-end">
+      <button onclick="clearAdminLogs()" style="background:#3a1414;border:1px solid #5c1f1f;color:#ff6b6b;padding:8px 16px;border-radius:8px;cursor:pointer;font-size:12px;font-weight:600">🗑 Wyczyść logi</button>
+    </div>`;
+    if(!logs||!logs.length){body.innerHTML=clearBtnHtml+'<p style="color:#888;padding:30px 20px;text-align:center">Brak zapisanych akcji</p>';return;}
     const ACTION_ICONS={ban:'🚫',unban:'✅',mute:'🔇',unmute:'🔊',delete_video:'🗑',edit_video:'✏️',delete_report:'🚩',rename_user:'✏️',delete_announcement:'📢'};
-    body.innerHTML=logs.map(l=>`
+    body.innerHTML=clearBtnHtml+logs.map(l=>`
       <div class="admin-row" style="align-items:flex-start">
         <div style="font-size:16px;flex-shrink:0">${ACTION_ICONS[l.action]||'📝'}</div>
         <div style="flex:1;min-width:0">
@@ -2099,6 +2125,14 @@ if(adminTab==='users'){
         </div>
       </div>`).join('');
   }
+}
+
+async function clearAdminLogs(){
+  if(!await showConfirm('Wyczyścić logi?','Wszystkie zapisane akcje admina zostaną trwale usunięte. Tej operacji nie można cofnąć.'))return;
+  const{error}=await sb.from('admin_logs').delete().not('id','is',null);
+  if(error){toast('Błąd: '+error.message);return;}
+  toast('Logi wyczyszczone 🗑');
+  renderAdminPanel();
 }
 
 function renderAdminVideosList(){
@@ -4451,6 +4485,7 @@ function renderChannelShorts(){
   cont.innerHTML=html;
 }
 
+let currentPostsCache=[];
 async function renderPosts(){
   closeEmojiPicker();
   const{userId,email,name}=currentChannelUser;
@@ -4459,6 +4494,7 @@ async function renderPosts(){
   if(!pc)return;
   pc.innerHTML='<div style="padding:20px;color:#555;font-size:14px">⏳ Ładowanie postów...</div>';
   const posts=await getPosts(userId,email);
+  currentPostsCache=posts;
   let html='<div class="posts-grid">';
   if(isOwner){
     html+=`<button class="add-post-btn" onclick="openAddPost()">+ Dodaj post</button>`;
@@ -4480,7 +4516,7 @@ async function renderPosts(){
           ${isOwner?`<button onclick="deletePost(${p.id})" style="margin-left:auto;background:none;border:none;color:#555;cursor:pointer;font-size:16px" title="Usuń post">🗑</button>`:''}
         </div>
         ${p.text?`<div class="post-text">${esc(p.text)}</div>`:''}
-        ${p.image?`<img class="post-img" src="${p.image}" alt="post">`:''}
+        ${renderPostImages(p)}
         ${p.poll?renderPoll(p):''}
         <div class="post-actions">
           <button class="post-btn${isLiked?' liked':''}" onclick="likePost(${p.id})">
@@ -4509,6 +4545,45 @@ async function renderPosts(){
   }
   html+='</div>';
   pc.innerHTML=html;
+}
+
+function renderPostImages(p){
+  const imgs=(p.images&&p.images.length?p.images:(p.image?[p.image]:[]));
+  if(!imgs.length)return'';
+  if(imgs.length===1)return`<div class="post-img-grid n1"><div class="pig-item" onclick="openPostLightbox('${p.id}',0)"><img src="${imgs[0]}" alt="post"></div></div>`;
+  const cls=imgs.length===2?'n2':imgs.length===3?'n3':'n4plus';
+  const shown=imgs.slice(0,4);
+  return`<div class="post-img-grid ${cls}">${shown.map((src,i)=>{
+    const isLastWithMore=cls==='n4plus'&&i===3&&imgs.length>4;
+    return`<div class="pig-item" onclick="openPostLightbox('${p.id}',${i})">
+      <img src="${src}" alt="post">
+      ${isLastWithMore?`<div class="pig-more">+${imgs.length-4}</div>`:''}
+    </div>`;
+  }).join('')}</div>`;
+}
+
+let lightboxImgs=[],lightboxIdx=0;
+function openPostLightbox(postId,idx){
+  const post=(currentPostsCache||[]).find(p=>String(p.id)===String(postId));
+  const imgs=post?(post.images&&post.images.length?post.images:(post.image?[post.image]:[])):[];
+  if(!imgs.length)return;
+  lightboxImgs=imgs;lightboxIdx=idx;
+  renderLightbox();
+  document.getElementById('post-img-lightbox').classList.add('open');
+}
+function renderLightbox(){
+  document.getElementById('plb-img').src=lightboxImgs[lightboxIdx];
+  document.getElementById('plb-count').textContent=lightboxImgs.length>1?`${lightboxIdx+1} / ${lightboxImgs.length}`:'';
+  const multi=lightboxImgs.length>1;
+  document.getElementById('plb-prev').style.display=multi?'flex':'none';
+  document.getElementById('plb-next').style.display=multi?'flex':'none';
+}
+function lightboxNav(dir){
+  lightboxIdx=(lightboxIdx+dir+lightboxImgs.length)%lightboxImgs.length;
+  renderLightbox();
+}
+function closeLightbox(){
+  document.getElementById('post-img-lightbox').classList.remove('open');
 }
 
 function renderPoll(p){
@@ -4586,18 +4661,39 @@ async function deletePost(postId){
   renderPosts();
 }
 
+let postImgFiles=[];
+
 function previewPostImg(input){
-  const file=input.files[0];
-  if(!file)return;
-  const url=URL.createObjectURL(file);
-  document.getElementById('post-img-preview-img').src=url;
-  document.getElementById('post-img-preview').style.display='block';
+  const files=[...input.files].slice(0,6);
+  if(input.files.length>6)toast('Maksymalnie 6 zdjęć na post');
+  postImgFiles=files;
+  renderPostImgPreview();
+}
+
+function renderPostImgPreview(){
+  const wrap=document.getElementById('post-img-preview');
+  if(!postImgFiles.length){wrap.style.display='none';wrap.innerHTML='';return;}
+  wrap.style.display='grid';
+  wrap.innerHTML=postImgFiles.map((f,i)=>{
+    const url=URL.createObjectURL(f);
+    return`<div style="position:relative">
+      <img src="${url}" style="width:100%;height:90px;object-fit:cover;border-radius:8px;display:block">
+      <button onclick="removePostImgAt(${i})" style="position:absolute;top:4px;right:4px;background:rgba(0,0,0,.7);border:none;color:#fff;border-radius:50%;width:22px;height:22px;cursor:pointer;font-size:13px;display:flex;align-items:center;justify-content:center">✕</button>
+    </div>`;
+  }).join('');
+}
+
+function removePostImgAt(i){
+  postImgFiles.splice(i,1);
+  renderPostImgPreview();
 }
 
 function removePostImg(){
+  postImgFiles=[];
   document.getElementById('post-img-inp').value='';
-  document.getElementById('post-img-preview').style.display='none';
-  document.getElementById('post-img-preview-img').src='';
+  const wrap=document.getElementById('post-img-preview');
+  wrap.style.display='none';
+  wrap.innerHTML='';
 }
 
 function togglePollFields(){
@@ -4636,11 +4732,19 @@ function openAddPost(){
 
 let isSubmittingPost=false;
 
+function readFileAsDataUrl(file){
+  return new Promise((resolve,reject)=>{
+    const r=new FileReader();
+    r.onload=e=>resolve(e.target.result);
+    r.onerror=reject;
+    r.readAsDataURL(file);
+  });
+}
+
 async function submitPost(){
   if(isSubmittingPost)return;
   if(isMutedNow()){toast(muteToastMsg());return;}
   const text=document.getElementById('post-text-inp').value.trim();
-  const imgFile=document.getElementById('post-img-inp').files[0];
   const pollOn=document.getElementById('poll-toggle').checked;
   let poll=null;
   if(pollOn){
@@ -4650,7 +4754,7 @@ async function submitPost(){
     if(opts.length<2){toast('Dodaj przynajmniej 2 opcje!');return;}
     poll={question,options:opts.map(text=>({text,votes:0})),voters:{}};
   }
-  if(!text&&!imgFile&&!poll){toast('Napisz coś, dodaj zdjęcie lub ankietę!');return;}
+  if(!text&&!postImgFiles.length&&!poll){toast('Napisz coś, dodaj zdjęcie lub ankietę!');return;}
   isSubmittingPost=true;
   const btn=document.getElementById('post-submit-btn');
   const originalLabel=btn.textContent;
@@ -4659,7 +4763,11 @@ async function submitPost(){
   btn.style.cursor='not-allowed';
   btn.textContent='Publikowanie...';
   const meta=currentUser.user_metadata;
-  const doSave=async(imgData)=>{
+  try{
+    let images=[];
+    if(postImgFiles.length){
+      images=await Promise.all(postImgFiles.map(readFileAsDataUrl));
+    }
     const{error}=await sb.from('posts').insert([{
       user_id:currentUser.id,
       user_email:currentUser.email,
@@ -4667,15 +4775,10 @@ async function submitPost(){
       user_avatar:meta?.avatar_url||'',
       user_color:myNameColor||'',
       user_font:myNameFont||'',
-      text,image:imgData||'',likes:0,comments:[],poll:poll
+      text,image:images[0]||'',images:images,likes:0,comments:[],poll:poll
     }]);
     if(error){
       toast('Błąd: '+error.message);
-      isSubmittingPost=false;
-      btn.disabled=false;
-      btn.style.opacity='1';
-      btn.style.cursor='pointer';
-      btn.textContent=originalLabel;
       return;
     }
     // notify subscribers
@@ -4685,23 +4788,28 @@ async function submitPost(){
       await sb.from('notifications').insert(notifs);
     }
     document.getElementById('post-text-inp').value='';
-    document.getElementById('post-img-inp').value='';
+    removePostImg();
     resetPollForm();
     document.getElementById('add-post-modal').classList.remove('open');
     renderPosts();
     toast('Post dodany! 📝');
+  }finally{
     isSubmittingPost=false;
     btn.disabled=false;
     btn.style.opacity='1';
     btn.style.cursor='pointer';
     btn.textContent=originalLabel;
-  };
-  if(imgFile){const r=new FileReader();r.onload=e=>doSave(e.target.result);r.readAsDataURL(imgFile);}
-  else await doSave('');
+  }
 }
 
 document.getElementById('pm').addEventListener('click',function(e){if(e.target===this)closeP();});
-document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeP();closeForm();closeEditModal();closeMessages();document.getElementById('add-post-modal').classList.remove('open');}});
+document.addEventListener('keydown',e=>{
+  if(e.key==='Escape'){closeP();closeForm();closeEditModal();closeMessages();document.getElementById('add-post-modal').classList.remove('open');closeLightbox();}
+  if(document.getElementById('post-img-lightbox').classList.contains('open')){
+    if(e.key==='ArrowLeft')lightboxNav(-1);
+    if(e.key==='ArrowRight')lightboxNav(1);
+  }
+});
 
 (async()=>{
   const{data:{session}}=await sb.auth.getSession();
