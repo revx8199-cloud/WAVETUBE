@@ -845,7 +845,7 @@ body.zoom-mode header,body.zoom-mode .sidebar-left,body.zoom-mode #main-content{
     <div class="field" style="margin-bottom:24px;padding-bottom:20px;border-bottom:1px solid var(--border)">
       <label data-i18n="settings_nick">Twój nick</label>
       <div style="display:flex;gap:10px;margin-top:8px">
-        <input id="settings-nick-inp" placeholder="Twój nick" data-i18n-placeholder="settings_nick" style="flex:1;background:var(--bg-sunken);border:1px solid var(--border);border-radius:8px;color:var(--text-primary);padding:10px 14px;font-size:13px;outline:none">
+        <input id="settings-nick-inp" maxlength="30" placeholder="Twój nick" data-i18n-placeholder="settings_nick" style="flex:1;background:var(--bg-sunken);border:1px solid var(--border);border-radius:8px;color:var(--text-primary);padding:10px 14px;font-size:13px;outline:none">
         <button onclick="saveMySettingsNick()" data-i18n="btn_save" style="background:#3ea6ff;border:none;color:#0f0f0f;padding:10px 16px;border-radius:8px;cursor:pointer;font-size:13px;font-weight:700;white-space:nowrap">Zapisz</button>
       </div>
       <p style="color:var(--text-tertiary);font-size:11px;margin-top:8px">Zmienia Twoją nazwę wyświetlaną w aplikacji.</p>
@@ -1079,11 +1079,13 @@ async function saveMySettingsNick(){
   if(!currentUser)return;
   const newNick=document.getElementById('settings-nick-inp').value.trim();
   if(!newNick){toast('Wpisz nick');return;}
+  if(newNick.length>30){toast('Nick może mieć max 30 znaków!');return;}
   const{error:authErr}=await sb.auth.updateUser({data:{full_name:newNick}});
   if(authErr){toast('Błąd: '+authErr.message);return;}
   const{error}=await sb.from('profiles').upsert([{id:currentUser.id,name:newNick}],{onConflict:'id'});
   if(error){toast('Błąd zapisu: '+error.message);return;}
   myDisplayNick=newNick;
+  profileCache[currentUser.id]={...(profileCache[currentUser.id]||{id:currentUser.id,avatar:currentUser.user_metadata?.avatar_url||'',email:currentUser.email||''}),name:newNick};
   toast('Nick zmieniony! ✏️');
   updateAuthUI();
 }
@@ -1442,10 +1444,12 @@ async function saveMyNickname(){
   if(!isAdmin())return;
   const newNick=document.getElementById('admin-nick-inp').value.trim();
   if(!newNick){toast('Wpisz nick');return;}
+  if(newNick.length>30){toast('Nick może mieć max 30 znaków!');return;}
   await sb.auth.updateUser({data:{full_name:newNick}});
   const{error}=await sb.from('profiles').upsert([{id:currentUser.id,name:newNick}],{onConflict:'id'});
   if(error){toast('Błąd zapisu nicku: '+error.message);return;}
   myDisplayNick=newNick;
+  profileCache[currentUser.id]={...(profileCache[currentUser.id]||{id:currentUser.id,avatar:currentUser.user_metadata?.avatar_url||'',email:currentUser.email||''}),name:newNick};
   toast('Nick zmieniony! ✏️');
   renderAdminPanel();
 }
@@ -1558,7 +1562,7 @@ function toggleRenameUser(userId,btnEl){
   popup.style.cssText=`position:fixed;top:${rect.bottom+4}px;left:${Math.min(rect.left-200,window.innerWidth-260)}px;background:var(--bg-panel);border:1px solid var(--border);border-radius:10px;padding:12px;min-width:240px;z-index:2000;box-shadow:0 4px 20px rgba(0,0,0,.5)`;
   popup.innerHTML=`
     <div style="font-size:11px;color:var(--text-tertiary);margin-bottom:8px">Nowy nick dla ${user?.email||''}</div>
-    <input id="rename-inp-${userId}" value="${esc(user?.name||'')}" style="width:100%;background:var(--bg-sunken);border:1px solid var(--border);border-radius:6px;color:var(--text-primary);padding:8px 10px;font-size:13px;outline:none;margin-bottom:10px" onkeydown="if(event.key==='Enter')saveRenameUser('${userId}')">
+    <input id="rename-inp-${userId}" maxlength="30" value="${esc(user?.name||'')}" style="width:100%;background:var(--bg-sunken);border:1px solid var(--border);border-radius:6px;color:var(--text-primary);padding:8px 10px;font-size:13px;outline:none;margin-bottom:10px" onkeydown="if(event.key==='Enter')saveRenameUser('${userId}')">
     <div style="display:flex;gap:8px;justify-content:flex-end">
       <button onclick="document.getElementById('admin-rename-popup').remove()" style="background:none;border:none;color:var(--text-tertiary);padding:6px 12px;border-radius:8px;cursor:pointer;font-size:12px">Anuluj</button>
       <button onclick="saveRenameUser('${userId}')" style="background:#3ea6ff;border:none;color:#0f0f0f;padding:6px 14px;border-radius:8px;cursor:pointer;font-size:12px;font-weight:700">Zapisz</button>
@@ -1572,6 +1576,7 @@ async function saveRenameUser(userId){
   const inp=document.getElementById(`rename-inp-${userId}`);
   const newName=inp?.value.trim();
   if(!newName){toast('Wpisz nick');return;}
+  if(newName.length>30){toast('Nick może mieć max 30 znaków!');return;}
   const{error}=await sb.from('profiles').upsert([{id:userId,name:newName}],{onConflict:'id'});
   const popup=document.getElementById('admin-rename-popup');
   if(popup)popup.remove();
@@ -1579,6 +1584,7 @@ async function saveRenameUser(userId){
   const user=adminUsersCache.find(u=>u.id===userId);
   logAdminAction('rename_user',`Zmieniono nick ${user?.email||userId} na "${newName}"`);
   if(user)user.name=newName;
+  profileCache[userId]={...(profileCache[userId]||{id:userId,avatar:'',email:user?.email||''}),name:newName};
   const nameEl=document.getElementById(`uname-${userId}`);
   if(nameEl)nameEl.textContent=newName;
   toast('Nick zmieniony! ✏️');
@@ -2062,7 +2068,7 @@ if(adminTab==='users'){
           <div style="font-size:13px;font-weight:700;color:var(--text-primary);margin-bottom:4px">✏️ Twój nick</div>
           <p style="color:var(--text-secondary);font-size:12px;margin-bottom:12px">Zmienia nazwę wyświetlaną wszędzie w aplikacji (natychmiastowo, także dla starszych wpisów).</p>
           <div style="display:flex;gap:10px">
-            <input id="admin-nick-inp" value="${myDisplayName}" placeholder="Twój nick" style="flex:1;background:var(--bg-sunken);border:1px solid var(--border);border-radius:8px;color:var(--text-primary);padding:10px 14px;font-size:13px;outline:none">
+            <input id="admin-nick-inp" maxlength="30" value="${myDisplayName}" placeholder="Twój nick" style="flex:1;background:var(--bg-sunken);border:1px solid var(--border);border-radius:8px;color:var(--text-primary);padding:10px 14px;font-size:13px;outline:none">
             <button onclick="saveMyNickname()" style="background:#3ea6ff;border:none;color:#0f0f0f;padding:10px 18px;border-radius:8px;cursor:pointer;font-size:13px;font-weight:700;white-space:nowrap">Zapisz nick</button>
           </div>
         </div>
@@ -2613,16 +2619,17 @@ async function submitReport(){
 async function getProfile(userId){
   if(!userId)return null;
   if(profileCache[userId])return profileCache[userId];
-  // Check videos first (fastest)
+  // Tabela profiles jest źródłem prawdy (aktualny nick/avatar) — sprawdzamy ją najpierw,
+  // żeby zmiana nicku od razu było widać wszędzie, a nie tylko na starych, "zamrożonych" wpisach.
+  const{data}=await sb.from('profiles').select('*').eq('id',userId).single();
+  if(data&&(data.avatar||data.name)){profileCache[userId]=data;return data;}
+  // Fallback dla userów bez wiersza w profiles: dane z ich filmu (najszybsze)
   const vid=videos.find(v=>v.user_id===userId);
   if(vid&&(vid.user_avatar||vid.user_name)){
     const p={id:userId,name:vid.user_name||vid.user_email?.split('@')[0]||'Użytkownik',avatar:vid.user_avatar||'',email:vid.user_email||''};
     profileCache[userId]=p;
     return p;
   }
-  // Fetch from profiles table
-  const{data}=await sb.from('profiles').select('*').eq('id',userId).single();
-  if(data&&(data.avatar||data.name)){profileCache[userId]=data;return data;}
   // Try subscriptions table - someone might have subscribed and their name is saved
   const{data:subData}=await sb.from('subscriptions').select('channel_id,channel_name,channel_avatar').eq('channel_id',userId).limit(1);
   if(subData&&subData.length&&subData[0].channel_name){
@@ -2691,7 +2698,7 @@ function thumbFor(v){
   const gdid=gdId(v.url);if(gdid)return`https://lh3.googleusercontent.com/d/${gdid}`;
   return'';
 }
-function getUserName(v){return v.user_name||v.user_email||'Anonim';}
+function getUserName(v){const p=profileCache[v.user_id||''];return(p&&p.name)||v.user_name||v.user_email||'Anonim';}
 function makeNick(name,email){
   if(!name||name.match(/^[0-9a-f-]{8,}$/i))return email?'@'+email.split('@')[0]:'@kanał';
   const base=name.toLowerCase().replace(/\s+/g,'').replace(/[^a-z0-9]/g,'');
@@ -2867,12 +2874,13 @@ function render(){
 // ── KANAŁ ─────────────────────────────────────────────────────────────────────
 async function showChannel(userId,nameIn,avatar,email){
   let name=nameIn;
-  // Fallback: jeśli brak nazwy/avatara (np. kanał bez żadnego filmu), pobierz z profiles
-  if(userId&&(!name||name==='undefined'||!avatar)){
+  // Zawsze bierzemy aktualny nick/avatar z profiles (jeśli istnieje) —
+  // przekazany nameIn to często "zamrożona" nazwa sprzed zmiany nicku (z filmu/komentarza).
+  if(userId){
     const prof=await getProfile(userId);
     if(prof){
-      if(!name||name==='undefined')name=prof.name||name;
-      if(!avatar)avatar=prof.avatar||avatar;
+      if(prof.name)name=prof.name;
+      if(prof.avatar)avatar=prof.avatar;
       if(!email)email=prof.email||email;
     }
   }
@@ -3629,6 +3637,20 @@ document.addEventListener('click',e=>{
   }
 });
 
+// Jedno wspólne źródło sortowania komentarzy — używane wszędzie (render + akcje),
+// żeby indeks klikniętego komentarza zawsze wskazywał na właściwy wpis w tablicy.
+function getSortedComments(){
+  const list=(cur&&cur.comments)||[];
+  return[...list].sort((a,b)=>{
+    const pin=(b.pinned?1:0)-(a.pinned?1:0);
+    if(pin!==0)return pin;
+    if(commentSortMode==='newest')return(b.ts||0)-(a.ts||0);
+    const likeDiff=(b.likes||0)-(a.likes||0);
+    if(likeDiff!==0)return likeDiff;
+    return(b.ts||0)-(a.ts||0);
+  });
+}
+
 function renderC(){
   closeEmojiPicker();
   closeCmtMenu();
@@ -3638,15 +3660,7 @@ function renderC(){
   const isVideoOwner=currentUser&&cur&&currentUser.id===cur.user_id;
   const likedComments=new Set(JSON.parse(localStorage.getItem('liked_comments')||'[]'));
   const dislikedComments=new Set(JSON.parse(localStorage.getItem('disliked_comments')||'[]'));
-  const sortedList=[...list].sort((a,b)=>{
-    const pin=(b.pinned?1:0)-(a.pinned?1:0);
-    if(pin!==0)return pin;
-    if(commentSortMode==='newest')return(b.ts||0)-(a.ts||0);
-    // najtrafniejsze: najpierw po polubieniach, potem najnowsze
-    const likeDiff=(b.likes||0)-(a.likes||0);
-    if(likeDiff!==0)return likeDiff;
-    return(b.ts||0)-(a.ts||0);
-  });
+  const sortedList=getSortedComments();
   document.getElementById('clist').innerHTML=sortedList.map((c,i)=>{
     const av=c.avatar?`<img src="${c.avatar}">`:`${(c.user||'?')[0].toUpperCase()}`;
     const uid=c.user_id||'';
@@ -3777,7 +3791,7 @@ async function likeComment(index){
   const cid=`${cur.id}_${index}`;
   const liked=new Set(JSON.parse(localStorage.getItem('liked_comments')||'[]'));
   const disliked=new Set(JSON.parse(localStorage.getItem('disliked_comments')||'[]'));
-  const sortedList=[...(cur.comments||[])].sort((a,b)=>(b.pinned?1:0)-(a.pinned?1:0));
+  const sortedList=getSortedComments();
   const c=sortedList[index];
   if(!c)return;
   const origIdx=(cur.comments||[]).findIndex(x=>x.user===c.user&&x.text===c.text&&x.time===c.time);
@@ -3796,7 +3810,7 @@ async function dislikeComment(index){
   const cid=`${cur.id}_${index}`;
   const liked=new Set(JSON.parse(localStorage.getItem('liked_comments')||'[]'));
   const disliked=new Set(JSON.parse(localStorage.getItem('disliked_comments')||'[]'));
-  const sortedList=[...(cur.comments||[])].sort((a,b)=>(b.pinned?1:0)-(a.pinned?1:0));
+  const sortedList=getSortedComments();
   const c=sortedList[index];
   if(!c)return;
   const origIdx=(cur.comments||[]).findIndex(x=>x.user===c.user&&x.text===c.text&&x.time===c.time);
@@ -3816,7 +3830,7 @@ async function postReply(index){
   if(!txt)return;
   const meta=currentUser.user_metadata;
   const now=new Date().toLocaleString('pl-PL',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'});
-  const sortedList=[...(cur.comments||[])].sort((a,b)=>(b.pinned?1:0)-(a.pinned?1:0));
+  const sortedList=getSortedComments();
   const c=sortedList[index];
   if(!c)return;
   const origIdx=(cur.comments||[]).findIndex(x=>x.user===c.user&&x.text===c.text&&x.time===c.time);
@@ -3834,7 +3848,7 @@ async function togglePinComment(index){
   if(!cur||!currentUser||currentUser.id!==cur.user_id)return;
   const list=cur.comments||[];
   // Find the actual comment in original list (before sort)
-  const sortedList=[...list].sort((a,b)=>(b.pinned?1:0)-(a.pinned?1:0));
+  const sortedList=getSortedComments();
   const comment=sortedList[index];
   if(!comment)return;
   const origIndex=list.findIndex(c=>c.user===comment.user&&c.text===comment.text&&c.time===comment.time);
@@ -3850,7 +3864,7 @@ async function togglePinComment(index){
 
 async function deleteComment(index){
   if(!cur||!currentUser)return;
-  const sortedList=[...( cur.comments||[])].sort((a,b)=>(b.pinned?1:0)-(a.pinned?1:0));
+  const sortedList=getSortedComments();
   const comment=sortedList[index];
   if(!comment)return;
   const isOwner=currentUser.id===cur.user_id;
@@ -3868,7 +3882,7 @@ async function deleteComment(index){
 
 async function deleteReply(commentIndex,replyIndex){
   if(!cur||!currentUser)return;
-  const sortedList=[...(cur.comments||[])].sort((a,b)=>(b.pinned?1:0)-(a.pinned?1:0));
+  const sortedList=getSortedComments();
   const comment=sortedList[commentIndex];
   if(!comment||!comment.replies)return;
   const reply=comment.replies[replyIndex];
@@ -3899,14 +3913,7 @@ function toggleEditComment(index){
 
 async function saveEditComment(index){
   if(!cur||!currentUser)return;
-  const sortedList=[...(cur.comments||[])].sort((a,b)=>{
-    const pin=(b.pinned?1:0)-(a.pinned?1:0);
-    if(pin!==0)return pin;
-    if(commentSortMode==='newest')return(b.ts||0)-(a.ts||0);
-    const likeDiff=(b.likes||0)-(a.likes||0);
-    if(likeDiff!==0)return likeDiff;
-    return(b.ts||0)-(a.ts||0);
-  });
+  const sortedList=getSortedComments();
   const comment=sortedList[index];
   if(!comment)return;
   if(currentUser.id!==comment.user_id){toast('Możesz edytować tylko swoje komentarze');return;}
@@ -4341,12 +4348,11 @@ function renderChatHeader(){
   closeEmojiPicker();
   const area=document.getElementById('msg-chat-area');
   const o=currentOtherUser;
-  // Try to get fresh data from videos
   const vid=videos.find(v=>v.user_id===o.id);
   const prof=profileCache[o.id];
-  const name=vid?.user_name||vid?.user_email?.split('@')[0]||prof?.name||o.name||'Użytkownik';
-  const avatar=vid?.user_avatar||prof?.avatar||o.avatar||'';
-  const email=vid?.user_email||prof?.email||o.email||'';
+  const name=prof?.name||vid?.user_name||vid?.user_email?.split('@')[0]||o.name||'Użytkownik';
+  const avatar=prof?.avatar||vid?.user_avatar||o.avatar||'';
+  const email=prof?.email||vid?.user_email||o.email||'';
   const isBlocked=!!blockedUsers[o.id];
   const expiresAt=blockedUsers[o.id];
   area.innerHTML=`
