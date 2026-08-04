@@ -959,6 +959,18 @@ body.zoom-mode header,body.zoom-mode .sidebar-left,body.zoom-mode #main-content{
   </div>
 </div>
 
+<!-- STATYSTYKI KANAŁU -->
+<div class="fmbg" id="stats-modal">
+  <div class="fbox" style="max-width:680px;width:92%;max-height:88vh;overflow-y:auto">
+    <h3>📊 Statystyki kanału</h3>
+    <p class="sub" style="margin-bottom:20px">Podgląd tylko dla Ciebie — widoczne wyłącznie na Twoim koncie.</p>
+    <div id="stats-body"><p style="color:var(--text-tertiary);padding:30px 0;text-align:center">Ładowanie...</p></div>
+    <div class="fbbtns">
+      <button class="fcancel" onclick="closeStatsPanel()">Zamknij</button>
+    </div>
+  </div>
+</div>
+
 <!-- PANEL ADMINISTRATORA -->
 <div class="fmbg" id="admin-panel-modal" style="align-items:center">
   <div class="fbox" style="max-width:820px;width:94%;height:80vh;display:flex;padding:0;border-radius:12px;overflow:hidden">
@@ -1351,6 +1363,123 @@ function openVipPanel(){
 
 function closeVipPanel(){
   document.getElementById('vip-panel-modal').classList.remove('open');
+}
+
+// ── STATYSTYKI KANAŁU ────────────────────────────────────────────────────────
+function statCard(icon,label,value){
+  return`<div style="background:var(--bg-card);border:1px solid var(--border);border-radius:10px;padding:14px 10px;text-align:center">
+    <div style="font-size:20px">${icon}</div>
+    <div style="font-size:18px;font-weight:700;margin-top:4px">${(value||0).toLocaleString('pl-PL')}</div>
+    <div style="font-size:11px;color:var(--text-tertiary);margin-top:2px">${label}</div>
+  </div>`;
+}
+
+function hBarChart(items,opts){
+  opts=opts||{};
+  const color=opts.color||'#cc0000';
+  const max=Math.max(1,...items.map(i=>i.value));
+  return items.map(i=>{
+    const pct=Math.max(2,Math.round((i.value/max)*100));
+    return`<div style="margin-bottom:10px">
+      <div style="display:flex;justify-content:space-between;gap:10px;font-size:12px;color:var(--text-secondary);margin-bottom:4px">
+        <span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(i.label)}</span>
+        <span style="font-weight:600;color:var(--text-primary);flex-shrink:0">${(i.value||0).toLocaleString('pl-PL')}</span>
+      </div>
+      <div style="background:var(--bg-sunken);border-radius:6px;height:8px;overflow:hidden">
+        <div style="background:${color};height:100%;width:${pct}%;border-radius:6px"></div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function svgLineChart(points){
+  if(!points.length)return'<div style="color:var(--text-tertiary);font-size:12px;padding:16px 0;text-align:center">Za mało danych</div>';
+  const w=600,h=140,pad=20;
+  const maxY=Math.max(1,...points.map(p=>p.y));
+  const stepX=points.length>1?(w-pad*2)/(points.length-1):0;
+  const coords=points.map((p,i)=>[pad+i*stepX,h-pad-((p.y/maxY)*(h-pad*2))]);
+  const linePath='M'+coords.map(c=>c[0]+','+c[1]).join(' L');
+  const areaPath=linePath+` L${coords[coords.length-1][0]},${h-pad} L${coords[0][0]},${h-pad} Z`;
+  return`<svg viewBox="0 0 ${w} ${h}" style="width:100%;height:140px;display:block">
+    <path d="${areaPath}" fill="rgba(204,0,0,.12)" stroke="none"/>
+    <path d="${linePath}" fill="none" stroke="#cc0000" stroke-width="2"/>
+    ${coords.map(c=>`<circle cx="${c[0]}" cy="${c[1]}" r="3" fill="#cc0000"/>`).join('')}
+  </svg>
+  <div style="display:flex;justify-content:space-between;font-size:10px;color:var(--text-tertiary);margin-top:2px">
+    <span>${esc(points[0].label)}</span>${points.length>1?`<span>${esc(points[points.length-1].label)}</span>`:''}
+  </div>`;
+}
+
+async function openStatsPanel(){
+  if(!currentUser)return;
+  document.getElementById('stats-modal').classList.add('open');
+  const body=document.getElementById('stats-body');
+  body.innerHTML='<p style="color:var(--text-tertiary);padding:30px 0;text-align:center">Ładowanie statystyk...</p>';
+
+  const ownVideos=videos.filter(v=>v.user_id===currentUser.id);
+  const totalViews=ownVideos.reduce((s,v)=>s+(v.views||0),0);
+  const totalLikes=ownVideos.reduce((s,v)=>s+(v.likes||0),0);
+  const totalComments=ownVideos.reduce((s,v)=>s+((v.comments||[]).length),0);
+  const{data:subs}=await sb.from('subscriptions').select('created_at').eq('channel_id',currentUser.id).order('created_at',{ascending:true});
+  const subCount=(subs||[]).length;
+
+  const topVideos=[...ownVideos].sort((a,b)=>(b.views||0)-(a.views||0)).slice(0,8)
+    .map(v=>({label:v.title||'Bez tytułu',value:v.views||0}));
+
+  const catMap={};
+  ownVideos.forEach(v=>{const c=v.category||'Bez kategorii';catMap[c]=(catMap[c]||0)+(v.views||0);});
+  const catData=Object.entries(catMap).sort((a,b)=>b[1]-a[1]).map(([label,value])=>({label,value}));
+
+  const monthMap={};
+  ownVideos.forEach(v=>{
+    const d=new Date(v.created_at||Date.now());
+    const key=d.toLocaleDateString('pl-PL',{month:'short',year:'2-digit'});
+    monthMap[key]=(monthMap[key]||0)+1;
+  });
+  const uploadPoints=Object.entries(monthMap).map(([label,y])=>({label,y}));
+
+  let running=0;
+  const subMonthMap={};
+  (subs||[]).forEach(s=>{
+    const d=new Date(s.created_at);
+    const key=d.toLocaleDateString('pl-PL',{month:'short',year:'2-digit'});
+    subMonthMap[key]=(subMonthMap[key]||0)+1;
+  });
+  const subPoints=Object.entries(subMonthMap).map(([label,c])=>{running+=c;return{label,y:running};});
+
+  body.innerHTML=`
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:10px;margin-bottom:26px">
+      ${statCard('👁️','Wyświetlenia',totalViews)}
+      ${statCard(likeIcon(),'Polubienia',totalLikes)}
+      ${statCard('🔔','Subskrybenci',subCount)}
+      ${statCard('🎬','Filmy',ownVideos.length)}
+      ${statCard('💬','Komentarze',totalComments)}
+    </div>
+
+    <div style="margin-bottom:24px">
+      <div style="font-size:13px;font-weight:700;margin-bottom:10px">📈 Wzrost subskrybentów (skumulowany)</div>
+      ${svgLineChart(subPoints)}
+    </div>
+
+    <div style="margin-bottom:24px">
+      <div style="font-size:13px;font-weight:700;margin-bottom:10px">🏆 Najpopularniejsze filmy</div>
+      ${topVideos.length?hBarChart(topVideos):'<div style="color:var(--text-tertiary);font-size:12px">Brak filmów</div>'}
+    </div>
+
+    <div style="margin-bottom:24px">
+      <div style="font-size:13px;font-weight:700;margin-bottom:10px">📂 Wyświetlenia wg kategorii</div>
+      ${catData.length?hBarChart(catData,{color:'#3ea6ff'}):'<div style="color:var(--text-tertiary);font-size:12px">Brak danych</div>'}
+    </div>
+
+    <div>
+      <div style="font-size:13px;font-weight:700;margin-bottom:10px">🗓️ Publikacje wg miesiąca</div>
+      ${uploadPoints.length?hBarChart(uploadPoints.map(p=>({label:p.label,value:p.y})),{color:'#4ade80'}):'<div style="color:var(--text-tertiary);font-size:12px">Brak danych</div>'}
+    </div>
+  `;
+}
+
+function closeStatsPanel(){
+  document.getElementById('stats-modal').classList.remove('open');
 }
 
 function renderVipPanel(){
@@ -3043,7 +3172,8 @@ async function showChannel(userId,nameIn,avatar,email){
           <span style="font-size:13px;color:var(--text-secondary)"><span id="sub-count-big">${subCount}</span> ${t('subscribers_label')} · ${userVideos.length} ${t('videos_label')}</span>
           ${!isOwner?`<button class="btn-sub-big${isSub?' subscribed':''}" onclick="toggleSub('${userId||email}','${jsesc(name)}')" id="sub-big-btn" style="margin-left:0">${isSub?'✓ '+t('btn_subscribed'):t('btn_subscribe')}</button>
           <button onclick="openMsg('${jsesc(name)}','${email}','${userId}')" style="background:var(--border-soft);border:none;color:var(--text-primary);padding:8px 16px;border-radius:20px;cursor:pointer;font-size:13px;display:flex;align-items:center;gap:6px">✉️ Wiadomość</button>`
-          :`<button class="btn-sub-big subscribed" style="margin-left:0;cursor:default">${t('your_channel_label')}</button>`}
+          :`<button class="btn-sub-big subscribed" style="margin-left:0;cursor:default">${t('your_channel_label')}</button>
+          <button onclick="openStatsPanel()" style="background:var(--border-soft);border:none;color:var(--text-primary);padding:8px 16px;border-radius:20px;cursor:pointer;font-size:13px;display:flex;align-items:center;gap:6px">📊 Statystyki</button>`}
         </div>
         <div id="ch-desc-wrap">
           ${isOwner
@@ -5086,7 +5216,7 @@ async function submitPost(){
 
 document.getElementById('pm').addEventListener('click',function(e){if(e.target===this)closeP();});
 document.addEventListener('keydown',e=>{
-  if(e.key==='Escape'){closeP();closeForm();closeEditModal();closeMessages();document.getElementById('add-post-modal').classList.remove('open');closeLightbox();}
+  if(e.key==='Escape'){closeP();closeForm();closeEditModal();closeMessages();document.getElementById('add-post-modal').classList.remove('open');closeLightbox();closeStatsPanel();}
   if(document.getElementById('post-img-lightbox').classList.contains('open')){
     if(e.key==='ArrowLeft')lightboxNav(-1);
     if(e.key==='ArrowRight')lightboxNav(1);
