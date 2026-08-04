@@ -1318,9 +1318,10 @@ const profileCache={};
 async function saveProfile(user){
   if(!user)return;
   const meta=user.user_metadata;
+  const rawName=meta?.full_name||user.email?.split('@')[0]||'Użytkownik';
   const profile={
     id:user.id,
-    name:meta?.full_name||user.email?.split('@')[0]||'Użytkownik',
+    name:rawName.slice(0,30),
     avatar:meta?.avatar_url||'',
     email:user.email||''
   };
@@ -1459,7 +1460,7 @@ async function loadAdminBadgeColor(){
 
 function getMyDisplayName(){
   if(!currentUser)return'';
-  return myDisplayNick||currentUser.user_metadata?.full_name||currentUser.email?.split('@')[0]||'Anonim';
+  return myDisplayNick||(currentUser.user_metadata?.full_name||currentUser.email?.split('@')[0]||'Anonim').slice(0,30);
 }
 let myNameFont='';
 
@@ -3110,7 +3111,7 @@ async function toggleSub(key,name){
     const chName=chVideos[0]?.user_name||chVideos[0]?.user_email?.split('@')[0]||name;
     await sb.from('subscriptions').insert([{subscriber_id:currentUser.id,subscriber_email:currentUser.email,channel_id:key,channel_name:chName,channel_avatar:chAvatar}]);
     // send notification to channel owner
-    await sb.from('notifications').insert([{user_id:key,message:`<b>${currentUser.user_metadata?.full_name||currentUser.email?.split('@')[0]}</b> zasubskrybował Twój kanał 🔔`,avatar:currentUser.user_metadata?.avatar_url||'',sender_id:currentUser.id,sender_name:currentUser.user_metadata?.full_name||currentUser.email?.split('@')[0],sender_avatar:currentUser.user_metadata?.avatar_url||'',sender_email:currentUser.email}]);
+    await sb.from('notifications').insert([{user_id:key,message:`<b>${getMyDisplayName()}</b> zasubskrybował Twój kanał 🔔`,avatar:currentUser.user_metadata?.avatar_url||'',sender_id:currentUser.id,sender_name:getMyDisplayName(),sender_avatar:currentUser.user_metadata?.avatar_url||'',sender_email:currentUser.email}]);
     toast(`Subskrybujesz: ${name} 🔔`);
   }
   const count=await getSubCount(key);
@@ -3653,7 +3654,7 @@ async function toggleSubInPlayer(key,name){
     const chAvatar=chVideos[0]?.user_avatar||'';
     const chName=chVideos[0]?.user_name||chVideos[0]?.user_email?.split('@')[0]||name;
     await sb.from('subscriptions').insert([{subscriber_id:currentUser.id,subscriber_email:currentUser.email,channel_id:key,channel_name:chName,channel_avatar:chAvatar}]);
-    await sb.from('notifications').insert([{user_id:key,message:`<b>${currentUser.user_metadata?.full_name||currentUser.email?.split('@')[0]}</b> zasubskrybował Twój kanał 🔔`,avatar:currentUser.user_metadata?.avatar_url||'',sender_id:currentUser.id,sender_name:currentUser.user_metadata?.full_name||currentUser.email?.split('@')[0],sender_avatar:currentUser.user_metadata?.avatar_url||'',sender_email:currentUser.email}]);
+    await sb.from('notifications').insert([{user_id:key,message:`<b>${getMyDisplayName()}</b> zasubskrybował Twój kanał 🔔`,avatar:currentUser.user_metadata?.avatar_url||'',sender_id:currentUser.id,sender_name:getMyDisplayName(),sender_avatar:currentUser.user_metadata?.avatar_url||'',sender_email:currentUser.email}]);
     toast(`Subskrybujesz: ${name} 🔔`);
   }
   const btn=document.getElementById('sub-btn');
