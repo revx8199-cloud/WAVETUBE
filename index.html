@@ -2903,13 +2903,14 @@ async function showChannel(userId,nameIn,avatar,email){
   const isOwner=currentUser&&(currentUser.id===userId||currentUser.id===email||(currentUser.email===email&&email));
   const bannerKey=userId||email;const _bannerRaw=localStorage.getItem('banner_'+bannerKey);
   const bannerBg=_bannerRaw?(_bannerRaw.startsWith('url(')?_bannerRaw:'url('+_bannerRaw+')'):'linear-gradient(135deg,#1a1a2e,#16213e)';
-  const savedDesc=localStorage.getItem('desc_'+(userId||email))||'';
+  const savedDescFallback=localStorage.getItem('desc_'+(userId||email))||'';
   const{count:subCount}=await sb.from('subscriptions').select('*',{count:'exact',head:true}).eq('channel_id',userId||email);
-  let chNameColor='',chNameFont='';
+  let chNameColor='',chNameFont='',savedDesc=savedDescFallback;
   if(userId){
-    const{data:profStyle}=await sb.from('profiles').select('name_color,name_font').eq('id',userId).single();
+    const{data:profStyle}=await sb.from('profiles').select('name_color,name_font,description').eq('id',userId).single();
     chNameColor=profStyle?.name_color||'';
     chNameFont=profStyle?.name_font||'';
+    if(profStyle&&profStyle.description)savedDesc=profStyle.description;
   }
   cc.innerHTML=`
     <div style="position:relative">
@@ -4010,9 +4011,13 @@ async function askDelete(id){
 }
 
 // ── INIT ──────────────────────────────────────────────────────────────────────
-function editDesc(key){
+async function editDesc(key){
   const wrap=document.getElementById('ch-desc-wrap');
-  const current=localStorage.getItem('desc_'+key)||'';
+  let current=localStorage.getItem('desc_'+key)||'';
+  if(currentUser&&currentUser.id===key){
+    const{data}=await sb.from('profiles').select('description').eq('id',key).single();
+    if(data&&data.description)current=data.description;
+  }
   wrap.innerHTML=`<textarea id="desc-inp" style="width:100%;background:var(--bg-card);border:1px solid #444;border-radius:8px;color:var(--text-primary);padding:8px;font-size:13px;resize:none;outline:none;margin-bottom:6px" rows="2" placeholder="Opis kanału...">${current}</textarea>
   <div style="display:flex;gap:8px">
     <button onclick="saveDesc('${key}')" style="background:#cc0000;border:none;color:var(--text-primary);padding:6px 14px;border-radius:16px;cursor:pointer;font-size:12px;font-weight:600">Zapisz</button>
@@ -4021,9 +4026,14 @@ function editDesc(key){
   document.getElementById('desc-inp').focus();
 }
 
-function saveDesc(key){
+async function saveDesc(key){
   const val=document.getElementById('desc-inp').value.trim();
   localStorage.setItem('desc_'+key,val);
+  if(currentUser&&currentUser.id===key){
+    const{error}=await sb.from('profiles').upsert([{id:key,description:val}],{onConflict:'id'});
+    if(error){toast('Błąd zapisu: '+error.message);return;}
+    if(profileCache[key])profileCache[key].description=val;
+  }
   toast('Opis zapisany! ✅');
   showMyChannel();
 }
