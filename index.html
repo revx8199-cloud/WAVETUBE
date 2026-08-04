@@ -771,6 +771,7 @@ body.zoom-mode header,body.zoom-mode .sidebar-left,body.zoom-mode #main-content{
 
 <div class="toast" id="toast"></div>
 <div id="disco-overlay"></div>
+<audio id="bg-music-player" loop style="display:none"></audio>
 
 <!-- EKRAN BANA -->
 <div id="ban-screen" style="display:none;position:fixed;inset:0;background:#0a0a0a;z-index:99999;align-items:center;justify-content:center;flex-direction:column;text-align:center;padding:24px">
@@ -1924,6 +1925,7 @@ async function checkDiscoState(){
   toggleEarthquakeEffect(data.active_effect==='earthquake');
   toggleUpsidedownEffect(data.active_effect==='upsidedown');
   toggleZoomEffect(data.active_effect==='zoom');
+  syncMusicState(data.music_url,!!data.music_active);
   if(lastSeenBurstAt===null){
     // pierwsze sprawdzenie w tej sesji - zapamiętaj ostatni wybuch, ale go NIE odpalaj (to stary event sprzed wejścia do appki)
     lastSeenBurstAt=data.last_burst_at||'';
@@ -1949,6 +1951,57 @@ async function setActiveEffect(effect){
 async function fireGlobalBurst(effect){
   const{error}=await sb.from('site_state').upsert([{id:1,last_burst:effect,last_burst_at:new Date().toISOString()}]);
   if(error)consoleLog('Błąd: '+error.message,'#ff6b6b');
+}
+
+async function setMusic(url){
+  const{data,error:selErr}=await sb.from('site_state').select('music_url,music_active').eq('id',1).single();
+  if(selErr){consoleLog('Błąd odczytu stanu: '+selErr.message,'#ff6b6b');return null;}
+  let newUrl=data?.music_url||'',newActive;
+  if(url==='off'){
+    newActive=false;
+  }else if(url){
+    newUrl=url;
+    newActive=true;
+  }else{
+    // brak argumentu = przełącz obecny/ostatni utwór
+    newActive=!data?.music_active;
+  }
+  if(newActive&&!newUrl){consoleLog('Podaj link do muzyki: music <url>','#ff6b6b');return null;}
+  const{error:upErr}=await sb.from('site_state').upsert([{id:1,music_url:newUrl,music_active:newActive,updated_at:new Date().toISOString()}]);
+  if(upErr){consoleLog('Błąd zapisu stanu: '+upErr.message,'#ff6b6b');return null;}
+  checkDiscoState();
+  return newActive;
+}
+
+let musicUnlockShown=false;
+function syncMusicState(url,active){
+  const audioEl=document.getElementById('bg-music-player');
+  if(!audioEl)return;
+  if(active&&url){
+    if(audioEl.dataset.src!==url){audioEl.dataset.src=url;audioEl.src=url;}
+    audioEl.volume=0.35;
+    const p=audioEl.play();
+    if(p&&p.catch)p.catch(()=>showMusicUnlockButton());
+  }else{
+    audioEl.pause();
+    const btn=document.getElementById('music-unlock-btn');
+    if(btn)btn.remove();
+    musicUnlockShown=false;
+  }
+}
+function showMusicUnlockButton(){
+  if(musicUnlockShown)return;
+  musicUnlockShown=true;
+  const btn=document.createElement('button');
+  btn.id='music-unlock-btn';
+  btn.textContent='🎵 Kliknij, żeby włączyć muzykę';
+  btn.style.cssText='position:fixed;bottom:20px;right:20px;z-index:99999;background:#cc0000;color:#fff;border:none;padding:12px 18px;border-radius:24px;cursor:pointer;font-size:13px;font-weight:600;box-shadow:0 4px 16px rgba(0,0,0,.4)';
+  btn.onclick=()=>{
+    document.getElementById('bg-music-player').play();
+    btn.remove();
+    musicUnlockShown=false;
+  };
+  document.body.appendChild(btn);
 }
 
 // ── ŚNIEG ────────────────────────────────────────────────────────────────
@@ -2134,6 +2187,11 @@ async function runConsoleCommand(raw){
     await fireGlobalBurst('hearts');
     consoleLog('💕 Serduszka wysłane do wszystkich!');
   }
+  else if(base==='music'){
+    const arg=parts[1]||'';
+    const on=await setMusic(arg);
+    if(on!==null)consoleLog(on?'🎵 MUZYKA: ON dla wszystkich — relaks się zaczyna':'Muzyka: OFF dla wszystkich');
+  }
   else if(base==='help'){
     consoleLog('Dostępne komendy:');
     consoleLog('  disco              - włącz/wyłącz tryb disco 🕺');
@@ -2142,6 +2200,8 @@ async function runConsoleCommand(raw){
     consoleLog('  earthquake         - włącz/wyłącz trzęsienie ekranu 🌍');
     consoleLog('  upsidedown         - włącz/wyłącz odwrócenie strony 🙃');
     consoleLog('  zoom               - włącz/wyłącz pulsowanie zoomu 🔍');
+    consoleLog('  music <url>        - włącz relaksującą muzykę dla wszystkich 🎵');
+    consoleLog('  music off          - wyłącz muzykę u wszystkich');
     consoleLog('  confetti           - jednorazowy wybuch konfetti 🎉');
     consoleLog('  shake              - jednorazowe zatrzęsienie ekranem 💥');
     consoleLog('  fireworks          - jednorazowe fajerwerki 🎆');
@@ -3152,7 +3212,7 @@ async function showChannel(userId,nameIn,avatar,email){
   }
   cc.innerHTML=`
     <div style="position:relative">
-      <div id="channel-banner" style="height:180px;background:${bannerBg};background-size:cover;background-position:center;position:relative">
+      <div id="channel-banner" style="height:230px;background:${bannerBg};background-size:cover;background-position:center;position:relative">
         ${isOwner?`
           <div style="position:absolute;bottom:0;left:0;right:0;background:rgba(0,0,0,0);display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity .2s;height:100%" id="banner-hover-area" onmouseover="this.style.opacity=1;this.style.background='rgba(0,0,0,0.4)'" onmouseout="this.style.opacity=0;this.style.background='rgba(0,0,0,0)'">
             <label style="background:rgba(0,0,0,0.7);color:var(--text-primary);padding:10px 20px;border-radius:24px;cursor:pointer;font-size:14px;font-weight:600;display:flex;align-items:center;gap:8px;border:2px solid rgba(255,255,255,0.3)">
