@@ -567,113 +567,189 @@ body.zoom-mode header,body.zoom-mode .sidebar-left,body.zoom-mode #main-content{
 
 <!-- FORM -->
 <div class="fmbg" id="fm">
-  <div class="fbox" style="max-width:560px;max-height:90vh;overflow-y:auto">
-    <h3>🎬 Dodaj film</h3>
-    <div class="sub">YouTube, Google Drive, TikTok i bezpośrednie linki MP4</div>
-
-    <div class="field">
-      <label>Tytuł *</label>
-      <input type="text" id="ftitle" placeholder="np. Wakacje w górach">
+  <div class="fbox" style="max-width:640px;width:92%;max-height:90vh;overflow-y:auto;padding:0">
+    <div style="padding:24px 28px 16px;border-bottom:1px solid var(--border-soft)">
+      <h3 style="margin:0">🎬 Dodaj film</h3>
+      <div class="sub" style="margin:4px 0 0">YouTube, Google Drive, TikTok i bezpośrednie linki MP4</div>
     </div>
 
-    <div class="field">
-      <label>Opis</label>
-      <textarea id="fdesc" style="width:100%;background:var(--bg-sunken);border:1px solid var(--border);border-radius:8px;color:var(--text-primary);padding:10px 14px;font-size:14px;outline:none;resize:none;height:80px" placeholder="Opisz film..."></textarea>
-    </div>
+    <div style="padding:20px 28px 0">
+      <div style="font-size:12px;font-weight:700;letter-spacing:.5px;color:var(--text-tertiary);text-transform:uppercase;margin-bottom:12px">Podstawowe informacje</div>
 
-    <div class="field">
-      <label>Link do filmu *</label>
-      <input type="url" id="furl" placeholder="YouTube / Google Drive / TikTok / MP4" oninput="detectSource()">
-      <div class="hint" id="fhint">Wklej link — zostanie automatycznie rozpoznany</div>
-    </div>
-
-    <div class="field">
-      <label>Miniaturka</label>
-      <div style="display:flex;gap:8px;margin-bottom:8px">
-        <button onclick="setThumbMode('url')" id="thumb-tab-url" style="flex:1;padding:7px;border-radius:8px;border:1px solid #cc0000;background:#cc0000;color:var(--text-primary);cursor:pointer;font-size:12px;font-weight:600">🔗 Link URL</button>
-        <button onclick="setThumbMode('file')" id="thumb-tab-file" style="flex:1;padding:7px;border-radius:8px;border:1px solid var(--border);background:transparent;color:var(--text-secondary);cursor:pointer;font-size:12px">📁 Z dysku</button>
-        <button onclick="setThumbMode('auto')" id="thumb-tab-auto" style="flex:1;padding:7px;border-radius:8px;border:1px solid var(--border);background:transparent;color:var(--text-secondary);cursor:pointer;font-size:12px">✨ Auto</button>
+      <div class="field">
+        <label>Tytuł *</label>
+        <input type="text" id="ftitle" maxlength="100" placeholder="np. Wakacje w górach">
       </div>
-      <div id="thumb-url-panel">
-        <input type="url" id="fthumb" placeholder="https://... link do zdjęcia">
+
+      <div class="field">
+        <label>Opis</label>
+        <textarea id="fdesc" maxlength="5000" style="width:100%;background:var(--bg-sunken);border:1px solid var(--border);border-radius:8px;color:var(--text-primary);padding:10px 14px;font-size:14px;outline:none;resize:none;height:80px" placeholder="Opisz film..."></textarea>
       </div>
-      <div id="thumb-file-panel" style="display:none">
-        <input type="file" id="fthumb-file" accept="image/*" style="color:var(--text-secondary)">
-        <div id="thumb-preview" style="margin-top:8px;display:none"><img id="thumb-img-preview" style="width:100%;border-radius:8px;max-height:150px;object-fit:cover"></div>
+
+      <div class="field">
+        <label>Link do filmu *</label>
+        <input type="url" id="furl" placeholder="YouTube / Google Drive / TikTok / MP4" oninput="detectSource()">
+        <div class="hint" id="fhint">Wklej link — zostanie automatycznie rozpoznany</div>
       </div>
-      <div id="thumb-auto-panel" style="display:none">
-        <div style="font-size:12px;color:#555;padding:8px 0">Miniaturka zostanie pobrana automatycznie z YouTube</div>
-      </div>
-    </div>
 
-    <div class="field">
-      <label>Czas trwania</label>
-      <input type="text" id="fdur" placeholder="np. 5:42">
-    </div>
-
-    <div class="field">
-      <label>Kategoria</label>
-      <select id="fcat" style="width:100%;background:var(--bg-sunken);border:1px solid var(--border);border-radius:8px;color:var(--text-primary);padding:10px 14px;font-size:14px;outline:none">
-        <option value="">Brak kategorii</option>
-        <option value="Gaming">🎮 Gaming</option>
-        <option value="Muzyka">🎵 Muzyka</option>
-        <option value="Sport">⚽ Sport</option>
-        <option value="Vlog">📹 Vlog</option>
-        <option value="Tutorial">📚 Tutorial</option>
-        <option value="Humor">😂 Humor</option>
-        <option value="Podróże">✈️ Podróże</option>
-        <option value="Inne">📌 Inne</option>
-      </select>
-    </div>
-
-    <div class="field">
-      <label>Widoczność</label>
-      <select id="fvis" style="width:100%;background:var(--bg-sunken);border:1px solid var(--border);border-radius:8px;color:var(--text-primary);padding:10px 14px;font-size:14px;outline:none">
-        <option value="public">🌍 Publiczny — widoczny dla wszystkich</option>
-        <option value="unlisted">🔗 Niewidoczny — tylko z linkiem</option>
-      </select>
-    </div>
-
-    <div class="field">
-      <label style="display:flex;align-items:center;gap:10px;cursor:pointer">
-        <input type="checkbox" id="fcomments" checked style="width:16px;height:16px;accent-color:#cc0000">
-        Włącz komentarze
-      </label>
-    </div>
-
-    <div class="field">
-      <label style="display:flex;align-items:center;gap:10px;cursor:pointer">
-        <input type="checkbox" id="flikes" checked style="width:16px;height:16px;accent-color:#cc0000">
-        Pokazuj liczbę polubień
-      </label>
-    </div>
-
-    <div class="field">
-      <label>Tagi (opcjonalnie)</label>
-      <input type="text" id="ftags" placeholder="np. gaming, vlog, muzyka (oddziel przecinkami)">
-      <div class="hint">Tagi pomagają ludziom znaleźć Twój film</div>
-    </div>
-
-    <div class="field">
-      <label>Data premiery (opcjonalnie)</label>
-      <input type="datetime-local" id="fpremiere" style="width:100%;background:var(--bg-sunken);border:1px solid var(--border);border-radius:8px;color:var(--text-primary);padding:10px 14px;font-size:14px;outline:none;color-scheme:dark">
-      <div class="hint">Zostaw puste żeby opublikować od razu. Ustaw datę żeby zaplanować premierę.</div>
-    </div>
-
-    <div class="field" style="background:var(--bg-card);border:1px solid var(--border);border-radius:10px;padding:14px">
-      <label style="display:flex;align-items:center;gap:10px;cursor:pointer">
-        <input type="checkbox" id="fshort" style="width:16px;height:16px;accent-color:#ff0000">
-        <div>
-          <div style="font-weight:600;display:flex;align-items:center;gap:6px">
-            <span style="background:#ff0000;color:var(--text-primary);font-size:10px;padding:2px 6px;border-radius:4px;font-weight:700">SHORT</span>
-            To jest Short (maks. 1 minuta)
-          </div>
-          <div style="font-size:11px;color:var(--text-tertiary);margin-top:2px">Shorts wyświetlają się osobno w pionie jak na TikToku</div>
+      <div class="field">
+        <label>Miniaturka</label>
+        <div style="display:flex;gap:8px;margin-bottom:8px">
+          <button onclick="setThumbMode('url')" id="thumb-tab-url" style="flex:1;padding:7px;border-radius:8px;border:1px solid #cc0000;background:#cc0000;color:var(--text-primary);cursor:pointer;font-size:12px;font-weight:600">🔗 Link URL</button>
+          <button onclick="setThumbMode('file')" id="thumb-tab-file" style="flex:1;padding:7px;border-radius:8px;border:1px solid var(--border);background:transparent;color:var(--text-secondary);cursor:pointer;font-size:12px">📁 Z dysku</button>
+          <button onclick="setThumbMode('auto')" id="thumb-tab-auto" style="flex:1;padding:7px;border-radius:8px;border:1px solid var(--border);background:transparent;color:var(--text-secondary);cursor:pointer;font-size:12px">✨ Auto</button>
         </div>
-      </label>
+        <div id="thumb-url-panel">
+          <input type="url" id="fthumb" placeholder="https://... link do zdjęcia">
+        </div>
+        <div id="thumb-file-panel" style="display:none">
+          <input type="file" id="fthumb-file" accept="image/*" style="color:var(--text-secondary)">
+          <div id="thumb-preview" style="margin-top:8px;display:none"><img id="thumb-img-preview" style="width:100%;border-radius:8px;max-height:150px;object-fit:cover"></div>
+        </div>
+        <div id="thumb-auto-panel" style="display:none">
+          <div style="font-size:12px;color:var(--text-tertiary);padding:8px 0">Miniaturka zostanie pobrana automatycznie z YouTube</div>
+        </div>
+      </div>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+        <div class="field">
+          <label>Czas trwania</label>
+          <input type="text" id="fdur" placeholder="np. 5:42">
+        </div>
+        <div class="field">
+          <label>Kategoria</label>
+          <select id="fcat" style="width:100%;background:var(--bg-sunken);border:1px solid var(--border);border-radius:8px;color:var(--text-primary);padding:10px 14px;font-size:14px;outline:none">
+            <option value="">Brak kategorii</option>
+            <option value="Gaming">🎮 Gaming</option>
+            <option value="Muzyka">🎵 Muzyka</option>
+            <option value="Sport">⚽ Sport</option>
+            <option value="Vlog">📹 Vlog</option>
+            <option value="Tutorial">📚 Tutorial</option>
+            <option value="Humor">😂 Humor</option>
+            <option value="Podróże">✈️ Podróże</option>
+            <option value="Inne">📌 Inne</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="field">
+        <label>Tagi (opcjonalnie)</label>
+        <input type="text" id="ftags" placeholder="np. gaming, vlog, muzyka (oddziel przecinkami)">
+        <div class="hint">Tagi pomagają ludziom znaleźć Twój film</div>
+      </div>
     </div>
 
-    <div class="fbbtns">
+    <div style="height:1px;background:var(--border-soft);margin:20px 0"></div>
+
+    <div style="padding:0 28px">
+      <div style="font-size:12px;font-weight:700;letter-spacing:.5px;color:var(--text-tertiary);text-transform:uppercase;margin-bottom:12px">Szczegóły</div>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+        <div class="field">
+          <label>Język filmu</label>
+          <select id="flang" style="width:100%;background:var(--bg-sunken);border:1px solid var(--border);border-radius:8px;color:var(--text-primary);padding:10px 14px;font-size:14px;outline:none">
+            <option value="pl">🇵🇱 Polski</option>
+            <option value="ru">🇷🇺 Русский</option>
+            <option value="en">🇬🇧 English</option>
+            <option value="other">🌐 Inny</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Licencja</label>
+          <select id="flicense" style="width:100%;background:var(--bg-sunken);border:1px solid var(--border);border-radius:8px;color:var(--text-primary);padding:10px 14px;font-size:14px;outline:none">
+            <option value="standard">Standardowa licencja WaveTube</option>
+            <option value="cc">Creative Commons — uznanie autorstwa</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="field">
+        <label>Data premiery (opcjonalnie)</label>
+        <input type="datetime-local" id="fpremiere" style="width:100%;background:var(--bg-sunken);border:1px solid var(--border);border-radius:8px;color:var(--text-primary);padding:10px 14px;font-size:14px;outline:none;color-scheme:dark">
+        <div class="hint">Zostaw puste żeby opublikować od razu. Ustaw datę żeby zaplanować premierę.</div>
+      </div>
+
+      <div class="field" style="background:var(--bg-card);border:1px solid var(--border);border-radius:10px;padding:14px">
+        <label style="display:flex;align-items:center;gap:10px;cursor:pointer">
+          <input type="checkbox" id="fshort" style="width:16px;height:16px;accent-color:#ff0000">
+          <div>
+            <div style="font-weight:600;display:flex;align-items:center;gap:6px">
+              <span style="background:#ff0000;color:var(--text-primary);font-size:10px;padding:2px 6px;border-radius:4px;font-weight:700">SHORT</span>
+              To jest Short (maks. 1 minuta)
+            </div>
+            <div style="font-size:11px;color:var(--text-tertiary);margin-top:2px">Shorts wyświetlają się osobno w pionie jak na TikToku</div>
+          </div>
+        </label>
+      </div>
+    </div>
+
+    <div style="height:1px;background:var(--border-soft);margin:20px 0"></div>
+
+    <div style="padding:0 28px">
+      <div style="font-size:12px;font-weight:700;letter-spacing:.5px;color:var(--text-tertiary);text-transform:uppercase;margin-bottom:12px">Widoczność publiczna</div>
+
+      <div class="field" style="display:flex;flex-direction:column;gap:8px">
+        <label class="vis-opt" data-val="public" onclick="selectVisibility('public')" style="display:flex;gap:12px;align-items:flex-start;padding:12px 14px;border:1.5px solid #cc0000;border-radius:10px;cursor:pointer;background:rgba(204,0,0,.08)">
+          <span style="font-size:20px;line-height:1">🌍</span>
+          <div>
+            <div style="font-weight:600;font-size:13px">Publiczny</div>
+            <div style="font-size:11px;color:var(--text-tertiary);margin-top:2px">Widoczny dla wszystkich — na stronie głównej, w wyszukiwarce i popularnych</div>
+          </div>
+        </label>
+        <label class="vis-opt" data-val="unlisted" onclick="selectVisibility('unlisted')" style="display:flex;gap:12px;align-items:flex-start;padding:12px 14px;border:1.5px solid var(--border);border-radius:10px;cursor:pointer">
+          <span style="font-size:20px;line-height:1">🔗</span>
+          <div>
+            <div style="font-weight:600;font-size:13px">Niepubliczny (unlisted)</div>
+            <div style="font-size:11px;color:var(--text-tertiary);margin-top:2px">Nie pojawia się w żadnych listach — obejrzy go tylko ten, kto ma bezpośredni link</div>
+          </div>
+        </label>
+        <label class="vis-opt" data-val="private" onclick="selectVisibility('private')" style="display:flex;gap:12px;align-items:flex-start;padding:12px 14px;border:1.5px solid var(--border);border-radius:10px;cursor:pointer">
+          <span style="font-size:20px;line-height:1">🔒</span>
+          <div>
+            <div style="font-weight:600;font-size:13px">Prywatny</div>
+            <div style="font-size:11px;color:var(--text-tertiary);margin-top:2px">Widzisz go tylko Ty (i administrator) — nawet z linkiem nikt inny go nie otworzy</div>
+          </div>
+        </label>
+        <input type="hidden" id="fvis" value="public">
+      </div>
+
+      <div class="field">
+        <label style="display:flex;align-items:center;gap:10px;cursor:pointer">
+          <input type="checkbox" id="fcomments" checked style="width:16px;height:16px;accent-color:#cc0000">
+          Włącz komentarze
+        </label>
+      </div>
+
+      <div class="field">
+        <label style="display:flex;align-items:center;gap:10px;cursor:pointer">
+          <input type="checkbox" id="flikes" checked style="width:16px;height:16px;accent-color:#cc0000">
+          Pokazuj liczbę polubień
+        </label>
+      </div>
+
+      <div class="field">
+        <label style="display:flex;align-items:center;gap:10px;cursor:pointer">
+          <input type="checkbox" id="fhideviews" style="width:16px;height:16px;accent-color:#cc0000">
+          Ukryj liczbę wyświetleń (publicznie)
+        </label>
+      </div>
+
+      <div class="field">
+        <label style="display:flex;align-items:center;gap:10px;cursor:pointer">
+          <input type="checkbox" id="fkids" onchange="if(this.checked)document.getElementById('fage').checked=false" style="width:16px;height:16px;accent-color:#cc0000">
+          Treść przeznaczona dla dzieci
+        </label>
+      </div>
+
+      <div class="field">
+        <label style="display:flex;align-items:center;gap:10px;cursor:pointer">
+          <input type="checkbox" id="fage" onchange="if(this.checked)document.getElementById('fkids').checked=false" style="width:16px;height:16px;accent-color:#cc0000">
+          Ograniczenie wiekowe (18+)
+        </label>
+      </div>
+    </div>
+
+    <div class="fbbtns" style="padding:20px 28px 24px;margin:0">
       <button class="fcancel" onclick="closeForm()">Anuluj</button>
       <button class="fsubmit" onclick="submitForm()">Opublikuj film</button>
     </div>
@@ -2600,7 +2676,7 @@ async function submitReport(){
   const reason=reasonEl.value;
   const details=document.getElementById('report-details').value.trim();
   const v=videos.find(x=>String(x.id)===String(reportingVideoId));
-  await sb.from('reports').insert([{
+  const{error}=await sb.from('reports').insert([{
     video_id:reportingVideoId,
     video_title:v?.title||'',
     video_url:v?.url||'',
@@ -2609,6 +2685,10 @@ async function submitReport(){
     reporter_id:currentUser.id,
     reporter_email:currentUser.email||''
   }]);
+  if(error){
+    toast(error.message.includes('RATE_LIMIT')?'Za dużo zgłoszeń naraz — odczekaj chwilę 🐢':'Błąd: '+error.message);
+    return;
+  }
   const subject=encodeURIComponent(`Zgłoszenie WaveTube: ${v?.title||reportingVideoId}`);
   const body=encodeURIComponent(`Film: ${v?.title||''}\nURL: ${v?.url||''}\nPowód: ${reason}\nSzczegóły: ${details}\nZgłaszający: ${currentUser.email||''}`);
   window.open(`mailto:${REPORT_EMAIL}?subject=${subject}&body=${body}`,'_blank');
@@ -2659,7 +2739,7 @@ async function loadVideos(){
 
 async function addVideo(v){
   const{error}=await sb.from('videos').insert([v]);
-  if(error){alert('Błąd: '+error.message);return false;}
+  if(error){toast(error.message.includes('RATE_LIMIT')?'Za dużo filmów naraz — odczekaj chwilę 🐢':'Błąd: '+error.message);return false;}
   // Notify subscribers
   if(currentUser){
     const meta=currentUser.user_metadata;
@@ -2698,6 +2778,25 @@ function thumbFor(v){
   const gdid=gdId(v.url);if(gdid)return`https://lh3.googleusercontent.com/d/${gdid}`;
   return'';
 }
+function viewsLabel(v,suffix){
+  suffix=suffix||' wyśw.';
+  if(v.hide_views&&!(currentUser&&(currentUser.id===v.user_id||isAdmin())))return'Wyświetlenia ukryte';
+  return(v.views||0)+suffix;
+}
+
+function isDiscoverable(v){
+  // Publiczne widać zawsze. Niepubliczne/prywatne widzi tylko właściciel i admin —
+  // używane na stronie głównej, w wyszukiwarce, popularnych, shortsach i cudzych kanałach.
+  if(!v.visibility||v.visibility==='public')return true;
+  return!!(currentUser&&(v.user_id===currentUser.id||isAdmin()));
+}
+function canViewVideo(v){
+  // Prywatny = tylko właściciel/admin, nawet z bezpośrednim linkiem.
+  // Niepubliczny (unlisted) da się otworzyć z linku — to jest sens tej opcji.
+  if(v.visibility!=='private')return true;
+  return!!(currentUser&&(v.user_id===currentUser.id||isAdmin()));
+}
+
 function getUserName(v){const p=profileCache[v.user_id||''];return(p&&p.name)||v.user_name||v.user_email||'Anonim';}
 function makeNick(name,email){
   if(!name||name.match(/^[0-9a-f-]{8,}$/i))return email?'@'+email.split('@')[0]:'@kanał';
@@ -2753,6 +2852,15 @@ document.getElementById('fthumb-file')?.addEventListener('change',function(){
   reader.readAsDataURL(file);
 });
 
+function selectVisibility(val){
+  document.getElementById('fvis').value=val;
+  document.querySelectorAll('.vis-opt').forEach(el=>{
+    const active=el.dataset.val===val;
+    el.style.borderColor=active?'#cc0000':'var(--border)';
+    el.style.background=active?'rgba(204,0,0,.08)':'transparent';
+  });
+}
+
 function detectSource(){
   const url=document.getElementById('furl').value.trim();
   const hint=document.getElementById('fhint');
@@ -2776,7 +2884,7 @@ function showShortsPage(){
   const shortsSection0=document.getElementById('shorts-section');
   if(shortsSection0)shortsSection0.style.display='none';
   document.getElementById('slabel').textContent='Shorts';
-  const shorts=videos.filter(v=>v.is_short===true);
+  const shorts=videos.filter(v=>v.is_short===true&&isDiscoverable(v));
   const g=document.getElementById('grid');
   g.style.display='block';
   if(!shorts.length){
@@ -2797,7 +2905,7 @@ function showShortsPage(){
       <div style="position:absolute;top:8px;left:8px;background:#ff0000;color:var(--text-primary);font-size:10px;font-weight:700;padding:2px 6px;border-radius:4px">SHORT</div>
       <div style="position:absolute;bottom:0;left:0;right:0;background:linear-gradient(transparent,rgba(0,0,0,.8));padding:12px 10px 10px">
         <div style="font-size:13px;font-weight:600;color:var(--text-primary);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden">${esc(v.title)}</div>
-        <div style="font-size:11px;color:rgba(255,255,255,.7);margin-top:3px">${v.likes||0} ${likeIcon()} · ${v.views||0} wyśw.</div>
+        <div style="font-size:11px;color:rgba(255,255,255,.7);margin-top:3px">${v.likes||0} ${likeIcon()} · ${viewsLabel(v)}</div>
       </div>
     </div>`;
     el.onclick=()=>openP(v.id);
@@ -2854,7 +2962,7 @@ function render(){
   g0.style.display='grid';
   g0.style.gridTemplateColumns='repeat(auto-fill,minmax(250px,1fr))';
   const q=(document.getElementById('search').value||'').toLowerCase();
-  const allVids=q?videos.filter(v=>v.title.toLowerCase().includes(q)):videos;
+  const allVids=(q?videos.filter(v=>v.title.toLowerCase().includes(q)):videos).filter(isDiscoverable);
   const shorts=allVids.filter(v=>v.is_short===true);
   const list=allVids.filter(v=>v.is_short!==true);
 
@@ -2887,7 +2995,7 @@ async function showChannel(userId,nameIn,avatar,email){
   document.getElementById('main-content').style.display='none';
   const cc=document.getElementById('channel-content');
   cc.classList.add('open');
-  const userVideos=videos.filter(v=>v.user_id===userId||(v.user_email===email&&email));
+  const userVideos=videos.filter(v=>(v.user_id===userId||(v.user_email===email&&email))&&isDiscoverable(v));
   const ucol=getUserColor(email);
   const avHtml=avatar?`<img src="${avatar}">`:`<span>${name[0]||'?'}</span>`;
   const isSub=subscribedSet.has(userId||email);
@@ -3091,7 +3199,7 @@ function showSubscriptions(){
     const el=document.createElement('div');
     el.className='card';
     el.style.cursor='pointer';
-    const chVideos=videos.filter(v=>v.user_id===ch.userId);
+    const chVideos=videos.filter(v=>v.user_id===ch.userId&&isDiscoverable(v));
     el.innerHTML=`<div style="background:var(--bg-card);border-radius:10px;padding:24px;text-align:center;border:1px solid var(--border-soft)">
       ${ch.avatar
         ?`<img src="${ch.avatar}" style="width:80px;height:80px;border-radius:50%;object-fit:cover;margin-bottom:12px">`
@@ -3324,6 +3432,7 @@ async function addAnnouncementComment(id){
   const inp=document.getElementById(`ann-cinp-${id}`);
   const text=inp?.value.trim();
   if(!text)return;
+  if(!commentCooldownOk())return;
   const a=announcementsCache.find(x=>x.id===id);
   if(!a)return;
   const meta=currentUser.user_metadata;
@@ -3414,7 +3523,7 @@ function showTrending(){
   const shortsSection2=document.getElementById('shorts-section');
   if(shortsSection2)shortsSection2.style.display='none';
   document.getElementById('slabel').textContent='🔥 Popularne';
-  const sorted=[...videos].sort((a,b)=>(b.views||0)-(a.views||0));
+  const sorted=[...videos].filter(isDiscoverable).sort((a,b)=>(b.views||0)-(a.views||0));
   const g=document.getElementById('grid');
   g.innerHTML='';
   sorted.forEach(v=>{
@@ -3435,7 +3544,7 @@ function showTrending(){
         ?`<img src="${avatarUrl}" style="width:36px;height:36px;border-radius:50%;object-fit:cover;flex-shrink:0;cursor:pointer" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'" onclick="event.stopPropagation();showChannel('${v.user_id||''}','${jsesc(uname)}','${avatarUrl}','${v.user_email||''}')"><div class="card-avatar-placeholder" style="background:${ucol};display:none;cursor:pointer" onclick="event.stopPropagation();showChannel('${v.user_id||''}','${jsesc(uname)}','','${v.user_email||''}')">${uname[0].toUpperCase()}</div>`
         :`<div class="card-avatar-placeholder" style="background:${ucol};cursor:pointer" onclick="event.stopPropagation();showChannel('${v.user_id||''}','${jsesc(uname)}','','${v.user_email||''}')">${uname[0].toUpperCase()}</div>`
       }
-      <div class="card-info"><h3>${esc(v.title)}</h3><div class="channel-name">${esc(uname)}</div><p>${v.views||0} wyśw.</p></div>
+      <div class="card-info"><h3>${esc(v.title)}</h3><div class="channel-name">${esc(uname)}</div><p>${viewsLabel(v)}</p></div>
     </div>`;
     el.onclick=()=>openP(v.id);
     g.appendChild(el);
@@ -3459,8 +3568,14 @@ function layoutActsForShorts(isShort){
   }
 }
 
-function openP(id){
+async function openP(id){
   const v=videos.find(x=>x.id===id);if(!v)return;
+  if(!canViewVideo(v)){toast('Ten film jest prywatny 🔒');return;}
+  if(v.age_restricted&&sessionStorage.getItem('age_ok_'+v.id)!=='1'){
+    const ok=await showConfirm('Ten film ma ograniczenie wiekowe (18+)','Potwierdź, że masz ukończone 18 lat, żeby go obejrzeć.','Mam 18+, obejrzyj');
+    if(!ok)return;
+    sessionStorage.setItem('age_ok_'+v.id,'1');
+  }
   const isUpcoming=v.premiere&&new Date(v.premiere)>new Date();
   cur=v;
   if(!isUpcoming){
@@ -3500,7 +3615,7 @@ function openP(id){
   document.getElementById('pw').innerHTML=html;
   layoutActsForShorts(isShort);
   document.getElementById('vt').textContent=v.title;
-  document.getElementById('vm').innerHTML=`${v.views} wyświetleń · ${v.date||''}${v.category?' · <span style="background:var(--border-soft);padding:2px 8px;border-radius:10px;font-size:11px">'+esc(v.category)+'</span>':''}${v.description?'<div style="margin-top:8px;color:var(--text-secondary);font-size:13px;line-height:1.5">'+esc(v.description)+'</div>':''}`;
+  document.getElementById('vm').innerHTML=`${viewsLabel(v,' wyświetleń')} · ${v.date||''}${v.category?' · <span style="background:var(--border-soft);padding:2px 8px;border-radius:10px;font-size:11px">'+esc(v.category)+'</span>':''}${v.age_restricted?' · <span style="background:#3a1414;color:#ff6b6b;padding:2px 8px;border-radius:10px;font-size:11px;font-weight:600">18+</span>':''}${v.made_for_kids?' · <span style="background:#142a3a;color:#3ea6ff;padding:2px 8px;border-radius:10px;font-size:11px;font-weight:600">👶 Dla dzieci</span>':''}${v.description?'<div style="margin-top:8px;color:var(--text-secondary);font-size:13px;line-height:1.5">'+esc(v.description)+'</div>':''}`;
   // handle comments enabled
   const commSec=document.getElementById('comments-section');
   if(commSec)commSec.style.display=v.comments_enabled===false?'none':'block';
@@ -3829,6 +3944,7 @@ async function postReply(index){
   const inp=document.getElementById(`reply-inp-${index}`);
   const txt=inp?.value.trim();
   if(!txt)return;
+  if(!commentCooldownOk())return;
   const meta=currentUser.user_metadata;
   const now=new Date().toLocaleString('pl-PL',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'});
   const sortedList=getSortedComments();
@@ -3931,12 +4047,21 @@ async function saveEditComment(index){
   toast('Komentarz zaktualizowany');
 }
 
+let lastCommentAt=0;
+function commentCooldownOk(){
+  const now=Date.now();
+  if(now-lastCommentAt<3000){toast('Zwolnij trochę — poczekaj chwilę przed kolejnym komentarzem 🐢');return false;}
+  lastCommentAt=now;
+  return true;
+}
+
 async function postC(){
   if(!currentUser){toast('Zaloguj się żeby pisać komentarze!');return;}
   if(isMutedNow()){toast(muteToastMsg());return;}
   if(!cur)return;
   const t=document.getElementById('cinp').value.trim();
   if(!t)return;
+  if(!commentCooldownOk())return;
   const meta=currentUser.user_metadata;
   const now=new Date().toLocaleString('pl-PL',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'});
   const newC={user:getMyDisplayName(),text:t,time:now,ts:Date.now(),col:'#cc0000',avatar:meta?.avatar_url||'',user_id:currentUser.id||'',user_email:currentUser.email||'',name_color:myNameColor||'',name_font:myNameFont||''};
@@ -3951,6 +4076,7 @@ async function postC(){
 // ── FORM ──────────────────────────────────────────────────────────────────────
 function openForm(){
   if(!currentUser){toast('Zaloguj się żeby dodawać filmy!');return;}
+  selectVisibility(document.getElementById('fvis')?.value||'public');
   document.getElementById('fm').classList.add('open');
 }
 function closeForm(){document.getElementById('fm').classList.remove('open');}
@@ -3983,6 +4109,11 @@ async function submitForm(){
     is_short:document.getElementById('fshort').checked,
     tags:document.getElementById('ftags').value.trim().split(',').map(t=>t.trim()).filter(Boolean),
     premiere:document.getElementById('fpremiere').value||null,
+    language:document.getElementById('flang').value,
+    license:document.getElementById('flicense').value,
+    hide_views:document.getElementById('fhideviews').checked,
+    made_for_kids:document.getElementById('fkids').checked,
+    age_restricted:document.getElementById('fage').checked,
     likes:0,dislikes:0,views:0,
     date:new Date().toLocaleDateString('pl-PL'),
     comments:[],
@@ -3995,7 +4126,14 @@ async function submitForm(){
   });
   btn.textContent='Opublikuj film';btn.disabled=false;
   if(ok){
-    ['ftitle','furl','fdesc','fdur'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+    ['ftitle','furl','fdesc','fdur','ftags'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+    ['fcomments','flikes'].forEach(id=>document.getElementById(id).checked=true);
+    ['fhideviews','fkids','fage','fshort'].forEach(id=>document.getElementById(id).checked=false);
+    document.getElementById('fcat').value='';
+    document.getElementById('flang').value='pl';
+    document.getElementById('flicense').value='standard';
+    document.getElementById('fpremiere').value='';
+    selectVisibility('public');
     closeForm();
   }
 }
@@ -4184,7 +4322,40 @@ document.addEventListener('click',e=>{
 // ── CHAT SYSTEM (Supabase) ────────────────────────────────────────────────────
 let currentConvId=null;
 let currentOtherUser=null;
-let msgPollInterval=null;
+let msgRealtimeChannel=null;
+let notifRealtimeChannel=null;
+
+// Realtime zamiast pollingu — jeden kanał na wiadomości, jeden na powiadomienia,
+// nasłuchują tylko zdarzeń dotyczących zalogowanego użytkownika.
+function subscribeRealtime(){
+  unsubscribeRealtime();
+  if(!currentUser)return;
+  const uid=currentUser.id;
+  msgRealtimeChannel=sb.channel('messages-'+uid)
+    .on('postgres_changes',{event:'*',schema:'public',table:'messages',filter:`receiver_id=eq.${uid}`},handleMessageRealtimeEvent)
+    .on('postgres_changes',{event:'*',schema:'public',table:'messages',filter:`sender_id=eq.${uid}`},handleMessageRealtimeEvent)
+    .subscribe();
+  notifRealtimeChannel=sb.channel('notifications-'+uid)
+    .on('postgres_changes',{event:'*',schema:'public',table:'notifications',filter:`user_id=eq.${uid}`},handleNotificationRealtimeEvent)
+    .subscribe();
+}
+
+function unsubscribeRealtime(){
+  if(msgRealtimeChannel){sb.removeChannel(msgRealtimeChannel);msgRealtimeChannel=null;}
+  if(notifRealtimeChannel){sb.removeChannel(notifRealtimeChannel);notifRealtimeChannel=null;}
+}
+
+function handleMessageRealtimeEvent(payload){
+  const row=payload.new||payload.old;
+  if(row&&currentConvId&&row.conv_id===currentConvId)loadMessages();
+  if(document.getElementById('messages-page')?.classList.contains('open'))loadConvList();
+}
+
+function handleNotificationRealtimeEvent(){
+  loadNotifications().then(()=>{
+    if(document.getElementById('notif-dropdown')?.classList.contains('open'))renderNotifications();
+  });
+}
 
 function getConvId(uid1,uid2){return [uid1,uid2].sort().join('_');}
 
@@ -4287,7 +4458,6 @@ function closeMessages(){
   document.body.style.overflow='';
   currentConvId=null;
   currentOtherUser=null;
-  if(msgPollInterval){clearInterval(msgPollInterval);msgPollInterval=null;}
   showHome();
 }
 
@@ -4346,10 +4516,8 @@ async function openConv(convId,otherId,otherName,otherAvatar,otherEmail){
   // Mark as read
   await sb.from('messages').update({read:true}).eq('conv_id',convId).eq('receiver_id',currentUser.id);
   renderChatHeader();
-  if(msgPollInterval){clearInterval(msgPollInterval);msgPollInterval=null;}
   if(!blockedUsers[otherId]){
     await loadMessages();
-    msgPollInterval=setInterval(loadMessages,3000);
   }
   loadConvList();
 }
@@ -4411,7 +4579,6 @@ async function deleteConversation(){
   await sb.from('messages').delete().eq('conv_id',currentConvId);
   currentConvId=null;
   currentOtherUser=null;
-  if(msgPollInterval){clearInterval(msgPollInterval);msgPollInterval=null;}
   document.getElementById('msg-chat-area').innerHTML=`<div class="msg-no-conv">
     <svg viewBox="0 0 24 24" width="64" height="64" fill="#555"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H6l-2 2V4h16v12z"/></svg>
     <p>Wybierz konwersację lub zacznij nową</p>
@@ -4473,7 +4640,7 @@ async function sendChatMsg(){
   if(!txt)return;
   inp.value='';
   const meta=currentUser.user_metadata;
-  await sb.from('messages').insert([{
+  const{error}=await sb.from('messages').insert([{
     conv_id:currentConvId,
     sender_id:currentUser.id,
     sender_name:getMyDisplayName(),
@@ -4484,6 +4651,11 @@ async function sendChatMsg(){
     text:txt,
     read:false
   }]);
+  if(error){
+    inp.value=txt;
+    toast(error.message.includes('RATE_LIMIT')?'Zwolnij trochę — wysyłasz za szybko 🐢':'Błąd: '+error.message);
+    return;
+  }
   await loadMessages();
   loadConvList();
 }
@@ -4533,8 +4705,8 @@ function switchChannelTab(tab){
 
 function renderChannelHome(){
   const{userId,email}=currentChannelUser;
-  const userVideos=videos.filter(v=>(v.user_id===userId||(v.user_email===email&&email))&&v.is_short!==true);
-  const userShorts=videos.filter(v=>(v.user_id===userId||(v.user_email===email&&email))&&v.is_short===true);
+  const userVideos=videos.filter(v=>(v.user_id===userId||(v.user_email===email&&email))&&v.is_short!==true&&isDiscoverable(v));
+  const userShorts=videos.filter(v=>(v.user_id===userId||(v.user_email===email&&email))&&v.is_short===true&&isDiscoverable(v));
   const cont=document.getElementById('channel-home-container');
   let html='<div style="padding:0 24px">';
   if(userShorts.length){
@@ -4562,7 +4734,7 @@ function renderChannelHome(){
           ${v.dur?`<div style="position:absolute;bottom:5px;right:7px;background:rgba(0,0,0,.85);font-size:11px;padding:2px 6px;border-radius:4px">${v.dur}</div>`:''}
         </div>
         <div style="font-size:13px;font-weight:500;margin-top:7px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden">${esc(v.title)}</div>
-        <div style="font-size:12px;color:var(--text-secondary)">${v.views||0} wyśw.</div>
+        <div style="font-size:12px;color:var(--text-secondary)">${viewsLabel(v)}</div>
       </div>`;
     });
     html+='</div>';
@@ -4574,7 +4746,7 @@ function renderChannelHome(){
 
 function renderChannelShorts(){
   const{userId,email}=currentChannelUser;
-  const userShorts=videos.filter(v=>(v.user_id===userId||(v.user_email===email&&email))&&v.is_short===true);
+  const userShorts=videos.filter(v=>(v.user_id===userId||(v.user_email===email&&email))&&v.is_short===true&&isDiscoverable(v));
   const cont=document.getElementById('channel-shorts-container');
   if(!userShorts.length){cont.innerHTML='<div style="padding:0 24px;color:#555;font-size:14px">Brak Shorts na tym kanale</div>';return;}
   let html='<div style="display:flex;flex-wrap:wrap;gap:12px;padding:0 24px">';
@@ -4584,7 +4756,7 @@ function renderChannelShorts(){
       <div style="position:relative;width:160px;height:284px;background:var(--bg-card);border-radius:12px;overflow:hidden">
         ${th?`<img src="${th}" style="width:100%;height:100%;object-fit:cover">`:'<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;color:#333;font-size:36px">📱</div>'}
         <div style="position:absolute;top:8px;left:8px;background:#ff0000;color:var(--text-primary);font-size:10px;font-weight:700;padding:2px 6px;border-radius:4px">SHORT</div>
-        <div style="position:absolute;bottom:0;left:0;right:0;background:linear-gradient(transparent,rgba(0,0,0,.85));padding:16px 10px 8px;font-size:11px;color:rgba(255,255,255,.85)">${v.views||0} wyśw. · ${v.likes||0} ${likeIcon()}</div>
+        <div style="position:absolute;bottom:0;left:0;right:0;background:linear-gradient(transparent,rgba(0,0,0,.85));padding:16px 10px 8px;font-size:11px;color:rgba(255,255,255,.85)">${viewsLabel(v)} · ${v.likes||0} ${likeIcon()}</div>
       </div>
       <div style="font-size:12px;font-weight:500;margin-top:6px">${esc(v.title)}</div>
     </div>`;
@@ -4754,6 +4926,7 @@ async function addPostComment(postId){
   if(isMutedNow()){toast(muteToastMsg());return;}
   const inp=document.getElementById('pci-'+postId);
   if(!inp||!inp.value.trim())return;
+  if(!commentCooldownOk())return;
   const meta=currentUser.user_metadata;
   const now=new Date().toLocaleString('pl-PL',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'});
   const{data:post}=await sb.from('posts').select('comments').eq('id',postId).single();
@@ -4886,7 +5059,7 @@ async function submitPost(){
       text,image:images[0]||'',images:images,likes:0,comments:[],poll:poll
     }]);
     if(error){
-      toast('Błąd: '+error.message);
+      toast(error.message.includes('RATE_LIMIT')?'Za dużo postów naraz — odczekaj chwilę 🐢':'Błąd: '+error.message);
       return;
     }
     // notify subscribers
@@ -4938,6 +5111,7 @@ document.addEventListener('keydown',e=>{
       await loadMyNameColor();
       await checkIfMuted();
       await loadSavedVideos();
+      subscribeRealtime();
     }
   }
   await loadVideos();
@@ -4954,7 +5128,10 @@ document.addEventListener('keydown',e=>{
       await checkIfMuted();
       await loadSavedVideos();
       await loadVipEmails();
+      subscribeRealtime();
       }
+    }else{
+      unsubscribeRealtime();
     }
   });
 })();
