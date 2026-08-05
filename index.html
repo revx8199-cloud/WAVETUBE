@@ -468,6 +468,23 @@ body.zoom-mode header,body.zoom-mode .sidebar-left,body.zoom-mode #main-content{
 </div>
 <div id="main-content" style="flex:1;min-width:0;padding:24px 20px">
   <div class="section-title" id="slabel">Wszystkie filmy</div>
+  <div id="feed-filters" style="display:flex;gap:8px;flex-wrap:wrap;margin:-8px 0 16px">
+    <select id="feed-cat-filter" onchange="applyFeedFilters()" style="background:var(--bg-sunken);border:1px solid var(--border);border-radius:16px;color:var(--text-primary);padding:6px 12px;font-size:12px;outline:none;cursor:pointer">
+      <option value="">📂 Wszystkie kategorie</option>
+    </select>
+    <select id="feed-dur-filter" onchange="applyFeedFilters()" style="background:var(--bg-sunken);border:1px solid var(--border);border-radius:16px;color:var(--text-primary);padding:6px 12px;font-size:12px;outline:none;cursor:pointer">
+      <option value="">⏱ Dowolna długość</option>
+      <option value="short">Krótkie (do 4 min)</option>
+      <option value="medium">Średnie (4–20 min)</option>
+      <option value="long">Długie (ponad 20 min)</option>
+    </select>
+    <select id="feed-sort-filter" onchange="applyFeedFilters()" style="background:var(--bg-sunken);border:1px solid var(--border);border-radius:16px;color:var(--text-primary);padding:6px 12px;font-size:12px;outline:none;cursor:pointer">
+      <option value="newest">🆕 Najnowsze</option>
+      <option value="oldest">Najstarsze</option>
+      <option value="popular">🔥 Najpopularniejsze</option>
+      <option value="liked">👍 Najwięcej polubień</option>
+    </select>
+  </div>
   <div id="shorts-section" style="display:none;margin-bottom:24px">
   <div style="font-size:15px;font-weight:600;margin-bottom:12px;display:flex;align-items:center;gap:8px">
     <svg viewBox="0 0 24 24" width="18" height="18" fill="#ff0000"><path d="M17.77 10.32l-1.2-.5L18 9.06c1.84-.96 2.56-3.22 1.6-5.06s-3.22-2.56-5.06-1.6L6 6.94c-1.29.68-2.07 2.04-2 3.49.07 1.42.93 2.67 2.22 3.25l1.2.5L6 14.94c-1.84.96-2.56 3.22-1.6 5.06.96 1.84 3.22 2.56 5.06 1.6l8.54-4.54c1.29-.68 2.07-2.04 2-3.49-.07-1.42-.93-2.67-2.23-3.25z"/></svg>
@@ -3087,6 +3104,8 @@ function setSbActive(id){
 
 function showShortsPage(){
   showHome();
+  const ff=document.getElementById('feed-filters');
+  if(ff)ff.style.display='none';
   const shortsSection0=document.getElementById('shorts-section');
   if(shortsSection0)shortsSection0.style.display='none';
   document.getElementById('slabel').textContent='Shorts';
@@ -3133,6 +3152,58 @@ function showHome(){
   render();
 }
 
+function durationToSeconds(dur){
+  if(!dur)return null;
+  const parts=String(dur).split(':').map(n=>parseInt(n,10));
+  if(parts.some(isNaN))return null;
+  if(parts.length===3)return parts[0]*3600+parts[1]*60+parts[2];
+  if(parts.length===2)return parts[0]*60+parts[1];
+  if(parts.length===1)return parts[0];
+  return null;
+}
+
+function populateFeedCategoryOptions(){
+  const sel=document.getElementById('feed-cat-filter');
+  if(!sel)return;
+  const cats=[...new Set(videos.map(v=>v.category).filter(Boolean))].sort((a,b)=>a.localeCompare(b,'pl'));
+  const key=cats.join('|');
+  if(sel.dataset.catsKey===key)return;
+  sel.dataset.catsKey=key;
+  const current=sel.value;
+  sel.innerHTML='<option value="">📂 Wszystkie kategorie</option>'+cats.map(c=>`<option value="${esc(c)}">${esc(c)}</option>`).join('');
+  if(cats.includes(current))sel.value=current;
+}
+
+function applyFeedFiltersToList(list){
+  const cat=document.getElementById('feed-cat-filter')?.value||'';
+  const durFilter=document.getElementById('feed-dur-filter')?.value||'';
+  const sortMode=document.getElementById('feed-sort-filter')?.value||'newest';
+
+  let out=list;
+  if(cat)out=out.filter(v=>v.category===cat);
+  if(durFilter){
+    out=out.filter(v=>{
+      const sec=durationToSeconds(v.dur);
+      if(sec===null)return false;
+      if(durFilter==='short')return sec<=240;
+      if(durFilter==='medium')return sec>240&&sec<=1200;
+      if(durFilter==='long')return sec>1200;
+      return true;
+    });
+  }
+  out=[...out].sort((a,b)=>{
+    if(sortMode==='oldest')return new Date(a.created_at||0)-new Date(b.created_at||0);
+    if(sortMode==='popular')return(b.views||0)-(a.views||0);
+    if(sortMode==='liked')return(b.likes||0)-(a.likes||0);
+    return new Date(b.created_at||0)-new Date(a.created_at||0); // newest (domyślne)
+  });
+  return out;
+}
+
+function applyFeedFilters(){
+  render();
+}
+
 function renderVideoCards(list,g){
   g.innerHTML='';
   list.forEach(v=>{
@@ -3164,19 +3235,23 @@ function renderVideoCards(list,g){
 }
 
 function render(){
+  const ff=document.getElementById('feed-filters');
+  if(ff)ff.style.display='flex';
+  populateFeedCategoryOptions();
   const g0=document.getElementById('grid');
   g0.style.display='grid';
   g0.style.gridTemplateColumns='repeat(auto-fill,minmax(250px,1fr))';
   const q=(document.getElementById('search').value||'').toLowerCase();
   const allVids=(q?videos.filter(v=>v.title.toLowerCase().includes(q)):videos).filter(isDiscoverable);
   const shorts=allVids.filter(v=>v.is_short===true);
-  const list=allVids.filter(v=>v.is_short!==true);
+  let list=allVids.filter(v=>v.is_short!==true);
+  list=applyFeedFiltersToList(list);
 
   // Shorts - nie pokazujemy na stronie głównej, tylko w osobnej zakładce Shorts
   const shortsSection=document.getElementById('shorts-section');
   if(shortsSection)shortsSection.style.display='none';
 
-  document.getElementById('slabel').textContent=q?`Wyniki: "${q}" (${allVids.length})`:`Wszystkie filmy (${list.length})`;
+  document.getElementById('slabel').textContent=q?`Wyniki: "${q}" (${list.length})`:`Wszystkie filmy (${list.length})`;
   const g=document.getElementById('grid');
   if(!list.length){
     g.innerHTML=`<div class="empty"><div style="font-size:64px;margin-bottom:16px">🎬</div><p style="font-size:15px;margin-bottom:8px">${q?'Brak wyników':'Brak filmów'}</p></div>`;
@@ -3365,6 +3440,8 @@ function renderSidebarSubs(subs){
 
 function showSubscriptions(){
   showHome();
+  const ff=document.getElementById('feed-filters');
+  if(ff)ff.style.display='none';
   const shortsSection3=document.getElementById('shorts-section');
   if(shortsSection3)shortsSection3.style.display='none';
   document.getElementById('slabel').textContent='Moje subskrypcje';
@@ -3462,6 +3539,8 @@ function updateSaveButtonUI(videoId){
 
 async function showSavedPage(){
   showHome();
+  const ff=document.getElementById('feed-filters');
+  if(ff)ff.style.display='none';
   const shortsSection=document.getElementById('shorts-section');
   if(shortsSection)shortsSection.style.display='none';
   document.getElementById('slabel').textContent='💾 Zapisane filmy';
@@ -3675,6 +3754,8 @@ async function addToWatchHistory(v){
 
 async function showHistory(){
   showHome();
+  const ff=document.getElementById('feed-filters');
+  if(ff)ff.style.display='none';
   const shortsSection1=document.getElementById('shorts-section');
   if(shortsSection1)shortsSection1.style.display='none';
   document.getElementById('slabel').innerHTML='Historia oglądania <button onclick="clearHistory()" style="font-size:12px;background:none;border:1px solid #444;color:var(--text-secondary);padding:4px 12px;border-radius:14px;cursor:pointer;margin-left:12px">Wyczyść</button>';
@@ -3727,6 +3808,8 @@ async function clearHistory(){
 
 function showTrending(){
   showHome();
+  const ff=document.getElementById('feed-filters');
+  if(ff)ff.style.display='none';
   const shortsSection2=document.getElementById('shorts-section');
   if(shortsSection2)shortsSection2.style.display='none';
   document.getElementById('slabel').textContent='🔥 Popularne';
