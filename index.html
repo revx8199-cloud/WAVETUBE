@@ -631,7 +631,7 @@ body.zoom-mode header,body.zoom-mode .sidebar-left,body.zoom-mode #main-content{
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
         <div class="field">
           <label>Czas trwania</label>
-          <input type="text" id="fdur" placeholder="np. 5:42">
+          <input type="text" id="fdur" placeholder="np. 5:42 (dla MP4 wykryjemy automatycznie)" oninput="this.dataset.userEdited='1'">
         </div>
         <div class="field">
           <label>Kategoria</label>
@@ -3091,8 +3091,29 @@ function detectSource(){
   if(ytId(url))hint.innerHTML='✅ <b style="color:#cc0000">YouTube</b>';
   else if(gdId(url))hint.innerHTML='✅ <b style="color:#1a73e8">Google Drive</b> — upewnij się że plik jest publiczny';
   else if(ttId(url))hint.innerHTML='✅ <b style="color:#000;background:#69C9D0;padding:2px 6px;border-radius:4px">TikTok</b>';
-  else if(url.match(/\.(mp4|webm|mov)(\?|$)/i))hint.innerHTML='✅ <b style="color:#188038">MP4</b>';
+  else if(url.match(/\.(mp4|webm|mov)(\?|$)/i)){
+    hint.innerHTML='✅ <b style="color:#188038">MP4</b> — wykrywam długość...';
+    detectVideoDuration(url);
+  }
   else hint.innerHTML='⚠️ Nierozpoznany format';
+}
+
+function detectVideoDuration(url){
+  const durField=document.getElementById('fdur');
+  const hint=document.getElementById('fhint');
+  const probe=document.createElement('video');
+  probe.preload='metadata';
+  probe.onloadedmetadata=()=>{
+    if(isFinite(probe.duration)&&probe.duration>0&&durField.dataset.userEdited!=='1'){
+      const total=Math.round(probe.duration);
+      const mm=Math.floor(total/60),ss=total%60;
+      durField.value=`${mm}:${String(ss).padStart(2,'0')}`;
+      if(hint)hint.innerHTML='✅ <b style="color:#188038">MP4</b> — długość wykryta automatycznie';
+    }
+    probe.remove();
+  };
+  probe.onerror=()=>{probe.remove();};
+  probe.src=url;
 }
 
 // ── RENDER ────────────────────────────────────────────────────────────────────
@@ -3899,10 +3920,14 @@ async function openP(id){
     const{type,src}=getPlayer(v.url);
     if(type==='yt'||type==='gd')html=`<iframe src="${src}" allow="autoplay;encrypted-media;fullscreen" allowfullscreen></iframe>`;
     else if(type==='tt')html=`<iframe src="${src}" allow="encrypted-media" allowfullscreen style="border:none;width:100%;height:100%"></iframe>`;
-    else if(type==='mp4')html=`<video src="${src}" controls autoplay></video>`;
+    else if(type==='mp4')html=`<video src="${src}" controls autoplay preload="metadata" poster="${v.thumb||''}"></video>`;
     else html=`<div style="display:flex;align-items:center;justify-content:center;height:100%;flex-direction:column;gap:12px;color:#555;padding:20px;text-align:center"><div style="font-size:48px">⚠️</div><p>Nie można odtworzyć</p><a href="${src}" target="_blank" style="color:#3ea6ff;font-size:13px">Otwórz zewnętrznie ↗</a></div>`;
   }
   document.getElementById('pw').innerHTML=html;
+  if(!isUpcoming){
+    const{type}=getPlayer(v.url);
+    if(type==='mp4')setupNativePlayer(v);
+  }
   layoutActsForShorts(isShort);
   document.getElementById('vt').textContent=v.title;
   document.getElementById('vm').innerHTML=`${viewsLabel(v,' wyświetleń')} · ${v.date||''}${v.category?' · <span style="background:var(--border-soft);padding:2px 8px;border-radius:10px;font-size:11px">'+esc(v.category)+'</span>':''}${v.age_restricted?' · <span style="background:#3a1414;color:#ff6b6b;padding:2px 8px;border-radius:10px;font-size:11px;font-weight:600">18+</span>':''}${v.made_for_kids?' · <span style="background:#142a3a;color:#3ea6ff;padding:2px 8px;border-radius:10px;font-size:11px;font-weight:600">👶 Dla dzieci</span>':''}${v.description?'<div style="margin-top:8px;color:var(--text-secondary);font-size:13px;line-height:1.5">'+esc(v.description)+'</div>':''}`;
@@ -3928,6 +3953,46 @@ async function openP(id){
   renderC();
   document.getElementById('pm').classList.add('open');
   document.body.style.overflow='hidden';
+}
+
+function setupNativePlayer(v){
+  const vid=document.querySelector('#pw video');
+  if(!vid)return;
+
+  // Zapamiętana głośność / wyciszenie (jak w prawdziwym YouTube - między filmami)
+  const savedVol=localStorage.getItem('player_volume');
+  const savedMuted=localStorage.getItem('player_muted');
+  if(savedVol!==null)vid.volume=parseFloat(savedVol);
+  if(savedMuted==='1')vid.muted=true;
+  vid.addEventListener('volumechange',()=>{
+    localStorage.setItem('player_volume',vid.volume);
+    localStorage.setItem('player_muted',vid.muted?'1':'0');
+  });
+
+  // Wznów odtwarzanie od miejsca, w którym skończyłeś ostatnim razem
+  const posKey='player_pos_'+v.id;
+  const savedPos=parseFloat(localStorage.getItem(posKey)||'0');
+  vid.addEventListener('loadedmetadata',()=>{
+    if(savedPos>5&&savedPos<vid.duration*0.95)vid.currentTime=savedPos;
+  });
+  let lastSaved=0;
+  vid.addEventListener('timeupdate',()=>{
+    if(vid.currentTime-lastSaved>3){
+      lastSaved=vid.currentTime;
+      localStorage.setItem(posKey,vid.currentTime);
+    }
+  });
+  vid.addEventListener('ended',()=>localStorage.removeItem(posKey));
+
+  // Czytelny błąd zamiast pustego czarnego ekranu przy zepsutym/martwym linku
+  vid.addEventListener('error',()=>{
+    document.getElementById('pw').innerHTML=`<div style="display:flex;align-items:center;justify-content:center;height:100%;flex-direction:column;gap:12px;color:var(--text-secondary);padding:20px;text-align:center;background:#000">
+      <div style="font-size:48px">⚠️</div>
+      <p style="font-size:15px;font-weight:600">Nie udało się załadować filmu</p>
+      <p style="font-size:12px;color:var(--text-tertiary)">Link może być uszkodzony albo plik został usunięty</p>
+      <a href="${esc(v.url)}" target="_blank" style="color:#3ea6ff;font-size:13px">Spróbuj otworzyć bezpośrednio ↗</a>
+    </div>`;
+  });
 }
 
 async function toggleSubInPlayer(key,name){
@@ -4417,6 +4482,7 @@ async function submitForm(){
   btn.textContent='Opublikuj film';btn.disabled=false;
   if(ok){
     ['ftitle','furl','fdesc','fdur','ftags'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+    delete document.getElementById('fdur').dataset.userEdited;
     ['fcomments','flikes'].forEach(id=>document.getElementById(id).checked=true);
     ['fhideviews','fkids','fage','fshort'].forEach(id=>document.getElementById(id).checked=false);
     document.getElementById('fcat').value='';
