@@ -1974,21 +1974,37 @@ async function setMusic(url){
 }
 
 let musicUnlockShown=false;
+let musicState={url:'',attempted:false};
 function syncMusicState(url,active){
   const audioEl=document.getElementById('bg-music-player');
   if(!audioEl)return;
   if(active&&url){
-    if(audioEl.dataset.src!==url){audioEl.dataset.src=url;audioEl.src=url;}
+    if(musicState.url!==url){
+      musicState={url,attempted:false};
+      audioEl.src=url;
+    }
+    if(musicState.attempted)return; // nie spamuj play() co 4 sekundy jeśli już próbowaliśmy
+    musicState.attempted=true;
     audioEl.volume=0.35;
     const p=audioEl.play();
     if(p&&p.catch)p.catch(()=>showMusicUnlockButton());
   }else{
     audioEl.pause();
+    musicState={url:'',attempted:false};
     const btn=document.getElementById('music-unlock-btn');
     if(btn)btn.remove();
     musicUnlockShown=false;
   }
 }
+document.addEventListener('DOMContentLoaded',()=>{
+  const audioEl=document.getElementById('bg-music-player');
+  if(audioEl)audioEl.addEventListener('error',()=>{
+    // zły/niedziałający link (np. link do YouTube zamiast pliku audio) - nie próbuj bez końca
+    const btn=document.getElementById('music-unlock-btn');
+    if(btn)btn.remove();
+    musicUnlockShown=false;
+  });
+});
 function showMusicUnlockButton(){
   if(musicUnlockShown)return;
   musicUnlockShown=true;
