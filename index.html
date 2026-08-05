@@ -880,29 +880,29 @@ body.zoom-mode header,body.zoom-mode .sidebar-left,body.zoom-mode #main-content{
 <!-- DODAJ POST -->
 <div class="fmbg" id="add-post-modal">
   <div class="fbox">
-    <h3>📝 Nowy post</h3>
+    <h3 data-i18n="post_modal_title">📝 Nowy post</h3>
     <div class="field">
-      <label>Tekst</label>
-      <textarea id="post-text-inp" style="width:100%;background:var(--bg-sunken);border:1px solid var(--border);border-radius:8px;color:var(--text-primary);padding:10px 14px;font-size:14px;outline:none;resize:none;height:120px" placeholder="Co chcesz napisać?"></textarea>
+      <label data-i18n="post_text_label">Tekst</label>
+      <textarea id="post-text-inp" style="width:100%;background:var(--bg-sunken);border:1px solid var(--border);border-radius:8px;color:var(--text-primary);padding:10px 14px;font-size:14px;outline:none;resize:none;height:120px" placeholder="Co chcesz napisać?" data-i18n-placeholder="post_text_placeholder"></textarea>
     </div>
     <div class="field">
-      <label>Zdjęcia (opcjonalnie, max 6)</label>
+      <label data-i18n="post_images_label">Zdjęcia (opcjonalnie, max 6)</label>
       <input type="file" id="post-img-inp" accept="image/*" multiple style="color:var(--text-secondary)" onchange="previewPostImg(this)">
       <div id="post-img-preview" style="display:none;margin-top:10px;grid-template-columns:repeat(3,1fr);gap:8px"></div>
     </div>
     <div class="field">
       <label style="display:flex;align-items:center;gap:8px;cursor:pointer;text-transform:none;font-size:13px;color:var(--text-secondary)">
-        <input type="checkbox" id="poll-toggle" onchange="togglePollFields()" style="width:auto"> 📊 Dodaj ankietę
+        <input type="checkbox" id="poll-toggle" onchange="togglePollFields()" style="width:auto"> <span data-i18n="post_add_poll">📊 Dodaj ankietę</span>
       </label>
       <div id="poll-fields" style="display:none;margin-top:12px">
-        <input id="poll-question" placeholder="Zadaj pytanie..." style="width:100%;background:var(--bg-sunken);border:1px solid var(--border);border-radius:8px;color:var(--text-primary);padding:10px 14px;font-size:14px;outline:none;margin-bottom:10px">
+        <input id="poll-question" placeholder="Zadaj pytanie..." data-i18n-placeholder="post_poll_question_ph" style="width:100%;background:var(--bg-sunken);border:1px solid var(--border);border-radius:8px;color:var(--text-primary);padding:10px 14px;font-size:14px;outline:none;margin-bottom:10px">
         <div id="poll-options-list"></div>
-        <button type="button" onclick="addPollOption()" id="poll-add-btn" style="background:none;border:1px dashed #444;color:var(--text-secondary);padding:7px 14px;border-radius:8px;cursor:pointer;font-size:12px;margin-top:4px">+ Dodaj opcję</button>
+        <button type="button" onclick="addPollOption()" id="poll-add-btn" data-i18n="post_add_option" style="background:none;border:1px dashed #444;color:var(--text-secondary);padding:7px 14px;border-radius:8px;cursor:pointer;font-size:12px;margin-top:4px">+ Dodaj opcję</button>
       </div>
     </div>
     <div class="fbbtns">
-      <button class="fcancel" onclick="document.getElementById('add-post-modal').classList.remove('open');removePostImg();resetPollForm()">Anuluj</button>
-      <button class="fsubmit" id="post-submit-btn" onclick="submitPost()">Opublikuj</button>
+      <button class="fcancel" data-i18n="btn_cancel" onclick="document.getElementById('add-post-modal').classList.remove('open');removePostImg();resetPollForm()">Anuluj</button>
+      <button class="fsubmit" id="post-submit-btn" data-i18n="btn_publish" onclick="submitPost()">Opublikuj</button>
     </div>
   </div>
 </div>
@@ -1123,7 +1123,26 @@ const TRANSLATIONS={
     settings_title:'Ustawienia',settings_nick:'Twój nick',settings_lang:'Język',
     btn_save:'Zapisz',btn_close:'Zamknij',btn_publish:'Opublikuj',
     tab_videos:'Filmy',tab_shorts:'Shorts',tab_posts:'Posty',subscribers_label:'subskrybentów',videos_label:'filmów',your_channel_label:'To Twój kanał',
-    login_google:'Zaloguj się',logged_in_as:'Zalogowano jako'
+    login_google:'Zaloguj się',logged_in_as:'Zalogowano jako',
+    ch_default_name:'Kanał',ch_change_banner:'Zmień baner',ch_message:'Wiadomość',ch_stats:'Statystyki',
+    ch_add_desc:'+ Dodaj opis kanału',ch_no_videos:'Ten kanał nie ma jeszcze żadnych filmów',
+    ch_no_shorts:'Brak Shorts na tym kanale',ch_comments_suffix:'komentarzy',ch_comments_off:'Komentarze wyłączone',
+    ch_premiere:'Premiera',toast_unsubscribed:'Anulowano subskrypcję',toast_subscribing:'Subskrybujesz',
+    desc_placeholder:'Opis kanału...',desc_saved_toast:'Opis zapisany! ✅',
+    posts_loading:'⏳ Ładowanie postów...',posts_add_btn:'+ Dodaj post',posts_none:'Brak postów na tym kanale',
+    post_delete_title:'Usuń post',post_comment_ph:'Komentarz...',post_login_comment:'Zaloguj się żeby komentować',
+    post_login_vote:'Zaloguj się żeby głosować',post_login_vote_toast:'Zaloguj się żeby zagłosować!',
+    vote_singular:'głos',vote_plural:'głosów',anonim:'Anonim',
+    toast_login_generic:'Zaloguj się!',confirm_delete_post:'Usunąć post?',confirm_irreversible:'Ta czynność jest nieodwracalna.',
+    toast_max_images:'Maksymalnie 6 zdjęć na post',
+    post_poll_question_missing:'Wpisz pytanie ankiety!',post_poll_min_options:'Dodaj przynajmniej 2 opcje!',
+    post_empty_error:'Napisz coś, dodaj zdjęcie lub ankietę!',post_publishing:'Publikowanie...',
+    post_rate_limit:'Za dużo postów naraz — odczekaj chwilę 🐢',post_new_notification:'dodał nowy post 📝',
+    post_published_toast:'Post dodany! 📝',
+    post_modal_title:'📝 Nowy post',post_text_label:'Tekst',post_text_placeholder:'Co chcesz napisać?',
+    post_images_label:'Zdjęcia (opcjonalnie, max 6)',post_add_poll:'📊 Dodaj ankietę',
+    post_poll_question_ph:'Zadaj pytanie...',post_add_option:'+ Dodaj opcję',
+    post_poll_option_ph:'Opcja',post_poll_max_options:'Maksymalnie 4 opcje'
   },
   ru:{
     nav_home:'Главная',nav_shorts:'Shorts',nav_trending:'В тренде',nav_you:'Вы',
@@ -1139,7 +1158,26 @@ const TRANSLATIONS={
     settings_title:'Настройки',settings_nick:'Ваш никнейм',settings_lang:'Язык',
     btn_save:'Сохранить',btn_close:'Закрыть',btn_publish:'Опубликовать',
     tab_videos:'Видео',tab_shorts:'Shorts',tab_posts:'Посты',subscribers_label:'подписчиков',videos_label:'видео',your_channel_label:'Это ваш канал',
-    login_google:'Войти',logged_in_as:'Вы вошли как'
+    login_google:'Войти',logged_in_as:'Вы вошли как',
+    ch_default_name:'Канал',ch_change_banner:'Изменить баннер',ch_message:'Сообщение',ch_stats:'Статистика',
+    ch_add_desc:'+ Добавить описание канала',ch_no_videos:'На этом канале пока нет видео',
+    ch_no_shorts:'На этом канале нет Shorts',ch_comments_suffix:'комментариев',ch_comments_off:'Комментарии отключены',
+    ch_premiere:'Премьера',toast_unsubscribed:'Подписка отменена',toast_subscribing:'Вы подписались на',
+    desc_placeholder:'Описание канала...',desc_saved_toast:'Описание сохранено! ✅',
+    posts_loading:'⏳ Загрузка постов...',posts_add_btn:'+ Добавить пост',posts_none:'На этом канале нет постов',
+    post_delete_title:'Удалить пост',post_comment_ph:'Комментарий...',post_login_comment:'Войдите, чтобы комментировать',
+    post_login_vote:'Войдите, чтобы голосовать',post_login_vote_toast:'Войдите, чтобы проголосовать!',
+    vote_singular:'голос',vote_plural:'голосов',anonim:'Аноним',
+    toast_login_generic:'Войдите!',confirm_delete_post:'Удалить пост?',confirm_irreversible:'Это действие необратимо.',
+    toast_max_images:'Максимум 6 фото на пост',
+    post_poll_question_missing:'Введите вопрос опроса!',post_poll_min_options:'Добавьте минимум 2 варианта!',
+    post_empty_error:'Напишите что-нибудь, добавьте фото или опрос!',post_publishing:'Публикация...',
+    post_rate_limit:'Слишком много постов подряд — подождите немного 🐢',post_new_notification:'опубликовал новый пост 📝',
+    post_published_toast:'Пост опубликован! 📝',
+    post_modal_title:'📝 Новый пост',post_text_label:'Текст',post_text_placeholder:'Что хотите написать?',
+    post_images_label:'Фото (необязательно, макс. 6)',post_add_poll:'📊 Добавить опрос',
+    post_poll_question_ph:'Задайте вопрос...',post_add_option:'+ Добавить вариант',
+    post_poll_option_ph:'Вариант',post_poll_max_options:'Максимум 4 варианта'
   }
 };
 
@@ -1977,8 +2015,10 @@ async function setMusic(url){
   if(url==='off'){
     newActive=false;
   }else if(url){
-    newUrl=url;
+    const gdid=gdId(url);
+    newUrl=gdid?`https://drive.google.com/uc?export=download&id=${gdid}`:url;
     newActive=true;
+    if(gdid)consoleLog('Wykryto link Google Drive — upewnij się że plik ma udostępnianie "Każdy, kto ma link"','#ffd700');
   }else{
     // brak argumentu = przełącz obecny/ostatni utwór
     newActive=!data?.music_active;
@@ -3302,7 +3342,7 @@ async function showChannel(userId,nameIn,avatar,email){
   const avHtml=avatar?`<img src="${avatar}">`:`<span>${name[0]||'?'}</span>`;
   const isSub=subscribedSet.has(userId||email);
   // Clean up name if it's a UUID
-  name=name&&!name.match(/^[0-9a-f-]{8,}$/i)?name:'Kanał';
+  name=name&&!name.match(/^[0-9a-f-]{8,}$/i)?name:t('ch_default_name');
   currentChannelUser={userId,email,name};
   currentTab='home';
   const sbEl=document.getElementById('sidebar-left');
@@ -3329,7 +3369,7 @@ async function showChannel(userId,nameIn,avatar,email){
           <div style="position:absolute;bottom:0;left:0;right:0;background:rgba(0,0,0,0);display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity .2s;height:100%" id="banner-hover-area" onmouseover="this.style.opacity=1;this.style.background='rgba(0,0,0,0.4)'" onmouseout="this.style.opacity=0;this.style.background='rgba(0,0,0,0)'">
             <label style="background:rgba(0,0,0,0.7);color:var(--text-primary);padding:10px 20px;border-radius:24px;cursor:pointer;font-size:14px;font-weight:600;display:flex;align-items:center;gap:8px;border:2px solid rgba(255,255,255,0.3)">
               <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>
-              Zmień baner
+              <span id="ch-banner-label">${t('ch_change_banner')}</span>
               <input type="file" accept="image/*" style="display:none" onchange="changeBanner(event,'${bannerKey}')" />
             </label>
           </div>`:''}
@@ -3343,13 +3383,13 @@ async function showChannel(userId,nameIn,avatar,email){
         <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:4px">
           <span style="font-size:13px;color:var(--text-secondary)"><span id="sub-count-big">${subCount}</span> ${t('subscribers_label')} · ${userVideos.length} ${t('videos_label')}</span>
           ${!isOwner?`<button class="btn-sub-big${isSub?' subscribed':''}" onclick="toggleSub('${userId||email}','${jsesc(name)}')" id="sub-big-btn" style="margin-left:0">${isSub?'✓ '+t('btn_subscribed'):t('btn_subscribe')}</button>
-          <button onclick="openMsg('${jsesc(name)}','${email}','${userId}')" style="background:var(--border-soft);border:none;color:var(--text-primary);padding:8px 16px;border-radius:20px;cursor:pointer;font-size:13px;display:flex;align-items:center;gap:6px">✉️ Wiadomość</button>`
+          <button onclick="openMsg('${jsesc(name)}','${email}','${userId}')" style="background:var(--border-soft);border:none;color:var(--text-primary);padding:8px 16px;border-radius:20px;cursor:pointer;font-size:13px;display:flex;align-items:center;gap:6px">✉️ ${t('ch_message')}</button>`
           :`<button class="btn-sub-big subscribed" style="margin-left:0;cursor:default">${t('your_channel_label')}</button>
-          <button onclick="openStatsPanel()" style="background:var(--border-soft);border:none;color:var(--text-primary);padding:8px 16px;border-radius:20px;cursor:pointer;font-size:13px;display:flex;align-items:center;gap:6px">📊 Statystyki</button>`}
+          <button onclick="openStatsPanel()" style="background:var(--border-soft);border:none;color:var(--text-primary);padding:8px 16px;border-radius:20px;cursor:pointer;font-size:13px;display:flex;align-items:center;gap:6px">📊 ${t('ch_stats')}</button>`}
         </div>
         <div id="ch-desc-wrap">
           ${isOwner
-            ?`<div id="ch-desc-text" style="font-size:13px;color:var(--text-secondary);cursor:pointer" onclick="editDesc('${userId||email}')">${savedDesc||'<span style="color:#555">+ Dodaj opis kanału</span>'}</div>`
+            ?`<div id="ch-desc-text" style="font-size:13px;color:var(--text-secondary);cursor:pointer" onclick="editDesc('${userId||email}')">${savedDesc||'<span style="color:#555">'+t('ch_add_desc')+'</span>'}</div>`
             :`<div style="font-size:13px;color:var(--text-secondary)">${esc(savedDesc)}</div>`
           }
         </div>
@@ -3369,7 +3409,7 @@ async function showChannel(userId,nameIn,avatar,email){
 
   renderChannelHome();
   const cg=document.getElementById('channel-grid');
-  if(!userVideos.length){cg.innerHTML='<div style="color:#555;font-size:14px">Ten kanał nie ma jeszcze żadnych filmów</div>';return;}
+  if(!userVideos.length){cg.innerHTML=`<div style="color:#555;font-size:14px">${t('ch_no_videos')}</div>`;return;}
   userVideos.forEach(v=>{
     const th=thumbFor(v);
     const el=document.createElement('div');
@@ -3381,10 +3421,10 @@ async function showChannel(userId,nameIn,avatar,email){
     </div>
     <div class="card-info" style="padding:10px 4px">
       <h3>${esc(v.title)}</h3>
-      <p>${v.category?`<span style="color:var(--text-secondary);font-size:11px">${esc(v.category)} · </span>`:''} ${v.likes_enabled!==false?(v.likes||0)+' '+likeIcon()+' · ':''} ${v.comments_enabled!==false?(v.comments||[]).length+' komentarzy':' 🔒 Komentarze wyłączone'}</p>
+      <p>${v.category?`<span style="color:var(--text-secondary);font-size:11px">${esc(v.category)} · </span>`:''} ${v.likes_enabled!==false?(v.likes||0)+' '+likeIcon()+' · ':''} ${v.comments_enabled!==false?(v.comments||[]).length+' '+t('ch_comments_suffix'):' 🔒 '+t('ch_comments_off')}</p>
       ${v.tags&&v.tags.length?`<div style="margin-top:4px;display:flex;flex-wrap:wrap;gap:4px">${v.tags.slice(0,3).map(t=>`<span style="background:var(--bg-card);color:var(--text-secondary);font-size:10px;padding:2px 6px;border-radius:8px">#${t}</span>`).join('')}</div>`:''
       }
-      ${v.premiere&&new Date(v.premiere)>new Date()?`<div style="margin-top:4px;font-size:11px;color:#ff0000;font-weight:600">🔴 Premiera: ${new Date(v.premiere).toLocaleString('pl-PL',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'})}</div>`:''
+      ${v.premiere&&new Date(v.premiere)>new Date()?`<div style="margin-top:4px;font-size:11px;color:#ff0000;font-weight:600">🔴 ${t('ch_premiere')}: ${new Date(v.premiere).toLocaleString('pl-PL',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'})}</div>`:''
       }
     </div>`;
     el.onclick=()=>openP(v.id);
@@ -3405,7 +3445,7 @@ async function toggleSub(key,name){
   if(isSub){
     subscribedSet.delete(key);
     await sb.from('subscriptions').delete().match({subscriber_id:currentUser.id,channel_id:key});
-    toast(`Anulowano subskrypcję: ${name}`);
+    toast(`${t('toast_unsubscribed')}: ${name}`);
   } else {
     subscribedSet.add(key);
     const chVideos=videos.filter(v=>v.user_id===key);
@@ -3414,7 +3454,7 @@ async function toggleSub(key,name){
     await sb.from('subscriptions').insert([{subscriber_id:currentUser.id,subscriber_email:currentUser.email,channel_id:key,channel_name:chName,channel_avatar:chAvatar}]);
     // send notification to channel owner
     await sb.from('notifications').insert([{user_id:key,message:`<b>${getMyDisplayName()}</b> zasubskrybował Twój kanał 🔔`,avatar:currentUser.user_metadata?.avatar_url||'',sender_id:currentUser.id,sender_name:getMyDisplayName(),sender_avatar:currentUser.user_metadata?.avatar_url||'',sender_email:currentUser.email}]);
-    toast(`Subskrybujesz: ${name} 🔔`);
+    toast(`${t('toast_subscribing')}: ${name} 🔔`);
   }
   const count=await getSubCount(key);
   const btn=document.getElementById('sub-big-btn');
@@ -4009,7 +4049,7 @@ async function toggleSubInPlayer(key,name){
     const chName=chVideos[0]?.user_name||chVideos[0]?.user_email?.split('@')[0]||name;
     await sb.from('subscriptions').insert([{subscriber_id:currentUser.id,subscriber_email:currentUser.email,channel_id:key,channel_name:chName,channel_avatar:chAvatar}]);
     await sb.from('notifications').insert([{user_id:key,message:`<b>${getMyDisplayName()}</b> zasubskrybował Twój kanał 🔔`,avatar:currentUser.user_metadata?.avatar_url||'',sender_id:currentUser.id,sender_name:getMyDisplayName(),sender_avatar:currentUser.user_metadata?.avatar_url||'',sender_email:currentUser.email}]);
-    toast(`Subskrybujesz: ${name} 🔔`);
+    toast(`${t('toast_subscribing')}: ${name} 🔔`);
   }
   const btn=document.getElementById('sub-btn');
   if(btn){btn.className='btn-sub'+(subscribedSet.has(key)?' subscribed':'');btn.textContent=subscribedSet.has(key)?'✓ '+t('btn_subscribed'):t('btn_subscribe');}
@@ -4512,10 +4552,10 @@ async function editDesc(key){
     const{data}=await sb.from('profiles').select('description').eq('id',key).single();
     if(data&&data.description)current=data.description;
   }
-  wrap.innerHTML=`<textarea id="desc-inp" style="width:100%;background:var(--bg-card);border:1px solid #444;border-radius:8px;color:var(--text-primary);padding:8px;font-size:13px;resize:none;outline:none;margin-bottom:6px" rows="2" placeholder="Opis kanału...">${current}</textarea>
+  wrap.innerHTML=`<textarea id="desc-inp" style="width:100%;background:var(--bg-card);border:1px solid #444;border-radius:8px;color:var(--text-primary);padding:8px;font-size:13px;resize:none;outline:none;margin-bottom:6px" rows="2" placeholder="${t('desc_placeholder')}">${current}</textarea>
   <div style="display:flex;gap:8px">
-    <button onclick="saveDesc('${key}')" style="background:#cc0000;border:none;color:var(--text-primary);padding:6px 14px;border-radius:16px;cursor:pointer;font-size:12px;font-weight:600">Zapisz</button>
-    <button onclick="showMyChannel()" style="background:var(--border-soft);border:none;color:var(--text-primary);padding:6px 14px;border-radius:16px;cursor:pointer;font-size:12px">Anuluj</button>
+    <button onclick="saveDesc('${key}')" style="background:#cc0000;border:none;color:var(--text-primary);padding:6px 14px;border-radius:16px;cursor:pointer;font-size:12px;font-weight:600">${t('btn_save')}</button>
+    <button onclick="showMyChannel()" style="background:var(--border-soft);border:none;color:var(--text-primary);padding:6px 14px;border-radius:16px;cursor:pointer;font-size:12px">${t('btn_cancel')}</button>
   </div>`;
   document.getElementById('desc-inp').focus();
 }
@@ -4528,7 +4568,7 @@ async function saveDesc(key){
     if(error){toast('Błąd zapisu: '+error.message);return;}
     if(profileCache[key])profileCache[key].description=val;
   }
-  toast('Opis zapisany! ✅');
+  toast(t('desc_saved_toast'));
   showMyChannel();
 }
 
@@ -5066,7 +5106,7 @@ function renderChannelHome(){
   const cont=document.getElementById('channel-home-container');
   let html='<div style="padding:0 24px">';
   if(userShorts.length){
-    html+=`<div style="font-size:15px;font-weight:600;margin-bottom:12px;display:flex;align-items:center;gap:8px"><span style="background:#ff0000;color:var(--text-primary);font-size:10px;padding:2px 6px;border-radius:4px;font-weight:700">SHORT</span> Shorts</div>
+    html+=`<div style="font-size:15px;font-weight:600;margin-bottom:12px;display:flex;align-items:center;gap:8px"><span style="background:#ff0000;color:var(--text-primary);font-size:10px;padding:2px 6px;border-radius:4px;font-weight:700">SHORT</span> ${t('tab_shorts')}</div>
     <div style="display:flex;gap:12px;overflow-x:auto;padding-bottom:16px;margin-bottom:20px">`;
     userShorts.forEach(v=>{
       const th=thumbFor(v);
@@ -5095,7 +5135,7 @@ function renderChannelHome(){
     });
     html+='</div>';
   }
-  if(!userVideos.length&&!userShorts.length) html+='<div style="color:#555;font-size:14px;padding:20px 0">Ten kanał nie ma jeszcze żadnych filmów</div>';
+  if(!userVideos.length&&!userShorts.length) html+=`<div style="color:#555;font-size:14px;padding:20px 0">${t('ch_no_videos')}</div>`;
   html+='</div>';
   cont.innerHTML=html;
 }
@@ -5104,7 +5144,7 @@ function renderChannelShorts(){
   const{userId,email}=currentChannelUser;
   const userShorts=videos.filter(v=>(v.user_id===userId||(v.user_email===email&&email))&&v.is_short===true&&isDiscoverable(v));
   const cont=document.getElementById('channel-shorts-container');
-  if(!userShorts.length){cont.innerHTML='<div style="padding:0 24px;color:#555;font-size:14px">Brak Shorts na tym kanale</div>';return;}
+  if(!userShorts.length){cont.innerHTML=`<div style="padding:0 24px;color:#555;font-size:14px">${t('ch_no_shorts')}</div>`;return;}
   let html='<div style="display:flex;flex-wrap:wrap;gap:12px;padding:0 24px">';
   userShorts.forEach(v=>{
     const th=thumbFor(v);
@@ -5128,20 +5168,20 @@ async function renderPosts(){
   const isOwner=currentUser&&(currentUser.id===userId||currentUser.id===email||(currentUser.email===email&&email));
   const pc=document.getElementById('posts-container');
   if(!pc)return;
-  pc.innerHTML='<div style="padding:20px;color:#555;font-size:14px">⏳ Ładowanie postów...</div>';
+  pc.innerHTML=`<div style="padding:20px;color:#555;font-size:14px">${t('posts_loading')}</div>`;
   const posts=await getPosts(userId,email);
   currentPostsCache=posts;
   let html='<div class="posts-grid">';
   if(isOwner){
-    html+=`<button class="add-post-btn" onclick="openAddPost()">+ Dodaj post</button>`;
+    html+=`<button class="add-post-btn" onclick="openAddPost()">${t('posts_add_btn')}</button>`;
   }
   if(!posts.length){
-    html+='<div style="color:#555;font-size:14px;padding:20px 0">Brak postów na tym kanale</div>';
+    html+=`<div style="color:#555;font-size:14px;padding:20px 0">${t('posts_none')}</div>`;
   } else {
     posts.forEach((p,i)=>{
       const likedPosts=new Set(JSON.parse(localStorage.getItem('liked_posts')||'[]'));
       const isLiked=likedPosts.has(p.id);
-      const uname=p.user_name||p.user||'Anonim';const avHtml=p.user_avatar?`<img class="post-av" src="${p.user_avatar}">`:`<div class="post-av-ph" style="background:${getUserColor(p.user_email)}">${uname[0]}</div>`;
+      const uname=p.user_name||p.user||t('anonim');const avHtml=p.user_avatar?`<img class="post-av" src="${p.user_avatar}">`:`<div class="post-av-ph" style="background:${getUserColor(p.user_email)}">${uname[0]}</div>`;
       html+=`<div class="post-card" id="post-${p.id}">
         <div class="post-header">
           ${avHtml}
@@ -5149,7 +5189,7 @@ async function renderPosts(){
             <div class="post-user" style="${p.user_color?`color:${p.user_color};`:''}${p.user_font?`font-family:${fontCssFor(p.user_font)};`:''}">${esc(uname)}${verifiedBadge(p.user_email||'')}</div>
             <div class="post-time">${p.created_at?new Date(p.created_at).toLocaleString('pl-PL',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'}):p.time||''}</div>
           </div>
-          ${isOwner?`<button onclick="deletePost(${p.id})" style="margin-left:auto;background:none;border:none;color:#555;cursor:pointer;font-size:16px" title="Usuń post">🗑</button>`:''}
+          ${isOwner?`<button onclick="deletePost(${p.id})" style="margin-left:auto;background:none;border:none;color:#555;cursor:pointer;font-size:16px" title="${t('post_delete_title')}">🗑</button>`:''}
         </div>
         ${p.text?`<div class="post-text">${esc(p.text)}</div>`:''}
         ${renderPostImages(p)}
@@ -5171,10 +5211,10 @@ async function renderPosts(){
             </div>`).join('')}
           ${currentUser?`<div style="display:flex;gap:8px;margin-top:8px;align-items:center">
             ${currentUser.user_metadata?.avatar_url?`<img src="${currentUser.user_metadata.avatar_url}" style="width:28px;height:28px;border-radius:50%;object-fit:cover;flex-shrink:0">`:`<div style="width:28px;height:28px;border-radius:50%;background:#cc0000;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0">${(currentUser.user_metadata?.full_name||currentUser.email||'?')[0].toUpperCase()}</div>`}
-            <input id="pci-${p.id}" placeholder="Komentarz..." style="flex:1;background:transparent;border:none;border-bottom:1px solid #444;color:var(--text-primary);padding:5px 0;font-size:13px;outline:none">
+            <input id="pci-${p.id}" placeholder="${t('post_comment_ph')}" style="flex:1;background:transparent;border:none;border-bottom:1px solid #444;color:var(--text-primary);padding:5px 0;font-size:13px;outline:none">
             <button onclick="toggleEmojiPicker('pci-${p.id}',this)" style="background:none;border:none;color:var(--text-secondary);cursor:pointer;font-size:16px" title="Emotki">😊</button>
-            <button onclick="addPostComment(${p.id})" style="background:#cc0000;border:none;color:var(--text-primary);padding:5px 12px;border-radius:16px;cursor:pointer;font-size:12px">Wyślij</button>
-          </div>`:'<div style="font-size:12px;color:#555">Zaloguj się żeby komentować</div>'}
+            <button onclick="addPostComment(${p.id})" style="background:#cc0000;border:none;color:var(--text-primary);padding:5px 12px;border-radius:16px;cursor:pointer;font-size:12px">${t('btn_send')}</button>
+          </div>`:`<div style="font-size:12px;color:#555">${t('post_login_comment')}</div>`}
         </div>
       </div>`;
     });
@@ -5241,12 +5281,12 @@ function renderPoll(p){
         </div>
       </div>`;
     }).join('')}
-    <div style="font-size:11px;color:var(--text-tertiary);margin-top:4px">${totalVotes} ${totalVotes===1?'głos':'głosów'}${!currentUser?' · Zaloguj się żeby głosować':''}</div>
+    <div style="font-size:11px;color:var(--text-tertiary);margin-top:4px">${totalVotes} ${totalVotes===1?t('vote_singular'):t('vote_plural')}${!currentUser?' · '+t('post_login_vote'):''}</div>
   </div>`;
 }
 
 async function votePoll(postId,optionIndex){
-  if(!currentUser){toast('Zaloguj się żeby zagłosować!');return;}
+  if(!currentUser){toast(t('post_login_vote_toast'));return;}
   const{data:post}=await sb.from('posts').select('poll').eq('id',postId).single();
   if(!post||!post.poll)return;
   const poll=post.poll;
@@ -5278,7 +5318,7 @@ async function likePost(postId){
 }
 
 async function addPostComment(postId){
-  if(!currentUser){toast('Zaloguj się!');return;}
+  if(!currentUser){toast(t('toast_login_generic'));return;}
   if(isMutedNow()){toast(muteToastMsg());return;}
   const inp=document.getElementById('pci-'+postId);
   if(!inp||!inp.value.trim())return;
@@ -5293,7 +5333,7 @@ async function addPostComment(postId){
 }
 
 async function deletePost(postId){
-  if(!await showConfirm('Usunąć post?','Ta czynność jest nieodwracalna.'))return;
+  if(!await showConfirm(t('confirm_delete_post'),t('confirm_irreversible')))return;
   await sb.from('posts').delete().eq('id',postId);
   renderPosts();
 }
@@ -5302,7 +5342,7 @@ let postImgFiles=[];
 
 function previewPostImg(input){
   const files=[...input.files].slice(0,6);
-  if(input.files.length>6)toast('Maksymalnie 6 zdjęć na post');
+  if(input.files.length>6)toast(t('toast_max_images'));
   postImgFiles=files;
   renderPostImgPreview();
 }
@@ -5344,11 +5384,11 @@ function togglePollFields(){
 
 function addPollOption(){
   const list=document.getElementById('poll-options-list');
-  if(list.children.length>=4){toast('Maksymalnie 4 opcje');return;}
+  if(list.children.length>=4){toast(t('post_poll_max_options'));return;}
   const idx=list.children.length;
   const row=document.createElement('div');
   row.style.cssText='display:flex;gap:6px;margin-bottom:8px;align-items:center';
-  row.innerHTML=`<input class="poll-opt-inp" placeholder="Opcja ${idx+1}" style="flex:1;background:var(--bg-sunken);border:1px solid var(--border);border-radius:8px;color:var(--text-primary);padding:8px 12px;font-size:13px;outline:none">
+  row.innerHTML=`<input class="poll-opt-inp" placeholder="${t('post_poll_option_ph')} ${idx+1}" style="flex:1;background:var(--bg-sunken);border:1px solid var(--border);border-radius:8px;color:var(--text-primary);padding:8px 12px;font-size:13px;outline:none">
     <button type="button" onclick="this.parentElement.remove()" style="background:none;border:none;color:var(--text-tertiary);cursor:pointer;font-size:16px">✕</button>`;
   list.appendChild(row);
   if(list.children.length>=4)document.getElementById('poll-add-btn').style.display='none';
@@ -5363,7 +5403,7 @@ function resetPollForm(){
 }
 
 function openAddPost(){
-  if(!currentUser){toast('Zaloguj się!');return;}
+  if(!currentUser){toast(t('toast_login_generic'));return;}
   document.getElementById('add-post-modal').classList.add('open');
 }
 
@@ -5387,18 +5427,18 @@ async function submitPost(){
   if(pollOn){
     const question=document.getElementById('poll-question').value.trim();
     const opts=[...document.querySelectorAll('.poll-opt-inp')].map(i=>i.value.trim()).filter(Boolean);
-    if(!question){toast('Wpisz pytanie ankiety!');return;}
-    if(opts.length<2){toast('Dodaj przynajmniej 2 opcje!');return;}
+    if(!question){toast(t('post_poll_question_missing'));return;}
+    if(opts.length<2){toast(t('post_poll_min_options'));return;}
     poll={question,options:opts.map(text=>({text,votes:0})),voters:{}};
   }
-  if(!text&&!postImgFiles.length&&!poll){toast('Napisz coś, dodaj zdjęcie lub ankietę!');return;}
+  if(!text&&!postImgFiles.length&&!poll){toast(t('post_empty_error'));return;}
   isSubmittingPost=true;
   const btn=document.getElementById('post-submit-btn');
   const originalLabel=btn.textContent;
   btn.disabled=true;
   btn.style.opacity='.6';
   btn.style.cursor='not-allowed';
-  btn.textContent='Publikowanie...';
+  btn.textContent=t('post_publishing');
   const meta=currentUser.user_metadata;
   try{
     let images=[];
@@ -5415,13 +5455,13 @@ async function submitPost(){
       text,image:images[0]||'',images:images,likes:0,comments:[],poll:poll
     }]);
     if(error){
-      toast(error.message.includes('RATE_LIMIT')?'Za dużo postów naraz — odczekaj chwilę 🐢':'Błąd: '+error.message);
+      toast(error.message.includes('RATE_LIMIT')?t('post_rate_limit'):'Błąd: '+error.message);
       return;
     }
     // notify subscribers
     const{data:subs}=await sb.from('subscriptions').select('subscriber_id').eq('channel_id',currentUser.id);
     if(subs&&subs.length){
-      const notifs=subs.map(s=>({user_id:s.subscriber_id,message:`<b>${getMyDisplayName()}</b> dodał nowy post 📝`,avatar:meta?.avatar_url||''}));
+      const notifs=subs.map(s=>({user_id:s.subscriber_id,message:`<b>${getMyDisplayName()}</b> ${t('post_new_notification')}`,avatar:meta?.avatar_url||''}));
       await sb.from('notifications').insert(notifs);
     }
     document.getElementById('post-text-inp').value='';
@@ -5429,7 +5469,7 @@ async function submitPost(){
     resetPollForm();
     document.getElementById('add-post-modal').classList.remove('open');
     renderPosts();
-    toast('Post dodany! 📝');
+    toast(t('post_published_toast'));
   }finally{
     isSubmittingPost=false;
     btn.disabled=false;
