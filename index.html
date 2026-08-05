@@ -295,6 +295,11 @@ body.upsidedown-mode header,body.upsidedown-mode .sidebar-left,body.upsidedown-m
 body.zoom-mode header,body.zoom-mode .sidebar-left,body.zoom-mode #main-content{animation:zoomPulse 1.6s ease-in-out infinite}
 @keyframes fireworkBurst{0%{transform:translate(0,0) scale(1);opacity:1}100%{transform:translate(var(--fx),var(--fy)) scale(.3);opacity:0}}
 @keyframes heartFloat{from{transform:translateY(0) scale(1);opacity:1}to{transform:translateY(-105vh) scale(1.3);opacity:0}}
+@keyframes rainbowCycle{0%{filter:hue-rotate(0deg)}100%{filter:hue-rotate(360deg)}}
+body.rainbow-mode{animation:rainbowCycle 4s linear infinite}
+body.blur-mode #main-content,body.blur-mode header,body.blur-mode .sidebar-left{filter:blur(3px);transition:filter .4s}
+@keyframes rainDrop{from{transform:translateY(-40px)}to{transform:translateY(105vh)}}
+@keyframes flashPulse{0%{opacity:0}15%{opacity:1}100%{opacity:0}}
 #console-output::-webkit-scrollbar{width:8px}
 #console-output::-webkit-scrollbar-thumb{background:#333;border-radius:4px}
 
@@ -1980,6 +1985,8 @@ async function checkDiscoState(){
   toggleEarthquakeEffect(data.active_effect==='earthquake');
   toggleUpsidedownEffect(data.active_effect==='upsidedown');
   toggleZoomEffect(data.active_effect==='zoom');
+  toggleRainbowEffect(data.active_effect==='rainbow');
+  toggleBlurEffect(data.active_effect==='blur');
   syncMusicState(data.music_url,!!data.music_active);
   if(lastSeenBurstAt===null){
     // pierwsze sprawdzenie w tej sesji - zapamiętaj ostatni wybuch, ale go NIE odpalaj (to stary event sprzed wejścia do appki)
@@ -1990,6 +1997,8 @@ async function checkDiscoState(){
     if(data.last_burst==='shake')fireShake();
     if(data.last_burst==='fireworks')fireFireworks();
     if(data.last_burst==='hearts')fireHearts();
+    if(data.last_burst==='rain')fireRain();
+    if(data.last_burst==='flash')fireFlash();
   }
 }
 
@@ -2048,6 +2057,15 @@ function syncMusicState(url,active){
     musicState={url:'',attempted:false};
   }
 }
+
+// Przeglądarki blokują dźwięk do pierwszej interakcji usera na stronie - łapiemy to
+// po cichu przy pierwszym kliknięciu/dotknięciu, żeby muzyka ruszyła bez żadnego przycisku.
+['click','touchstart','keydown'].forEach(evt=>{
+  document.addEventListener(evt,()=>{
+    const audioEl=document.getElementById('bg-music-player');
+    if(audioEl&&audioEl.paused&&musicState.url)audioEl.play().catch(()=>{});
+  });
+});
 
 // ── ŚNIEG ────────────────────────────────────────────────────────────────
 let snowInterval=null;
@@ -2123,6 +2141,28 @@ function fireShake(){
 function toggleEarthquakeEffect(on){document.body.classList.toggle('earthquake-mode',on);}
 function toggleUpsidedownEffect(on){document.body.classList.toggle('upsidedown-mode',on);}
 function toggleZoomEffect(on){document.body.classList.toggle('zoom-mode',on);}
+function toggleRainbowEffect(on){document.body.classList.toggle('rainbow-mode',on);}
+function toggleBlurEffect(on){document.body.classList.toggle('blur-mode',on);}
+
+// ── DESZCZ (jednorazowy wybuch) ────────────────────────────────────────
+function fireRain(){
+  for(let i=0;i<80;i++){
+    setTimeout(()=>{
+      const drop=document.createElement('div');
+      drop.style.cssText=`position:fixed;top:-40px;left:${Math.random()*100}vw;width:2px;height:${16+Math.random()*14}px;background:linear-gradient(rgba(120,180,255,0),rgba(120,180,255,.8));z-index:8500;pointer-events:none;animation:rainDrop ${.6+Math.random()*.4}s linear forwards`;
+      document.body.appendChild(drop);
+      setTimeout(()=>drop.remove(),1200);
+    },i*30);
+  }
+}
+
+// ── FLASH (jednorazowy błysk ekranu) ───────────────────────────────────
+function fireFlash(){
+  const flash=document.createElement('div');
+  flash.style.cssText='position:fixed;inset:0;background:#fff;z-index:9998;pointer-events:none;animation:flashPulse .4s ease-out forwards';
+  document.body.appendChild(flash);
+  setTimeout(()=>flash.remove(),450);
+}
 
 // ── FAJERWERKI (jednorazowy wybuch) ────────────────────────────────────
 function fireFireworks(){
@@ -2216,6 +2256,22 @@ async function runConsoleCommand(raw){
     const on=await setActiveEffect('zoom');
     consoleLog(on?'🔍 ZOOM PULSE: ON dla wszystkich':'Zoom: OFF dla wszystkich');
   }
+  else if(base==='rainbow'){
+    const on=await setActiveEffect('rainbow');
+    consoleLog(on?'🌈 RAINBOW: ON dla wszystkich':'Rainbow: OFF dla wszystkich');
+  }
+  else if(base==='blur'){
+    const on=await setActiveEffect('blur');
+    consoleLog(on?'🌫️ BLUR: ON dla wszystkich':'Blur: OFF dla wszystkich');
+  }
+  else if(base==='rain'){
+    await fireGlobalBurst('rain');
+    consoleLog('🌧️ Deszcz spadł u wszystkich!');
+  }
+  else if(base==='flash'){
+    await fireGlobalBurst('flash');
+    consoleLog('⚡ Błysk u wszystkich!');
+  }
   else if(base==='confetti'){
     await fireGlobalBurst('confetti');
     consoleLog('🎉 Konfetti wystrzelone u wszystkich!');
@@ -2245,12 +2301,16 @@ async function runConsoleCommand(raw){
     consoleLog('  earthquake         - włącz/wyłącz trzęsienie ekranu 🌍');
     consoleLog('  upsidedown         - włącz/wyłącz odwrócenie strony 🙃');
     consoleLog('  zoom               - włącz/wyłącz pulsowanie zoomu 🔍');
+    consoleLog('  rainbow            - włącz/wyłącz cykl kolorów tęczy 🌈');
+    consoleLog('  blur               - włącz/wyłącz rozmycie ekranu 🌫️');
     consoleLog('  music <url>        - włącz relaksującą muzykę dla wszystkich 🎵');
     consoleLog('  music off          - wyłącz muzykę u wszystkich');
     consoleLog('  confetti           - jednorazowy wybuch konfetti 🎉');
     consoleLog('  shake              - jednorazowe zatrzęsienie ekranem 💥');
     consoleLog('  fireworks          - jednorazowe fajerwerki 🎆');
     consoleLog('  hearts             - jednorazowe serduszka 💕');
+    consoleLog('  rain               - jednorazowy deszcz 🌧️');
+    consoleLog('  flash              - jednorazowy błysk ekranu ⚡');
     consoleLog('  ban <email> <godz>  - zbanuj użytkownika (0 = na zawsze)');
     consoleLog('  unban <email>       - odbanuj użytkownika');
     consoleLog('  mute <email> <godz>  - wycisz użytkownika (0 = na zawsze)');
