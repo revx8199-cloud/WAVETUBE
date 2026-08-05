@@ -2030,7 +2030,6 @@ async function setMusic(url){
   return newActive;
 }
 
-let musicUnlockShown=false;
 let musicState={url:'',attempted:false};
 function syncMusicState(url,active){
   const audioEl=document.getElementById('bg-music-player');
@@ -2043,38 +2042,11 @@ function syncMusicState(url,active){
     if(musicState.attempted)return; // nie spamuj play() co 4 sekundy jeśli już próbowaliśmy
     musicState.attempted=true;
     audioEl.volume=0.35;
-    const p=audioEl.play();
-    if(p&&p.catch)p.catch(()=>showMusicUnlockButton());
+    audioEl.play().catch(()=>{}); // autoplay może być zablokowany do pierwszej interakcji - i tak nie pokazujemy przycisku
   }else{
     audioEl.pause();
     musicState={url:'',attempted:false};
-    const btn=document.getElementById('music-unlock-btn');
-    if(btn)btn.remove();
-    musicUnlockShown=false;
   }
-}
-document.addEventListener('DOMContentLoaded',()=>{
-  const audioEl=document.getElementById('bg-music-player');
-  if(audioEl)audioEl.addEventListener('error',()=>{
-    // zły/niedziałający link (np. link do YouTube zamiast pliku audio) - nie próbuj bez końca
-    const btn=document.getElementById('music-unlock-btn');
-    if(btn)btn.remove();
-    musicUnlockShown=false;
-  });
-});
-function showMusicUnlockButton(){
-  if(musicUnlockShown)return;
-  musicUnlockShown=true;
-  const btn=document.createElement('button');
-  btn.id='music-unlock-btn';
-  btn.textContent='🎵 Kliknij, żeby włączyć muzykę';
-  btn.style.cssText='position:fixed;bottom:20px;right:20px;z-index:99999;background:#cc0000;color:#fff;border:none;padding:12px 18px;border-radius:24px;cursor:pointer;font-size:13px;font-weight:600;box-shadow:0 4px 16px rgba(0,0,0,.4)';
-  btn.onclick=()=>{
-    document.getElementById('bg-music-player').play();
-    btn.remove();
-    musicUnlockShown=false;
-  };
-  document.body.appendChild(btn);
 }
 
 // ── ŚNIEG ────────────────────────────────────────────────────────────────
@@ -2340,13 +2312,38 @@ document.addEventListener('keydown',e=>{
   }
 });
 
+let consoleHistory=JSON.parse(localStorage.getItem('wt_console_history')||'[]');
+let consoleHistoryIdx=consoleHistory.length;
+
 document.addEventListener('DOMContentLoaded',()=>{
   const inp=document.getElementById('console-input');
   if(inp)inp.addEventListener('keydown',e=>{
     if(e.key==='Enter'){
       const val=inp.value;
       inp.value='';
+      if(val.trim()){
+        consoleHistory=consoleHistory.filter(c=>c!==val); // bez duplikatów w historii
+        consoleHistory.push(val);
+        if(consoleHistory.length>50)consoleHistory.shift();
+        localStorage.setItem('wt_console_history',JSON.stringify(consoleHistory));
+      }
+      consoleHistoryIdx=consoleHistory.length;
       runConsoleCommand(val);
+    }else if(e.key==='ArrowUp'){
+      if(consoleHistoryIdx>0){
+        e.preventDefault();
+        consoleHistoryIdx--;
+        inp.value=consoleHistory[consoleHistoryIdx]||'';
+      }
+    }else if(e.key==='ArrowDown'){
+      e.preventDefault();
+      if(consoleHistoryIdx<consoleHistory.length-1){
+        consoleHistoryIdx++;
+        inp.value=consoleHistory[consoleHistoryIdx]||'';
+      }else{
+        consoleHistoryIdx=consoleHistory.length;
+        inp.value='';
+      }
     }
   });
 });
