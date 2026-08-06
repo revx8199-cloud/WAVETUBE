@@ -465,6 +465,10 @@ body.blur-mode #main-content,body.blur-mode header,body.blur-mode .sidebar-left{
       <svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor"><path d="M17 3H7c-1.1 0-2 .9-2 2v16l7-3 7 3V5c0-1.1-.9-2-2-2z"/></svg>
       <span data-i18n="nav_saved">Zapisane filmy</span>
     </div>
+    <div class="sb-item" id="sb-watchlater" onclick="setSbActive('sb-watchlater');showWatchLaterPage()">
+      <svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm.5 5H11v6l5.25 3.15.75-1.23-4.5-2.67V7z"/></svg>
+      <span data-i18n="nav_watchlater">Obejrzę później</span>
+    </div>
   </div>
   <div class="sb-section" id="sb-subs-section" style="display:none">
     <div class="sb-title" data-i18n="nav_subscriptions">Subskrypcje</div>
@@ -554,6 +558,10 @@ body.blur-mode #main-content,body.blur-mode header,body.blur-mode .sidebar-left{
       <button class="abtn" id="player-save-btn" onclick="toggleSaveVideo(cur.id)">
         <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M17 3H7c-1.1 0-2 .9-2 2v16l7-3 7 3V5c0-1.1-.9-2-2-2z"/></svg>
         Zapisz
+      </button>
+      <button class="abtn" id="player-wl-btn" onclick="toggleWatchLater(cur.id)">
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm.5 5H11v6l5.25 3.15.75-1.23-4.5-2.67V7z"/></svg>
+        Obejrzę później
       </button>
     </div>
     <hr>
@@ -1117,7 +1125,7 @@ const TRANSLATIONS={
   pl:{
     nav_home:'Strona główna',nav_shorts:'Shorts',nav_trending:'Popularne',nav_you:'Ty',
     nav_mychannel:'Mój kanał',nav_subs:'Moje subskrypcje',nav_history:'Historia oglądania',
-    nav_messages:'Wiadomości',nav_subscriptions:'Subskrypcje',nav_announcements:'Ogłoszenia',nav_saved:'Zapisane filmy',
+    nav_messages:'Wiadomości',nav_subscriptions:'Subskrypcje',nav_announcements:'Ogłoszenia',nav_saved:'Zapisane filmy',nav_watchlater:'Obejrzę później',
     search_placeholder:'Szukaj filmów...',btn_add_video:'+ Dodaj film',
     dd_mychannel:'Mój kanał',dd_settings:'Ustawienia',dd_logout:'Wyloguj',
     btn_subscribe:'Subskrybuj',btn_subscribed:'Subskrybujesz',btn_share:'Udostępnij',
@@ -1152,7 +1160,7 @@ const TRANSLATIONS={
   ru:{
     nav_home:'Главная',nav_shorts:'Shorts',nav_trending:'В тренде',nav_you:'Вы',
     nav_mychannel:'Мой канал',nav_subs:'Мои подписки',nav_history:'История просмотров',
-    nav_messages:'Сообщения',nav_subscriptions:'Подписки',nav_announcements:'Объявления',nav_saved:'Сохранённые',
+    nav_messages:'Сообщения',nav_subscriptions:'Подписки',nav_announcements:'Объявления',nav_saved:'Сохранённые',nav_watchlater:'Посмотреть позже',
     search_placeholder:'Поиск видео...',btn_add_video:'+ Добавить видео',
     dd_mychannel:'Мой канал',dd_settings:'Настройки',dd_logout:'Выйти',
     btn_subscribe:'Подписаться',btn_subscribed:'Вы подписаны',btn_share:'Поделиться',
@@ -2208,22 +2216,33 @@ function toggleAdminConsole(){
   el.style.display=adminConsoleOpen?'flex':'none';
   if(adminConsoleOpen){
     const out=document.getElementById('console-output');
-    if(!out.dataset.greeted){
-      consoleLog('WaveTube Admin Console v1.0');
-      consoleLog('Wpisz "help" żeby zobaczyć dostępne komendy.');
-      out.dataset.greeted='1';
+    if(!out.dataset.restored){
+      out.dataset.restored='1';
+      const saved=JSON.parse(localStorage.getItem('wt_console_log')||'[]');
+      if(saved.length){
+        saved.forEach(l=>consoleLog(l.msg,l.color,false));
+      }else{
+        consoleLog('WaveTube Admin Console v1.0');
+        consoleLog('Wpisz "help" żeby zobaczyć dostępne komendy.');
+      }
     }
     document.getElementById('console-input').focus();
   }
 }
 
-function consoleLog(msg,color){
+let consoleLogBuffer=JSON.parse(localStorage.getItem('wt_console_log')||'[]');
+function consoleLog(msg,color,persist){
   const out=document.getElementById('console-output');
   const line=document.createElement('div');
   line.textContent=msg;
   if(color)line.style.color=color;
   out.appendChild(line);
   out.scrollTop=out.scrollHeight;
+  if(persist!==false){
+    consoleLogBuffer.push({msg,color});
+    if(consoleLogBuffer.length>200)consoleLogBuffer.shift();
+    localStorage.setItem('wt_console_log',JSON.stringify(consoleLogBuffer));
+  }
 }
 
 async function runConsoleCommand(raw){
@@ -2322,6 +2341,8 @@ async function runConsoleCommand(raw){
   }
   else if(base==='clear'){
     document.getElementById('console-output').innerHTML='';
+    consoleLogBuffer=[];
+    localStorage.setItem('wt_console_log','[]');
   }
   else if(base==='stats'){
     consoleLog('Ładowanie statystyk...');
@@ -2930,6 +2951,7 @@ function toggleCardMenu(videoId,btnEl){
   menu.style.cssText=`position:fixed;top:${top}px;left:${Math.min(rect.left,window.innerWidth-210)}px;background:var(--bg-panel);border:1px solid var(--border);border-radius:10px;min-width:190px;z-index:1000;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,.6)`;
   menu.innerHTML=`
     <div onclick="event.stopPropagation();closeCardMenu();toggleSaveVideo('${videoId}')" style="padding:12px 16px;cursor:pointer;font-size:13px;display:flex;align-items:center;gap:10px" onmouseover="this.style.background='var(--border)'" onmouseout="this.style.background='none'"><span id="save-menu-label-${videoId}">${savedVideoIds.has(String(videoId))?'✅ Zapisano':'💾 Zapisz'}</span></div>
+    <div onclick="event.stopPropagation();closeCardMenu();toggleWatchLater('${videoId}')" style="padding:12px 16px;cursor:pointer;font-size:13px;display:flex;align-items:center;gap:10px" onmouseover="this.style.background='var(--border)'" onmouseout="this.style.background='none'"><span id="wl-menu-label-${videoId}">${watchLaterIds.has(String(videoId))?'✅ W kolejce':'⏰ Obejrzę później'}</span></div>
     <div onclick="event.stopPropagation();closeCardMenu();downloadVideo('${videoId}')" style="padding:12px 16px;cursor:pointer;font-size:13px;display:flex;align-items:center;gap:10px" onmouseover="this.style.background='var(--border)'" onmouseout="this.style.background='none'">⬇️ Pobierz</div>
     <div onclick="event.stopPropagation();closeCardMenu();shareVideoCard('${videoId}')" style="padding:12px 16px;cursor:pointer;font-size:13px;display:flex;align-items:center;gap:10px" onmouseover="this.style.background='var(--border)'" onmouseout="this.style.background='none'">🔗 Udostępnij</div>
     <div style="border-top:1px solid var(--border)"></div>
@@ -3677,6 +3699,64 @@ async function showSavedPage(){
   renderVideoCards(saved,g);
 }
 
+// ── OBEJRZĘ PÓŹNIEJ ──────────────────────────────────────────────────────
+let watchLaterIds=new Set();
+
+async function loadWatchLater(){
+  if(!currentUser){watchLaterIds=new Set();return;}
+  const{data}=await sb.from('watch_later').select('video_id').eq('user_id',currentUser.id);
+  watchLaterIds=new Set((data||[]).map(r=>String(r.video_id)));
+}
+
+async function toggleWatchLater(videoId){
+  if(!currentUser){toast('Zaloguj się żeby dodawać do "Obejrzę później"!');return;}
+  const idStr=String(videoId);
+  if(watchLaterIds.has(idStr)){
+    await sb.from('watch_later').delete().eq('user_id',currentUser.id).eq('video_id',idStr);
+    watchLaterIds.delete(idStr);
+    toast('Usunięto z "Obejrzę później"');
+  } else {
+    await sb.from('watch_later').insert([{user_id:currentUser.id,video_id:idStr}]);
+    watchLaterIds.add(idStr);
+    toast('Dodano do obejrzenia później ⏰');
+  }
+  updateWatchLaterButtonUI(videoId);
+}
+
+function updateWatchLaterButtonUI(videoId){
+  const idStr=String(videoId);
+  const isSaved=watchLaterIds.has(idStr);
+  const menuBtn=document.getElementById(`wl-menu-label-${idStr}`);
+  if(menuBtn)menuBtn.textContent=isSaved?'✅ W kolejce':'⏰ Obejrzę później';
+  const playerBtn=document.getElementById('player-wl-btn');
+  if(playerBtn&&cur&&String(cur.id)===idStr){
+    playerBtn.innerHTML=isSaved
+      ?`<svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/></svg> W kolejce`
+      :`<svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm.5 5H11v6l5.25 3.15.75-1.23-4.5-2.67V7z"/></svg> Obejrzę później`;
+  }
+}
+
+async function showWatchLaterPage(){
+  showHome();
+  const ff=document.getElementById('feed-filters');
+  if(ff)ff.style.display='none';
+  const shortsSection=document.getElementById('shorts-section');
+  if(shortsSection)shortsSection.style.display='none';
+  document.getElementById('slabel').textContent='⏰ Obejrzę później';
+  const g=document.getElementById('grid');
+  if(!currentUser){
+    g.innerHTML=`<div class="empty"><div style="font-size:48px;margin-bottom:12px">⏰</div><p style="font-size:15px">Zaloguj się żeby korzystać z "Obejrzę później"</p></div>`;
+    return;
+  }
+  await loadWatchLater();
+  const list=videos.filter(v=>watchLaterIds.has(String(v.id)));
+  if(!list.length){
+    g.innerHTML=`<div class="empty"><div style="font-size:48px;margin-bottom:12px">⏰</div><p style="font-size:15px">Brak filmów do obejrzenia później</p><p style="font-size:13px;color:#444;margin-top:6px">Kliknij ⋮ przy filmie i wybierz "Obejrzę później"</p></div>`;
+    return;
+  }
+  renderVideoCards(list,g);
+}
+
 async function showAnnouncementsPage(){
   showHome();
   const shortsSection=document.getElementById('shorts-section');
@@ -3990,6 +4070,7 @@ async function openP(id){
   if(!isUpcoming){
     updateVideo(v.id,{views:(v.views||0)+1});v.views=(v.views||0)+1;
     updateSaveButtonUI(v.id);
+    updateWatchLaterButtonUI(v.id);
     addToWatchHistory(v);
   }
   const isShort=v.is_short===true;
@@ -5565,6 +5646,7 @@ document.addEventListener('keydown',e=>{
       await loadMyNameColor();
       await checkIfMuted();
       await loadSavedVideos();
+      await loadWatchLater();
       subscribeRealtime();
     }
   }
@@ -5581,6 +5663,7 @@ document.addEventListener('keydown',e=>{
         await loadMyNameColor();
       await checkIfMuted();
       await loadSavedVideos();
+      await loadWatchLater();
       await loadVipEmails();
       subscribeRealtime();
       }
