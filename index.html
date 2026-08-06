@@ -2060,11 +2060,12 @@ function syncMusicState(url,active){
 
 // Przeglądarki blokują dźwięk do pierwszej interakcji usera na stronie - łapiemy to
 // po cichu przy pierwszym kliknięciu/dotknięciu, żeby muzyka ruszyła bez żadnego przycisku.
+// Faza "capture" (true na końcu) - żeby złapać zdarzenie ZANIM jakiś przycisk zatrzyma je stopPropagation().
 ['click','touchstart','keydown'].forEach(evt=>{
   document.addEventListener(evt,()=>{
     const audioEl=document.getElementById('bg-music-player');
     if(audioEl&&audioEl.paused&&musicState.url)audioEl.play().catch(()=>{});
-  });
+  },true);
 });
 
 // ── ŚNIEG ────────────────────────────────────────────────────────────────
