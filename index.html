@@ -114,7 +114,19 @@ header{background:var(--bg-page);border-bottom:1px solid var(--border-soft);padd
 .mclose{display:flex;justify-content:flex-end;margin-bottom:8px}
 .mclose button{background:none;border:none;color:var(--text-primary);font-size:30px;cursor:pointer;opacity:.7}
 .mclose button:hover{opacity:1}
-.pwrap{width:100%;aspect-ratio:16/9;background:#000;border-radius:10px;overflow:hidden}
+.pwrap{width:100%;aspect-ratio:16/9;background:#000;border-radius:10px;overflow:hidden;position:relative}
+.autoplay-overlay{position:absolute;inset:0;background:rgba(0,0,0,.85);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;z-index:50;color:#fff;text-align:center;padding:20px}
+.autoplay-overlay img{width:200px;max-width:70%;border-radius:8px;object-fit:cover;aspect-ratio:16/9}
+.autoplay-ring{position:relative;width:56px;height:56px}
+.autoplay-ring svg{transform:rotate(-90deg)}
+.autoplay-ring circle{fill:none;stroke-width:4}
+.autoplay-ring .bg{stroke:rgba(255,255,255,.2)}
+.autoplay-ring .fg{stroke:#cc0000;stroke-dasharray:150.8;transition:stroke-dashoffset 1s linear}
+.autoplay-ring span{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:700}
+.toggle-switch{position:relative;display:inline-block;width:42px;height:24px;background:var(--border);border-radius:24px;cursor:pointer;transition:background .2s;flex-shrink:0}
+.toggle-switch.on{background:#cc0000}
+.toggle-knob{position:absolute;top:2px;left:2px;width:20px;height:20px;background:#fff;border-radius:50%;transition:left .2s;box-shadow:0 1px 3px rgba(0,0,0,.3)}
+.toggle-switch.on .toggle-knob{left:20px}
 .pwrap video,.pwrap iframe{width:100%;height:100%;border:none;display:block}
 .vinfo h2{font-size:20px;font-weight:700;margin:14px 0 6px}
 .vmeta{color:var(--text-secondary);font-size:13px;margin-bottom:12px}
@@ -306,6 +318,7 @@ body.rainbow-mode{animation:rainbowCycle 4s linear infinite}
 body.blur-mode #main-content,body.blur-mode header,body.blur-mode .sidebar-left{filter:blur(3px);transition:filter .4s}
 @keyframes rainDrop{from{transform:translateY(-40px)}to{transform:translateY(105vh)}}
 @keyframes flashPulse{0%{opacity:0}15%{opacity:1}100%{opacity:0}}
+@keyframes broadcastSlideIn{from{transform:translateY(-100%);opacity:0}to{transform:translateY(0);opacity:1}}
 #console-output::-webkit-scrollbar{width:8px}
 #console-output::-webkit-scrollbar-thumb{background:#333;border-radius:4px}
 
@@ -978,6 +991,13 @@ body.blur-mode #main-content,body.blur-mode header,body.blur-mode .sidebar-left{
         <button onclick="setTheme('light')" id="theme-btn-light" style="flex:1;display:flex;align-items:center;justify-content:center;gap:8px;padding:12px 14px;border-radius:10px;cursor:pointer;font-size:14px;background:var(--bg-sunken);border:1px solid var(--border);color:var(--text-primary)">☀️ Jasny</button>
       </div>
     </div>
+    <div class="field" style="margin-top:24px;padding-top:20px;border-top:1px solid var(--border)">
+      <label style="display:flex;align-items:center;justify-content:space-between;cursor:pointer" onclick="event.preventDefault()">
+        <span>▶️ Autoodtwarzanie następnego filmu</span>
+        <span class="toggle-switch" id="autoplay-toggle" onclick="toggleAutoplayNext()"><span class="toggle-knob"></span></span>
+      </label>
+      <p style="color:var(--text-tertiary);font-size:11px;margin-top:8px">Po skończeniu filmu automatycznie odtworzy się kolejny.</p>
+    </div>
     <div class="fbbtns">
       <button class="fcancel" onclick="closeSettingsModal()" data-i18n="btn_close">Zamknij</button>
     </div>
@@ -1232,6 +1252,7 @@ function openSettingsModal(){
   }
   updateLangButtons();
   updateThemeButtons();
+  syncAutoplayToggleUI();
 }
 
 function closeSettingsModal(){
@@ -1251,6 +1272,133 @@ async function saveMySettingsNick(){
   profileCache[currentUser.id]={...(profileCache[currentUser.id]||{id:currentUser.id,avatar:currentUser.user_metadata?.avatar_url||'',email:currentUser.email||''}),name:newNick};
   toast('Nick zmieniony! ✏️');
   updateAuthUI();
+}
+
+// ── AUTOODTWARZANIE NASTĘPNEGO FILMU ────────────────────────────────────
+function getAutoplayNext(){return localStorage.getItem('wt_autoplay_next')!=='0';} // domyślnie włączone
+function setAutoplayNextPref(on){localStorage.setItem('wt_autoplay_next',on?'1':'0');}
+function toggleAutoplayNext(){
+  setAutoplayNextPref(!getAutoplayNext());
+  syncAutoplayToggleUI();
+}
+function syncAutoplayToggleUI(){
+  const el=document.getElementById('autoplay-toggle');
+  if(el)el.classList.toggle('on',getAutoplayNext());
+}
+
+function getNextVideoId(currentId){
+  const pool=videos.filter(v=>v.is_short!==true&&isDiscoverable(v)&&(!v.premiere||new Date(v.premiere)<=new Date()));
+  if(pool.length<2)return null;
+  const sorted=[...pool].sort((a,b)=>new Date(b.created_at||0)-new Date(a.created_at||0));
+  const idx=sorted.findIndex(v=>String(v.id)===String(currentId));
+  if(idx===-1)return sorted[0].id;
+  return sorted[(idx+1)%sorted.length].id;
+}
+
+let autoplayTimer=null,autoplayTicksLeft=0;
+function cancelAutoplayCountdown(){
+  if(autoplayTimer){clearInterval(autoplayTimer);autoplayTimer=null;}
+  const ov=document.getElementById('autoplay-overlay');
+  if(ov)ov.remove();
+}
+
+function triggerAutoplayNext(){
+  if(!getAutoplayNext()||!cur)return;
+  const nextId=getNextVideoId(cur.id);
+  if(!nextId)return;
+  const nextV=videos.find(v=>v.id===nextId);
+  if(!nextV)return;
+  showAutoplayOverlay(nextV);
+}
+
+function showAutoplayOverlay(nextV){
+  cancelAutoplayCountdown();
+  const pw=document.getElementById('pw');
+  if(!pw)return;
+  autoplayTicksLeft=5;
+  const CIRC=150.8;
+  const ov=document.createElement('div');
+  ov.id='autoplay-overlay';
+  ov.className='autoplay-overlay';
+  ov.innerHTML=`
+    <div style="font-size:13px;color:#aaa">Następny film</div>
+    <img src="${thumbFor(nextV)||''}" alt="">
+    <div style="font-weight:600;max-width:80%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(nextV.title||'')}</div>
+    <div class="autoplay-ring">
+      <svg width="56" height="56"><circle class="bg" cx="28" cy="28" r="24"/><circle class="fg" id="autoplay-ring-fg" cx="28" cy="28" r="24" stroke-dashoffset="0"/></svg>
+      <span id="autoplay-ring-num">5</span>
+    </div>
+    <div style="display:flex;gap:10px">
+      <button onclick="cancelAutoplayCountdown()" style="background:rgba(255,255,255,.15);border:none;color:#fff;padding:8px 18px;border-radius:20px;cursor:pointer;font-size:13px">Anuluj</button>
+      <button onclick="cancelAutoplayCountdown();openP(${JSON.stringify(nextV.id)})" style="background:#cc0000;border:none;color:#fff;padding:8px 18px;border-radius:20px;cursor:pointer;font-size:13px;font-weight:600">Odtwórz teraz</button>
+    </div>`;
+  pw.appendChild(ov);
+  autoplayTimer=setInterval(()=>{
+    autoplayTicksLeft--;
+    const numEl=document.getElementById('autoplay-ring-num');
+    const ringEl=document.getElementById('autoplay-ring-fg');
+    if(numEl)numEl.textContent=autoplayTicksLeft;
+    if(ringEl)ringEl.style.strokeDashoffset=(CIRC*(5-autoplayTicksLeft)/5);
+    if(autoplayTicksLeft<=0){
+      cancelAutoplayCountdown();
+      openP(nextV.id);
+    }
+  },1000);
+}
+
+// Natywny <video> (mp4) - wykrywamy koniec wprost
+// (podłączane w setupNativePlayer poniżej)
+
+// YouTube - oficjalne IFrame API, żeby wykryć koniec filmu
+let ytApiLoading=false;
+function ensureYtApi(cb){
+  if(window.YT&&window.YT.Player){cb();return;}
+  window._ytApiCallbacks=window._ytApiCallbacks||[];
+  window._ytApiCallbacks.push(cb);
+  if(ytApiLoading)return;
+  ytApiLoading=true;
+  window.onYouTubeIframeAPIReady=function(){
+    (window._ytApiCallbacks||[]).forEach(f=>f());
+    window._ytApiCallbacks=[];
+  };
+  const tag=document.createElement('script');
+  tag.src='https://www.youtube.com/iframe_api';
+  document.head.appendChild(tag);
+}
+let ytPlayerInstance=null;
+function setupYtAutoplayWatcher(v){
+  if(!getAutoplayNext())return;
+  ensureYtApi(()=>{
+    const iframeEl=document.getElementById('yt-player-iframe');
+    if(!iframeEl)return;
+    try{
+      ytPlayerInstance=new YT.Player('yt-player-iframe',{
+        events:{onStateChange:e=>{if(e.data===YT.PlayerState.ENDED)triggerAutoplayNext();}}
+      });
+    }catch(err){}
+  });
+}
+
+let lastBroadcastText='';
+function syncBroadcastText(text){
+  if(text===lastBroadcastText)return;
+  lastBroadcastText=text;
+  let bar=document.getElementById('broadcast-bar');
+  if(!text){
+    if(bar)bar.remove();
+    return;
+  }
+  if(bar)bar.remove(); // usuń stary, zbuduj nowy - żeby animacja wejścia zagrała przy każdej zmianie tekstu
+  bar=document.createElement('div');
+  bar.id='broadcast-bar';
+  bar.style.cssText='position:fixed;top:56px;left:0;right:0;z-index:9000;background:linear-gradient(90deg,#cc0000,#8a0000);color:#fff;padding:10px 20px;font-size:13px;font-weight:600;display:flex;align-items:center;justify-content:center;gap:14px;text-align:center;box-shadow:0 2px 8px rgba(0,0,0,.3);animation:broadcastSlideIn .3s ease-out';
+  bar.innerHTML=`<span>📢 ${esc(text)}</span><button onclick="dismissBroadcastText()" style="background:rgba(255,255,255,.2);border:none;color:#fff;width:22px;height:22px;border-radius:50%;cursor:pointer;font-size:13px;line-height:1;flex-shrink:0">✕</button>`;
+  document.body.appendChild(bar);
+}
+
+function dismissBroadcastText(){
+  const bar=document.getElementById('broadcast-bar');
+  if(bar)bar.remove();
 }
 
 // ── MOTYW (jasny/ciemny) ─────────────────────────────────────────────────
@@ -2002,6 +2150,7 @@ async function checkDiscoState(){
   toggleRainbowEffect(data.active_effect==='rainbow');
   toggleBlurEffect(data.active_effect==='blur');
   syncMusicState(data.music_url,!!data.music_active);
+  syncBroadcastText(data.broadcast_text||'');
   if(lastSeenBurstAt===null){
     // pierwsze sprawdzenie w tej sesji - zapamiętaj ostatni wybuch, ale go NIE odpalaj (to stary event sprzed wejścia do appki)
     lastSeenBurstAt=data.last_burst_at||'';
@@ -2353,6 +2502,8 @@ async function runConsoleCommand(raw){
     consoleLog('  hearts             - jednorazowe serduszka 💕');
     consoleLog('  rain               - jednorazowy deszcz 🌧️');
     consoleLog('  flash              - jednorazowy błysk ekranu ⚡');
+    consoleLog('  say <tekst>        - pokaż baner z tekstem u wszystkich 📢');
+    consoleLog('  say off            - ukryj baner u wszystkich');
     consoleLog('  ban <email> <godz>  - zbanuj użytkownika (0 = na zawsze)');
     consoleLog('  unban <email>       - odbanuj użytkownika');
     consoleLog('  mute <email> <godz>  - wycisz użytkownika (0 = na zawsze)');
@@ -2394,6 +2545,17 @@ async function runConsoleCommand(raw){
       await unmuteUser(prof.id);
       consoleLog(`🔊 Cofnięto wyciszenie ${email}`,'#4ade80');
     }
+  }
+  else if(base==='say'){
+    const text=parts.slice(1).join(' ');
+    if(text.toLowerCase()==='off'||text.toLowerCase()==='clear'||!text){
+      await sb.from('site_state').upsert([{id:1,broadcast_text:'',updated_at:new Date().toISOString()}]);
+      consoleLog('Komunikat usunięty u wszystkich.','#4ade80');
+    }else{
+      await sb.from('site_state').upsert([{id:1,broadcast_text:text,updated_at:new Date().toISOString()}]);
+      consoleLog('📢 Wysłano do wszystkich: "'+text+'"','#4ade80');
+    }
+    checkDiscoState();
   }
   else if(base==='announce'){
     const text=parts.slice(1).join(' ');
@@ -3131,7 +3293,7 @@ function ytId(url){const m=(url||'').match(/(?:youtube\.com\/(?:watch\?v=|embed\
 function gdId(url){const m=(url||'').match(/drive\.google\.com\/(?:file\/d\/|open\?id=)([a-zA-Z0-9_-]+)/);return m?m[1]:null;}
 function ttId(url){const m=(url||'').match(/tiktok\.com\/@[^/]+\/video\/(\d+)/);return m?m[1]:null;}
 function getPlayer(url){
-  const ytid=ytId(url);if(ytid)return{type:'yt',src:`https://www.youtube.com/embed/${ytid}?autoplay=1`};
+  const ytid=ytId(url);if(ytid)return{type:'yt',src:`https://www.youtube.com/embed/${ytid}?autoplay=1&enablejsapi=1&origin=${encodeURIComponent(location.origin)}`};
   const gdid=gdId(url);if(gdid)return{type:'gd',src:`https://drive.google.com/file/d/${gdid}/preview`};
   const ttid=ttId(url);if(ttid)return{type:'tt',src:`https://www.tiktok.com/embed/v2/${ttid}`};
   if((url||'').match(/\.(mp4|webm|mov)(\?|$)/i))return{type:'mp4',src:url};
@@ -4119,15 +4281,17 @@ async function openP(id){
     </div>`;
   } else {
     const{type,src}=getPlayer(v.url);
-    if(type==='yt'||type==='gd')html=`<iframe src="${src}" allow="autoplay;encrypted-media;fullscreen" allowfullscreen></iframe>`;
+    if(type==='yt'||type==='gd')html=`<iframe id="${type==='yt'?'yt-player-iframe':''}" src="${src}" allow="autoplay;encrypted-media;fullscreen" allowfullscreen></iframe>`;
     else if(type==='tt')html=`<iframe src="${src}" allow="encrypted-media" allowfullscreen style="border:none;width:100%;height:100%"></iframe>`;
     else if(type==='mp4')html=`<video src="${src}" controls autoplay preload="metadata" poster="${v.thumb||''}"></video>`;
     else html=`<div style="display:flex;align-items:center;justify-content:center;height:100%;flex-direction:column;gap:12px;color:#555;padding:20px;text-align:center"><div style="font-size:48px">⚠️</div><p>Nie można odtworzyć</p><a href="${src}" target="_blank" style="color:#3ea6ff;font-size:13px">Otwórz zewnętrznie ↗</a></div>`;
   }
   document.getElementById('pw').innerHTML=html;
+  cancelAutoplayCountdown();
   if(!isUpcoming){
     const{type}=getPlayer(v.url);
     if(type==='mp4')setupNativePlayer(v);
+    if(type==='yt')setupYtAutoplayWatcher(v);
   }
   layoutActsForShorts(isShort);
   document.getElementById('vt').textContent=v.title;
@@ -4183,7 +4347,10 @@ function setupNativePlayer(v){
       localStorage.setItem(posKey,vid.currentTime);
     }
   });
-  vid.addEventListener('ended',()=>localStorage.removeItem(posKey));
+  vid.addEventListener('ended',()=>{
+    localStorage.removeItem(posKey);
+    triggerAutoplayNext();
+  });
 
   // Czytelny błąd zamiast pustego czarnego ekranu przy zepsutym/martwym linku
   vid.addEventListener('error',()=>{
@@ -4218,6 +4385,7 @@ async function toggleSubInPlayer(key,name){
 
 function closeP(){
   layoutActsForShorts(false); // przywróć pasek akcji na miejsce, zanim wyczyścimy zawartość playera
+  cancelAutoplayCountdown();
   document.getElementById('pm').classList.remove('open');
   document.getElementById('pw').innerHTML='';
   document.body.style.overflow='';cur=null;
