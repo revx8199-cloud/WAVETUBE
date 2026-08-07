@@ -318,7 +318,7 @@ body.rainbow-mode{animation:rainbowCycle 4s linear infinite}
 body.blur-mode #main-content,body.blur-mode header,body.blur-mode .sidebar-left{filter:blur(3px);transition:filter .4s}
 @keyframes rainDrop{from{transform:translateY(-40px)}to{transform:translateY(105vh)}}
 @keyframes flashPulse{0%{opacity:0}15%{opacity:1}100%{opacity:0}}
-@keyframes broadcastSlideIn{from{transform:translateY(-100%);opacity:0}to{transform:translateY(0);opacity:1}}
+@keyframes broadcastSlideIn{from{transform:translateX(-50%) translateY(-30px);opacity:0}to{transform:translateX(-50%) translateY(0);opacity:1}}
 #console-output::-webkit-scrollbar{width:8px}
 #console-output::-webkit-scrollbar-thumb{background:#333;border-radius:4px}
 
@@ -1166,7 +1166,7 @@ const TRANSLATIONS={
     ch_default_name:'Kanał',ch_change_banner:'Zmień baner',ch_message:'Wiadomość',ch_stats:'Statystyki',
     ch_add_desc:'+ Dodaj opis kanału',ch_no_videos:'Ten kanał nie ma jeszcze żadnych filmów',
     ch_no_shorts:'Brak Shorts na tym kanale',ch_comments_suffix:'komentarzy',ch_comments_off:'Komentarze wyłączone',
-    ch_premiere:'Premiera',toast_unsubscribed:'Anulowano subskrypcję',toast_subscribing:'Subskrybujesz',
+    ch_premiere:'Premiera',toast_unsubscribed:'Anulowano subskrypcję',toast_subscribing:'Subskrybujesz',ch_joined:'Dołączył(a):',
     desc_placeholder:'Opis kanału...',desc_saved_toast:'Opis zapisany! ✅',
     posts_loading:'⏳ Ładowanie postów...',posts_add_btn:'+ Dodaj post',posts_none:'Brak postów na tym kanale',
     post_delete_title:'Usuń post',post_comment_ph:'Komentarz...',post_login_comment:'Zaloguj się żeby komentować',
@@ -1201,7 +1201,7 @@ const TRANSLATIONS={
     ch_default_name:'Канал',ch_change_banner:'Изменить баннер',ch_message:'Сообщение',ch_stats:'Статистика',
     ch_add_desc:'+ Добавить описание канала',ch_no_videos:'На этом канале пока нет видео',
     ch_no_shorts:'На этом канале нет Shorts',ch_comments_suffix:'комментариев',ch_comments_off:'Комментарии отключены',
-    ch_premiere:'Премьера',toast_unsubscribed:'Подписка отменена',toast_subscribing:'Вы подписались на',
+    ch_premiere:'Премьера',toast_unsubscribed:'Подписка отменена',toast_subscribing:'Вы подписались на',ch_joined:'Дата регистрации:',
     desc_placeholder:'Описание канала...',desc_saved_toast:'Описание сохранено! ✅',
     posts_loading:'⏳ Загрузка постов...',posts_add_btn:'+ Добавить пост',posts_none:'На этом канале нет постов',
     post_delete_title:'Удалить пост',post_comment_ph:'Комментарий...',post_login_comment:'Войдите, чтобы комментировать',
@@ -1380,9 +1380,10 @@ function setupYtAutoplayWatcher(v){
 }
 
 let lastBroadcastText='';
-function syncBroadcastText(text){
-  if(text===lastBroadcastText)return;
-  lastBroadcastText=text;
+function syncBroadcastText(text,byName){
+  const key=text+'|'+(byName||'');
+  if(key===lastBroadcastText)return;
+  lastBroadcastText=key;
   let bar=document.getElementById('broadcast-bar');
   if(!text){
     if(bar)bar.remove();
@@ -1391,8 +1392,10 @@ function syncBroadcastText(text){
   if(bar)bar.remove(); // usuń stary, zbuduj nowy - żeby animacja wejścia zagrała przy każdej zmianie tekstu
   bar=document.createElement('div');
   bar.id='broadcast-bar';
-  bar.style.cssText='position:fixed;top:56px;left:0;right:0;z-index:9000;background:linear-gradient(90deg,#cc0000,#8a0000);color:#fff;padding:10px 20px;font-size:13px;font-weight:600;display:flex;align-items:center;justify-content:center;gap:14px;text-align:center;box-shadow:0 2px 8px rgba(0,0,0,.3);animation:broadcastSlideIn .3s ease-out';
-  bar.innerHTML=`<span>📢 ${esc(text)}</span><button onclick="dismissBroadcastText()" style="background:rgba(255,255,255,.2);border:none;color:#fff;width:22px;height:22px;border-radius:50%;cursor:pointer;font-size:13px;line-height:1;flex-shrink:0">✕</button>`;
+  bar.style.cssText='position:fixed;top:66px;left:50%;transform:translateX(-50%);z-index:9000;background:var(--bg-card);color:var(--text-primary);border:1px solid var(--border);border-left:4px solid #cc0000;border-radius:12px;padding:12px 16px;font-size:13px;display:flex;align-items:center;gap:12px;max-width:min(560px,90vw);box-shadow:0 4px 20px rgba(0,0,0,.35);animation:broadcastSlideIn .3s ease-out';
+  bar.innerHTML=`<span style="font-size:20px;flex-shrink:0">📢</span>
+    <span style="line-height:1.4"><b style="color:#cc0000">${esc(byName||'Admin')}</b>${verifiedBadge(ADMIN_EMAIL)}<span style="color:var(--text-tertiary)">:</span> ${esc(text)}</span>
+    <button onclick="dismissBroadcastText()" style="background:var(--border-soft);border:none;color:var(--text-secondary);width:22px;height:22px;border-radius:50%;cursor:pointer;font-size:12px;line-height:1;flex-shrink:0;margin-left:4px">✕</button>`;
   document.body.appendChild(bar);
 }
 
@@ -2150,7 +2153,7 @@ async function checkDiscoState(){
   toggleRainbowEffect(data.active_effect==='rainbow');
   toggleBlurEffect(data.active_effect==='blur');
   syncMusicState(data.music_url,!!data.music_active);
-  syncBroadcastText(data.broadcast_text||'');
+  syncBroadcastText(data.broadcast_text||'',data.broadcast_by||'');
   if(lastSeenBurstAt===null){
     // pierwsze sprawdzenie w tej sesji - zapamiętaj ostatni wybuch, ale go NIE odpalaj (to stary event sprzed wejścia do appki)
     lastSeenBurstAt=data.last_burst_at||'';
@@ -2552,7 +2555,7 @@ async function runConsoleCommand(raw){
       await sb.from('site_state').upsert([{id:1,broadcast_text:'',updated_at:new Date().toISOString()}]);
       consoleLog('Komunikat usunięty u wszystkich.','#4ade80');
     }else{
-      await sb.from('site_state').upsert([{id:1,broadcast_text:text,updated_at:new Date().toISOString()}]);
+      await sb.from('site_state').upsert([{id:1,broadcast_text:text,broadcast_by:getMyDisplayName(),updated_at:new Date().toISOString()}]);
       consoleLog('📢 Wysłano do wszystkich: "'+text+'"','#4ade80');
     }
     checkDiscoState();
@@ -3619,12 +3622,13 @@ async function showChannel(userId,nameIn,avatar,email){
   const bannerBg=_bannerRaw?(_bannerRaw.startsWith('url(')?_bannerRaw:'url('+_bannerRaw+')'):'linear-gradient(135deg,#1a1a2e,#16213e)';
   const savedDescFallback=localStorage.getItem('desc_'+(userId||email))||'';
   const{count:subCount}=await sb.from('subscriptions').select('*',{count:'exact',head:true}).eq('channel_id',userId||email);
-  let chNameColor='',chNameFont='',savedDesc=savedDescFallback;
+  let chNameColor='',chNameFont='',savedDesc=savedDescFallback,joinedAt='';
   if(userId){
-    const{data:profStyle}=await sb.from('profiles').select('name_color,name_font,description').eq('id',userId).single();
+    const{data:profStyle}=await sb.from('profiles').select('name_color,name_font,description,created_at').eq('id',userId).single();
     chNameColor=profStyle?.name_color||'';
     chNameFont=profStyle?.name_font||'';
     if(profStyle&&profStyle.description)savedDesc=profStyle.description;
+    if(profStyle&&profStyle.created_at)joinedAt=profStyle.created_at;
   }
   cc.innerHTML=`
     <div style="position:relative">
@@ -3646,6 +3650,7 @@ async function showChannel(userId,nameIn,avatar,email){
         <div style="font-size:12px;color:var(--text-secondary);margin-bottom:6px">${makeNick(name,email)}</div>
         <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:4px">
           <span style="font-size:13px;color:var(--text-secondary)"><span id="sub-count-big">${subCount}</span> ${t('subscribers_label')} · ${userVideos.length} ${t('videos_label')}</span>
+          ${joinedAt?`<span style="font-size:12px;color:var(--text-tertiary)">· ${t('ch_joined')} ${new Date(joinedAt).toLocaleDateString(getLang()==='ru'?'ru-RU':'pl-PL',{day:'numeric',month:'long',year:'numeric'})}</span>`:''}
           ${!isOwner?`<button class="btn-sub-big${isSub?' subscribed':''}" onclick="toggleSub('${userId||email}','${jsesc(name)}')" id="sub-big-btn" style="margin-left:0">${isSub?'✓ '+t('btn_subscribed'):t('btn_subscribe')}</button>
           <button onclick="openMsg('${jsesc(name)}','${email}','${userId}')" style="background:var(--border-soft);border:none;color:var(--text-primary);padding:8px 16px;border-radius:20px;cursor:pointer;font-size:13px;display:flex;align-items:center;gap:6px">✉️ ${t('ch_message')}</button>`
           :`<button class="btn-sub-big subscribed" style="margin-left:0;cursor:default">${t('your_channel_label')}</button>
