@@ -24,20 +24,26 @@
 }
 html.light-mode{
   --bg-page:#fff;
-  --bg-sunken:#f7f7f7;
+  --bg-sunken:#f9f9f9;
   --bg-card:#fff;
   --bg-panel:#fff;
-  --border:#e2e2e2;
-  --border-soft:#ececec;
+  --border:#e5e5e5;
+  --border-soft:#f2f2f2;
   --text-primary:#0f0f0f;
-  --text-secondary:#5a5a5a;
+  --text-secondary:#606060;
   --text-tertiary:#767676;
 }
 html.light-mode body{background:#fff}
 html.light-mode .fbox,html.light-mode .dropdown,html.light-mode .admin-row:hover,
 html.light-mode .post-card,html.light-mode #admin-panel-modal .fbox,
-html.light-mode #vip-panel-modal .fbox{box-shadow:0 1px 6px rgba(0,0,0,.08)}
-html.light-mode header{box-shadow:0 1px 2px rgba(0,0,0,.06)}
+html.light-mode #vip-panel-modal .fbox{box-shadow:0 1px 6px rgba(0,0,0,.1)}
+html.light-mode header{box-shadow:0 1px 2px rgba(0,0,0,.08)}
+html.light-mode .search-bar input{background:#fff;border-color:#ccc}
+html.light-mode .search-bar input:focus{border-color:#1c62b9;box-shadow:inset 1px 1px 0 rgba(28,98,185,.3)}
+html.light-mode .search-bar input:focus+button{border-color:#1c62b9}
+html.light-mode .search-bar button{background:#f8f8f8;border-color:#ccc}
+html.light-mode .card:hover .thumb{box-shadow:0 1px 8px rgba(0,0,0,.15)}
+html.light-mode ::-webkit-scrollbar-thumb{background:#c7c7c7}
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:Arial,sans-serif;background:var(--bg-page);color:var(--text-primary);min-height:100vh}
 header{background:var(--bg-page);border-bottom:1px solid var(--border-soft);padding:12px 20px;display:flex;align-items:center;gap:16px;position:sticky;top:0;z-index:100}
@@ -2044,7 +2050,7 @@ async function setMusic(url){
   const{error:upErr}=await sb.from('site_state').upsert([{id:1,music_url:newUrl,music_active:newActive,updated_at:new Date().toISOString()}]);
   if(upErr){consoleLog('Błąd zapisu stanu: '+upErr.message,'#ff6b6b');return null;}
   checkDiscoState();
-  return newActive;
+  return{active:newActive,url:newUrl};
 }
 
 let musicState={url:'',attempted:false};
@@ -2308,10 +2314,25 @@ async function runConsoleCommand(raw){
     await fireGlobalBurst('hearts');
     consoleLog('💕 Serduszka wysłane do wszystkich!');
   }
+  else if(base==='music'&&(parts[1]||'').toLowerCase()==='link'){
+    const{data}=await sb.from('site_state').select('music_url').eq('id',1).single();
+    if(data?.music_url){
+      consoleLog('Aktualny link do muzyki (skopiuj):');
+      consoleLog(data.music_url,'#3ea6ff');
+    }else{
+      consoleLog('Nie ustawiono jeszcze żadnego linku do muzyki.','#ffd700');
+    }
+  }
   else if(base==='music'){
     const arg=parts[1]||'';
-    const on=await setMusic(arg);
-    if(on!==null)consoleLog(on?'🎵 MUZYKA: ON dla wszystkich — relaks się zaczyna':'Muzyka: OFF dla wszystkich');
+    const res=await setMusic(arg);
+    if(res!==null){
+      consoleLog(res.active?'🎵 MUZYKA: ON dla wszystkich — relaks się zaczyna':'Muzyka: OFF dla wszystkich');
+      if(res.url){
+        consoleLog('Link (skopiuj żeby użyć ponownie):');
+        consoleLog(res.url,'#3ea6ff');
+      }
+    }
   }
   else if(base==='help'){
     consoleLog('Dostępne komendy:');
@@ -2325,6 +2346,7 @@ async function runConsoleCommand(raw){
     consoleLog('  blur               - włącz/wyłącz rozmycie ekranu 🌫️');
     consoleLog('  music <url>        - włącz relaksującą muzykę dla wszystkich 🎵');
     consoleLog('  music off          - wyłącz muzykę u wszystkich');
+    consoleLog('  music link         - pokaż aktualny link do muzyki (do skopiowania)');
     consoleLog('  confetti           - jednorazowy wybuch konfetti 🎉');
     consoleLog('  shake              - jednorazowe zatrzęsienie ekranem 💥');
     consoleLog('  fireworks          - jednorazowe fajerwerki 🎆');
