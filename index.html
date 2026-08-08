@@ -500,19 +500,19 @@ body.blur-mode #main-content,body.blur-mode header,body.blur-mode .sidebar-left{
   <div class="section-title" id="slabel">Wszystkie filmy</div>
   <div id="feed-filters" style="display:flex;gap:8px;flex-wrap:wrap;margin:-8px 0 16px">
     <select id="feed-cat-filter" onchange="applyFeedFilters()" style="background:var(--bg-sunken);border:1px solid var(--border);border-radius:16px;color:var(--text-primary);padding:6px 12px;font-size:12px;outline:none;cursor:pointer">
-      <option value="">📂 Wszystkie kategorie</option>
+      <option value="" data-i18n="filter_all_categories">📂 Wszystkie kategorie</option>
     </select>
     <select id="feed-dur-filter" onchange="applyFeedFilters()" style="background:var(--bg-sunken);border:1px solid var(--border);border-radius:16px;color:var(--text-primary);padding:6px 12px;font-size:12px;outline:none;cursor:pointer">
-      <option value="">⏱ Dowolna długość</option>
-      <option value="short">Krótkie (do 4 min)</option>
-      <option value="medium">Średnie (4–20 min)</option>
-      <option value="long">Długie (ponad 20 min)</option>
+      <option value="" data-i18n="filter_any_length">⏱ Dowolna długość</option>
+      <option value="short" data-i18n="filter_short">Krótkie (do 4 min)</option>
+      <option value="medium" data-i18n="filter_medium">Średnie (4–20 min)</option>
+      <option value="long" data-i18n="filter_long">Długie (ponad 20 min)</option>
     </select>
     <select id="feed-sort-filter" onchange="applyFeedFilters()" style="background:var(--bg-sunken);border:1px solid var(--border);border-radius:16px;color:var(--text-primary);padding:6px 12px;font-size:12px;outline:none;cursor:pointer">
-      <option value="newest">🆕 Najnowsze</option>
-      <option value="oldest">Najstarsze</option>
-      <option value="popular">🔥 Najpopularniejsze</option>
-      <option value="liked">👍 Najwięcej polubień</option>
+      <option value="newest" data-i18n="filter_newest">🆕 Najnowsze</option>
+      <option value="oldest" data-i18n="filter_oldest">Najstarsze</option>
+      <option value="popular" data-i18n="filter_popular">🔥 Najpopularniejsze</option>
+      <option value="liked" data-i18n="filter_liked">👍 Najwięcej polubień</option>
     </select>
   </div>
   <div id="shorts-section" style="display:none;margin-bottom:24px">
@@ -532,20 +532,20 @@ body.blur-mode #main-content,body.blur-mode header,body.blur-mode .sidebar-left{
 <div class="messages-page" id="messages-page">
   <div class="msg-header">
     <button class="msg-back" onclick="closeMessages()">←</button>
-    <h2>Wiadomości</h2>
+    <h2 data-i18n="nav_messages">Wiadomości</h2>
   </div>
   <div class="msg-body">
     <div class="msg-list">
       <div class="msg-list-header">
-        Konwersacje
-        <button onclick="showNewMsgForm()" style="background:#cc0000;border:none;color:var(--text-primary);padding:5px 12px;border-radius:14px;cursor:pointer;font-size:12px;font-weight:600">+ Nowa</button>
+        <span data-i18n="msg_conversations">Konwersacje</span>
+        <button onclick="showNewMsgForm()" style="background:#cc0000;border:none;color:var(--text-primary);padding:5px 12px;border-radius:14px;cursor:pointer;font-size:12px;font-weight:600" data-i18n="msg_new_btn">+ Nowa</button>
       </div>
       <div id="conv-list"></div>
     </div>
     <div class="msg-chat" id="msg-chat-area">
       <div class="msg-no-conv">
         <svg viewBox="0 0 24 24" width="64" height="64" fill="#555"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H6l-2 2V4h16v12z"/></svg>
-        <p>Wybierz konwersację lub zacznij nową</p>
+        <p data-i18n="msg_pick_conv">Wybierz konwersację lub zacznij nową</p>
       </div>
     </div>
   </div>
@@ -1197,7 +1197,14 @@ const TRANSLATIONS={
     confirm_clear_history:'Wyczyścić historię oglądania?',confirm_clear_history_sub:'Cała historia obejrzanych filmów zostanie usunięta.',
     toast_history_cleared:'Historia wyczyszczona!',
     subs_empty:'Nie subskrybujesz jeszcze nikogo!',subs_empty_sub:'Wejdź na czyjś kanał i kliknij Subskrybuj',
-    subs_no_videos:'Brak filmów od subskrybowanych kanałów'
+    subs_no_videos:'Brak filmów od subskrybowanych kanałów',
+    msg_conversations:'Konwersacje',msg_new_btn:'+ Nowa',msg_pick_conv:'Wybierz konwersację lub zacznij nową',
+    msg_no_convs:'Brak konwersacji.',msg_no_convs_sub:'Wejdź na czyjś kanał i kliknij ✉️ Wiadomość',
+    msg_placeholder:'Napisz wiadomość...',confirm_delete_conv:'Usunąć tę konwersację?',confirm_delete_conv_sub:'Wszystkie wiadomości zostaną trwale usunięte.',toast_chat_deleted:'Czat usunięty 🗑',
+    feed_all_videos:'Wszystkie filmy',feed_no_results:'Brak wyników',feed_no_videos:'Brak filmów',feed_results_for:'Wyniki',
+    filter_all_categories:'📂 Wszystkie kategorie',filter_any_length:'⏱ Dowolna długość',
+    filter_short:'Krótkie (do 4 min)',filter_medium:'Średnie (4–20 min)',filter_long:'Długie (ponad 20 min)',
+    filter_newest:'🆕 Najnowsze',filter_oldest:'Najstarsze',filter_popular:'🔥 Najpopularniejsze',filter_liked:'👍 Najwięcej polubień'
   },
   ru:{
     nav_home:'Главная',nav_shorts:'Shorts',nav_trending:'В тренде',nav_you:'Вы',
@@ -1246,7 +1253,14 @@ const TRANSLATIONS={
     confirm_clear_history:'Очистить историю просмотров?',confirm_clear_history_sub:'Вся история просмотренных видео будет удалена.',
     toast_history_cleared:'История очищена!',
     subs_empty:'Вы пока ни на кого не подписаны!',subs_empty_sub:'Зайдите на чей-нибудь канал и нажмите Подписаться',
-    subs_no_videos:'Нет видео от каналов, на которые вы подписаны'
+    subs_no_videos:'Нет видео от каналов, на которые вы подписаны',
+    msg_conversations:'Беседы',msg_new_btn:'+ Новая',msg_pick_conv:'Выберите беседу или начните новую',
+    msg_no_convs:'Нет бесед.',msg_no_convs_sub:'Зайдите на чей-нибудь канал и нажмите ✉️ Сообщение',
+    msg_placeholder:'Напишите сообщение...',confirm_delete_conv:'Удалить эту беседу?',confirm_delete_conv_sub:'Все сообщения будут безвозвратно удалены.',toast_chat_deleted:'Чат удалён 🗑',
+    feed_all_videos:'Все видео',feed_no_results:'Нет результатов',feed_no_videos:'Нет видео',feed_results_for:'Результаты',
+    filter_all_categories:'📂 Все категории',filter_any_length:'⏱ Любая длительность',
+    filter_short:'Короткие (до 4 мин)',filter_medium:'Средние (4–20 мин)',filter_long:'Длинные (более 20 мин)',
+    filter_newest:'🆕 Сначала новые',filter_oldest:'Сначала старые',filter_popular:'🔥 Популярные',filter_liked:'👍 По лайкам'
   }
 };
 
@@ -3535,7 +3549,7 @@ function populateFeedCategoryOptions(){
   if(sel.dataset.catsKey===key)return;
   sel.dataset.catsKey=key;
   const current=sel.value;
-  sel.innerHTML='<option value="">📂 Wszystkie kategorie</option>'+cats.map(c=>`<option value="${esc(c)}">${esc(c)}</option>`).join('');
+  sel.innerHTML=`<option value="">${t('filter_all_categories')}</option>`+cats.map(c=>`<option value="${esc(c)}">${esc(c)}</option>`).join('');
   if(cats.includes(current))sel.value=current;
 }
 
@@ -3655,11 +3669,11 @@ function render(){
   const shortsSection=document.getElementById('shorts-section');
   if(shortsSection)shortsSection.style.display='none';
 
-  document.getElementById('slabel').textContent=q?`Wyniki: "${q}" (${list.length})`:`Wszystkie filmy (${list.length})`;
+  document.getElementById('slabel').textContent=q?`${t('feed_results_for')}: "${q}" (${list.length})`:`${t('feed_all_videos')} (${list.length})`;
   const g=document.getElementById('grid');
   if(feedObserver){feedObserver.disconnect();feedObserver=null;}
   if(!list.length){
-    g.innerHTML=`<div class="empty"><div style="font-size:64px;margin-bottom:16px">🎬</div><p style="font-size:15px;margin-bottom:8px">${q?'Brak wyników':'Brak filmów'}</p></div>`;
+    g.innerHTML=`<div class="empty"><div style="font-size:64px;margin-bottom:16px">🎬</div><p style="font-size:15px;margin-bottom:8px">${q?t('feed_no_results'):t('feed_no_videos')}</p></div>`;
     return;
   }
   g.innerHTML='';
@@ -5284,7 +5298,7 @@ async function loadConvList(){
     await Promise.all(otherIds.map(id=>getProfile(id)));
   }
   if(!data||!data.length){
-    list.innerHTML='<div style="padding:20px;text-align:center;color:#555;font-size:13px">Brak konwersacji.<br>Wejdź na czyjś kanał i kliknij ✉️ Wiadomość</div>';
+    list.innerHTML=`<div style="padding:20px;text-align:center;color:#555;font-size:13px">${t('msg_no_convs')}<br>${t('msg_no_convs_sub')}</div>`;
     return;
   }
   // Group by conv_id
@@ -5371,7 +5385,7 @@ function renderChatHeader(){
       :`<div class="msg-chat-messages" id="msg-msgs-list"></div>
     <div class="msg-input-area" style="position:relative">
       <button onclick="toggleEmojiPicker('msg-inp',this)" style="background:none;border:none;color:var(--text-secondary);cursor:pointer;font-size:20px;padding:6px;flex-shrink:0" title="Emotki">😊</button>
-      <textarea class="msg-input" id="msg-inp" placeholder="Napisz wiadomość..." rows="1" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendChatMsg();}"></textarea>
+      <textarea class="msg-input" id="msg-inp" placeholder="${t('msg_placeholder')}" rows="1" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendChatMsg();}"></textarea>
       <button class="msg-send-btn" onclick="sendChatMsg()">
         <svg viewBox="0 0 24 24" width="18" height="18" fill="white"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
       </button>
@@ -5386,16 +5400,16 @@ function toggleChatMenu(){
 
 async function deleteConversation(){
   if(!currentConvId)return;
-  if(!await showConfirm('Usunąć tę konwersację?','Wszystkie wiadomości zostaną trwale usunięte.'))return;
+  if(!await showConfirm(t('confirm_delete_conv'),t('confirm_delete_conv_sub')))return;
   await sb.from('messages').delete().eq('conv_id',currentConvId);
   currentConvId=null;
   currentOtherUser=null;
   document.getElementById('msg-chat-area').innerHTML=`<div class="msg-no-conv">
     <svg viewBox="0 0 24 24" width="64" height="64" fill="#555"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H6l-2 2V4h16v12z"/></svg>
-    <p>Wybierz konwersację lub zacznij nową</p>
+    <p>${t('msg_pick_conv')}</p>
   </div>`;
   loadConvList();
-  toast('Czat usunięty 🗑');
+  toast(t('toast_chat_deleted'));
 }
 
 async function blockUser(hours){
