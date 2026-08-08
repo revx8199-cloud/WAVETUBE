@@ -995,10 +995,10 @@ body.blur-mode #main-content,body.blur-mode header,body.blur-mode .sidebar-left{
     </div>
     <div class="field" style="margin-top:24px;padding-top:20px;border-top:1px solid var(--border)">
       <label style="display:flex;align-items:center;justify-content:space-between;cursor:pointer" onclick="event.preventDefault()">
-        <span>▶️ Autoodtwarzanie następnego filmu</span>
+        <span data-i18n="settings_autoplay">▶️ Autoodtwarzanie następnego filmu</span>
         <span class="toggle-switch" id="autoplay-toggle" onclick="toggleAutoplayNext()"><span class="toggle-knob"></span></span>
       </label>
-      <p style="color:var(--text-tertiary);font-size:11px;margin-top:8px">Po skończeniu filmu automatycznie odtworzy się kolejny.</p>
+      <p style="color:var(--text-tertiary);font-size:11px;margin-top:8px" data-i18n="settings_autoplay_desc">Po skończeniu filmu automatycznie odtworzy się kolejny.</p>
     </div>
     <div class="fbbtns">
       <button class="fcancel" onclick="closeSettingsModal()" data-i18n="btn_close">Zamknij</button>
@@ -1204,7 +1204,9 @@ const TRANSLATIONS={
     feed_all_videos:'Wszystkie filmy',feed_no_results:'Brak wyników',feed_no_videos:'Brak filmów',feed_results_for:'Wyniki',
     filter_all_categories:'📂 Wszystkie kategorie',filter_any_length:'⏱ Dowolna długość',
     filter_short:'Krótkie (do 4 min)',filter_medium:'Średnie (4–20 min)',filter_long:'Długie (ponad 20 min)',
-    filter_newest:'🆕 Najnowsze',filter_oldest:'Najstarsze',filter_popular:'🔥 Najpopularniejsze',filter_liked:'👍 Najwięcej polubień'
+    filter_newest:'🆕 Najnowsze',filter_oldest:'Najstarsze',filter_popular:'🔥 Najpopularniejsze',filter_liked:'👍 Najwięcej polubień',
+    settings_autoplay:'▶️ Autoodtwarzanie następnego filmu',settings_autoplay_desc:'Po skończeniu filmu automatycznie odtworzy się kolejny.',
+    autoplay_next_video:'Następny film',autoplay_play_now:'Odtwórz teraz'
   },
   ru:{
     nav_home:'Главная',nav_shorts:'Shorts',nav_trending:'В тренде',nav_you:'Вы',
@@ -1260,7 +1262,9 @@ const TRANSLATIONS={
     feed_all_videos:'Все видео',feed_no_results:'Нет результатов',feed_no_videos:'Нет видео',feed_results_for:'Результаты',
     filter_all_categories:'📂 Все категории',filter_any_length:'⏱ Любая длительность',
     filter_short:'Короткие (до 4 мин)',filter_medium:'Средние (4–20 мин)',filter_long:'Длинные (более 20 мин)',
-    filter_newest:'🆕 Сначала новые',filter_oldest:'Сначала старые',filter_popular:'🔥 Популярные',filter_liked:'👍 По лайкам'
+    filter_newest:'🆕 Сначала новые',filter_oldest:'Сначала старые',filter_popular:'🔥 Популярные',filter_liked:'👍 По лайкам',
+    settings_autoplay:'▶️ Автовоспроизведение следующего видео',settings_autoplay_desc:'После окончания видео автоматически начнётся следующее.',
+    autoplay_next_video:'Следующее видео',autoplay_play_now:'Смотреть сейчас'
   }
 };
 
@@ -1365,7 +1369,7 @@ function showAutoplayOverlay(nextV){
   ov.id='autoplay-overlay';
   ov.className='autoplay-overlay';
   ov.innerHTML=`
-    <div style="font-size:13px;color:#aaa">Następny film</div>
+    <div style="font-size:13px;color:#aaa">${t('autoplay_next_video')}</div>
     <img src="${thumbFor(nextV)||''}" alt="">
     <div style="font-weight:600;max-width:80%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(nextV.title||'')}</div>
     <div class="autoplay-ring">
@@ -1373,8 +1377,8 @@ function showAutoplayOverlay(nextV){
       <span id="autoplay-ring-num">5</span>
     </div>
     <div style="display:flex;gap:10px">
-      <button onclick="cancelAutoplayCountdown()" style="background:rgba(255,255,255,.15);border:none;color:#fff;padding:8px 18px;border-radius:20px;cursor:pointer;font-size:13px">Anuluj</button>
-      <button onclick="cancelAutoplayCountdown();openP(${JSON.stringify(nextV.id)})" style="background:#cc0000;border:none;color:#fff;padding:8px 18px;border-radius:20px;cursor:pointer;font-size:13px;font-weight:600">Odtwórz teraz</button>
+      <button onclick="cancelAutoplayCountdown()" style="background:rgba(255,255,255,.15);border:none;color:#fff;padding:8px 18px;border-radius:20px;cursor:pointer;font-size:13px">${t('btn_cancel')}</button>
+      <button onclick="cancelAutoplayCountdown();openP(${JSON.stringify(nextV.id)})" style="background:#cc0000;border:none;color:#fff;padding:8px 18px;border-radius:20px;cursor:pointer;font-size:13px;font-weight:600">${t('autoplay_play_now')}</button>
     </div>`;
   pw.appendChild(ov);
   autoplayTimer=setInterval(()=>{
@@ -1687,11 +1691,33 @@ async function openStatsPanel(){
   body.innerHTML='<p style="color:var(--text-tertiary);padding:30px 0;text-align:center">Ładowanie statystyk...</p>';
 
   const ownVideos=videos.filter(v=>v.user_id===currentUser.id);
+  const ownVideoIds=ownVideos.map(v=>String(v.id));
   const totalViews=ownVideos.reduce((s,v)=>s+(v.views||0),0);
   const totalLikes=ownVideos.reduce((s,v)=>s+(v.likes||0),0);
+  const totalDislikes=ownVideos.reduce((s,v)=>s+(v.dislikes||0),0);
   const totalComments=ownVideos.reduce((s,v)=>s+((v.comments||[]).length),0);
+  const avgViews=ownVideos.length?Math.round(totalViews/ownVideos.length):0;
+  const engagement=totalViews?(((totalLikes+totalComments)/totalViews)*100).toFixed(1):'0';
+  const shortsCount=ownVideos.filter(v=>v.is_short===true).length;
+  const longCount=ownVideos.length-shortsCount;
+  const shortsViews=ownVideos.filter(v=>v.is_short===true).reduce((s,v)=>s+(v.views||0),0);
+  const longViews=totalViews-shortsViews;
+
   const{data:subs}=await sb.from('subscriptions').select('created_at').eq('channel_id',currentUser.id).order('created_at',{ascending:true});
   const subCount=(subs||[]).length;
+
+  let savedCount=0,wlCount=0;
+  if(ownVideoIds.length){
+    const{count:sc}=await sb.from('saved_videos').select('*',{count:'exact',head:true}).in('video_id',ownVideoIds);
+    savedCount=sc||0;
+    const{count:wc}=await sb.from('watch_later').select('*',{count:'exact',head:true}).in('video_id',ownVideoIds);
+    wlCount=wc||0;
+  }
+
+  const{data:ownPosts}=await sb.from('posts').select('likes,comments').eq('user_id',currentUser.id);
+  const postCount=(ownPosts||[]).length;
+  const postLikes=(ownPosts||[]).reduce((s,p)=>s+(p.likes||0),0);
+  const postComments=(ownPosts||[]).reduce((s,p)=>s+((p.comments||[]).length),0);
 
   const topVideos=[...ownVideos].sort((a,b)=>(b.views||0)-(a.views||0)).slice(0,8)
     .map(v=>({label:v.title||'Bez tytułu',value:v.views||0}));
@@ -1718,12 +1744,19 @@ async function openStatsPanel(){
   const subPoints=Object.entries(subMonthMap).map(([label,c])=>{running+=c;return{label,y:running};});
 
   body.innerHTML=`
-    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:10px;margin-bottom:26px">
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:10px;margin-bottom:14px">
       ${statCard('👁️','Wyświetlenia',totalViews)}
       ${statCard(likeIcon(),'Polubienia',totalLikes)}
       ${statCard('🔔','Subskrybenci',subCount)}
       ${statCard('🎬','Filmy',ownVideos.length)}
       ${statCard('💬','Komentarze',totalComments)}
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:10px;margin-bottom:26px">
+      ${statCard('📊','Śr. wyświetleń/film',avgViews)}
+      ${statCard('🔥','Zaangażowanie',engagement+'%')}
+      ${statCard('👎','Dislajki',totalDislikes)}
+      ${statCard('💾','Zapisano',savedCount)}
+      ${statCard('⏰','Obejrzę później',wlCount)}
     </div>
 
     <div style="margin-bottom:24px">
@@ -1737,13 +1770,27 @@ async function openStatsPanel(){
     </div>
 
     <div style="margin-bottom:24px">
+      <div style="font-size:13px;font-weight:700;margin-bottom:10px">🎞️ Filmy vs Shorts</div>
+      ${hBarChart([{label:`🎬 Filmy (${longCount})`,value:longViews},{label:`📱 Shorts (${shortsCount})`,value:shortsViews}],{color:'#a78bfa'})}
+    </div>
+
+    <div style="margin-bottom:24px">
       <div style="font-size:13px;font-weight:700;margin-bottom:10px">📂 Wyświetlenia wg kategorii</div>
       ${catData.length?hBarChart(catData,{color:'#3ea6ff'}):'<div style="color:var(--text-tertiary);font-size:12px">Brak danych</div>'}
     </div>
 
-    <div>
+    <div style="margin-bottom:24px">
       <div style="font-size:13px;font-weight:700;margin-bottom:10px">🗓️ Publikacje wg miesiąca</div>
       ${uploadPoints.length?hBarChart(uploadPoints.map(p=>({label:p.label,value:p.y})),{color:'#4ade80'}):'<div style="color:var(--text-tertiary);font-size:12px">Brak danych</div>'}
+    </div>
+
+    <div style="padding-top:20px;border-top:1px solid var(--border)">
+      <div style="font-size:13px;font-weight:700;margin-bottom:10px">📝 Posty</div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:10px">
+        ${statCard('📝','Posty',postCount)}
+        ${statCard(likeIcon(),'Polubienia postów',postLikes)}
+        ${statCard('💬','Komentarze pod postami',postComments)}
+      </div>
     </div>
   `;
 }
