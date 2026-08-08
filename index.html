@@ -311,6 +311,8 @@ body.earthquake-mode header,body.earthquake-mode .sidebar-left,body.earthquake-m
 body.upsidedown-mode header,body.upsidedown-mode .sidebar-left,body.upsidedown-mode #main-content{transform:rotate(180deg);transition:transform .6s}
 @keyframes zoomPulse{0%,100%{transform:scale(1)}50%{transform:scale(1.04)}}
 body.zoom-mode header,body.zoom-mode .sidebar-left,body.zoom-mode #main-content{animation:zoomPulse 1.6s ease-in-out infinite}
+@keyframes spinRotate{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
+body.spin-mode header,body.spin-mode .sidebar-left,body.spin-mode #main-content{animation:spinRotate 3s linear infinite;transform-origin:center center}
 @keyframes fireworkBurst{0%{transform:translate(0,0) scale(1);opacity:1}100%{transform:translate(var(--fx),var(--fy)) scale(.3);opacity:0}}
 @keyframes heartFloat{from{transform:translateY(0) scale(1);opacity:1}to{transform:translateY(-105vh) scale(1.3);opacity:0}}
 @keyframes rainbowCycle{0%{filter:hue-rotate(0deg)}100%{filter:hue-rotate(360deg)}}
@@ -1181,7 +1183,21 @@ const TRANSLATIONS={
     post_modal_title:'📝 Nowy post',post_text_label:'Tekst',post_text_placeholder:'Co chcesz napisać?',
     post_images_label:'Zdjęcia (opcjonalnie, max 6)',post_add_poll:'📊 Dodaj ankietę',
     post_poll_question_ph:'Zadaj pytanie...',post_add_option:'+ Dodaj opcję',
-    post_poll_option_ph:'Opcja',post_poll_max_options:'Maksymalnie 4 opcje'
+    post_poll_option_ph:'Opcja',post_poll_max_options:'Maksymalnie 4 opcje',
+    page_shorts:'Shorts',page_my_subs:'Moje subskrypcje',page_saved:'💾 Zapisane filmy',
+    page_watchlater:'⏰ Obejrzę później',page_announcements:'📢 Ogłoszenia od twórcy',
+    page_trending:'🔥 Popularne',page_history:'Historia oglądania',btn_clear:'Wyczyść',
+    saved_login:'Zaloguj się żeby zapisywać filmy',saved_empty:'Brak zapisanych filmów',
+    saved_empty_sub:'Kliknij ⋮ przy filmie i wybierz "Zapisz"',
+    wl_login:'Zaloguj się żeby korzystać z "Obejrzę później"',wl_empty:'Brak filmów do obejrzenia później',
+    wl_empty_sub:'Kliknij ⋮ przy filmie i wybierz "Obejrzę później"',
+    wl_login_toast:'Zaloguj się żeby dodawać do "Obejrzę później"!',wl_removed_toast:'Usunięto z "Obejrzę później"',wl_added_toast:'Dodano do obejrzenia później ⏰',
+    history_login:'Zaloguj się żeby zobaczyć historię oglądania',history_empty:'Brak historii oglądania',
+    history_empty_sub:'Filmy które oglądasz pojawią się tutaj',watched_at_label:'Oglądano',
+    confirm_clear_history:'Wyczyścić historię oglądania?',confirm_clear_history_sub:'Cała historia obejrzanych filmów zostanie usunięta.',
+    toast_history_cleared:'Historia wyczyszczona!',
+    subs_empty:'Nie subskrybujesz jeszcze nikogo!',subs_empty_sub:'Wejdź na czyjś kanał i kliknij Subskrybuj',
+    subs_no_videos:'Brak filmów od subskrybowanych kanałów'
   },
   ru:{
     nav_home:'Главная',nav_shorts:'Shorts',nav_trending:'В тренде',nav_you:'Вы',
@@ -1216,7 +1232,21 @@ const TRANSLATIONS={
     post_modal_title:'📝 Новый пост',post_text_label:'Текст',post_text_placeholder:'Что хотите написать?',
     post_images_label:'Фото (необязательно, макс. 6)',post_add_poll:'📊 Добавить опрос',
     post_poll_question_ph:'Задайте вопрос...',post_add_option:'+ Добавить вариант',
-    post_poll_option_ph:'Вариант',post_poll_max_options:'Максимум 4 варианта'
+    post_poll_option_ph:'Вариант',post_poll_max_options:'Максимум 4 варианта',
+    page_shorts:'Shorts',page_my_subs:'Мои подписки',page_saved:'💾 Сохранённые видео',
+    page_watchlater:'⏰ Посмотреть позже',page_announcements:'📢 Объявления от автора',
+    page_trending:'🔥 В тренде',page_history:'История просмотров',btn_clear:'Очистить',
+    saved_login:'Войдите, чтобы сохранять видео',saved_empty:'Нет сохранённых видео',
+    saved_empty_sub:'Нажмите ⋮ на видео и выберите "Сохранить"',
+    wl_login:'Войдите, чтобы использовать "Посмотреть позже"',wl_empty:'Нет видео для просмотра позже',
+    wl_empty_sub:'Нажмите ⋮ на видео и выберите "Посмотреть позже"',
+    wl_login_toast:'Войдите, чтобы добавлять в "Посмотреть позже"!',wl_removed_toast:'Удалено из "Посмотреть позже"',wl_added_toast:'Добавлено в "Посмотреть позже" ⏰',
+    history_login:'Войдите, чтобы увидеть историю просмотров',history_empty:'История просмотров пуста',
+    history_empty_sub:'Видео, которые вы смотрите, появятся здесь',watched_at_label:'Просмотрено',
+    confirm_clear_history:'Очистить историю просмотров?',confirm_clear_history_sub:'Вся история просмотренных видео будет удалена.',
+    toast_history_cleared:'История очищена!',
+    subs_empty:'Вы пока ни на кого не подписаны!',subs_empty_sub:'Зайдите на чей-нибудь канал и нажмите Подписаться',
+    subs_no_videos:'Нет видео от каналов, на которые вы подписаны'
   }
 };
 
@@ -2152,6 +2182,7 @@ async function checkDiscoState(){
   toggleZoomEffect(data.active_effect==='zoom');
   toggleRainbowEffect(data.active_effect==='rainbow');
   toggleBlurEffect(data.active_effect==='blur');
+  toggleSpinEffect(data.active_effect==='spin');
   syncMusicState(data.music_url,!!data.music_active);
   syncBroadcastText(data.broadcast_text||'',data.broadcast_by||'');
   if(lastSeenBurstAt===null){
@@ -2308,6 +2339,7 @@ function fireShake(){
 function toggleEarthquakeEffect(on){document.body.classList.toggle('earthquake-mode',on);}
 function toggleUpsidedownEffect(on){document.body.classList.toggle('upsidedown-mode',on);}
 function toggleZoomEffect(on){document.body.classList.toggle('zoom-mode',on);}
+function toggleSpinEffect(on){document.body.classList.toggle('spin-mode',on);}
 function toggleRainbowEffect(on){document.body.classList.toggle('rainbow-mode',on);}
 function toggleBlurEffect(on){document.body.classList.toggle('blur-mode',on);}
 
@@ -2442,6 +2474,10 @@ async function runConsoleCommand(raw){
     const on=await setActiveEffect('blur');
     consoleLog(on?'🌫️ BLUR: ON dla wszystkich':'Blur: OFF dla wszystkich');
   }
+  else if(base==='spin'){
+    const on=await setActiveEffect('spin');
+    consoleLog(on?'🌀 SPIN: ON dla wszystkich — trzymajcie się czegoś':'Spin: OFF dla wszystkich');
+  }
   else if(base==='rain'){
     await fireGlobalBurst('rain');
     consoleLog('🌧️ Deszcz spadł u wszystkich!');
@@ -2496,6 +2532,7 @@ async function runConsoleCommand(raw){
     consoleLog('  zoom               - włącz/wyłącz pulsowanie zoomu 🔍');
     consoleLog('  rainbow            - włącz/wyłącz cykl kolorów tęczy 🌈');
     consoleLog('  blur               - włącz/wyłącz rozmycie ekranu 🌫️');
+    consoleLog('  spin               - włącz/wyłącz obracanie ekranu 🌀');
     consoleLog('  music <url>        - włącz relaksującą muzykę dla wszystkich 🎵');
     consoleLog('  music off          - wyłącz muzykę u wszystkich');
     consoleLog('  music link         - pokaż aktualny link do muzyki (do skopiowania)');
@@ -3436,7 +3473,7 @@ function showShortsPage(){
   if(ff)ff.style.display='none';
   const shortsSection0=document.getElementById('shorts-section');
   if(shortsSection0)shortsSection0.style.display='none';
-  document.getElementById('slabel').textContent='Shorts';
+  document.getElementById('slabel').textContent=t('page_shorts');
   const shorts=videos.filter(v=>v.is_short===true&&isDiscoverable(v));
   const g=document.getElementById('grid');
   g.style.display='block';
@@ -3534,6 +3571,10 @@ function applyFeedFilters(){
 
 function renderVideoCards(list,g){
   g.innerHTML='';
+  appendVideoCards(list,g);
+}
+
+function appendVideoCards(list,g){
   list.forEach(v=>{
     const th=thumbFor(v);
     const uname=getUserName(v);
@@ -3542,7 +3583,7 @@ function renderVideoCards(list,g){
     const el=document.createElement('div');
     el.className='card';
     el.innerHTML=`<div class="thumb">
-      ${th?`<img src="${th}" alt="${esc(v.title)}" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"><div class="no-thumb" style="display:none">🎬</div>`:'<div class="no-thumb">🎬</div>'}
+      ${th?`<img src="${th}" alt="${esc(v.title)}" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"><div class="no-thumb" style="display:none">🎬</div>`:'<div class="no-thumb">🎬</div>'}
       <div class="play-ov"><div class="pb">▶</div></div>
       ${v.dur?`<div class="dur">${v.dur}</div>`:''}
       <button class="del" onclick="event.stopPropagation();askDelete(${v.id})">🗑</button>
@@ -3560,6 +3601,41 @@ function renderVideoCards(list,g){
     el.onclick=()=>openP(v.id);
     g.appendChild(el);
   });
+}
+
+// ── PAGINACJA GŁÓWNEGO FEEDU (renderujemy tylko część kart naraz - dużo szybsze
+// przy większej liczbie filmów, reszta dogrywa się automatycznie przy scrollu) ──
+const FEED_PAGE_SIZE=24;
+let feedPageState={list:[],shown:0};
+let feedObserver=null;
+
+function loadNextFeedPage(){
+  const g=document.getElementById('grid');
+  if(!g)return;
+  const{list,shown}=feedPageState;
+  const next=list.slice(shown,shown+FEED_PAGE_SIZE);
+  appendVideoCards(next,g);
+  feedPageState.shown+=next.length;
+  setupFeedSentinel();
+}
+
+function setupFeedSentinel(){
+  const g=document.getElementById('grid');
+  const old=document.getElementById('feed-sentinel');
+  if(old)old.remove();
+  if(!g||feedPageState.shown>=feedPageState.list.length)return; // wszystko już pokazane
+  const sentinel=document.createElement('div');
+  sentinel.id='feed-sentinel';
+  sentinel.style.cssText='grid-column:1/-1;height:1px';
+  g.appendChild(sentinel);
+  if(feedObserver)feedObserver.disconnect();
+  feedObserver=new IntersectionObserver(entries=>{
+    if(entries[0].isIntersecting){
+      feedObserver.disconnect();
+      loadNextFeedPage();
+    }
+  },{rootMargin:'1000px'});
+  feedObserver.observe(sentinel);
 }
 
 function render(){
@@ -3581,11 +3657,14 @@ function render(){
 
   document.getElementById('slabel').textContent=q?`Wyniki: "${q}" (${list.length})`:`Wszystkie filmy (${list.length})`;
   const g=document.getElementById('grid');
+  if(feedObserver){feedObserver.disconnect();feedObserver=null;}
   if(!list.length){
     g.innerHTML=`<div class="empty"><div style="font-size:64px;margin-bottom:16px">🎬</div><p style="font-size:15px;margin-bottom:8px">${q?'Brak wyników':'Brak filmów'}</p></div>`;
     return;
   }
-  renderVideoCards(list,g);
+  g.innerHTML='';
+  feedPageState={list,shown:0};
+  loadNextFeedPage();
 }
 
 // ── KANAŁ ─────────────────────────────────────────────────────────────────────
@@ -3774,12 +3853,12 @@ function showSubscriptions(){
   if(ff)ff.style.display='none';
   const shortsSection3=document.getElementById('shorts-section');
   if(shortsSection3)shortsSection3.style.display='none';
-  document.getElementById('slabel').textContent='Moje subskrypcje';
+  document.getElementById('slabel').textContent=t('page_my_subs');
   if(!currentUser){render();return;}
   const subIds=[...subscribedSet];
   const g=document.getElementById('grid');
   if(!subIds.length){
-    g.innerHTML='<div class="empty"><div style="font-size:48px;margin-bottom:12px">🔔</div><p>Nie subskrybujesz jeszcze nikogo!</p><p style="font-size:13px;color:#444;margin-top:6px">Wejdź na czyjś kanał i kliknij Subskrybuj</p></div>';
+    g.innerHTML=`<div class="empty"><div style="font-size:48px;margin-bottom:12px">🔔</div><p>${t('subs_empty')}</p><p style="font-size:13px;color:#444;margin-top:6px">${t('subs_empty_sub')}</p></div>`;
     return;
   }
   // Show unique channels
@@ -3803,7 +3882,7 @@ function showSubscriptions(){
     }
   });
   if(!channels.length){
-    g.innerHTML='<div class="empty"><div style="font-size:48px;margin-bottom:12px">🔔</div><p>Brak filmów od subskrybowanych kanałów</p></div>';
+    g.innerHTML=`<div class="empty"><div style="font-size:48px;margin-bottom:12px">🔔</div><p>${t('subs_no_videos')}</p></div>`;
     return;
   }
   // Show as channel cards
@@ -3873,16 +3952,16 @@ async function showSavedPage(){
   if(ff)ff.style.display='none';
   const shortsSection=document.getElementById('shorts-section');
   if(shortsSection)shortsSection.style.display='none';
-  document.getElementById('slabel').textContent='💾 Zapisane filmy';
+  document.getElementById('slabel').textContent=t('page_saved');
   const g=document.getElementById('grid');
   if(!currentUser){
-    g.innerHTML=`<div class="empty"><div style="font-size:48px;margin-bottom:12px">💾</div><p style="font-size:15px">Zaloguj się żeby zapisywać filmy</p></div>`;
+    g.innerHTML=`<div class="empty"><div style="font-size:48px;margin-bottom:12px">💾</div><p style="font-size:15px">${t('saved_login')}</p></div>`;
     return;
   }
   await loadSavedVideos();
   const saved=videos.filter(v=>savedVideoIds.has(String(v.id)));
   if(!saved.length){
-    g.innerHTML=`<div class="empty"><div style="font-size:48px;margin-bottom:12px">💾</div><p style="font-size:15px">Brak zapisanych filmów</p><p style="font-size:13px;color:#444;margin-top:6px">Kliknij ⋮ przy filmie i wybierz "Zapisz"</p></div>`;
+    g.innerHTML=`<div class="empty"><div style="font-size:48px;margin-bottom:12px">💾</div><p style="font-size:15px">${t('saved_empty')}</p><p style="font-size:13px;color:#444;margin-top:6px">${t('saved_empty_sub')}</p></div>`;
     return;
   }
   renderVideoCards(saved,g);
@@ -3898,16 +3977,16 @@ async function loadWatchLater(){
 }
 
 async function toggleWatchLater(videoId){
-  if(!currentUser){toast('Zaloguj się żeby dodawać do "Obejrzę później"!');return;}
+  if(!currentUser){toast(t('wl_login_toast'));return;}
   const idStr=String(videoId);
   if(watchLaterIds.has(idStr)){
     await sb.from('watch_later').delete().eq('user_id',currentUser.id).eq('video_id',idStr);
     watchLaterIds.delete(idStr);
-    toast('Usunięto z "Obejrzę później"');
+    toast(t('wl_removed_toast'));
   } else {
     await sb.from('watch_later').insert([{user_id:currentUser.id,video_id:idStr}]);
     watchLaterIds.add(idStr);
-    toast('Dodano do obejrzenia później ⏰');
+    toast(t('wl_added_toast'));
   }
   updateWatchLaterButtonUI(videoId);
 }
@@ -3931,16 +4010,16 @@ async function showWatchLaterPage(){
   if(ff)ff.style.display='none';
   const shortsSection=document.getElementById('shorts-section');
   if(shortsSection)shortsSection.style.display='none';
-  document.getElementById('slabel').textContent='⏰ Obejrzę później';
+  document.getElementById('slabel').textContent=t('page_watchlater');
   const g=document.getElementById('grid');
   if(!currentUser){
-    g.innerHTML=`<div class="empty"><div style="font-size:48px;margin-bottom:12px">⏰</div><p style="font-size:15px">Zaloguj się żeby korzystać z "Obejrzę później"</p></div>`;
+    g.innerHTML=`<div class="empty"><div style="font-size:48px;margin-bottom:12px">⏰</div><p style="font-size:15px">${t('wl_login')}</p></div>`;
     return;
   }
   await loadWatchLater();
   const list=videos.filter(v=>watchLaterIds.has(String(v.id)));
   if(!list.length){
-    g.innerHTML=`<div class="empty"><div style="font-size:48px;margin-bottom:12px">⏰</div><p style="font-size:15px">Brak filmów do obejrzenia później</p><p style="font-size:13px;color:#444;margin-top:6px">Kliknij ⋮ przy filmie i wybierz "Obejrzę później"</p></div>`;
+    g.innerHTML=`<div class="empty"><div style="font-size:48px;margin-bottom:12px">⏰</div><p style="font-size:15px">${t('wl_empty')}</p><p style="font-size:13px;color:#444;margin-top:6px">${t('wl_empty_sub')}</p></div>`;
     return;
   }
   renderVideoCards(list,g);
@@ -3948,9 +4027,11 @@ async function showWatchLaterPage(){
 
 async function showAnnouncementsPage(){
   showHome();
+  const ff=document.getElementById('feed-filters');
+  if(ff)ff.style.display='none';
   const shortsSection=document.getElementById('shorts-section');
   if(shortsSection)shortsSection.style.display='none';
-  document.getElementById('slabel').textContent='📢 Ogłoszenia od twórcy';
+  document.getElementById('slabel').textContent=t('page_announcements');
   const g=document.getElementById('grid');
   g.style.display='block';
   g.innerHTML='<p style="color:var(--text-tertiary);padding:20px;text-align:center">Ładowanie...</p>';
@@ -4146,10 +4227,10 @@ async function showHistory(){
   if(ff)ff.style.display='none';
   const shortsSection1=document.getElementById('shorts-section');
   if(shortsSection1)shortsSection1.style.display='none';
-  document.getElementById('slabel').innerHTML='Historia oglądania <button onclick="clearHistory()" style="font-size:12px;background:none;border:1px solid #444;color:var(--text-secondary);padding:4px 12px;border-radius:14px;cursor:pointer;margin-left:12px">Wyczyść</button>';
+  document.getElementById('slabel').innerHTML=`${t('page_history')} <button onclick="clearHistory()" style="font-size:12px;background:none;border:1px solid #444;color:var(--text-secondary);padding:4px 12px;border-radius:14px;cursor:pointer;margin-left:12px">${t('btn_clear')}</button>`;
   const g=document.getElementById('grid');
   if(!currentUser){
-    g.innerHTML='<div class="empty"><div style="font-size:48px;margin-bottom:12px">🕐</div><p style="font-size:15px">Zaloguj się żeby zobaczyć historię oglądania</p></div>';
+    g.innerHTML=`<div class="empty"><div style="font-size:48px;margin-bottom:12px">🕐</div><p style="font-size:15px">${t('history_login')}</p></div>`;
     return;
   }
   g.innerHTML='<p style="color:var(--text-tertiary);padding:20px;text-align:center">Ładowanie...</p>';
@@ -4159,7 +4240,7 @@ async function showHistory(){
     return v?{...v,watched_at:h.watched_at}:null;
   }).filter(Boolean);
   if(!hist.length){
-    g.innerHTML='<div class="empty"><div style="font-size:48px;margin-bottom:12px">🕐</div><p style="font-size:15px">Brak historii oglądania</p><p style="font-size:13px;color:#444;margin-top:6px">Filmy które oglądasz pojawią się tutaj</p></div>';
+    g.innerHTML=`<div class="empty"><div style="font-size:48px;margin-bottom:12px">🕐</div><p style="font-size:15px">${t('history_empty')}</p><p style="font-size:13px;color:#444;margin-top:6px">${t('history_empty_sub')}</p></div>`;
     return;
   }
   g.innerHTML='';
@@ -4178,7 +4259,7 @@ async function showHistory(){
       <div class="card-info">
         <h3>${esc(v.title)}</h3>
         <div class="channel-name">${esc(getUserName(v)||'Anonim')}</div>
-        <p style="font-size:11px;color:var(--text-tertiary)">Oglądano: ${new Date(v.watched_at).toLocaleString('pl-PL',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'})}</p>
+        <p style="font-size:11px;color:var(--text-tertiary)">${t('watched_at_label')}: ${new Date(v.watched_at).toLocaleString(getLang()==='ru'?'ru-RU':'pl-PL',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'})}</p>
       </div>
     </div>`;
     el.onclick=()=>openP(v.id);
@@ -4188,10 +4269,10 @@ async function showHistory(){
 
 async function clearHistory(){
   if(!currentUser)return;
-  if(!await showConfirm('Wyczyścić historię oglądania?','Cała historia obejrzanych filmów zostanie usunięta.','Wyczyść'))return;
+  if(!await showConfirm(t('confirm_clear_history'),t('confirm_clear_history_sub'),t('btn_clear')))return;
   await sb.from('watch_history').delete().eq('user_id',currentUser.id);
   showHistory();
-  toast('Historia wyczyszczona!');
+  toast(t('toast_history_cleared'));
 }
 
 function showTrending(){
@@ -4200,7 +4281,7 @@ function showTrending(){
   if(ff)ff.style.display='none';
   const shortsSection2=document.getElementById('shorts-section');
   if(shortsSection2)shortsSection2.style.display='none';
-  document.getElementById('slabel').textContent='🔥 Popularne';
+  document.getElementById('slabel').textContent=t('page_trending');
   const sorted=[...videos].filter(isDiscoverable).sort((a,b)=>(b.views||0)-(a.views||0));
   const g=document.getElementById('grid');
   g.innerHTML='';
