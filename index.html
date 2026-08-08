@@ -1047,6 +1047,10 @@ body.blur-mode #main-content,body.blur-mode header,body.blur-mode .sidebar-left{
           <svg viewBox="0 0 24 24" width="19" height="19" fill="currentColor"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>
           <span>Użytkownicy</span>
         </div>
+        <div id="admin-tab-online" class="admin-nav-item" onclick="setAdminTab('online')">
+          <svg viewBox="0 0 24 24" width="19" height="19" fill="currentColor"><circle cx="12" cy="12" r="8"/></svg>
+          <span>Online <span id="online-count-badge" style="background:#4ade80;color:#052e12;font-size:10px;font-weight:800;padding:1px 6px;border-radius:10px;margin-left:4px"></span></span>
+        </div>
         <div id="admin-tab-reports" class="admin-nav-item" onclick="setAdminTab('reports')">
           <svg viewBox="0 0 24 24" width="19" height="19" fill="currentColor"><path d="M14.4 6L14 4H5v17h2v-7h5.6l.4 2h7V6z"/></svg>
           <span>Zgłoszenia</span>
@@ -2113,6 +2117,31 @@ async function saveRenameUser(userId){
   toast('Nick zmieniony! ✏️');
 }
 
+function renderOnlineUsersList(){
+  const body=document.getElementById('admin-panel-body');
+  const badge=document.getElementById('online-count-badge');
+  const entries=Object.entries(onlineUsersState); // {userId: [{name,email,avatar,online_at}, ...]}
+  if(badge)badge.textContent=entries.length;
+  if(!entries.length){
+    body.innerHTML='<p style="color:var(--text-tertiary);padding:30px 20px;text-align:center">Nikt teraz nie jest online 👻</p>';
+    return;
+  }
+  const sorted=entries.map(([userId,presences])=>({userId,...(presences[0]||{})}))
+    .sort((a,b)=>(a.name||'').localeCompare(b.name||'','pl'));
+  body.innerHTML=sorted.map(u=>`
+    <div class="admin-row">
+      <div style="position:relative;flex-shrink:0">
+        ${u.avatar?`<img src="${u.avatar}" style="width:36px;height:36px;border-radius:50%;object-fit:cover">`:`<div style="width:36px;height:36px;border-radius:50%;background:${getUserColor(u.email||'')};display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px">${(u.name||'?')[0].toUpperCase()}</div>`}
+        <span style="position:absolute;bottom:-1px;right:-1px;width:11px;height:11px;background:#4ade80;border:2px solid var(--bg-panel);border-radius:50%"></span>
+      </div>
+      <div style="flex:1;min-width:0">
+        <div style="font-size:13px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(u.name||'Użytkownik')}</div>
+        <div style="font-size:11px;color:var(--text-tertiary);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(u.email||'')}</div>
+      </div>
+      <div style="font-size:11px;color:#4ade80;font-weight:600;flex-shrink:0">🟢 online</div>
+    </div>`).join('');
+}
+
 function renderAdminUsersList(banMap){
   if(banMap)adminUsersBanMap=banMap;
   const body=document.getElementById('admin-panel-body');
@@ -2722,13 +2751,17 @@ async function logAdminAction(action,details){
 
 async function renderAdminPanel(){
   const body=document.getElementById('admin-panel-body');
-  ['videos','users','reports','color','announce','logs'].forEach(tab=>{
+  ['videos','users','online','reports','color','announce','logs'].forEach(tab=>{
     const el=document.getElementById('admin-tab-'+tab);
     if(el)el.classList.toggle('active',adminTab===tab);
   });
 
   if(adminTab==='videos'){
     renderAdminVideosList();
+  }
+
+  if(adminTab==='online'){
+    renderOnlineUsersList();
   }
 
 if(adminTab==='users'){
@@ -3008,9 +3041,12 @@ function toggleAdminBanMenu(userId,btnEl){
   menu.dataset.user=userId;
   menu.style.cssText=`position:fixed;top:${rect.bottom+4}px;left:${Math.min(rect.left,window.innerWidth-190)}px;background:var(--bg-panel);border:1px solid var(--border);border-radius:10px;min-width:170px;z-index:2000;overflow:hidden;box-shadow:0 4px 20px rgba(0,0,0,.5)`;
   menu.innerHTML=`
+    <div onclick="adminBanUser('${userId}',1/60)" style="padding:11px 16px;cursor:pointer;font-size:13px" onmouseover="this.style.background='var(--border)'" onmouseout="this.style.background='none'">1 minuta</div>
     <div onclick="adminBanUser('${userId}',24)" style="padding:11px 16px;cursor:pointer;font-size:13px" onmouseover="this.style.background='var(--border)'" onmouseout="this.style.background='none'">24 godziny</div>
     <div onclick="adminBanUser('${userId}',168)" style="padding:11px 16px;cursor:pointer;font-size:13px" onmouseover="this.style.background='var(--border)'" onmouseout="this.style.background='none'">7 dni</div>
+    <div onclick="adminBanUser('${userId}',240)" style="padding:11px 16px;cursor:pointer;font-size:13px" onmouseover="this.style.background='var(--border)'" onmouseout="this.style.background='none'">10 dni</div>
     <div onclick="adminBanUser('${userId}',720)" style="padding:11px 16px;cursor:pointer;font-size:13px" onmouseover="this.style.background='var(--border)'" onmouseout="this.style.background='none'">30 dni</div>
+    <div onclick="adminBanUser('${userId}',43800)" style="padding:11px 16px;cursor:pointer;font-size:13px" onmouseover="this.style.background='var(--border)'" onmouseout="this.style.background='none'">5 lat</div>
     <div onclick="adminBanUser('${userId}',null)" style="padding:11px 16px;cursor:pointer;font-size:13px;color:#ff6b6b" onmouseover="this.style.background='var(--border)'" onmouseout="this.style.background='none'">Na zawsze</div>
   `;
   document.body.appendChild(menu);
@@ -3029,11 +3065,19 @@ async function adminBanUser(userId,hours){
   await sb.from('banned_users').insert([{user_id:userId,expires_at,banned_by:currentUser.id}]);
   const targetEmail=adminUsersCache.find(u=>u.id===userId)?.email||userId;
   await purgeUserTraces(userId,targetEmail);
-  logAdminAction('ban',`Zbanowano ${targetEmail} na ${hours?hours+'h':'zawsze'} (dane wyczyszczone)`);
+  logAdminAction('ban',`Zbanowano ${targetEmail} na ${formatBanDuration(hours)} (dane wyczyszczone)`);
   const menu=document.getElementById('admin-ban-menu');
   if(menu)menu.remove();
   renderAdminPanel();
   toast('Użytkownik zablokowany 🚫');
+}
+
+function formatBanDuration(hours){
+  if(!hours)return'zawsze';
+  if(hours<1)return Math.round(hours*60)+' min';
+  if(hours<24)return hours+'h';
+  if(hours<24*365)return Math.round(hours/24)+' dni';
+  return Math.round(hours/(24*365))+' lat';
 }
 
 // Usuwa ślady zbanowanego użytkownika: jego komentarze (filmy/posty/ogłoszenia) i powiadomienia
@@ -5217,6 +5261,37 @@ function unsubscribeRealtime(){
   if(notifRealtimeChannel){sb.removeChannel(notifRealtimeChannel);notifRealtimeChannel=null;}
 }
 
+// ── OBECNOŚĆ (kto jest online) - Supabase Realtime Presence ─────────────
+let presenceChannel=null;
+let onlineUsersState={};
+
+function subscribePresence(){
+  unsubscribePresence();
+  if(!currentUser)return;
+  presenceChannel=sb.channel('online-users',{config:{presence:{key:currentUser.id}}});
+  presenceChannel
+    .on('presence',{event:'sync'},()=>{
+      onlineUsersState=presenceChannel.presenceState();
+      const modalOpen=document.getElementById('admin-panel-modal')?.classList.contains('open');
+      if(modalOpen&&adminTab==='online')renderAdminPanel();
+    })
+    .subscribe(async status=>{
+      if(status==='SUBSCRIBED'){
+        await presenceChannel.track({
+          name:getMyDisplayName(),
+          email:currentUser.email||'',
+          avatar:currentUser.user_metadata?.avatar_url||'',
+          online_at:new Date().toISOString()
+        });
+      }
+    });
+}
+
+function unsubscribePresence(){
+  if(presenceChannel){sb.removeChannel(presenceChannel);presenceChannel=null;}
+  onlineUsersState={};
+}
+
 function handleMessageRealtimeEvent(payload){
   const row=payload.new||payload.old;
   if(row&&currentConvId&&row.conv_id===currentConvId)loadMessages();
@@ -5985,6 +6060,7 @@ document.addEventListener('keydown',e=>{
       await loadSavedVideos();
       await loadWatchLater();
       subscribeRealtime();
+      subscribePresence();
     }
   }
   await loadVideos();
@@ -6003,9 +6079,11 @@ document.addEventListener('keydown',e=>{
       await loadWatchLater();
       await loadVipEmails();
       subscribeRealtime();
+      subscribePresence();
       }
     }else{
       unsubscribeRealtime();
+      unsubscribePresence();
     }
   });
 })();
