@@ -983,6 +983,16 @@ body.blur-mode #main-content,body.blur-mode header,body.blur-mode .sidebar-left{
       </div>
       <p style="color:var(--text-tertiary);font-size:11px;margin-top:8px">Zmienia Twoją nazwę wyświetlaną w aplikacji.</p>
     </div>
+    <div class="field" style="margin-bottom:24px;padding-bottom:20px;border-bottom:1px solid var(--border)">
+      <label data-i18n="settings_country">Kraj kanału</label>
+      <div style="display:flex;gap:10px;margin-top:8px">
+        <select id="settings-country-sel" style="flex:1;background:var(--bg-sunken);border:1px solid var(--border);border-radius:8px;color:var(--text-primary);padding:10px 14px;font-size:13px;outline:none">
+          <option value="">— nie podano —</option>
+        </select>
+        <button onclick="saveMyCountry()" data-i18n="btn_save" style="background:#3ea6ff;border:none;color:#0f0f0f;padding:10px 16px;border-radius:8px;cursor:pointer;font-size:13px;font-weight:700;white-space:nowrap">Zapisz</button>
+      </div>
+      <p style="color:var(--text-tertiary);font-size:11px;margin-top:8px" data-i18n="settings_country_desc">Widoczny publicznie na Twoim kanale.</p>
+    </div>
     <div class="field">
       <label data-i18n="settings_lang">Język / Язык</label>
       <div style="display:flex;flex-direction:column;gap:8px;margin-top:8px">
@@ -1177,7 +1187,8 @@ const TRANSLATIONS={
     ch_default_name:'Kanał',ch_change_banner:'Zmień baner',ch_message:'Wiadomość',ch_stats:'Statystyki',
     ch_add_desc:'+ Dodaj opis kanału',ch_no_videos:'Ten kanał nie ma jeszcze żadnych filmów',
     ch_no_shorts:'Brak Shorts na tym kanale',ch_comments_suffix:'komentarzy',ch_comments_off:'Komentarze wyłączone',
-    ch_premiere:'Premiera',toast_unsubscribed:'Anulowano subskrypcję',toast_subscribing:'Subskrybujesz',ch_joined:'Dołączył(a):',
+    ch_premiere:'Premiera',toast_unsubscribed:'Anulowano subskrypcję',toast_subscribing:'Subskrybujesz',ch_joined:'Dołączył(a):',ch_set_country:'Ustaw kraj kanału',
+    settings_country:'Kraj kanału',settings_country_desc:'Widoczny publicznie na Twoim kanale.',
     desc_placeholder:'Opis kanału...',desc_saved_toast:'Opis zapisany! ✅',
     posts_loading:'⏳ Ładowanie postów...',posts_add_btn:'+ Dodaj post',posts_none:'Brak postów na tym kanale',
     post_delete_title:'Usuń post',post_comment_ph:'Komentarz...',post_login_comment:'Zaloguj się żeby komentować',
@@ -1235,7 +1246,8 @@ const TRANSLATIONS={
     ch_default_name:'Канал',ch_change_banner:'Изменить баннер',ch_message:'Сообщение',ch_stats:'Статистика',
     ch_add_desc:'+ Добавить описание канала',ch_no_videos:'На этом канале пока нет видео',
     ch_no_shorts:'На этом канале нет Shorts',ch_comments_suffix:'комментариев',ch_comments_off:'Комментарии отключены',
-    ch_premiere:'Премьера',toast_unsubscribed:'Подписка отменена',toast_subscribing:'Вы подписались на',ch_joined:'Дата регистрации:',
+    ch_premiere:'Премьера',toast_unsubscribed:'Подписка отменена',toast_subscribing:'Вы подписались на',ch_joined:'Дата регистрации:',ch_set_country:'Указать страну канала',
+    settings_country:'Страна канала',settings_country_desc:'Отображается публично на вашем канале.',
     desc_placeholder:'Описание канала...',desc_saved_toast:'Описание сохранено! ✅',
     posts_loading:'⏳ Загрузка постов...',posts_add_btn:'+ Добавить пост',posts_none:'На этом канале нет постов',
     post_delete_title:'Удалить пост',post_comment_ph:'Комментарий...',post_login_comment:'Войдите, чтобы комментировать',
@@ -1307,9 +1319,35 @@ function openSettingsModal(){
   } else if(nickField){
     nickField.style.display='none';
   }
+  const countryField=document.getElementById('settings-country-sel')?.closest('.field');
+  if(currentUser){
+    if(countryField)countryField.style.display='block';
+    loadMyCountryIntoSettings();
+  } else if(countryField){
+    countryField.style.display='none';
+  }
   updateLangButtons();
   updateThemeButtons();
   syncAutoplayToggleUI();
+}
+
+async function loadMyCountryIntoSettings(){
+  const sel=document.getElementById('settings-country-sel');
+  if(!sel)return;
+  const sorted=[...COUNTRIES].sort((a,b)=>countryName(a[0]).localeCompare(countryName(b[0]),getLang()==='ru'?'ru':'pl'));
+  sel.innerHTML=`<option value="">— ${getLang()==='ru'?'не указано':'nie podano'} —</option>`+
+    sorted.map(c=>`<option value="${c[0]}">${flagEmoji(c[0])} ${countryName(c[0])}</option>`).join('');
+  const{data}=await sb.from('profiles').select('country').eq('id',currentUser.id).single();
+  sel.value=data?.country||'';
+}
+
+async function saveMyCountry(){
+  if(!currentUser)return;
+  const sel=document.getElementById('settings-country-sel');
+  const country=sel.value;
+  const{error}=await sb.from('profiles').upsert([{id:currentUser.id,country}],{onConflict:'id'});
+  if(error){toast('Błąd: '+error.message);return;}
+  toast(country?'Kraj zapisany! 🌍':'Kraj usunięty');
 }
 
 function closeSettingsModal(){
@@ -1893,6 +1931,31 @@ async function saveVipFont(fontId){
 
 // ── ADMIN ────────────────────────────────────────────────────────────────
 const ADMIN_EMAIL='revx8199@gmail.com';
+
+// ── KRAJ KANAŁU ───────────────────────────────────────────────────────────
+const COUNTRIES=[
+  ['PL','Polska','Польша'],['RU','Rosja','Россия'],['UA','Ukraina','Украина'],['BY','Białoruś','Беларусь'],
+  ['DE','Niemcy','Германия'],['US','Stany Zjednoczone','США'],['GB','Wielka Brytania','Великобритания'],
+  ['FR','Francja','Франция'],['ES','Hiszpania','Испания'],['IT','Włochy','Италия'],['CZ','Czechy','Чехия'],
+  ['SK','Słowacja','Словакия'],['LT','Litwa','Литва'],['LV','Łotwa','Латвия'],['EE','Estonia','Эстония'],
+  ['KZ','Kazachstan','Казахстан'],['CA','Kanada','Канада'],['AU','Australia','Австралия'],
+  ['NL','Holandia','Нидерланды'],['SE','Szwecja','Швеция'],['NO','Norwegia','Норвегия'],['FI','Finlandia','Финляндия'],
+  ['TR','Turcja','Турция'],['IN','Indie','Индия'],['CN','Chiny','Китай'],['JP','Japonia','Япония'],
+  ['KR','Korea Południowa','Южная Корея'],['BR','Brazylia','Бразилия'],['MX','Meksyk','Мексика'],
+  ['AR','Argentyna','Аргентина'],['ZA','RPA','ЮАР'],['EG','Egipt','Египет'],['IL','Izrael','Израиль'],
+  ['AE','ZEA','ОАЭ'],['IE','Irlandia','Ирландия'],['PT','Portugalia','Португалия'],['GR','Grecja','Греция'],
+  ['RO','Rumunia','Румыния'],['HU','Węgry','Венгрия'],['CH','Szwajcaria','Швейцария'],['AT','Austria','Австрия'],
+  ['BE','Belgia','Бельгия']
+];
+function flagEmoji(code){
+  if(!code)return'';
+  return code.toUpperCase().replace(/./g,c=>String.fromCodePoint(127397+c.charCodeAt(0)));
+}
+function countryName(code){
+  const c=COUNTRIES.find(x=>x[0]===code);
+  if(!c)return code;
+  return getLang()==='ru'?c[2]:c[1];
+}
 function isAdmin(){return!!(currentUser&&currentUser.email===ADMIN_EMAIL);}
 
 let myNameColor='';
@@ -3872,13 +3935,14 @@ async function showChannel(userId,nameIn,avatar,email){
   const bannerBg=_bannerRaw?(_bannerRaw.startsWith('url(')?_bannerRaw:'url('+_bannerRaw+')'):'linear-gradient(135deg,#1a1a2e,#16213e)';
   const savedDescFallback=localStorage.getItem('desc_'+(userId||email))||'';
   const{count:subCount}=await sb.from('subscriptions').select('*',{count:'exact',head:true}).eq('channel_id',userId||email);
-  let chNameColor='',chNameFont='',savedDesc=savedDescFallback,joinedAt='';
+  let chNameColor='',chNameFont='',savedDesc=savedDescFallback,joinedAt='',country='';
   if(userId){
-    const{data:profStyle}=await sb.from('profiles').select('name_color,name_font,description,created_at').eq('id',userId).single();
+    const{data:profStyle}=await sb.from('profiles').select('name_color,name_font,description,created_at,country').eq('id',userId).single();
     chNameColor=profStyle?.name_color||'';
     chNameFont=profStyle?.name_font||'';
     if(profStyle&&profStyle.description)savedDesc=profStyle.description;
     if(profStyle&&profStyle.created_at)joinedAt=profStyle.created_at;
+    if(profStyle&&profStyle.country)country=profStyle.country;
   }
   cc.innerHTML=`
     <div style="position:relative">
@@ -3901,6 +3965,7 @@ async function showChannel(userId,nameIn,avatar,email){
         <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:4px">
           <span style="font-size:13px;color:var(--text-secondary)"><span id="sub-count-big">${subCount}</span> ${t('subscribers_label')} · ${userVideos.length} ${t('videos_label')}</span>
           ${joinedAt?`<span style="font-size:12px;color:var(--text-tertiary)">· ${t('ch_joined')} ${new Date(joinedAt).toLocaleDateString(getLang()==='ru'?'ru-RU':'pl-PL',{day:'numeric',month:'long',year:'numeric'})}</span>`:''}
+          ${country?`<span style="font-size:12px;color:var(--text-tertiary)">· ${flagEmoji(country)} ${countryName(country)}</span>`:(isOwner?`<span style="font-size:12px;color:var(--text-tertiary);cursor:pointer;text-decoration:underline" onclick="openSettingsModal()">· 🌍 ${t('ch_set_country')}</span>`:'')}
           ${!isOwner?`<button class="btn-sub-big${isSub?' subscribed':''}" onclick="toggleSub('${userId||email}','${jsesc(name)}')" id="sub-big-btn" style="margin-left:0">${isSub?'✓ '+t('btn_subscribed'):t('btn_subscribe')}</button>
           <button onclick="openMsg('${jsesc(name)}','${email}','${userId}')" style="background:var(--border-soft);border:none;color:var(--text-primary);padding:8px 16px;border-radius:20px;cursor:pointer;font-size:13px;display:flex;align-items:center;gap:6px">✉️ ${t('ch_message')}</button>`
           :`<button class="btn-sub-big subscribed" style="margin-left:0;cursor:default">${t('your_channel_label')}</button>
