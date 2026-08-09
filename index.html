@@ -52,6 +52,8 @@ header{background:var(--bg-page);border-bottom:1px solid var(--border-soft);padd
 .search-bar input{flex:1;padding:9px 16px;background:var(--bg-sunken);border:1px solid var(--border);border-right:none;border-radius:24px 0 0 24px;color:var(--text-primary);font-size:14px;outline:none}
 .search-bar button{padding:0;width:64px;background:var(--bg-sunken);border:1px solid var(--border);border-radius:0 24px 24px 0;color:var(--text-primary);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .15s}
 .search-bar button:hover{background:var(--border)}
+#mic-btn.listening{background:#cc0000;color:#fff;animation:micPulse 1.2s ease-in-out infinite}
+@keyframes micPulse{0%,100%{box-shadow:0 0 0 0 rgba(204,0,0,.5)}50%{box-shadow:0 0 0 8px rgba(204,0,0,0)}}
 .header-right{display:flex;align-items:center;gap:10px;margin-left:auto}
 .btn-login{background:var(--bg-card);color:#3ea6ff;border:1px solid #3ea6ff;padding:8px 16px;border-radius:20px;cursor:pointer;font-size:13px;font-weight:600;display:flex;align-items:center;gap:6px}
 .btn-login:hover{background:#1a3a5c}
@@ -382,6 +384,9 @@ body.blur-mode #main-content,body.blur-mode header,body.blur-mode .sidebar-left{
   <div class="search-bar">
     <input type="text" id="search" placeholder="Szukaj filmów..." data-i18n-placeholder="search_placeholder" oninput="render()">
     <button aria-label="Szukaj"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></button>
+    <button id="mic-btn" aria-label="Szukaj głosem" onclick="toggleVoiceSearch()" style="margin-left:8px;width:40px;height:40px;flex-shrink:0;border-radius:50%;border:none;background:var(--bg-sunken);color:var(--text-primary);cursor:pointer;display:flex;align-items:center;justify-content:center">
+      <svg viewBox="0 0 24 24" width="19" height="19" fill="currentColor"><path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3zm5-3c0 2.76-2.24 5-5 5s-5-2.24-5-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-3.08c3.39-.49 6-3.39 6-6.92h-2z"/></svg>
+    </button>
   </div>
   <div class="header-right">
     <div style="position:relative" id="notif-wrap" style="display:none">
@@ -3560,6 +3565,38 @@ function selectVisibility(val){
     el.style.borderColor=active?'#cc0000':'var(--border)';
     el.style.background=active?'rgba(204,0,0,.08)':'transparent';
   });
+}
+
+// ── WYSZUKIWANIE GŁOSEM ──────────────────────────────────────────────────
+let voiceRecognition=null;
+function toggleVoiceSearch(){
+  const SpeechRec=window.SpeechRecognition||window.webkitSpeechRecognition;
+  if(!SpeechRec){toast('Twoja przeglądarka nie obsługuje wyszukiwania głosem 😕');return;}
+  const btn=document.getElementById('mic-btn');
+  if(voiceRecognition){
+    voiceRecognition.stop();
+    return;
+  }
+  voiceRecognition=new SpeechRec();
+  voiceRecognition.lang=getLang()==='ru'?'ru-RU':'pl-PL';
+  voiceRecognition.interimResults=true;
+  voiceRecognition.maxAlternatives=1;
+  btn.classList.add('listening');
+  voiceRecognition.onresult=e=>{
+    const transcript=[...e.results].map(r=>r[0].transcript).join('');
+    const inp=document.getElementById('search');
+    inp.value=transcript;
+    render();
+  };
+  voiceRecognition.onerror=()=>{
+    btn.classList.remove('listening');
+    voiceRecognition=null;
+  };
+  voiceRecognition.onend=()=>{
+    btn.classList.remove('listening');
+    voiceRecognition=null;
+  };
+  voiceRecognition.start();
 }
 
 function detectSource(){
