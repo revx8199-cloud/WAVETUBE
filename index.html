@@ -3444,6 +3444,35 @@ function getPlayer(url){
   if((url||'').match(/\.(mp4|webm|mov)(\?|$)/i))return{type:'mp4',src:url};
   return{type:'unknown',src:url};
 }
+function relativeDate(dateStr){
+  if(!dateStr)return'';
+  const d=new Date(dateStr);
+  const now=new Date();
+  const sec=Math.floor((now-d)/1000);
+  const isRu=getLang()==='ru';
+  const units=[
+    [31536000,isRu?['год','года','лет']:['rok','lata','lat']],
+    [2592000,isRu?['месяц','месяца','месяцев']:['miesiąc','miesiące','miesięcy']],
+    [604800,isRu?['неделю','недели','недель']:['tydzień','tygodnie','tygodni']],
+    [86400,isRu?['день','дня','дней']:['dzień','dni','dni']],
+    [3600,isRu?['час','часа','часов']:['godzinę','godziny','godzin']],
+    [60,isRu?['минуту','минуты','минут']:['minutę','minuty','minut']]
+  ];
+  for(const[secs,forms] of units){
+    const n=Math.floor(sec/secs);
+    if(n>=1){
+      let form;
+      if(isRu){
+        form=(n%10===1&&n%100!==11)?forms[0]:(n%10>=2&&n%10<=4&&(n%100<10||n%100>=20))?forms[1]:forms[2];
+      }else{
+        form=n===1?forms[0]:(n%10>=2&&n%10<=4&&(n%100<10||n%100>=20))?forms[1]:forms[2];
+      }
+      return isRu?`${n} ${form} назад`:`${n} ${form} temu`;
+    }
+  }
+  return isRu?'только что':'przed chwilą';
+}
+
 function thumbFor(v){
   if(v.thumb)return v.thumb;
   const ytid=ytId(v.url);if(ytid)return`https://img.youtube.com/vi/${ytid}/hqdefault.jpg`;
@@ -3700,7 +3729,7 @@ function appendVideoCards(list,g){
       <div class="card-info">
         <h3>${esc(v.title)}</h3>
         <div class="channel-name" style="${v.user_color?`color:${v.user_color};font-weight:700;`:''}${v.user_font?`font-family:${fontCssFor(v.user_font)};`:''}" onclick="event.stopPropagation();showChannel('${v.user_id||''}','${jsesc(uname)}','${v.user_avatar||''}','${v.user_email||''}')">${esc(uname)}</div>
-        <p>${v.likes||0} ${likeIcon()} · ${(v.comments||[]).length} komentarzy</p>
+        <p>${v.likes||0} ${likeIcon()} · ${(v.comments||[]).length} komentarzy · ${relativeDate(v.created_at)}</p>
       </div>
     </div>`;
     el.onclick=()=>openP(v.id);
@@ -4486,7 +4515,7 @@ async function openP(id){
   }
   layoutActsForShorts(isShort);
   document.getElementById('vt').textContent=v.title;
-  document.getElementById('vm').innerHTML=`${viewsLabel(v,' wyświetleń')} · ${v.date||''}${v.category?' · <span style="background:var(--border-soft);padding:2px 8px;border-radius:10px;font-size:11px">'+esc(v.category)+'</span>':''}${v.age_restricted?' · <span style="background:#3a1414;color:#ff6b6b;padding:2px 8px;border-radius:10px;font-size:11px;font-weight:600">18+</span>':''}${v.made_for_kids?' · <span style="background:#142a3a;color:#3ea6ff;padding:2px 8px;border-radius:10px;font-size:11px;font-weight:600">👶 Dla dzieci</span>':''}${v.description?'<div style="margin-top:8px;color:var(--text-secondary);font-size:13px;line-height:1.5">'+esc(v.description)+'</div>':''}`;
+  document.getElementById('vm').innerHTML=`${viewsLabel(v,' wyświetleń')} · ${relativeDate(v.created_at)}${v.category?' · <span style="background:var(--border-soft);padding:2px 8px;border-radius:10px;font-size:11px">'+esc(v.category)+'</span>':''}${v.age_restricted?' · <span style="background:#3a1414;color:#ff6b6b;padding:2px 8px;border-radius:10px;font-size:11px;font-weight:600">18+</span>':''}${v.made_for_kids?' · <span style="background:#142a3a;color:#3ea6ff;padding:2px 8px;border-radius:10px;font-size:11px;font-weight:600">👶 Dla dzieci</span>':''}${v.description?'<div style="margin-top:8px;color:var(--text-secondary);font-size:13px;line-height:1.5">'+esc(v.description)+'</div>':''}`;
   // handle comments enabled
   const commSec=document.getElementById('comments-section');
   if(commSec)commSec.style.display=v.comments_enabled===false?'none':'block';
