@@ -1066,6 +1066,14 @@ body.blur-mode #main-content,body.blur-mode header,body.blur-mode .sidebar-left{
           <svg viewBox="0 0 24 24" width="19" height="19" fill="currentColor"><circle cx="12" cy="12" r="8"/></svg>
           <span>Online <span id="online-count-badge" style="background:#4ade80;color:#052e12;font-size:10px;font-weight:800;padding:1px 6px;border-radius:10px;margin-left:4px"></span></span>
         </div>
+        <div id="admin-tab-activity" class="admin-nav-item" onclick="setAdminTab('activity')">
+          <svg viewBox="0 0 24 24" width="19" height="19" fill="currentColor"><path d="M13 3a9 9 0 0 0-9 9H1l3.89 3.89.07.14L9 12H6a7 7 0 0 1 7-7 7 7 0 0 1 7 7 7 7 0 0 1-7 7c-1.9 0-3.62-.79-4.85-2.06l-1.42 1.42A8.954 8.954 0 0 0 13 21a9 9 0 0 0 0-18zm-1 5v5l4.28 2.54.72-1.21-3.5-2.08V8H12z"/></svg>
+          <span>Ostatnia aktywność</span>
+        </div>
+        <div id="admin-tab-trash" class="admin-nav-item" onclick="setAdminTab('trash')">
+          <svg viewBox="0 0 24 24" width="19" height="19" fill="currentColor"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>
+          <span>Kosz</span>
+        </div>
         <div id="admin-tab-reports" class="admin-nav-item" onclick="setAdminTab('reports')">
           <svg viewBox="0 0 24 24" width="19" height="19" fill="currentColor"><path d="M14.4 6L14 4H5v17h2v-7h5.6l.4 2h7V6z"/></svg>
           <span>Zgłoszenia</span>
@@ -1656,10 +1664,22 @@ async function saveProfile(user){
     id:user.id,
     name:rawName.slice(0,30),
     avatar:meta?.avatar_url||'',
-    email:user.email||''
+    email:user.email||'',
+    last_seen_at:new Date().toISOString()
   };
   profileCache[user.id]=profile;
   await sb.from('profiles').upsert([profile],{onConflict:'id'});
+}
+
+let heartbeatInterval=null;
+function startHeartbeat(){
+  stopHeartbeat();
+  heartbeatInterval=setInterval(()=>{
+    if(currentUser)sb.from('profiles').update({last_seen_at:new Date().toISOString()}).eq('id',currentUser.id);
+  },3*60*1000); // co 3 minuty
+}
+function stopHeartbeat(){
+  if(heartbeatInterval){clearInterval(heartbeatInterval);heartbeatInterval=null;}
 }
 
 const VIP_BADGE_COLORS_ADMIN=['#3ea6ff','#ffd700','#ff6b35','#c084fc','#4ade80','#f472b6','#fb7185','#a78bfa','#22d3ee','#ef4444','#84cc16','#e879f9','#fb923c','#14b8a6','#eab308','#f43f5e'];
@@ -2209,6 +2229,91 @@ function renderOnlineUsersList(){
       <div style="font-size:11px;color:#4ade80;font-weight:600;flex-shrink:0">🟢 online</div>
     </div>`).join('');
 }
+
+async function renderActivityList(){
+  const body=document.getElementById('admin-panel-body');
+  body.innerHTML='<p style="color:var(--text-tertiary);padding:30px 20px;text-align:center">Ładowanie...</p>';
+  const{data,error}=await sb.from('profiles').select('id,name,email,avatar,last_seen_at').order('last_seen_at',{ascending:false,nullsFirst:false}).limit(200);
+  if(error){body.innerHTML=`<p style="color:#ff6b6b;padding:30px 20px;text-align:center">Błąd: ${error.message}</p>`;return;}
+  if(!data||!data.length){body.innerHTML='<p style="color:var(--text-tertiary);padding:30px 20px;text-align:center">Brak danych</p>';return;}
+  body.innerHTML=data.map(u=>{
+    const isOnline=!!onlineUsersState[u.id];
+    return`<div class="admin-row">
+      <div style="position:relative;flex-shrink:0">
+        ${u.avatar?`<img src="${u.avatar}" style="width:36px;height:36px;border-radius:50%;object-fit:cover">`:`<div style="width:36px;height:36px;border-radius:50%;background:${getUserColor(u.email||'')};display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px">${(u.name||'?')[0]?.toUpperCase()||'?'}</div>`}
+        ${isOnline?`<span style="position:absolute;bottom:-1px;right:-1px;width:11px;height:11px;background:#4ade80;border:2px solid var(--bg-panel);border-radius:50%"></span>`:''}
+      </div>
+      <div style="flex:1;min-width:0">
+        <div style="font-size:13px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(u.name||'Użytkownik')}</div>
+        <div style="font-size:11px;color:var(--text-tertiary);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(u.email||'')}</div>
+      </div>
+      <div style="font-size:11px;color:${isOnline?'#4ade80':'var(--text-tertiary)'};font-weight:600;flex-shrink:0">${isOnline?'🟢 online':(u.last_seen_at?'widziany(a) '+relativeDate(u.last_seen_at):'nigdy')}</div>
+    </div>`;
+  }).join('');
+}
+
+// ── KOSZ (soft-delete filmów i postów, 24h na przywrócenie) ─────────────
+async function renderTrashList(){
+  const body=document.getElementById('admin-panel-body');
+  body.innerHTML='<p style="color:var(--text-tertiary);padding:30px 20px;text-align:center">Ładowanie...</p>';
+  const{data:trashVideos}=await sb.from('videos').select('id,title,user_email,user_id,deleted_at').not('deleted_at','is',null).order('deleted_at',{ascending:false});
+  const{data:trashPosts}=await sb.from('posts').select('id,text,user_email,user_id,deleted_at').not('deleted_at','is',null).order('deleted_at',{ascending:false});
+  const items=[
+    ...(trashVideos||[]).map(v=>({...v,type:'video',label:v.title||'Bez tytułu'})),
+    ...(trashPosts||[]).map(p=>({...p,type:'post',label:p.text?(p.text.slice(0,60)+(p.text.length>60?'…':'')):'(post bez tekstu)'}))
+  ].sort((a,b)=>new Date(b.deleted_at)-new Date(a.deleted_at));
+
+  const clearBtnHtml=`<div style="padding:14px 20px;border-bottom:1px solid var(--border-soft);display:flex;justify-content:space-between;align-items:center;gap:10px">
+    <span style="font-size:11px;color:var(--text-tertiary)">Elementy starsze niż 24h można trwale usunąć.</span>
+    <button onclick="purgeOldTrash()" style="background:#3a1414;border:1px solid #5c1f1f;color:#ff6b6b;padding:8px 16px;border-radius:8px;cursor:pointer;font-size:12px;font-weight:600;white-space:nowrap">🗑 Wyczyść stare (24h+)</button>
+  </div>`;
+
+  if(!items.length){body.innerHTML=clearBtnHtml+'<p style="color:var(--text-tertiary);padding:30px 20px;text-align:center">Kosz jest pusty 🎉</p>';return;}
+
+  body.innerHTML=clearBtnHtml+items.map(it=>{
+    const deletedMs=Date.now()-new Date(it.deleted_at).getTime();
+    const expired=deletedMs>24*3600*1000;
+    const hoursLeft=Math.max(0,Math.ceil(24-deletedMs/3600000));
+    return`<div class="admin-row">
+      <div style="font-size:18px;flex-shrink:0">${it.type==='video'?'🎬':'📝'}</div>
+      <div style="flex:1;min-width:0">
+        <div style="font-size:13px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(it.label)}</div>
+        <div style="font-size:11px;color:var(--text-tertiary)">${esc(it.user_email||it.user_id||'')} · usunięte ${relativeDate(it.deleted_at)} · ${expired?'<span style="color:#ff6b6b">wygasło</span>':`wygasa za ${hoursLeft}h`}</div>
+      </div>
+      <button onclick="restoreFromTrash('${it.type}','${it.id}')" style="background:#14301a;border:1px solid #1f5c2a;color:#7fe08a;padding:6px 12px;border-radius:8px;cursor:pointer;font-size:12px;flex-shrink:0">↩️ Przywróć</button>
+      <button onclick="hardDeleteFromTrash('${it.type}','${it.id}')" style="background:#3a1414;border:1px solid #5c1f1f;color:#ff6b6b;padding:6px 12px;border-radius:8px;cursor:pointer;font-size:12px;flex-shrink:0">Usuń na stałe</button>
+    </div>`;
+  }).join('');
+}
+
+async function restoreFromTrash(type,id){
+  const table=type==='video'?'videos':'posts';
+  await sb.from(table).update({deleted_at:null,deleted_by:null}).eq('id',id);
+  logAdminAction('restore_'+type,`Przywrócono z kosza: ${type} #${id}`);
+  toast('Przywrócono ✅');
+  if(type==='video')await loadVideos();
+  renderTrashList();
+}
+
+async function hardDeleteFromTrash(type,id){
+  if(!await showConfirm('Usunąć na stałe?','Tej czynności NIE da się cofnąć.'))return;
+  const table=type==='video'?'videos':'posts';
+  await sb.from(table).delete().eq('id',id);
+  logAdminAction('hard_delete_'+type,`Trwale usunięto: ${type} #${id}`);
+  toast('Usunięto na stałe 🗑');
+  renderTrashList();
+}
+
+async function purgeOldTrash(){
+  if(!await showConfirm('Wyczyścić stary kosz?','Wszystkie elementy usunięte ponad 24h temu znikną na zawsze.'))return;
+  const cutoff=new Date(Date.now()-24*3600*1000).toISOString();
+  await sb.from('videos').delete().not('deleted_at','is',null).lt('deleted_at',cutoff);
+  await sb.from('posts').delete().not('deleted_at','is',null).lt('deleted_at',cutoff);
+  logAdminAction('purge_trash','Wyczyszczono elementy z kosza starsze niż 24h');
+  toast('Kosz wyczyszczony 🗑');
+  renderTrashList();
+}
+
 
 function renderAdminUsersList(banMap){
   if(banMap)adminUsersBanMap=banMap;
@@ -2819,7 +2924,7 @@ async function logAdminAction(action,details){
 
 async function renderAdminPanel(){
   const body=document.getElementById('admin-panel-body');
-  ['videos','users','online','reports','color','announce','logs'].forEach(tab=>{
+  ['videos','users','online','activity','trash','reports','color','announce','logs'].forEach(tab=>{
     const el=document.getElementById('admin-tab-'+tab);
     if(el)el.classList.toggle('active',adminTab===tab);
   });
@@ -2830,6 +2935,14 @@ async function renderAdminPanel(){
 
   if(adminTab==='online'){
     renderOnlineUsersList();
+  }
+
+  if(adminTab==='activity'){
+    renderActivityList();
+  }
+
+  if(adminTab==='trash'){
+    renderTrashList();
   }
 
 if(adminTab==='users'){
@@ -3468,7 +3581,7 @@ async function getProfile(userId){
 }
 
 async function loadVideos(){
-  const{data,error}=await sb.from('videos').select('*').order('created_at',{ascending:false});
+  const{data,error}=await sb.from('videos').select('*').is('deleted_at',null).order('created_at',{ascending:false});
   if(error){document.getElementById('grid').innerHTML='<div class="loading" style="color:#cc0000">Błąd połączenia :(</div>';return;}
   videos=data||[];
   // Preload profiles for all video authors
@@ -3493,7 +3606,7 @@ async function addVideo(v){
 }
 
 async function deleteVideo(id){
-  await sb.from('videos').delete().eq('id',id);
+  await sb.from('videos').update({deleted_at:new Date().toISOString(),deleted_by:currentUser?.id||null}).eq('id',id);
   videos=videos.filter(v=>v.id!==id);render();
 }
 
@@ -5191,6 +5304,7 @@ async function askDelete(id){
   if(!currentUser){toast('Zaloguj się!');return;}
   if(!v||(currentUser.id!==v.user_id&&!isAdmin())){toast('Możesz usuwać tylko swoje filmy');return;}
   if(!await showConfirm('Usunąć ten film?','Tej czynności nie można cofnąć.'))return;
+  if(isAdmin()&&currentUser.id!==v.user_id)logAdminAction('delete_video',`Przeniesiono do kosza: "${v.title}" (${v.user_email||v.user_id})`);
   await deleteVideo(id);
   toast('Film usunięty');
 }
@@ -5759,7 +5873,7 @@ async function sendMsg(){
 
 // ── POSTY ─────────────────────────────────────────────────────────────────────
 async function getPosts(userId,email){
-  const{data}=await sb.from('posts').select('*').or(`user_id.eq.${userId||'null'},user_email.eq.${email||'null'}`).order('created_at',{ascending:false});
+  const{data}=await sb.from('posts').select('*').or(`user_id.eq.${userId||'null'},user_email.eq.${email||'null'}`).is('deleted_at',null).order('created_at',{ascending:false});
   return data||[];
 }
 
@@ -6016,8 +6130,10 @@ async function addPostComment(postId){
 
 async function deletePost(postId){
   if(!await showConfirm(t('confirm_delete_post'),t('confirm_irreversible')))return;
-  await sb.from('posts').delete().eq('id',postId);
+  const p=currentPostsCache.find(x=>x.id===postId);
+  await sb.from('posts').update({deleted_at:new Date().toISOString(),deleted_by:currentUser?.id||null}).eq('id',postId);
   renderPosts();
+  if(p)logAdminAction('delete_post',`Przeniesiono post do kosza (${p.user_email||p.user_id})`);
 }
 
 let postImgFiles=[];
@@ -6192,6 +6308,7 @@ document.addEventListener('keydown',e=>{
       await loadWatchLater();
       subscribeRealtime();
       subscribePresence();
+      startHeartbeat();
     }
   }
   await loadVideos();
@@ -6211,10 +6328,12 @@ document.addEventListener('keydown',e=>{
       await loadVipEmails();
       subscribeRealtime();
       subscribePresence();
+      startHeartbeat();
       }
     }else{
       unsubscribeRealtime();
       unsubscribePresence();
+      stopHeartbeat();
     }
   });
 })();
