@@ -4157,19 +4157,21 @@ async function showChannel(userId,nameIn,avatar,email){
   const mw=document.getElementById('main-wrapper');
   if(mw)mw.style.display='none';
   const isOwner=currentUser&&(currentUser.id===userId||currentUser.id===email||(currentUser.email===email&&email));
-  const bannerKey=userId||email;const _bannerRaw=localStorage.getItem('banner_'+bannerKey);
-  const bannerBg=_bannerRaw?(_bannerRaw.startsWith('url(')?_bannerRaw:'url('+_bannerRaw+')'):'linear-gradient(135deg,#1a1a2e,#16213e)';
+  const bannerKey=userId||email;
+  let chBannerUrl=localStorage.getItem('banner_'+bannerKey)||'';
   const savedDescFallback=localStorage.getItem('desc_'+(userId||email))||'';
   const{count:subCount}=await sb.from('subscriptions').select('*',{count:'exact',head:true}).eq('channel_id',userId||email);
   let chNameColor='',chNameFont='',savedDesc=savedDescFallback,joinedAt='',country='';
   if(userId){
-    const{data:profStyle}=await sb.from('profiles').select('name_color,name_font,description,created_at,country').eq('id',userId).single();
+    const{data:profStyle}=await sb.from('profiles').select('name_color,name_font,description,created_at,country,banner_url').eq('id',userId).single();
     chNameColor=profStyle?.name_color||'';
     chNameFont=profStyle?.name_font||'';
     if(profStyle&&profStyle.description)savedDesc=profStyle.description;
     if(profStyle&&profStyle.created_at)joinedAt=profStyle.created_at;
     if(profStyle&&profStyle.country)country=profStyle.country;
+    if(profStyle&&profStyle.banner_url)chBannerUrl=profStyle.banner_url;
   }
+  const bannerBg=chBannerUrl?(chBannerUrl.startsWith('url(')?chBannerUrl:'url('+chBannerUrl+')'):'linear-gradient(135deg,#1a1a2e,#16213e)';
   cc.innerHTML=`
     <div style="position:relative">
       <div id="channel-banner" style="height:230px;background:${bannerBg};background-size:cover;background-position:center;position:relative">
@@ -5492,7 +5494,12 @@ function changeBanner(e, key){
         canvas.getContext('2d').drawImage(img,0,0,w,h);
         const compressed=canvas.toDataURL('image/jpeg',0.85);
         try{localStorage.setItem('banner_'+key,compressed);}
-        catch(err){localStorage.setItem('banner_'+key,compressed.substring(0,500000)||'');}
+        catch(err){try{localStorage.setItem('banner_'+key,compressed.substring(0,500000)||'');}catch(e2){}}
+        if(currentUser){
+          sb.from('profiles').update({banner_url:compressed}).eq('id',currentUser.id).then(({error})=>{
+            if(error)toast('Baner zapisany lokalnie, ale nie na serwerze ⚠️');
+          });
+        }
       };
       img.src=ev.target.result;
     }catch(err){console.warn('Banner save error:',err);}
