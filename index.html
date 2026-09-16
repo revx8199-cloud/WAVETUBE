@@ -2315,7 +2315,6 @@ async function renderBotsList(){
   const{data:banned}=await sb.from('banned_bots').select('*').order('banned_at',{ascending:false});
   const{data:activity}=await sb.from('bot_activity_log').select('*').order('created_at',{ascending:false}).limit(200);
   const badge=document.getElementById('bots-count-badge');
-  if(badge)badge.textContent=(banned||[]).length;
 
   const bannedSet=new Set((banned||[]).map(b=>b.ip_address));
   const byIp={};
@@ -2324,9 +2323,10 @@ async function renderBotsList(){
     byIp[a.ip_address].count++;
     if(new Date(a.created_at)>new Date(byIp[a.ip_address].last)){byIp[a.ip_address].last=a.created_at;byIp[a.ip_address].reason=a.flagged_reason;}
   });
+  if(badge)badge.textContent=(banned||[]).length+Object.keys(byIp).filter(ip=>!bannedSet.has(ip)).length;
 
   const banBtnHtml=`<div style="padding:14px 20px;border-bottom:1px solid var(--border-soft);display:flex;gap:8px;align-items:center">
-    <input id="bot-manual-ip" placeholder="IP do zbanowania ręcznie" style="flex:1;background:var(--bg-sunken);border:1px solid var(--border-soft);color:var(--text-primary);padding:8px 12px;border-radius:8px;font-size:12px">
+    <input id="bot-manual-ip" aria-label="IP do zbanowania ręcznie" placeholder="IP do zbanowania ręcznie" style="flex:1;background:var(--bg-sunken);border:1px solid var(--border-soft);color:var(--text-primary);padding:8px 12px;border-radius:8px;font-size:12px">
     <button onclick="banBotManual()" style="background:#3a1414;border:1px solid #5c1f1f;color:#ff6b6b;padding:8px 16px;border-radius:8px;cursor:pointer;font-size:12px;font-weight:600;white-space:nowrap">🚫 Zbanuj IP</button>
   </div>`;
 
@@ -4259,8 +4259,16 @@ async function toggleSub(key,name){
   } else {
     subscribedSet.add(key);
     const chVideos=videos.filter(v=>v.user_id===key);
-    const chAvatar=chVideos[0]?.user_avatar||'';
-    const chName=chVideos[0]?.user_name||chVideos[0]?.user_email?.split('@')[0]||name;
+    let chAvatar=chVideos[0]?.user_avatar||'';
+    let chName=chVideos[0]?.user_name||chVideos[0]?.user_email?.split('@')[0]||'';
+    if((!chAvatar||!chName)&&key&&!key.includes('@')){
+      const prof=await getProfile(key);
+      if(prof){
+        if(!chAvatar&&prof.avatar)chAvatar=prof.avatar;
+        if(!chName&&prof.name)chName=prof.name;
+      }
+    }
+    if(!chName)chName=name;
     await sb.from('subscriptions').insert([{subscriber_id:currentUser.id,subscriber_email:currentUser.email,channel_id:key,channel_name:chName,channel_avatar:chAvatar}]);
     // send notification to channel owner
     await sb.from('notifications').insert([{user_id:key,message:`<b>${getMyDisplayName()}</b> zasubskrybował Twój kanał 🔔`,avatar:currentUser.user_metadata?.avatar_url||'',sender_id:currentUser.id,sender_name:getMyDisplayName(),sender_avatar:currentUser.user_metadata?.avatar_url||'',sender_email:currentUser.email}]);
@@ -4921,8 +4929,16 @@ async function toggleSubInPlayer(key,name){
   } else {
     subscribedSet.add(key);
     const chVideos=videos.filter(v=>v.user_id===key);
-    const chAvatar=chVideos[0]?.user_avatar||'';
-    const chName=chVideos[0]?.user_name||chVideos[0]?.user_email?.split('@')[0]||name;
+    let chAvatar=chVideos[0]?.user_avatar||'';
+    let chName=chVideos[0]?.user_name||chVideos[0]?.user_email?.split('@')[0]||'';
+    if((!chAvatar||!chName)&&key&&!key.includes('@')){
+      const prof=await getProfile(key);
+      if(prof){
+        if(!chAvatar&&prof.avatar)chAvatar=prof.avatar;
+        if(!chName&&prof.name)chName=prof.name;
+      }
+    }
+    if(!chName)chName=name;
     await sb.from('subscriptions').insert([{subscriber_id:currentUser.id,subscriber_email:currentUser.email,channel_id:key,channel_name:chName,channel_avatar:chAvatar}]);
     await sb.from('notifications').insert([{user_id:key,message:`<b>${getMyDisplayName()}</b> zasubskrybował Twój kanał 🔔`,avatar:currentUser.user_metadata?.avatar_url||'',sender_id:currentUser.id,sender_name:getMyDisplayName(),sender_avatar:currentUser.user_metadata?.avatar_url||'',sender_email:currentUser.email}]);
     toast(`${t('toast_subscribing')}: ${name} 🔔`);
