@@ -845,6 +845,12 @@ body.blur-mode #main-content,body.blur-mode header,body.blur-mode .sidebar-left{
   <button onclick="continueAsGuestFromBan()" style="background:var(--border-soft);border:1px solid #444;color:var(--text-primary);padding:11px 24px;border-radius:24px;cursor:pointer;font-size:14px;font-weight:600">👁 Przeglądaj bez logowania</button>
 </div>
 
+<div id="bot-block-screen" style="display:none;position:fixed;inset:0;background:#0a0a0a;z-index:99999;align-items:center;justify-content:center;flex-direction:column;text-align:center;padding:24px">
+  <div style="font-size:72px;margin-bottom:20px">🤖🚫</div>
+  <h1 style="font-size:26px;font-weight:800;color:var(--text-primary);margin-bottom:12px">Dostęp zablokowany</h1>
+  <p style="color:var(--text-secondary);font-size:15px;max-width:480px;line-height:1.5">Twój adres IP został oznaczony jako zautomatyzowany ruch (bot) i zablokowany przez administratora.</p>
+</div>
+
 <!-- KONSOLA ADMINA -->
 <div id="admin-console" style="display:none;position:fixed;bottom:0;left:0;right:0;height:280px;background:rgba(8,8,8,.97);border-top:2px solid #3ea6ff;z-index:9999;font-family:'Courier New',monospace;flex-direction:column;box-shadow:0 -8px 30px rgba(0,0,0,.6)">
   <div style="display:flex;align-items:center;justify-content:space-between;padding:6px 12px;border-bottom:1px solid #222;background:#111">
@@ -1074,6 +1080,10 @@ body.blur-mode #main-content,body.blur-mode header,body.blur-mode .sidebar-left{
           <svg viewBox="0 0 24 24" width="19" height="19" fill="currentColor"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>
           <span>Kosz</span>
         </div>
+        <div id="admin-tab-bots" class="admin-nav-item" onclick="setAdminTab('bots')">
+          <svg viewBox="0 0 24 24" width="19" height="19" fill="currentColor"><path d="M12 2a2 2 0 012 2c0 .74-.4 1.39-1 1.73V7h1a7 7 0 017 7h1a1 1 0 011 1v3a1 1 0 01-1 1h-1v1a2 2 0 01-2 2H6a2 2 0 01-2-2v-1H3a1 1 0 01-1-1v-3a1 1 0 011-1h1a7 7 0 017-7h1V5.73A2 2 0 0111 4a2 2 0 011-2zM7.5 12a1.5 1.5 0 100 3 1.5 1.5 0 000-3zm9 0a1.5 1.5 0 100 3 1.5 1.5 0 000-3z"/></svg>
+          <span>Boty <span id="bots-count-badge" style="background:#ff6b6b;color:#2a0a0a;font-size:10px;font-weight:800;padding:1px 6px;border-radius:10px;margin-left:4px"></span></span>
+        </div>
         <div id="admin-tab-reports" class="admin-nav-item" onclick="setAdminTab('reports')">
           <svg viewBox="0 0 24 24" width="19" height="19" fill="currentColor"><path d="M14.4 6L14 4H5v17h2v-7h5.6l.4 2h7V6z"/></svg>
           <span>Zgłoszenia</span>
@@ -1135,6 +1145,18 @@ const SUPABASE_URL='https://qasfdynmzeatkkfphaqi.supabase.co';
 const SUPABASE_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFhc2ZkeW5temVhdGtrZnBoYXFpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODI1ODc3MjEsImV4cCI6MjA5ODE2MzcyMX0.piwZ0v0UnoOo5L6Q53l6P1hTOfDE6uPr0lNILzehCSo';
 const SITE_URL=window.location.origin+window.location.pathname;
 const sb=supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
+const BOT_GUARD_URL='https://qasfdynmzeatkkfphaqi.functions.supabase.co/bot-guard';
+async function checkBotGuard(){
+  try{
+    const res=await fetch(BOT_GUARD_URL,{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({userAgent:navigator.userAgent,endpoint:'page_load'})});
+    const data=await res.json();
+    if(data?.blocked){
+      document.getElementById('bot-block-screen').style.display='flex';
+      return true;
+    }
+  }catch(e){/* Edge Function niedostępna — appka działa dalej normalnie */}
+  return false;
+}
 
 let videos=[];
 let cur=null;
@@ -2286,7 +2308,76 @@ async function renderTrashList(){
   }).join('');
 }
 
+// ── BOTY (wykrywanie/banowanie automatycznego ruchu) ─────────────────────
+async function renderBotsList(){
+  const body=document.getElementById('admin-panel-body');
+  body.innerHTML='<p style="color:var(--text-tertiary);padding:30px 20px;text-align:center">Ładowanie...</p>';
+  const{data:banned}=await sb.from('banned_bots').select('*').order('banned_at',{ascending:false});
+  const{data:activity}=await sb.from('bot_activity_log').select('*').order('created_at',{ascending:false}).limit(200);
+  const badge=document.getElementById('bots-count-badge');
+  if(badge)badge.textContent=(banned||[]).length;
+
+  const bannedSet=new Set((banned||[]).map(b=>b.ip_address));
+  const byIp={};
+  (activity||[]).forEach(a=>{
+    if(!byIp[a.ip_address])byIp[a.ip_address]={ip_address:a.ip_address,user_agent:a.user_agent,count:0,last:a.created_at,reason:a.flagged_reason};
+    byIp[a.ip_address].count++;
+    if(new Date(a.created_at)>new Date(byIp[a.ip_address].last)){byIp[a.ip_address].last=a.created_at;byIp[a.ip_address].reason=a.flagged_reason;}
+  });
+
+  const banBtnHtml=`<div style="padding:14px 20px;border-bottom:1px solid var(--border-soft);display:flex;gap:8px;align-items:center">
+    <input id="bot-manual-ip" placeholder="IP do zbanowania ręcznie" style="flex:1;background:var(--bg-sunken);border:1px solid var(--border-soft);color:var(--text-primary);padding:8px 12px;border-radius:8px;font-size:12px">
+    <button onclick="banBotManual()" style="background:#3a1414;border:1px solid #5c1f1f;color:#ff6b6b;padding:8px 16px;border-radius:8px;cursor:pointer;font-size:12px;font-weight:600;white-space:nowrap">🚫 Zbanuj IP</button>
+  </div>`;
+
+  const bannedHtml=(banned||[]).map(b=>`<div class="admin-row">
+      <div style="font-size:18px;flex-shrink:0">🚫</div>
+      <div style="flex:1;min-width:0">
+        <div style="font-size:13px;font-weight:600">${esc(b.ip_address)}</div>
+        <div style="font-size:11px;color:var(--text-tertiary);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(b.user_agent||'')} ${b.reason?'· '+esc(b.reason):''}</div>
+      </div>
+      <button onclick="unbanBotManual('${esc(b.ip_address)}')" style="background:#14301a;border:1px solid #1f5c2a;color:#7fe08a;padding:6px 12px;border-radius:8px;cursor:pointer;font-size:12px;flex-shrink:0">✅ Odbanuj</button>
+    </div>`).join('');
+
+  const watchedHtml=Object.values(byIp).filter(b=>!bannedSet.has(b.ip_address)).sort((a,b)=>b.count-a.count).map(b=>`<div class="admin-row">
+      <div style="font-size:18px;flex-shrink:0">👁</div>
+      <div style="flex:1;min-width:0">
+        <div style="font-size:13px;font-weight:600">${esc(b.ip_address)} <span style="color:var(--text-tertiary);font-weight:400">· ${b.count} żądań</span></div>
+        <div style="font-size:11px;color:var(--text-tertiary);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(b.user_agent||'')} ${b.reason?'· '+esc(b.reason):''} · ${relativeDate(b.last)}</div>
+      </div>
+      <button onclick="banBotManual('${esc(b.ip_address)}')" style="background:#3a1414;border:1px solid #5c1f1f;color:#ff6b6b;padding:6px 12px;border-radius:8px;cursor:pointer;font-size:12px;flex-shrink:0">🚫 Zbanuj</button>
+    </div>`).join('');
+
+  const sections=[
+    banBtnHtml,
+    `<div style="padding:10px 20px 4px;font-size:11px;font-weight:700;color:var(--text-tertiary);text-transform:uppercase">Zbanowane (${(banned||[]).length})</div>`,
+    bannedHtml||'<p style="color:var(--text-tertiary);padding:10px 20px">Brak zbanowanych.</p>',
+    `<div style="padding:16px 20px 4px;font-size:11px;font-weight:700;color:var(--text-tertiary);text-transform:uppercase">Obserwowane / podejrzane (${Object.keys(byIp).length-bannedSet.size<0?0:Object.values(byIp).filter(b=>!bannedSet.has(b.ip_address)).length})</div>`,
+    watchedHtml||'<p style="color:var(--text-tertiary);padding:10px 20px">Brak podejrzanej aktywności.</p>'
+  ];
+  body.innerHTML=sections.join('');
+}
+
+async function banBotManual(ipArg){
+  if(!isAdmin()){toast('Brak uprawnień');return;}
+  const ip=ipArg||document.getElementById('bot-manual-ip')?.value?.trim();
+  if(!ip){toast('Podaj adres IP');return;}
+  await sb.from('banned_bots').upsert([{ip_address:ip,reason:'Ręczny ban z Admin Studio',banned_by:currentUser.email}],{onConflict:'ip_address'});
+  logAdminAction('ban_bot',`Zbanowano IP bota: ${ip}`);
+  toast('Zbanowano IP ✅');
+  renderBotsList();
+}
+
+async function unbanBotManual(ip){
+  if(!isAdmin()){toast('Brak uprawnień');return;}
+  await sb.from('banned_bots').delete().eq('ip_address',ip);
+  logAdminAction('unban_bot',`Odbanowano IP bota: ${ip}`);
+  toast('Odbanowano IP ✅');
+  renderBotsList();
+}
+
 async function restoreFromTrash(type,id){
+  if(!isAdmin()){toast('Brak uprawnień');return;}
   const table=type==='video'?'videos':'posts';
   await sb.from(table).update({deleted_at:null,deleted_by:null}).eq('id',id);
   logAdminAction('restore_'+type,`Przywrócono z kosza: ${type} #${id}`);
@@ -2296,6 +2387,7 @@ async function restoreFromTrash(type,id){
 }
 
 async function hardDeleteFromTrash(type,id){
+  if(!isAdmin()){toast('Brak uprawnień');return;}
   if(!await showConfirm('Usunąć na stałe?','Tej czynności NIE da się cofnąć.'))return;
   const table=type==='video'?'videos':'posts';
   await sb.from(table).delete().eq('id',id);
@@ -2305,6 +2397,7 @@ async function hardDeleteFromTrash(type,id){
 }
 
 async function purgeOldTrash(){
+  if(!isAdmin()){toast('Brak uprawnień');return;}
   if(!await showConfirm('Wyczyścić stary kosz?','Wszystkie elementy usunięte ponad 24h temu znikną na zawsze.'))return;
   const cutoff=new Date(Date.now()-24*3600*1000).toISOString();
   await sb.from('videos').delete().not('deleted_at','is',null).lt('deleted_at',cutoff);
@@ -2811,6 +2904,8 @@ async function runConsoleCommand(raw){
     consoleLog('  unban <email>       - odbanuj użytkownika');
     consoleLog('  mute <email> <godz>  - wycisz użytkownika (0 = na zawsze)');
     consoleLog('  unmute <email>      - cofnij wyciszenie');
+    consoleLog('  banbot <ip>         - zbanuj IP bota');
+    consoleLog('  unbanbot <ip>       - odbanuj IP bota');
     consoleLog('  stats              - statystyki appki');
     consoleLog('  announce <tekst>    - wyślij ogłoszenie do wszystkich');
     consoleLog('  clear              - wyczyść konsolę');
@@ -2859,6 +2954,20 @@ async function runConsoleCommand(raw){
       consoleLog('📢 Wysłano do wszystkich: "'+text+'"','#4ade80');
     }
     checkDiscoState();
+  }
+  else if(base==='banbot'){
+    const ip=parts[1];
+    if(!ip){consoleLog('Podaj IP, np: banbot 1.2.3.4','#ff6b6b');return;}
+    await sb.from('banned_bots').upsert([{ip_address:ip,reason:'Ban z konsoli admina',banned_by:currentUser.email}],{onConflict:'ip_address'});
+    logAdminAction('ban_bot',`Zbanowano IP bota (konsola): ${ip}`);
+    consoleLog(`🚫 Zbanowano IP: ${ip}`,'#4ade80');
+  }
+  else if(base==='unbanbot'){
+    const ip=parts[1];
+    if(!ip){consoleLog('Podaj IP, np: unbanbot 1.2.3.4','#ff6b6b');return;}
+    await sb.from('banned_bots').delete().eq('ip_address',ip);
+    logAdminAction('unban_bot',`Odbanowano IP bota (konsola): ${ip}`);
+    consoleLog(`✅ Odbanowano IP: ${ip}`,'#4ade80');
   }
   else if(base==='announce'){
     const text=parts.slice(1).join(' ');
@@ -2924,7 +3033,7 @@ async function logAdminAction(action,details){
 
 async function renderAdminPanel(){
   const body=document.getElementById('admin-panel-body');
-  ['videos','users','online','activity','trash','reports','color','announce','logs'].forEach(tab=>{
+  ['videos','users','online','activity','trash','bots','reports','color','announce','logs'].forEach(tab=>{
     const el=document.getElementById('admin-tab-'+tab);
     if(el)el.classList.toggle('active',adminTab===tab);
   });
@@ -2943,6 +3052,10 @@ async function renderAdminPanel(){
 
   if(adminTab==='trash'){
     renderTrashList();
+  }
+
+  if(adminTab==='bots'){
+    renderBotsList();
   }
 
 if(adminTab==='users'){
@@ -6287,6 +6400,8 @@ document.addEventListener('keydown',e=>{
 });
 
 (async()=>{
+  const isBot=await checkBotGuard();
+  if(isBot)return;
   const{data:{session}}=await sb.auth.getSession();
   if(session)currentUser=session.user;
   updateAuthUI();
