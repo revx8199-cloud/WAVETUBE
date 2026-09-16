@@ -1148,7 +1148,7 @@ const sb=supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
 const BOT_GUARD_URL='https://qasfdynmzeatkkfphaqi.functions.supabase.co/bot-guard';
 async function checkBotGuard(){
   try{
-    const res=await fetch(BOT_GUARD_URL,{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({userAgent:navigator.userAgent,endpoint:'page_load'})});
+    const res=await fetch(BOT_GUARD_URL,{method:'POST',headers:{'content-type':'application/json','Authorization':'Bearer '+SUPABASE_KEY},body:JSON.stringify({userAgent:navigator.userAgent,endpoint:'page_load'})});
     const data=await res.json();
     if(data?.blocked){
       document.getElementById('bot-block-screen').style.display='flex';
