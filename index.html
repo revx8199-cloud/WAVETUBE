@@ -1021,6 +1021,13 @@ body.blur-mode #main-content,body.blur-mode header,body.blur-mode .sidebar-left{
       </label>
       <p style="color:var(--text-tertiary);font-size:11px;margin-top:8px" data-i18n="settings_autoplay_desc">Po skończeniu filmu automatycznie odtworzy się kolejny.</p>
     </div>
+    <div class="field" style="margin-top:24px;padding-top:20px;border-top:1px solid var(--border)">
+      <label style="display:flex;align-items:center;justify-content:space-between;cursor:pointer" onclick="event.preventDefault()">
+        <span data-i18n="settings_allow_msg">✉️ Zezwalaj innym na pisanie do mnie</span>
+        <span class="toggle-switch" id="allowmsg-toggle" onclick="toggleAllowMessages()"><span class="toggle-knob"></span></span>
+      </label>
+      <p style="color:var(--text-tertiary);font-size:11px;margin-top:8px" data-i18n="settings_allow_msg_desc">Gdy wyłączone, nikt nie założy z Tobą nowej rozmowy w Wiadomościach.</p>
+    </div>
     <div class="fbbtns">
       <button class="fcancel" onclick="closeSettingsModal()" data-i18n="btn_close">Zamknij</button>
     </div>
@@ -1280,7 +1287,8 @@ const TRANSLATIONS={
     form_submit_btn:'Opublikuj film',form_publishing_btn:'Publikowanie...',form_need_title_url:'Podaj tytuł i link!',
     hint_paste_link:'Wklej link — zostanie automatycznie rozpoznany',
     hint_gdrive:'✅ <b style="color:#1a73e8">Google Drive</b> — upewnij się że plik jest publiczny',
-    hint_mp4_detecting:'✅ <b style="color:#188038">MP4</b> — wykrywam długość...',hint_unknown_format:'⚠️ Nierozpoznany format',hint_mp4_detected:'✅ <b style="color:#188038">MP4</b> — długość wykryta automatycznie'
+    hint_mp4_detecting:'✅ <b style="color:#188038">MP4</b> — wykrywam długość...',hint_unknown_format:'⚠️ Nierozpoznany format',hint_mp4_detected:'✅ <b style="color:#188038">MP4</b> — długość wykryta automatycznie',
+    settings_allow_msg:'✉️ Zezwalaj innym na pisanie do mnie',settings_allow_msg_desc:'Gdy wyłączone, nikt nie założy z Tobą nowej rozmowy w Wiadomościach.',toast_msg_disabled:'Ten użytkownik wyłączył możliwość pisania do niego'
   },
   ru:{
     nav_home:'Главная',nav_shorts:'Shorts',nav_trending:'В тренде',nav_you:'Вы',
@@ -1363,7 +1371,8 @@ const TRANSLATIONS={
     form_submit_btn:'Опубликовать видео',form_publishing_btn:'Публикация...',form_need_title_url:'Укажите название и ссылку!',
     hint_paste_link:'Вставьте ссылку — она будет распознана автоматически',
     hint_gdrive:'✅ <b style="color:#1a73e8">Google Диск</b> — убедитесь, что файл публичный',
-    hint_mp4_detecting:'✅ <b style="color:#188038">MP4</b> — определяю длительность...',hint_unknown_format:'⚠️ Формат не распознан',hint_mp4_detected:'✅ <b style="color:#188038">MP4</b> — длительность определена автоматически'
+    hint_mp4_detecting:'✅ <b style="color:#188038">MP4</b> — определяю длительность...',hint_unknown_format:'⚠️ Формат не распознан',hint_mp4_detected:'✅ <b style="color:#188038">MP4</b> — длительность определена автоматически',
+    settings_allow_msg:'✉️ Разрешить другим писать мне',settings_allow_msg_desc:'Если выключено, никто не сможет начать с вами новый разговор в Сообщениях.',toast_msg_disabled:'Этот пользователь отключил возможность писать ему'
   }
 };
 
@@ -1407,6 +1416,7 @@ function openSettingsModal(){
   updateLangButtons();
   updateThemeButtons();
   syncAutoplayToggleUI();
+  loadAllowMsgIntoSettings();
 }
 
 async function loadMyCountryIntoSettings(){
@@ -1457,6 +1467,22 @@ function toggleAutoplayNext(){
 function syncAutoplayToggleUI(){
   const el=document.getElementById('autoplay-toggle');
   if(el)el.classList.toggle('on',getAutoplayNext());
+}
+
+// ── ZEZWALAJ NA WIADOMOŚCI ───────────────────────────────────────────────
+async function loadAllowMsgIntoSettings(){
+  const el=document.getElementById('allowmsg-toggle');
+  if(!el||!currentUser)return;
+  const{data}=await sb.from('profiles').select('allow_messages').eq('id',currentUser.id).single();
+  el.classList.toggle('on',data?.allow_messages!==false);
+}
+async function toggleAllowMessages(){
+  if(!currentUser)return;
+  const el=document.getElementById('allowmsg-toggle');
+  const{data}=await sb.from('profiles').select('allow_messages').eq('id',currentUser.id).single();
+  const newVal=!(data?.allow_messages!==false);
+  await sb.from('profiles').upsert([{id:currentUser.id,allow_messages:newVal}],{onConflict:'id'});
+  if(el)el.classList.toggle('on',newVal);
 }
 
 function getNextVideoId(currentId){
@@ -6058,9 +6084,13 @@ function showNewMsgForm(){
   toast('Wejdź na czyjś kanał i kliknij ✉️ Wiadomość żeby zacząć rozmowę!');
 }
 
-function openMsg(name,email,userId){
+async function openMsg(name,email,userId){
   if(!currentUser){toast('Zaloguj się żeby wysyłać wiadomości!');return;}
   if(!userId){toast('Nie można znaleźć tego użytkownika');return;}
+  if(userId!==currentUser.id){
+    const{data:targetProf}=await sb.from('profiles').select('allow_messages').eq('id',userId).single();
+    if(targetProf?.allow_messages===false){toast(t('toast_msg_disabled'));return;}
+  }
   const convId=getConvId(currentUser.id,userId);
   const theirVideo=videos.find(v=>v.user_id===userId);
   const avatar=theirVideo?.user_avatar||'';
