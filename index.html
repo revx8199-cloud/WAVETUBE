@@ -6286,7 +6286,7 @@ async function renderPosts(){
     posts.forEach((p,i)=>{
       const likedPosts=new Set(JSON.parse(localStorage.getItem('liked_posts')||'[]'));
       const isLiked=likedPosts.has(p.id);
-      const uname=p.user_name||p.user||t('anonim');const avHtml=p.user_avatar?`<img class="post-av" src="${p.user_avatar}">`:`<div class="post-av-ph" style="background:${getUserColor(p.user_email)}">${uname[0]}</div>`;
+      const uname=p.user_name||p.user||t('anonim');const avHtml=p.user_avatar?`<img class="post-av" src="${p.user_avatar}" style="${p.user_avatar_frame?`border:2px solid ${p.user_avatar_frame};box-sizing:border-box`:''}">`:`<div class="post-av-ph" style="background:${getUserColor(p.user_email)}">${uname[0]}</div>`;
       html+=`<div class="post-card" id="post-${p.id}">
         <div class="post-header">
           ${avHtml}
@@ -6559,6 +6559,7 @@ async function submitPost(){
       user_avatar:meta?.avatar_url||'',
       user_color:myNameColor||'',
       user_font:myNameFont||'',
+      user_avatar_frame:myAvatarFrame||'',
       text,image:images[0]||'',images:images,likes:0,comments:[],poll:poll
     }]);
     if(error){
