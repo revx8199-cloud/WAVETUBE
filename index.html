@@ -625,84 +625,84 @@ body.blur-mode #main-content,body.blur-mode header,body.blur-mode .sidebar-left{
 <div class="fmbg" id="fm">
   <div class="fbox" style="max-width:640px;width:92%;max-height:90vh;overflow-y:auto;padding:0">
     <div style="padding:24px 28px 16px;border-bottom:1px solid var(--border-soft)">
-      <h3 style="margin:0">🎬 Dodaj film</h3>
-      <div class="sub" style="margin:4px 0 0">YouTube, Google Drive, TikTok i bezpośrednie linki MP4</div>
+      <h3 style="margin:0" data-i18n="form_title">🎬 Dodaj film</h3>
+      <div class="sub" style="margin:4px 0 0" data-i18n="form_subtitle">YouTube, Google Drive, TikTok i bezpośrednie linki MP4</div>
     </div>
 
     <div style="padding:20px 28px 0">
-      <div style="font-size:12px;font-weight:700;letter-spacing:.5px;color:var(--text-tertiary);text-transform:uppercase;margin-bottom:12px">Podstawowe informacje</div>
+      <div style="font-size:12px;font-weight:700;letter-spacing:.5px;color:var(--text-tertiary);text-transform:uppercase;margin-bottom:12px" data-i18n="form_section_basic">Podstawowe informacje</div>
 
       <div class="field">
-        <label>Tytuł *</label>
-        <input type="text" id="ftitle" maxlength="100" placeholder="np. Wakacje w górach">
+        <label data-i18n="form_title_label">Tytuł *</label>
+        <input type="text" id="ftitle" maxlength="100" placeholder="np. Wakacje w górach" data-i18n-placeholder="form_title_ph">
       </div>
 
       <div class="field">
-        <label>Opis</label>
-        <textarea id="fdesc" maxlength="5000" style="width:100%;background:var(--bg-sunken);border:1px solid var(--border);border-radius:8px;color:var(--text-primary);padding:10px 14px;font-size:14px;outline:none;resize:none;height:80px" placeholder="Opisz film..."></textarea>
+        <label data-i18n="form_desc_label">Opis</label>
+        <textarea id="fdesc" maxlength="5000" style="width:100%;background:var(--bg-sunken);border:1px solid var(--border);border-radius:8px;color:var(--text-primary);padding:10px 14px;font-size:14px;outline:none;resize:none;height:80px" placeholder="Opisz film..." data-i18n-placeholder="form_desc_ph"></textarea>
       </div>
 
       <div class="field">
-        <label>Link do filmu *</label>
-        <input type="url" id="furl" placeholder="YouTube / Google Drive / TikTok / MP4" oninput="detectSource()">
-        <div class="hint" id="fhint">Wklej link — zostanie automatycznie rozpoznany</div>
+        <label data-i18n="form_link_label">Link do filmu *</label>
+        <input type="url" id="furl" placeholder="YouTube / Google Drive / TikTok / MP4" data-i18n-placeholder="form_link_ph" oninput="detectSource()">
+        <div class="hint" id="fhint" data-i18n="form_link_hint">Wklej link — zostanie automatycznie rozpoznany</div>
       </div>
 
       <div class="field">
-        <label>Miniaturka</label>
+        <label data-i18n="form_thumb_label">Miniaturka</label>
         <div style="display:flex;gap:8px;margin-bottom:8px">
-          <button onclick="setThumbMode('url')" id="thumb-tab-url" style="flex:1;padding:7px;border-radius:8px;border:1px solid #cc0000;background:#cc0000;color:var(--text-primary);cursor:pointer;font-size:12px;font-weight:600">🔗 Link URL</button>
-          <button onclick="setThumbMode('file')" id="thumb-tab-file" style="flex:1;padding:7px;border-radius:8px;border:1px solid var(--border);background:transparent;color:var(--text-secondary);cursor:pointer;font-size:12px">📁 Z dysku</button>
-          <button onclick="setThumbMode('auto')" id="thumb-tab-auto" style="flex:1;padding:7px;border-radius:8px;border:1px solid var(--border);background:transparent;color:var(--text-secondary);cursor:pointer;font-size:12px">✨ Auto</button>
+          <button onclick="setThumbMode('url')" id="thumb-tab-url" style="flex:1;padding:7px;border-radius:8px;border:1px solid #cc0000;background:#cc0000;color:var(--text-primary);cursor:pointer;font-size:12px;font-weight:600" data-i18n="form_thumb_url_tab">🔗 Link URL</button>
+          <button onclick="setThumbMode('file')" id="thumb-tab-file" style="flex:1;padding:7px;border-radius:8px;border:1px solid var(--border);background:transparent;color:var(--text-secondary);cursor:pointer;font-size:12px" data-i18n="form_thumb_file_tab">📁 Z dysku</button>
+          <button onclick="setThumbMode('auto')" id="thumb-tab-auto" style="flex:1;padding:7px;border-radius:8px;border:1px solid var(--border);background:transparent;color:var(--text-secondary);cursor:pointer;font-size:12px" data-i18n="form_thumb_auto_tab">✨ Auto</button>
         </div>
         <div id="thumb-url-panel">
-          <input type="url" id="fthumb" placeholder="https://... link do zdjęcia">
+          <input type="url" id="fthumb" placeholder="https://... link do zdjęcia" data-i18n-placeholder="form_thumb_url_ph">
         </div>
         <div id="thumb-file-panel" style="display:none">
           <input type="file" id="fthumb-file" accept="image/*" style="color:var(--text-secondary)">
           <div id="thumb-preview" style="margin-top:8px;display:none"><img id="thumb-img-preview" style="width:100%;border-radius:8px;max-height:150px;object-fit:cover"></div>
         </div>
         <div id="thumb-auto-panel" style="display:none">
-          <div style="font-size:12px;color:var(--text-tertiary);padding:8px 0">Miniaturka zostanie pobrana automatycznie z YouTube</div>
+          <div style="font-size:12px;color:var(--text-tertiary);padding:8px 0" data-i18n="form_thumb_auto_hint">Miniaturka zostanie pobrana automatycznie z YouTube</div>
         </div>
       </div>
 
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
         <div class="field">
-          <label>Czas trwania</label>
-          <input type="text" id="fdur" placeholder="np. 5:42 (dla MP4 wykryjemy automatycznie)" oninput="this.dataset.userEdited='1'">
+          <label data-i18n="form_duration_label">Czas trwania</label>
+          <input type="text" id="fdur" placeholder="np. 5:42 (dla MP4 wykryjemy automatycznie)" data-i18n-placeholder="form_duration_ph" oninput="this.dataset.userEdited='1'">
         </div>
         <div class="field">
-          <label>Kategoria</label>
+          <label data-i18n="form_category_label">Kategoria</label>
           <select id="fcat" style="width:100%;background:var(--bg-sunken);border:1px solid var(--border);border-radius:8px;color:var(--text-primary);padding:10px 14px;font-size:14px;outline:none">
-            <option value="">Brak kategorii</option>
-            <option value="Gaming">🎮 Gaming</option>
-            <option value="Muzyka">🎵 Muzyka</option>
-            <option value="Sport">⚽ Sport</option>
-            <option value="Vlog">📹 Vlog</option>
-            <option value="Tutorial">📚 Tutorial</option>
-            <option value="Humor">😂 Humor</option>
-            <option value="Podróże">✈️ Podróże</option>
-            <option value="Inne">📌 Inne</option>
+            <option value="" data-i18n="cat_none">Brak kategorii</option>
+            <option value="Gaming" data-i18n="cat_gaming">🎮 Gaming</option>
+            <option value="Muzyka" data-i18n="cat_music">🎵 Muzyka</option>
+            <option value="Sport" data-i18n="cat_sport">⚽ Sport</option>
+            <option value="Vlog" data-i18n="cat_vlog">📹 Vlog</option>
+            <option value="Tutorial" data-i18n="cat_tutorial">📚 Tutorial</option>
+            <option value="Humor" data-i18n="cat_humor">😂 Humor</option>
+            <option value="Podróże" data-i18n="cat_travel">✈️ Podróże</option>
+            <option value="Inne" data-i18n="cat_other">📌 Inne</option>
           </select>
         </div>
       </div>
 
       <div class="field">
-        <label>Tagi (opcjonalnie)</label>
-        <input type="text" id="ftags" placeholder="np. gaming, vlog, muzyka (oddziel przecinkami)">
-        <div class="hint">Tagi pomagają ludziom znaleźć Twój film</div>
+        <label data-i18n="form_tags_label">Tagi (opcjonalnie)</label>
+        <input type="text" id="ftags" placeholder="np. gaming, vlog, muzyka (oddziel przecinkami)" data-i18n-placeholder="form_tags_ph">
+        <div class="hint" data-i18n="form_tags_hint">Tagi pomagają ludziom znaleźć Twój film</div>
       </div>
     </div>
 
     <div style="height:1px;background:var(--border-soft);margin:20px 0"></div>
 
     <div style="padding:0 28px">
-      <div style="font-size:12px;font-weight:700;letter-spacing:.5px;color:var(--text-tertiary);text-transform:uppercase;margin-bottom:12px">Szczegóły</div>
+      <div style="font-size:12px;font-weight:700;letter-spacing:.5px;color:var(--text-tertiary);text-transform:uppercase;margin-bottom:12px" data-i18n="form_section_details">Szczegóły</div>
 
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
         <div class="field">
-          <label>Język filmu</label>
+          <label data-i18n="form_lang_label">Język filmu</label>
           <select id="flang" style="width:100%;background:var(--bg-sunken);border:1px solid var(--border);border-radius:8px;color:var(--text-primary);padding:10px 14px;font-size:14px;outline:none">
             <option value="pl">🇵🇱 Polski</option>
             <option value="ru">🇷🇺 Русский</option>
@@ -711,18 +711,18 @@ body.blur-mode #main-content,body.blur-mode header,body.blur-mode .sidebar-left{
           </select>
         </div>
         <div class="field">
-          <label>Licencja</label>
+          <label data-i18n="form_license_label">Licencja</label>
           <select id="flicense" style="width:100%;background:var(--bg-sunken);border:1px solid var(--border);border-radius:8px;color:var(--text-primary);padding:10px 14px;font-size:14px;outline:none">
-            <option value="standard">Standardowa licencja WaveTube</option>
-            <option value="cc">Creative Commons — uznanie autorstwa</option>
+            <option value="standard" data-i18n="license_standard">Standardowa licencja WaveTube</option>
+            <option value="cc" data-i18n="license_cc">Creative Commons — uznanie autorstwa</option>
           </select>
         </div>
       </div>
 
       <div class="field">
-        <label>Data premiery (opcjonalnie)</label>
+        <label data-i18n="form_premiere_label">Data premiery (opcjonalnie)</label>
         <input type="datetime-local" id="fpremiere" style="width:100%;background:var(--bg-sunken);border:1px solid var(--border);border-radius:8px;color:var(--text-primary);padding:10px 14px;font-size:14px;outline:none;color-scheme:dark">
-        <div class="hint">Zostaw puste żeby opublikować od razu. Ustaw datę żeby zaplanować premierę.</div>
+        <div class="hint" data-i18n="form_premiere_hint">Zostaw puste żeby opublikować od razu. Ustaw datę żeby zaplanować premierę.</div>
       </div>
 
       <div class="field" style="background:var(--bg-card);border:1px solid var(--border);border-radius:10px;padding:14px">
@@ -731,9 +731,9 @@ body.blur-mode #main-content,body.blur-mode header,body.blur-mode .sidebar-left{
           <div>
             <div style="font-weight:600;display:flex;align-items:center;gap:6px">
               <span style="background:#ff0000;color:var(--text-primary);font-size:10px;padding:2px 6px;border-radius:4px;font-weight:700">SHORT</span>
-              To jest Short (maks. 1 minuta)
+              <span data-i18n="form_short_title">To jest Short (maks. 1 minuta)</span>
             </div>
-            <div style="font-size:11px;color:var(--text-tertiary);margin-top:2px">Shorts wyświetlają się osobno w pionie jak na TikToku</div>
+            <div style="font-size:11px;color:var(--text-tertiary);margin-top:2px" data-i18n="form_short_desc">Shorts wyświetlają się osobno w pionie jak na TikToku</div>
           </div>
         </label>
       </div>
@@ -742,28 +742,28 @@ body.blur-mode #main-content,body.blur-mode header,body.blur-mode .sidebar-left{
     <div style="height:1px;background:var(--border-soft);margin:20px 0"></div>
 
     <div style="padding:0 28px">
-      <div style="font-size:12px;font-weight:700;letter-spacing:.5px;color:var(--text-tertiary);text-transform:uppercase;margin-bottom:12px">Widoczność publiczna</div>
+      <div style="font-size:12px;font-weight:700;letter-spacing:.5px;color:var(--text-tertiary);text-transform:uppercase;margin-bottom:12px" data-i18n="form_section_visibility">Widoczność publiczna</div>
 
       <div class="field" style="display:flex;flex-direction:column;gap:8px">
         <label class="vis-opt" data-val="public" onclick="selectVisibility('public')" style="display:flex;gap:12px;align-items:flex-start;padding:12px 14px;border:1.5px solid #cc0000;border-radius:10px;cursor:pointer;background:rgba(204,0,0,.08)">
           <span style="font-size:20px;line-height:1">🌍</span>
           <div>
-            <div style="font-weight:600;font-size:13px">Publiczny</div>
-            <div style="font-size:11px;color:var(--text-tertiary);margin-top:2px">Widoczny dla wszystkich — na stronie głównej, w wyszukiwarce i popularnych</div>
+            <div style="font-weight:600;font-size:13px" data-i18n="vis_public_title">Publiczny</div>
+            <div style="font-size:11px;color:var(--text-tertiary);margin-top:2px" data-i18n="vis_public_desc">Widoczny dla wszystkich — na stronie głównej, w wyszukiwarce i popularnych</div>
           </div>
         </label>
         <label class="vis-opt" data-val="unlisted" onclick="selectVisibility('unlisted')" style="display:flex;gap:12px;align-items:flex-start;padding:12px 14px;border:1.5px solid var(--border);border-radius:10px;cursor:pointer">
           <span style="font-size:20px;line-height:1">🔗</span>
           <div>
-            <div style="font-weight:600;font-size:13px">Niepubliczny (unlisted)</div>
-            <div style="font-size:11px;color:var(--text-tertiary);margin-top:2px">Nie pojawia się w żadnych listach — obejrzy go tylko ten, kto ma bezpośredni link</div>
+            <div style="font-weight:600;font-size:13px" data-i18n="vis_unlisted_title">Niepubliczny (unlisted)</div>
+            <div style="font-size:11px;color:var(--text-tertiary);margin-top:2px" data-i18n="vis_unlisted_desc">Nie pojawia się w żadnych listach — obejrzy go tylko ten, kto ma bezpośredni link</div>
           </div>
         </label>
         <label class="vis-opt" data-val="private" onclick="selectVisibility('private')" style="display:flex;gap:12px;align-items:flex-start;padding:12px 14px;border:1.5px solid var(--border);border-radius:10px;cursor:pointer">
           <span style="font-size:20px;line-height:1">🔒</span>
           <div>
-            <div style="font-weight:600;font-size:13px">Prywatny</div>
-            <div style="font-size:11px;color:var(--text-tertiary);margin-top:2px">Widzisz go tylko Ty (i administrator) — nawet z linkiem nikt inny go nie otworzy</div>
+            <div style="font-weight:600;font-size:13px" data-i18n="vis_private_title">Prywatny</div>
+            <div style="font-size:11px;color:var(--text-tertiary);margin-top:2px" data-i18n="vis_private_desc">Widzisz go tylko Ty (i administrator) — nawet z linkiem nikt inny go nie otworzy</div>
           </div>
         </label>
         <input type="hidden" id="fvis" value="public">
@@ -772,42 +772,42 @@ body.blur-mode #main-content,body.blur-mode header,body.blur-mode .sidebar-left{
       <div class="field">
         <label style="display:flex;align-items:center;gap:10px;cursor:pointer">
           <input type="checkbox" id="fcomments" checked style="width:16px;height:16px;accent-color:#cc0000">
-          Włącz komentarze
+          <span data-i18n="form_comments_label">Włącz komentarze</span>
         </label>
       </div>
 
       <div class="field">
         <label style="display:flex;align-items:center;gap:10px;cursor:pointer">
           <input type="checkbox" id="flikes" checked style="width:16px;height:16px;accent-color:#cc0000">
-          Pokazuj liczbę polubień
+          <span data-i18n="form_likes_label">Pokazuj liczbę polubień</span>
         </label>
       </div>
 
       <div class="field">
         <label style="display:flex;align-items:center;gap:10px;cursor:pointer">
           <input type="checkbox" id="fhideviews" style="width:16px;height:16px;accent-color:#cc0000">
-          Ukryj liczbę wyświetleń (publicznie)
+          <span data-i18n="form_hideviews_label">Ukryj liczbę wyświetleń (publicznie)</span>
         </label>
       </div>
 
       <div class="field">
         <label style="display:flex;align-items:center;gap:10px;cursor:pointer">
           <input type="checkbox" id="fkids" onchange="if(this.checked)document.getElementById('fage').checked=false" style="width:16px;height:16px;accent-color:#cc0000">
-          Treść przeznaczona dla dzieci
+          <span data-i18n="form_kids_label">Treść przeznaczona dla dzieci</span>
         </label>
       </div>
 
       <div class="field">
         <label style="display:flex;align-items:center;gap:10px;cursor:pointer">
           <input type="checkbox" id="fage" onchange="if(this.checked)document.getElementById('fkids').checked=false" style="width:16px;height:16px;accent-color:#cc0000">
-          Ograniczenie wiekowe (18+)
+          <span data-i18n="form_age_label">Ograniczenie wiekowe (18+)</span>
         </label>
       </div>
     </div>
 
     <div class="fbbtns" style="padding:20px 28px 24px;margin:0">
-      <button class="fcancel" onclick="closeForm()">Anuluj</button>
-      <button class="fsubmit" onclick="submitForm()">Opublikuj film</button>
+      <button class="fcancel" onclick="closeForm()" data-i18n="btn_cancel">Anuluj</button>
+      <button class="fsubmit" onclick="submitForm()" data-i18n="form_submit_btn">Opublikuj film</button>
     </div>
   </div>
 </div>
@@ -1256,7 +1256,31 @@ const TRANSLATIONS={
     filter_short:'Krótkie (do 4 min)',filter_medium:'Średnie (4–20 min)',filter_long:'Długie (ponad 20 min)',
     filter_newest:'🆕 Najnowsze',filter_oldest:'Najstarsze',filter_popular:'🔥 Najpopularniejsze',filter_liked:'👍 Najwięcej polubień',
     settings_autoplay:'▶️ Autoodtwarzanie następnego filmu',settings_autoplay_desc:'Po skończeniu filmu automatycznie odtworzy się kolejny.',
-    autoplay_next_video:'Następny film',autoplay_play_now:'Odtwórz teraz'
+    autoplay_next_video:'Następny film',autoplay_play_now:'Odtwórz teraz',
+    form_title:'🎬 Dodaj film',form_subtitle:'YouTube, Google Drive, TikTok i bezpośrednie linki MP4',
+    form_section_basic:'Podstawowe informacje',form_title_label:'Tytuł *',form_title_ph:'np. Wakacje w górach',
+    form_desc_label:'Opis',form_desc_ph:'Opisz film...',
+    form_link_label:'Link do filmu *',form_link_ph:'YouTube / Google Drive / TikTok / MP4',form_link_hint:'Wklej link — zostanie automatycznie rozpoznany',
+    form_thumb_label:'Miniaturka',form_thumb_url_tab:'🔗 Link URL',form_thumb_file_tab:'📁 Z dysku',form_thumb_auto_tab:'✨ Auto',
+    form_thumb_url_ph:'https://... link do zdjęcia',form_thumb_auto_hint:'Miniaturka zostanie pobrana automatycznie z YouTube',
+    form_duration_label:'Czas trwania',form_duration_ph:'np. 5:42 (dla MP4 wykryjemy automatycznie)',
+    form_category_label:'Kategoria',cat_none:'Brak kategorii',cat_gaming:'🎮 Gaming',cat_music:'🎵 Muzyka',cat_sport:'⚽ Sport',
+    cat_vlog:'📹 Vlog',cat_tutorial:'📚 Tutorial',cat_humor:'😂 Humor',cat_travel:'✈️ Podróże',cat_other:'📌 Inne',
+    form_tags_label:'Tagi (opcjonalnie)',form_tags_ph:'np. gaming, vlog, muzyka (oddziel przecinkami)',form_tags_hint:'Tagi pomagają ludziom znaleźć Twój film',
+    form_section_details:'Szczegóły',form_lang_label:'Język filmu',form_license_label:'Licencja',
+    license_standard:'Standardowa licencja WaveTube',license_cc:'Creative Commons — uznanie autorstwa',
+    form_premiere_label:'Data premiery (opcjonalnie)',form_premiere_hint:'Zostaw puste żeby opublikować od razu. Ustaw datę żeby zaplanować premierę.',
+    form_short_title:'To jest Short (maks. 1 minuta)',form_short_desc:'Shorts wyświetlają się osobno w pionie jak na TikToku',
+    form_section_visibility:'Widoczność publiczna',
+    vis_public_title:'Publiczny',vis_public_desc:'Widoczny dla wszystkich — na stronie głównej, w wyszukiwarce i popularnych',
+    vis_unlisted_title:'Niepubliczny (unlisted)',vis_unlisted_desc:'Nie pojawia się w żadnych listach — obejrzy go tylko ten, kto ma bezpośredni link',
+    vis_private_title:'Prywatny',vis_private_desc:'Widzisz go tylko Ty (i administrator) — nawet z linkiem nikt inny go nie otworzy',
+    form_comments_label:'Włącz komentarze',form_likes_label:'Pokazuj liczbę polubień',form_hideviews_label:'Ukryj liczbę wyświetleń (publicznie)',
+    form_kids_label:'Treść przeznaczona dla dzieci',form_age_label:'Ograniczenie wiekowe (18+)',
+    form_submit_btn:'Opublikuj film',form_publishing_btn:'Publikowanie...',form_need_title_url:'Podaj tytuł i link!',
+    hint_paste_link:'Wklej link — zostanie automatycznie rozpoznany',
+    hint_gdrive:'✅ <b style="color:#1a73e8">Google Drive</b> — upewnij się że plik jest publiczny',
+    hint_mp4_detecting:'✅ <b style="color:#188038">MP4</b> — wykrywam długość...',hint_unknown_format:'⚠️ Nierozpoznany format',hint_mp4_detected:'✅ <b style="color:#188038">MP4</b> — długość wykryta automatycznie'
   },
   ru:{
     nav_home:'Главная',nav_shorts:'Shorts',nav_trending:'В тренде',nav_you:'Вы',
@@ -1315,7 +1339,31 @@ const TRANSLATIONS={
     filter_short:'Короткие (до 4 мин)',filter_medium:'Средние (4–20 мин)',filter_long:'Длинные (более 20 мин)',
     filter_newest:'🆕 Сначала новые',filter_oldest:'Сначала старые',filter_popular:'🔥 Популярные',filter_liked:'👍 По лайкам',
     settings_autoplay:'▶️ Автовоспроизведение следующего видео',settings_autoplay_desc:'После окончания видео автоматически начнётся следующее.',
-    autoplay_next_video:'Следующее видео',autoplay_play_now:'Смотреть сейчас'
+    autoplay_next_video:'Следующее видео',autoplay_play_now:'Смотреть сейчас',
+    form_title:'🎬 Добавить видео',form_subtitle:'YouTube, Google Диск, TikTok и прямые ссылки MP4',
+    form_section_basic:'Основная информация',form_title_label:'Название *',form_title_ph:'напр. Отпуск в горах',
+    form_desc_label:'Описание',form_desc_ph:'Опишите видео...',
+    form_link_label:'Ссылка на видео *',form_link_ph:'YouTube / Google Диск / TikTok / MP4',form_link_hint:'Вставьте ссылку — она будет распознана автоматически',
+    form_thumb_label:'Миниатюра',form_thumb_url_tab:'🔗 Ссылка URL',form_thumb_file_tab:'📁 С диска',form_thumb_auto_tab:'✨ Авто',
+    form_thumb_url_ph:'https://... ссылка на изображение',form_thumb_auto_hint:'Миниатюра будет загружена автоматически с YouTube',
+    form_duration_label:'Продолжительность',form_duration_ph:'напр. 5:42 (для MP4 определим автоматически)',
+    form_category_label:'Категория',cat_none:'Без категории',cat_gaming:'🎮 Игры',cat_music:'🎵 Музыка',cat_sport:'⚽ Спорт',
+    cat_vlog:'📹 Влог',cat_tutorial:'📚 Обучение',cat_humor:'😂 Юмор',cat_travel:'✈️ Путешествия',cat_other:'📌 Другое',
+    form_tags_label:'Теги (необязательно)',form_tags_ph:'напр. игры, влог, музыка (через запятую)',form_tags_hint:'Теги помогают людям найти ваше видео',
+    form_section_details:'Подробности',form_lang_label:'Язык видео',form_license_label:'Лицензия',
+    license_standard:'Стандартная лицензия WaveTube',license_cc:'Creative Commons — с указанием авторства',
+    form_premiere_label:'Дата премьеры (необязательно)',form_premiere_hint:'Оставьте пустым, чтобы опубликовать сразу. Укажите дату, чтобы запланировать премьеру.',
+    form_short_title:'Это Short (макс. 1 минута)',form_short_desc:'Shorts отображаются отдельно в вертикальном формате, как в TikTok',
+    form_section_visibility:'Публичная видимость',
+    vis_public_title:'Публичное',vis_public_desc:'Видно всем — на главной странице, в поиске и в трендах',
+    vis_unlisted_title:'Доступ по ссылке (unlisted)',vis_unlisted_desc:'Не появляется ни в одном списке — увидит только тот, у кого есть прямая ссылка',
+    vis_private_title:'Приватное',vis_private_desc:'Видите только вы (и администратор) — даже по ссылке никто другой не откроет',
+    form_comments_label:'Включить комментарии',form_likes_label:'Показывать количество лайков',form_hideviews_label:'Скрыть количество просмотров (публично)',
+    form_kids_label:'Контент для детей',form_age_label:'Возрастное ограничение (18+)',
+    form_submit_btn:'Опубликовать видео',form_publishing_btn:'Публикация...',form_need_title_url:'Укажите название и ссылку!',
+    hint_paste_link:'Вставьте ссылку — она будет распознана автоматически',
+    hint_gdrive:'✅ <b style="color:#1a73e8">Google Диск</b> — убедитесь, что файл публичный',
+    hint_mp4_detecting:'✅ <b style="color:#188038">MP4</b> — определяю длительность...',hint_unknown_format:'⚠️ Формат не распознан',hint_mp4_detected:'✅ <b style="color:#188038">MP4</b> — длительность определена автоматически'
   }
 };
 
@@ -3891,15 +3939,15 @@ function toggleVoiceSearch(){
 function detectSource(){
   const url=document.getElementById('furl').value.trim();
   const hint=document.getElementById('fhint');
-  if(!url){hint.innerHTML='Wklej link — zostanie automatycznie rozpoznany';return;}
+  if(!url){hint.innerHTML=t('hint_paste_link');return;}
   if(ytId(url))hint.innerHTML='✅ <b style="color:#cc0000">YouTube</b>';
-  else if(gdId(url))hint.innerHTML='✅ <b style="color:#1a73e8">Google Drive</b> — upewnij się że plik jest publiczny';
+  else if(gdId(url))hint.innerHTML=t('hint_gdrive');
   else if(ttId(url))hint.innerHTML='✅ <b style="color:#000;background:#69C9D0;padding:2px 6px;border-radius:4px">TikTok</b>';
   else if(url.match(/\.(mp4|webm|mov)(\?|$)/i)){
-    hint.innerHTML='✅ <b style="color:#188038">MP4</b> — wykrywam długość...';
+    hint.innerHTML=t('hint_mp4_detecting');
     detectVideoDuration(url);
   }
-  else hint.innerHTML='⚠️ Nierozpoznany format';
+  else hint.innerHTML=t('hint_unknown_format');
 }
 
 function detectVideoDuration(url){
@@ -3912,7 +3960,7 @@ function detectVideoDuration(url){
       const total=Math.round(probe.duration);
       const mm=Math.floor(total/60),ss=total%60;
       durField.value=`${mm}:${String(ss).padStart(2,'0')}`;
-      if(hint)hint.innerHTML='✅ <b style="color:#188038">MP4</b> — długość wykryta automatycznie';
+      if(hint)hint.innerHTML=t('hint_mp4_detected');
     }
     probe.remove();
   };
@@ -5374,10 +5422,10 @@ function closeForm(){document.getElementById('fm').classList.remove('open');}
 async function submitForm(){
   const title=document.getElementById('ftitle').value.trim();
   const url=document.getElementById('furl').value.trim();
-  if(!title||!url){alert('Podaj tytuł i link!');return;}
+  if(!title||!url){alert(t('form_need_title_url'));return;}
   const meta=currentUser?.user_metadata;
   const btn=document.querySelector('.fsubmit');
-  btn.textContent='Publikowanie...';btn.disabled=true;
+  btn.textContent=t('form_publishing_btn');btn.disabled=true;
 
   // Handle thumbnail
   let thumb=document.getElementById('fthumb')?.value.trim()||'';
@@ -5414,7 +5462,7 @@ async function submitForm(){
     user_color:myNameColor||'',
     user_font:myNameFont||''
   });
-  btn.textContent='Opublikuj film';btn.disabled=false;
+  btn.textContent=t('form_submit_btn');btn.disabled=false;
   if(ok){
     ['ftitle','furl','fdesc','fdur','ftags'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
     delete document.getElementById('fdur').dataset.userEdited;
