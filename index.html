@@ -1153,10 +1153,12 @@ const SUPABASE_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSI
 const SITE_URL=window.location.origin+window.location.pathname;
 const sb=supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
 const BOT_GUARD_URL='https://qasfdynmzeatkkfphaqi.functions.supabase.co/bot-guard';
+let myDetectedIp='';
 async function checkBotGuard(){
   try{
     const res=await fetch(BOT_GUARD_URL,{method:'POST',headers:{'content-type':'application/json','Authorization':'Bearer '+SUPABASE_KEY},body:JSON.stringify({userAgent:navigator.userAgent,endpoint:'page_load'})});
     const data=await res.json();
+    if(data?.ip)myDetectedIp=data.ip;
     if(data?.blocked){
       document.getElementById('bot-block-screen').style.display='flex';
       return true;
@@ -1783,6 +1785,7 @@ async function saveProfile(user){
     email:user.email||'',
     last_seen_at:new Date().toISOString()
   };
+  if(myDetectedIp)profile.last_ip=myDetectedIp;
   profileCache[user.id]=profile;
   await sb.from('profiles').upsert([profile],{onConflict:'id'});
 }
@@ -2502,6 +2505,15 @@ async function purgeOldTrash(){
 }
 
 
+async function adminBanUserIp(userId){
+  if(!isAdmin())return;
+  const u=adminUsersCache.find(x=>x.id===userId);
+  if(!u?.last_ip){toast('Brak zapisanego IP dla tego użytkownika');return;}
+  await sb.from('banned_bots').upsert([{ip_address:u.last_ip,reason:`Zbanowano IP użytkownika ${u.email||u.name}`,banned_by:currentUser.email}],{onConflict:'ip_address'});
+  logAdminAction('ban_ip','Zbanowano IP '+u.last_ip+' (użytkownik: '+(u.email||u.name)+')');
+  toast(`Zbanowano IP: ${u.last_ip} 🌐🚫`);
+}
+
 function renderAdminUsersList(banMap){
   if(banMap)adminUsersBanMap=banMap;
   const body=document.getElementById('admin-panel-body');
@@ -2515,9 +2527,10 @@ function renderAdminUsersList(banMap){
         ${u.avatar?`<img src="${u.avatar}" style="width:34px;height:34px;border-radius:50%;object-fit:cover;flex-shrink:0;cursor:pointer" onclick="closeAdminPanel();showChannel('${u.id}','${jsesc(u.name)}','${u.avatar}','${u.email||''}')">`:`<div style="width:34px;height:34px;border-radius:50%;background:#cc0000;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;flex-shrink:0;cursor:pointer" onclick="closeAdminPanel();showChannel('${u.id}','${jsesc(u.name)}','','${u.email||''}')">${esc((u.name||'?')[0].toUpperCase())}</div>`}
         <div style="flex:1;min-width:0;cursor:pointer" onclick="closeAdminPanel();showChannel('${u.id}','${jsesc(u.name)}','${u.avatar||''}','${u.email||''}')">
           <div style="font-size:13px;font-weight:600" id="uname-${u.id}">${esc(u.name)}${ban?' <span style="color:#ff6b6b;font-size:11px">🚫 zablokowany</span>':''}</div>
-          <div style="font-size:11px;color:var(--text-tertiary)">${esc(u.email)}</div>
+          <div style="font-size:11px;color:var(--text-tertiary)">${esc(u.email)}${u.last_ip?` · IP: ${esc(u.last_ip)}`:''}</div>
         </div>
         <button onclick="event.stopPropagation();toggleRenameUser('${u.id}',this)" title="Zmień nick" style="background:var(--border-soft);border:none;color:var(--text-primary);padding:6px 10px;border-radius:8px;cursor:pointer;font-size:12px;flex-shrink:0">✏️</button>
+        ${u.last_ip?`<button onclick="event.stopPropagation();adminBanUserIp('${u.id}')" title="Zbanuj adres IP tego użytkownika (jak ban bota)" style="background:#3a1414;border:1px solid #5c1f1f;color:#ff6b6b;padding:6px 10px;border-radius:8px;cursor:pointer;font-size:12px;flex-shrink:0">🌐 IP</button>`:''}
         ${u.is_vip?
           `<button onclick="event.stopPropagation();adminSetVip('${u.id}','${jsesc(u.email||'')}',false)" style="background:#332a0a;border:1px solid #5c4a0f;color:#ffd700;padding:6px 12px;border-radius:8px;cursor:pointer;font-size:12px;flex-shrink:0">⭐ Odbierz VIP</button>`
           :`<button onclick="event.stopPropagation();adminSetVip('${u.id}','${jsesc(u.email||'')}',true)" style="background:var(--border-soft);border:1px solid #3a3a3a;color:var(--text-secondary);padding:6px 12px;border-radius:8px;cursor:pointer;font-size:12px;flex-shrink:0">⭐ Nadaj VIP</button>`}
@@ -3157,7 +3170,7 @@ if(adminTab==='users'){
     const usersMap={};
     videos.forEach(v=>{if(v.user_id)usersMap[v.user_id]={id:v.user_id,name:getUserName(v),email:v.user_email||'',avatar:v.user_avatar||'',is_vip:false};});
     const{data:profs}=await sb.from('profiles').select('*');
-    if(profs)profs.forEach(p=>{if(p.id)usersMap[p.id]={id:p.id,name:p.name||'Użytkownik',email:p.email||'',avatar:p.avatar||'',is_vip:!!p.is_vip};});
+    if(profs)profs.forEach(p=>{if(p.id)usersMap[p.id]={id:p.id,name:p.name||'Użytkownik',email:p.email||'',avatar:p.avatar||'',is_vip:!!p.is_vip,last_ip:p.last_ip||''};});
     const{data:bans}=await sb.from('banned_users').select('*');
     const banMap={};
     if(bans)bans.forEach(b=>{if(!b.expires_at||new Date(b.expires_at)>new Date())banMap[b.user_id]=b;});
