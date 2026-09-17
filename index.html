@@ -364,6 +364,9 @@ body.blur-mode #main-content,body.blur-mode header,body.blur-mode .sidebar-left{
 .msg-input:focus{border-color:#444}
 .msg-send-btn{background:#cc0000;border:none;color:var(--text-primary);width:40px;height:40px;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0}
 .msg-send-btn:hover{background:#e60000}
+.msg-bubble-img{max-width:240px;max-height:320px;border-radius:14px;cursor:pointer;display:block;object-fit:cover}
+.msg-bubble-wrap.sent .msg-bubble-img{border-bottom-right-radius:4px}
+.msg-bubble-wrap.received .msg-bubble-img{border-bottom-left-radius:4px}
 .msg-no-conv{flex:1;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:16px;color:#555}
 
 /* TOAST */
@@ -5997,7 +6000,7 @@ async function loadConvList(){
       <div class="msg-conv-av-ph" style="background:#cc0000;cursor:pointer;${avatar?'display:none':''}" onclick="event.stopPropagation();closeMessages();showChannel('${otherId}','${jsesc(name)}','${avatar}','${email}')">${(name||'?')[0].toUpperCase()}</div>
       <div class="msg-conv-info">
         <div class="msg-conv-name" style="cursor:pointer" onclick="event.stopPropagation();closeMessages();showChannel('${otherId}','${jsesc(name)}','${avatar}','${email}')">${esc(name)}${verifiedBadge(email)}${isBlocked?' <span style="color:#cc0000;font-size:11px">🚫 zablokowany</span>':''}</div>
-        <div class="msg-conv-last">${m.text.substring(0,40)}</div>
+        <div class="msg-conv-last">${m.image_url?'📷 Zdjęcie':m.text.substring(0,40)}</div>
       </div>
       <div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px">
         <div class="msg-conv-time">${time}</div>
@@ -6057,6 +6060,8 @@ function renderChatHeader(){
       :`<div class="msg-chat-messages" id="msg-msgs-list"></div>
     <div class="msg-input-area" style="position:relative">
       <button onclick="toggleEmojiPicker('msg-inp',this)" style="background:none;border:none;color:var(--text-secondary);cursor:pointer;font-size:20px;padding:6px;flex-shrink:0" title="Emotki">😊</button>
+      <button onclick="document.getElementById('chat-img-inp').click()" style="background:none;border:none;color:var(--text-secondary);cursor:pointer;font-size:20px;padding:6px;flex-shrink:0" title="Wyślij zdjęcie">📷</button>
+      <input type="file" id="chat-img-inp" accept="image/*" style="display:none" onchange="sendChatImage(this.files[0]);this.value=''">
       <textarea class="msg-input" id="msg-inp" placeholder="${t('msg_placeholder')}" rows="1" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendChatMsg();}"></textarea>
       <button class="msg-send-btn" onclick="sendChatMsg()">
         <svg viewBox="0 0 24 24" width="18" height="18" fill="white"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
@@ -6118,8 +6123,10 @@ async function loadMessages(){
   list.innerHTML=data.map(m=>{
     const isSent=m.sender_id===currentUser.id;
     const time=new Date(m.created_at).toLocaleString('pl-PL',{hour:'2-digit',minute:'2-digit'});
+    const imgHtml=m.image_url?`<img class="msg-bubble-img" src="${m.image_url}" onclick="openImgLightbox('${m.image_url}')">`:'';
+    const txtHtml=m.text?`<div class="msg-bubble ${isSent?'sent':'received'}">${esc(m.text)}</div>`:'';
     return`<div class="msg-bubble-wrap ${isSent?'sent':'received'}">
-      <div class="msg-bubble ${isSent?'sent':'received'}">${esc(m.text)}</div>
+      ${imgHtml}${txtHtml}
       <div class="msg-bubble-time">${time}</div>
     </div>`;
   }).join('');
@@ -6150,6 +6157,55 @@ async function sendChatMsg(){
   }]);
   if(error){
     inp.value=txt;
+    toast(error.message.includes('RATE_LIMIT')?'Zwolnij trochę — wysyłasz za szybko 🐢':'Błąd: '+error.message);
+    return;
+  }
+  await loadMessages();
+  loadConvList();
+}
+
+function compressChatImage(file){
+  return new Promise((resolve,reject)=>{
+    const reader=new FileReader();
+    reader.onload=e=>{
+      const img=new Image();
+      img.onload=()=>{
+        const maxW=1280;
+        const scale=Math.min(1,maxW/img.width);
+        const canvas=document.createElement('canvas');
+        canvas.width=img.width*scale;
+        canvas.height=img.height*scale;
+        canvas.getContext('2d').drawImage(img,0,0,canvas.width,canvas.height);
+        resolve(canvas.toDataURL('image/jpeg',0.7));
+      };
+      img.onerror=reject;
+      img.src=e.target.result;
+    };
+    reader.onerror=reject;
+    reader.readAsDataURL(file);
+  });
+}
+
+async function sendChatImage(file){
+  if(!file)return;
+  if(!currentUser||!currentConvId||!currentOtherUser)return;
+  if(isMutedNow()){toast(muteToastMsg());return;}
+  if(blockedUsers[currentOtherUser.id]){toast('Odblokuj użytkownika żeby wysłać wiadomość');return;}
+  const dataUrl=await compressChatImage(file);
+  const meta=currentUser.user_metadata;
+  const{error}=await sb.from('messages').insert([{
+    conv_id:currentConvId,
+    sender_id:currentUser.id,
+    sender_name:getMyDisplayName(),
+    sender_avatar:meta?.avatar_url||'',
+    receiver_id:currentOtherUser.id,
+    receiver_name:currentOtherUser.name||'',
+    receiver_avatar:currentOtherUser.avatar||'',
+    text:'',
+    image_url:dataUrl,
+    read:false
+  }]);
+  if(error){
     toast(error.message.includes('RATE_LIMIT')?'Zwolnij trochę — wysyłasz za szybko 🐢':'Błąd: '+error.message);
     return;
   }
@@ -6365,6 +6421,11 @@ function lightboxNav(dir){
 }
 function closeLightbox(){
   document.getElementById('post-img-lightbox').classList.remove('open');
+}
+function openImgLightbox(url){
+  lightboxImgs=[url];lightboxIdx=0;
+  renderLightbox();
+  document.getElementById('post-img-lightbox').classList.add('open');
 }
 
 function renderPoll(p){
