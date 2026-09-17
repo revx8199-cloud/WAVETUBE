@@ -4178,6 +4178,16 @@ function render(){
 // ── KANAŁ ─────────────────────────────────────────────────────────────────────
 async function showChannel(userId,nameIn,avatar,email){
   let name=nameIn;
+  // Czasem przez pomyłkę wywołania trafia tu e-mail zamiast prawdziwego UUID usera —
+  // wtedy próbujemy go odnaleźć w profiles, żeby dane (m.in. baner) ładowały się poprawnie.
+  if(userId&&userId.includes('@')){
+    if(!email)email=userId;
+    userId=null;
+  }
+  if(!userId&&email){
+    const{data:profByEmail}=await sb.from('profiles').select('id').eq('email',email).maybeSingle();
+    if(profByEmail?.id)userId=profByEmail.id;
+  }
   // Zawsze bierzemy aktualny nick/avatar z profiles (jeśli istnieje) —
   // przekazany nameIn to często "zamrożona" nazwa sprzed zmiany nicku (z filmu/komentarza).
   if(userId){
@@ -4301,6 +4311,10 @@ function showMyChannel(){
 
 async function toggleSub(key,name){
   if(!currentUser){toast('Zaloguj się żeby subskrybować!');return;}
+  if(key&&key.includes('@')){
+    const{data:profByEmail}=await sb.from('profiles').select('id').eq('email',key).maybeSingle();
+    if(profByEmail?.id)key=profByEmail.id;
+  }
   const isSub=subscribedSet.has(key);
   if(isSub){
     subscribedSet.delete(key);
@@ -4971,6 +4985,10 @@ function setupNativePlayer(v){
 
 async function toggleSubInPlayer(key,name){
   if(!currentUser){toast('Zaloguj się żeby subskrybować!');return;}
+  if(key&&key.includes('@')){
+    const{data:profByEmail}=await sb.from('profiles').select('id').eq('email',key).maybeSingle();
+    if(profByEmail?.id)key=profByEmail.id;
+  }
   const isSub=subscribedSet.has(key);
   if(isSub){
     subscribedSet.delete(key);
