@@ -979,7 +979,7 @@ body.blur-mode #main-content,body.blur-mode header,body.blur-mode .sidebar-left{
 
 <!-- USTAWIENIA -->
 <div class="fmbg" id="settings-modal">
-  <div class="fbox" style="max-width:380px">
+  <div class="fbox" style="max-width:560px">
     <h3 data-i18n="settings_title">⚙️ Ustawienia</h3>
     <div class="field" style="margin-bottom:24px;padding-bottom:20px;border-bottom:1px solid var(--border)">
       <label data-i18n="settings_nick">Twój nick</label>
@@ -1288,7 +1288,8 @@ const TRANSLATIONS={
     hint_paste_link:'Wklej link — zostanie automatycznie rozpoznany',
     hint_gdrive:'✅ <b style="color:#1a73e8">Google Drive</b> — upewnij się że plik jest publiczny',
     hint_mp4_detecting:'✅ <b style="color:#188038">MP4</b> — wykrywam długość...',hint_unknown_format:'⚠️ Nierozpoznany format',hint_mp4_detected:'✅ <b style="color:#188038">MP4</b> — długość wykryta automatycznie',
-    settings_allow_msg:'✉️ Zezwalaj innym na pisanie do mnie',settings_allow_msg_desc:'Gdy wyłączone, nikt nie założy z Tobą nowej rozmowy w Wiadomościach.',toast_msg_disabled:'Ten użytkownik wyłączył możliwość pisania do niego'
+    settings_allow_msg:'✉️ Zezwalaj innym na pisanie do mnie',settings_allow_msg_desc:'Gdy wyłączone, nikt nie założy z Tobą nowej rozmowy w Wiadomościach.',toast_msg_disabled:'Ten użytkownik wyłączył możliwość pisania do niego',
+    announce_load_error:'Nie udało się wczytać ogłoszeń',announce_empty:'Brak ogłoszeń',announce_empty_sub:'Tutaj pojawią się wiadomości od twórcy WaveTube'
   },
   ru:{
     nav_home:'Главная',nav_shorts:'Shorts',nav_trending:'В тренде',nav_you:'Вы',
@@ -1372,7 +1373,8 @@ const TRANSLATIONS={
     hint_paste_link:'Вставьте ссылку — она будет распознана автоматически',
     hint_gdrive:'✅ <b style="color:#1a73e8">Google Диск</b> — убедитесь, что файл публичный',
     hint_mp4_detecting:'✅ <b style="color:#188038">MP4</b> — определяю длительность...',hint_unknown_format:'⚠️ Формат не распознан',hint_mp4_detected:'✅ <b style="color:#188038">MP4</b> — длительность определена автоматически',
-    settings_allow_msg:'✉️ Разрешить другим писать мне',settings_allow_msg_desc:'Если выключено, никто не сможет начать с вами новый разговор в Сообщениях.',toast_msg_disabled:'Этот пользователь отключил возможность писать ему'
+    settings_allow_msg:'✉️ Разрешить другим писать мне',settings_allow_msg_desc:'Если выключено, никто не сможет начать с вами новый разговор в Сообщениях.',toast_msg_disabled:'Этот пользователь отключил возможность писать ему',
+    announce_load_error:'Не удалось загрузить объявления',announce_empty:'Нет объявлений',announce_empty_sub:'Здесь появятся сообщения от автора WaveTube'
   }
 };
 
@@ -1676,6 +1678,24 @@ function toast(msg){
   const t=document.getElementById('toast');
   t.textContent=msg;t.style.display='block';
   setTimeout(()=>t.style.display='none',2500);
+}
+
+// ── PUSTE WIDOKI W STYLU YOUTUBE (szara ikonka zamiast dużej emotki) ─────
+const EMPTY_ICONS={
+  clock:'<svg viewBox="0 0 24 24" width="32" height="32" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3.5 2"/></svg>',
+  history:'<svg viewBox="0 0 24 24" width="32" height="32" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3 12a9 9 0 109-9"/><path d="M3 4v5h5"/><path d="M12 7v5l3.5 2"/></svg>',
+  bookmark:'<svg viewBox="0 0 24 24" width="32" height="32" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M6 3h12v18l-6-4-6 4V3z"/></svg>',
+  bell:'<svg viewBox="0 0 24 24" width="32" height="32" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M18 8a6 6 0 10-12 0c0 6-2 7-2 7h16s-2-1-2-7"/><path d="M10 20a2 2 0 004 0"/></svg>',
+  megaphone:'<svg viewBox="0 0 24 24" width="32" height="32" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3 10v4h3l6 4V6l-6 4H3z"/><path d="M16 9a4 4 0 010 6"/><path d="M19 6a8 8 0 010 12"/></svg>',
+  phone:'<svg viewBox="0 0 24 24" width="32" height="32" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="7" y="2" width="10" height="20" rx="2"/><path d="M11 18h2"/></svg>',
+  film:'<svg viewBox="0 0 24 24" width="32" height="32" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M7 4v16M17 4v16M3 9h4M17 9h4M3 15h4M17 15h4"/></svg>'
+};
+function emptyStateHtml(iconKey,title,subtitle){
+  return `<div class="empty" style="display:flex;flex-direction:column;align-items:center;padding:70px 20px">
+    <div style="width:72px;height:72px;border-radius:50%;background:var(--bg-card);display:flex;align-items:center;justify-content:center;margin-bottom:18px;color:var(--text-tertiary)">${EMPTY_ICONS[iconKey]||''}</div>
+    <p style="font-size:16px;font-weight:600;color:var(--text-primary);margin:0 0 6px">${title}</p>
+    ${subtitle?`<p style="font-size:13px;color:var(--text-tertiary);margin:0;max-width:320px;text-align:center;line-height:1.5">${subtitle}</p>`:''}
+  </div>`;
 }
 
 // ── AUTH ──────────────────────────────────────────────────────────────────────
@@ -4012,7 +4032,7 @@ function showShortsPage(){
   const g=document.getElementById('grid');
   g.style.display='block';
   if(!shorts.length){
-    g.innerHTML='<div class="empty"><div style="font-size:48px;margin-bottom:12px">📱</div><p style="font-size:15px">Brak Shorts</p></div>';
+    g.innerHTML=emptyStateHtml('phone','Brak Shorts');
     return;
   }
   g.innerHTML='';
@@ -4193,7 +4213,7 @@ function render(){
   const g=document.getElementById('grid');
   if(feedObserver){feedObserver.disconnect();feedObserver=null;}
   if(!list.length){
-    g.innerHTML=`<div class="empty"><div style="font-size:64px;margin-bottom:16px">🎬</div><p style="font-size:15px;margin-bottom:8px">${q?t('feed_no_results'):t('feed_no_videos')}</p></div>`;
+    g.innerHTML=emptyStateHtml('film',q?t('feed_no_results'):t('feed_no_videos'));
     return;
   }
   g.innerHTML='';
@@ -4418,7 +4438,7 @@ function showSubscriptions(){
   const subIds=[...subscribedSet];
   const g=document.getElementById('grid');
   if(!subIds.length){
-    g.innerHTML=`<div class="empty"><div style="font-size:48px;margin-bottom:12px">🔔</div><p>${t('subs_empty')}</p><p style="font-size:13px;color:#444;margin-top:6px">${t('subs_empty_sub')}</p></div>`;
+    g.innerHTML=emptyStateHtml('bell',t('subs_empty'),t('subs_empty_sub'));
     return;
   }
   // Show unique channels
@@ -4442,7 +4462,7 @@ function showSubscriptions(){
     }
   });
   if(!channels.length){
-    g.innerHTML=`<div class="empty"><div style="font-size:48px;margin-bottom:12px">🔔</div><p>${t('subs_no_videos')}</p></div>`;
+    g.innerHTML=emptyStateHtml('bell',t('subs_no_videos'));
     return;
   }
   // Show as channel cards
@@ -4515,13 +4535,13 @@ async function showSavedPage(){
   document.getElementById('slabel').textContent=t('page_saved');
   const g=document.getElementById('grid');
   if(!currentUser){
-    g.innerHTML=`<div class="empty"><div style="font-size:48px;margin-bottom:12px">💾</div><p style="font-size:15px">${t('saved_login')}</p></div>`;
+    g.innerHTML=emptyStateHtml('bookmark',t('saved_login'));
     return;
   }
   await loadSavedVideos();
   const saved=videos.filter(v=>savedVideoIds.has(String(v.id)));
   if(!saved.length){
-    g.innerHTML=`<div class="empty"><div style="font-size:48px;margin-bottom:12px">💾</div><p style="font-size:15px">${t('saved_empty')}</p><p style="font-size:13px;color:#444;margin-top:6px">${t('saved_empty_sub')}</p></div>`;
+    g.innerHTML=emptyStateHtml('bookmark',t('saved_empty'),t('saved_empty_sub'));
     return;
   }
   renderVideoCards(saved,g);
@@ -4573,13 +4593,13 @@ async function showWatchLaterPage(){
   document.getElementById('slabel').textContent=t('page_watchlater');
   const g=document.getElementById('grid');
   if(!currentUser){
-    g.innerHTML=`<div class="empty"><div style="font-size:48px;margin-bottom:12px">⏰</div><p style="font-size:15px">${t('wl_login')}</p></div>`;
+    g.innerHTML=emptyStateHtml('clock',t('wl_login'));
     return;
   }
   await loadWatchLater();
   const list=videos.filter(v=>watchLaterIds.has(String(v.id)));
   if(!list.length){
-    g.innerHTML=`<div class="empty"><div style="font-size:48px;margin-bottom:12px">⏰</div><p style="font-size:15px">${t('wl_empty')}</p><p style="font-size:13px;color:#444;margin-top:6px">${t('wl_empty_sub')}</p></div>`;
+    g.innerHTML=emptyStateHtml('clock',t('wl_empty'),t('wl_empty_sub'));
     return;
   }
   renderVideoCards(list,g);
@@ -4602,7 +4622,7 @@ async function showAnnouncementsPage(){
 
   const{data,error}=await sb.from('announcements').select('*').order('created_at',{ascending:false});
   if(error){
-    g.innerHTML=`<div class="empty"><div style="font-size:48px;margin-bottom:12px">📢</div><p style="font-size:15px">Nie udało się wczytać ogłoszeń</p></div>`;
+    g.innerHTML=emptyStateHtml('megaphone',t('announce_load_error'));
     return;
   }
   announcementsCache=data||[];
@@ -4612,7 +4632,7 @@ async function showAnnouncementsPage(){
 function renderAnnouncementsList(){
   const g=document.getElementById('grid');
   if(!announcementsCache.length){
-    g.innerHTML=`<div class="empty"><div style="font-size:48px;margin-bottom:12px">📢</div><p style="font-size:15px">Brak ogłoszeń</p><p style="font-size:13px;color:#444;margin-top:6px">Tutaj pojawią się wiadomości od twórcy WaveTube</p></div>`;
+    g.innerHTML=emptyStateHtml('megaphone',t('announce_empty'),t('announce_empty_sub'));
     return;
   }
   g.innerHTML=`<div style="max-width:640px;margin:0 auto;display:flex;flex-direction:column;gap:14px">
@@ -4790,7 +4810,7 @@ async function showHistory(){
   document.getElementById('slabel').innerHTML=`${t('page_history')} <button onclick="clearHistory()" style="font-size:12px;background:none;border:1px solid #444;color:var(--text-secondary);padding:4px 12px;border-radius:14px;cursor:pointer;margin-left:12px">${t('btn_clear')}</button>`;
   const g=document.getElementById('grid');
   if(!currentUser){
-    g.innerHTML=`<div class="empty"><div style="font-size:48px;margin-bottom:12px">🕐</div><p style="font-size:15px">${t('history_login')}</p></div>`;
+    g.innerHTML=emptyStateHtml('history',t('history_login'));
     return;
   }
   g.innerHTML='<p style="color:var(--text-tertiary);padding:20px;text-align:center">Ładowanie...</p>';
@@ -4800,7 +4820,7 @@ async function showHistory(){
     return v?{...v,watched_at:h.watched_at}:null;
   }).filter(Boolean);
   if(!hist.length){
-    g.innerHTML=`<div class="empty"><div style="font-size:48px;margin-bottom:12px">🕐</div><p style="font-size:15px">${t('history_empty')}</p><p style="font-size:13px;color:#444;margin-top:6px">${t('history_empty_sub')}</p></div>`;
+    g.innerHTML=emptyStateHtml('history',t('history_empty'),t('history_empty_sub'));
     return;
   }
   g.innerHTML='';
