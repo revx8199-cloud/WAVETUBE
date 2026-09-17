@@ -1738,8 +1738,9 @@ function updateAuthUI(){
     userArea.style.gap='10px';
     const av=document.getElementById('user-av');
     const meta=currentUser.user_metadata;
+    const frameBorder=myAvatarFrame?`3px solid ${myAvatarFrame}`:'2px solid #cc0000';
     if(meta&&meta.avatar_url){
-      av.innerHTML=`<img src="${meta.avatar_url}" style="width:34px;height:34px;border-radius:50%;object-fit:cover;border:2px solid #cc0000">`;
+      av.innerHTML=`<img src="${meta.avatar_url}" style="width:34px;height:34px;border-radius:50%;object-fit:cover;border:${frameBorder}">`;
     } else {
       av.textContent=(meta&&meta.full_name?meta.full_name[0]:(currentUser.email?currentUser.email[0]:'?')).toUpperCase();
     }
@@ -1748,7 +1749,10 @@ function updateAuthUI(){
     const headerAv=document.getElementById('dropdown-header-av');
     const headerName=document.getElementById('dropdown-header-name');
     const headerEmail=document.getElementById('dropdown-header-email');
-    if(headerAv)headerAv.innerHTML=meta&&meta.avatar_url?`<img src="${meta.avatar_url}">`:esc((dispName[0]||'?').toUpperCase());
+    if(headerAv){
+      headerAv.innerHTML=meta&&meta.avatar_url?`<img src="${meta.avatar_url}">`:esc((dispName[0]||'?').toUpperCase());
+      headerAv.style.border=myAvatarFrame?`3px solid ${myAvatarFrame}`:'';
+    }
     if(headerName)headerName.textContent=dispName;
     if(headerEmail)headerEmail.textContent=currentUser.email||'';
     // update comment avatar
@@ -2016,6 +2020,23 @@ function renderVipPanel(){
       </div>
     </div>
 
+    <div style="margin-bottom:24px;padding-bottom:20px;border-bottom:1px solid var(--border)">
+      <div style="font-size:13px;font-weight:700;color:var(--text-primary);margin-bottom:4px">🖼️ Ramka avatara</div>
+      <p style="color:var(--text-secondary);font-size:12px;margin-bottom:14px">Kolorowa obwódka wokół Twojego zdjęcia profilowego, widoczna na Twoim kanale.</p>
+      <div style="display:flex;align-items:center;gap:16px;margin-bottom:14px">
+        <div style="width:64px;height:64px;border-radius:50%;padding:3px;${myAvatarFrame?`background:${myAvatarFrame}`:'background:transparent'}">
+          <div style="width:100%;height:100%;border-radius:50%;overflow:hidden;background:var(--bg-sunken);display:flex;align-items:center;justify-content:center">
+            ${meta?.avatar_url?`<img src="${meta.avatar_url}" style="width:100%;height:100%;object-fit:cover">`:`<span style="font-size:22px;font-weight:700">${(myDisplayName[0]||'?').toUpperCase()}</span>`}
+          </div>
+        </div>
+        <div style="font-size:12px;color:var(--text-tertiary)">Podgląd</div>
+      </div>
+      <div style="display:flex;flex-wrap:wrap;gap:10px">
+        <div onclick="resetAvatarFrame()" style="width:34px;height:34px;border-radius:50%;background:var(--bg-sunken);border:2px dashed var(--border);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:14px" title="Brak ramki">${!myAvatarFrame?'✓':'✕'}</div>
+        ${VIP_BADGE_COLORS.map(c=>`<div onclick="saveAvatarFrame('${c}')" style="width:34px;height:34px;border-radius:50%;background:${c};cursor:pointer;border:3px solid ${myAvatarFrame===c?'#fff':'transparent'};display:flex;align-items:center;justify-content:center">${myAvatarFrame===c?'<svg viewBox="0 0 24 24" width="14" height="14" fill="#000"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/></svg>':''}</div>`).join('')}
+      </div>
+    </div>
+
     <div>
       <div style="font-size:13px;font-weight:700;color:var(--text-primary);margin-bottom:4px">🔤 Czcionka nicku</div>
       <p style="color:var(--text-secondary);font-size:12px;margin-bottom:14px">Wybierz styl czcionki dla swojego nicku.</p>
@@ -2059,6 +2080,25 @@ async function resetVipColor(){
   toast('Kolor zresetowany');
 }
 
+async function saveAvatarFrame(color){
+  if(!isVIP())return;
+  const{error}=await sb.from('profiles').upsert([{id:currentUser.id,avatar_frame:color}],{onConflict:'id'});
+  if(error){toast('Błąd: '+error.message);return;}
+  myAvatarFrame=color;
+  renderVipPanel();
+  updateAuthUI();
+  toast('Ramka avatara zapisana! 🖼️');
+}
+
+async function resetAvatarFrame(){
+  if(!isVIP())return;
+  await sb.from('profiles').upsert([{id:currentUser.id,avatar_frame:''}],{onConflict:'id'});
+  myAvatarFrame='';
+  renderVipPanel();
+  updateAuthUI();
+  toast('Ramka usunięta');
+}
+
 async function saveVipFont(fontId){
   if(!isVIP())return;
   const{error}=await sb.from('profiles').upsert([{id:currentUser.id,name_font:fontId}],{onConflict:'id'});
@@ -2098,6 +2138,7 @@ function countryName(code){
 function isAdmin(){return!!(currentUser&&currentUser.email===ADMIN_EMAIL);}
 
 let myNameColor='';
+let myAvatarFrame='';
 let myDisplayNick='';
 let vipBadgeColor='';
 let adminBadgeColor='';
@@ -2167,11 +2208,12 @@ function fontCssFor(fontId){
 }
 
 async function loadMyNameColor(){
-  if(!currentUser){myNameColor='';myNameFont='';myDisplayNick='';return;}
-  const{data}=await sb.from('profiles').select('name_color,name_font,name').eq('id',currentUser.id).single();
+  if(!currentUser){myNameColor='';myNameFont='';myDisplayNick='';myAvatarFrame='';return;}
+  const{data}=await sb.from('profiles').select('name_color,name_font,name,avatar_frame').eq('id',currentUser.id).single();
   myNameColor=data?.name_color||'';
   myNameFont=data?.name_font||'';
   myDisplayNick=data?.name||'';
+  myAvatarFrame=data?.avatar_frame||'';
 }
 
 async function saveMyNickname(){
@@ -4262,7 +4304,7 @@ async function showChannel(userId,nameIn,avatar,email){
   cc.classList.add('open');
   const userVideos=videos.filter(v=>(v.user_id===userId||(v.user_email===email&&email))&&isDiscoverable(v));
   const ucol=getUserColor(email);
-  const avHtml=avatar?`<img src="${avatar}">`:`<span>${name[0]||'?'}</span>`;
+  let avHtml=avatar?`<img src="${avatar}">`:`<span>${name[0]||'?'}</span>`;
   const isSub=subscribedSet.has(userId||email);
   // Clean up name if it's a UUID
   name=name&&!name.match(/^[0-9a-f-]{8,}$/i)?name:t('ch_default_name');
@@ -4278,16 +4320,18 @@ async function showChannel(userId,nameIn,avatar,email){
   let chBannerUrl=localStorage.getItem('banner_'+bannerKey)||'';
   const savedDescFallback=localStorage.getItem('desc_'+(userId||email))||'';
   const{count:subCount}=await sb.from('subscriptions').select('*',{count:'exact',head:true}).eq('channel_id',userId||email);
-  let chNameColor='',chNameFont='',savedDesc=savedDescFallback,joinedAt='',country='';
+  let chNameColor='',chNameFont='',savedDesc=savedDescFallback,joinedAt='',country='',chAvatarFrame='';
   if(userId){
-    const{data:profStyle}=await sb.from('profiles').select('name_color,name_font,description,created_at,country,banner_url').eq('id',userId).single();
+    const{data:profStyle}=await sb.from('profiles').select('name_color,name_font,description,created_at,country,banner_url,avatar_frame').eq('id',userId).single();
     chNameColor=profStyle?.name_color||'';
     chNameFont=profStyle?.name_font||'';
     if(profStyle&&profStyle.description)savedDesc=profStyle.description;
     if(profStyle&&profStyle.created_at)joinedAt=profStyle.created_at;
     if(profStyle&&profStyle.country)country=profStyle.country;
     if(profStyle&&profStyle.banner_url)chBannerUrl=profStyle.banner_url;
+    chAvatarFrame=profStyle?.avatar_frame||'';
   }
+  const avFrameStyle=chAvatarFrame?`border:3px solid ${chAvatarFrame};box-sizing:border-box`:'';
   const bannerBg=chBannerUrl?(chBannerUrl.startsWith('url(')?chBannerUrl:'url('+chBannerUrl+')'):'linear-gradient(135deg,#1a1a2e,#16213e)';
   cc.innerHTML=`
     <div style="position:relative">
@@ -4303,7 +4347,7 @@ async function showChannel(userId,nameIn,avatar,email){
       </div>
     </div>
     <div class="channel-header">
-      <div class="channel-big-av">${avHtml}</div>
+      <div class="channel-big-av" style="${avFrameStyle}">${avHtml}</div>
       <div class="channel-big-info" style="flex:1">
         <h2 style="margin-bottom:2px;display:flex;align-items:center;${chNameColor?`color:${chNameColor};`:''}${chNameFont?`font-family:${fontCssFor(chNameFont)};`:''}">${esc(name)}${verifiedBadge(email)}</h2>
         <div style="font-size:12px;color:var(--text-secondary);margin-bottom:6px">${makeNick(name,email)}</div>
