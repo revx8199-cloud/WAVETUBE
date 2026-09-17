@@ -4730,7 +4730,7 @@ function renderAnnouncementCard(a){
     <div id="ann-comments-${a.id}" style="display:none;margin-top:14px;padding-top:14px;border-top:1px solid var(--border-soft)">
       <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:12px">
         ${comments.map(c=>`<div style="display:flex;gap:8px">
-          ${c.avatar?`<img src="${c.avatar}" style="width:28px;height:28px;border-radius:50%;object-fit:cover;flex-shrink:0;cursor:pointer" onclick="showChannel('${c.user_id||''}','${jsesc(c.user)}','${c.avatar||''}','')">`:`<div style="width:28px;height:28px;border-radius:50%;background:#cc0000;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0;cursor:pointer" onclick="showChannel('${c.user_id||''}','${jsesc(c.user)}','','')">${(c.user||'?')[0].toUpperCase()}</div>`}
+          ${c.avatar?`<img src="${c.avatar}" style="width:28px;height:28px;border-radius:50%;object-fit:cover;flex-shrink:0;cursor:pointer${c.avatar_frame?`;border:2px solid ${c.avatar_frame};box-sizing:border-box`:''}" onclick="showChannel('${c.user_id||''}','${jsesc(c.user)}','${c.avatar||''}','')">`:`<div style="width:28px;height:28px;border-radius:50%;background:#cc0000;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0;cursor:pointer" onclick="showChannel('${c.user_id||''}','${jsesc(c.user)}','','')">${(c.user||'?')[0].toUpperCase()}</div>`}
           <div>
             <div style="font-size:12px;font-weight:600;cursor:pointer${c.name_color?`;color:${c.name_color}`:''}${c.name_font?`;font-family:${fontCssFor(c.name_font)}`:''}" onclick="showChannel('${c.user_id||''}','${jsesc(c.user)}','${c.avatar||''}','')">${esc(c.user)}</div>
             <div style="font-size:13px;color:var(--text-secondary)">${esc(c.text)}</div>
@@ -4831,7 +4831,7 @@ async function addAnnouncementComment(id){
   const comments=[...(a.comments||[]),{
     user:getMyDisplayName(),
     text,ts:Date.now(),avatar:meta?.avatar_url||'',
-    user_id:currentUser.id,name_color:myNameColor||'',name_font:myNameFont||''
+    user_id:currentUser.id,name_color:myNameColor||'',name_font:myNameFont||'',avatar_frame:myAvatarFrame||''
   }];
   a.comments=comments;
   await sb.from('announcements').update({comments}).eq('id',id);
@@ -5253,7 +5253,7 @@ function renderC(){
     const displayTime=c.ts?timeAgo(c.ts):(c.time||'');
     return`<div class="citem" id="citem-${i}" style="${isPinned?'background:#1a2a1a;border-radius:8px;padding:8px 8px 4px;margin-bottom:8px':'margin-bottom:16px'}">
       ${isPinned?`<div style="color:#3ea6ff;font-size:11px;margin-bottom:6px;display:flex;align-items:center;gap:4px"><svg viewBox="0 0 24 24" width="12" height="12" fill="currentColor"><path d="M17 4v7l2 3H5l2-3V4h10m0-2H7c-.55 0-1 .45-1 1v1H5v2h1v5.5L4 14v2h7v5h2v-5h7v-2l-2-2.5V6h1V4h-1V3c0-.55-.45-1-1-1z"/></svg> Przypięty komentarz</div>`:''}
-      <div class="cav" style="${c.avatar?'':'background:'+( c.col||colors[i%colors.length])};cursor:pointer;flex-shrink:0" onclick="closeP();showChannel('${uid}','${jsesc(c.user)}','${uavatar}','${uemail}')">${av}</div>
+      <div class="cav" style="${c.avatar?'':'background:'+( c.col||colors[i%colors.length])};cursor:pointer;flex-shrink:0${c.avatar_frame?`;border:2px solid ${c.avatar_frame};box-sizing:border-box`:''}" onclick="closeP();showChannel('${uid}','${jsesc(c.user)}','${uavatar}','${uemail}')">${av}</div>
       <div class="cbody" style="flex:1;min-width:0">
         <div class="cname" style="display:flex;align-items:center;gap:4px;flex-wrap:wrap;justify-content:space-between;margin-bottom:4px">
           <div style="display:flex;align-items:center;gap:4px;flex-wrap:wrap">
@@ -5326,7 +5326,7 @@ function renderC(){
               const replyIsAuthor=currentUser&&currentUser.id===r.user_id;
               const replyCanDelete=isVideoOwner||replyIsAuthor||isAdmin();
               return`<div style="display:flex;gap:10px;margin-bottom:12px">
-              ${r.avatar?`<img src="${r.avatar}" style="width:28px;height:28px;border-radius:50%;object-fit:cover;flex-shrink:0">`:`<div style="width:28px;height:28px;border-radius:50%;background:#cc0000;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:var(--text-primary);flex-shrink:0">${(r.user||'?')[0]}</div>`}
+              ${r.avatar?`<img src="${r.avatar}" style="width:28px;height:28px;border-radius:50%;object-fit:cover;flex-shrink:0${r.avatar_frame?`;border:2px solid ${r.avatar_frame};box-sizing:border-box`:''}">`:`<div style="width:28px;height:28px;border-radius:50%;background:#cc0000;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:var(--text-primary);flex-shrink:0">${(r.user||'?')[0]}</div>`}
               <div style="flex:1">
                 <div style="font-size:12px;font-weight:600;display:flex;align-items:center;gap:4px;justify-content:space-between">
                   <span style="display:flex;align-items:center;gap:4px"><span style="${r.name_color?`color:${r.name_color};`:''}${r.name_font?`font-family:${fontCssFor(r.name_font)};`:''}">${esc(r.user)}</span>${verifiedBadge(r.user_email||'')} <span style="color:var(--text-secondary);font-weight:400;font-size:11px">${r.ts?timeAgo(r.ts):(r.time||'')}</span></span>
@@ -5411,7 +5411,7 @@ async function postReply(index){
   if(!c)return;
   const origIdx=(cur.comments||[]).findIndex(x=>x.user===c.user&&x.text===c.text&&x.time===c.time);
   if(!cur.comments[origIdx].replies)cur.comments[origIdx].replies=[];
-  cur.comments[origIdx].replies.push({user:getMyDisplayName(),text:txt,time:now,ts:Date.now(),avatar:meta?.avatar_url||'',user_email:currentUser.email,user_id:currentUser.id,name_color:myNameColor||'',name_font:myNameFont||''});
+  cur.comments[origIdx].replies.push({user:getMyDisplayName(),text:txt,time:now,ts:Date.now(),avatar:meta?.avatar_url||'',user_email:currentUser.email,user_id:currentUser.id,name_color:myNameColor||'',name_font:myNameFont||'',avatar_frame:myAvatarFrame||''});
   inp.value='';
   await updateVideo(cur.id,{comments:cur.comments});
   const v=videos.find(x=>x.id===cur.id);if(v)v.comments=cur.comments;
@@ -5523,7 +5523,7 @@ async function postC(){
   if(!commentCooldownOk())return;
   const meta=currentUser.user_metadata;
   const now=new Date().toLocaleString('pl-PL',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'});
-  const newC={user:getMyDisplayName(),text:t,time:now,ts:Date.now(),col:'#cc0000',avatar:meta?.avatar_url||'',user_id:currentUser.id||'',user_email:currentUser.email||'',name_color:myNameColor||'',name_font:myNameFont||''};
+  const newC={user:getMyDisplayName(),text:t,time:now,ts:Date.now(),col:'#cc0000',avatar:meta?.avatar_url||'',user_id:currentUser.id||'',user_email:currentUser.email||'',name_color:myNameColor||'',name_font:myNameFont||'',avatar_frame:myAvatarFrame||''};
   const list=[newC,...(cur.comments||[])];
   cur.comments=list;
   document.getElementById('cinp').value='';
@@ -6311,7 +6311,7 @@ async function renderPosts(){
         <div id="pc-${p.id}" style="display:none;margin-top:12px;border-top:1px solid var(--border-soft);padding-top:12px">
           ${(p.comments||[]).map(c=>`
             <div style="display:flex;gap:8px;margin-bottom:10px">
-              ${c.avatar?`<img src="${c.avatar}" style="width:28px;height:28px;border-radius:50%;object-fit:cover;flex-shrink:0">`:`<div style="width:28px;height:28px;border-radius:50%;background:${c.col||'#cc0000'};display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0">${(c.user||'?')[0]}</div>`}
+              ${c.avatar?`<img src="${c.avatar}" style="width:28px;height:28px;border-radius:50%;object-fit:cover;flex-shrink:0${c.avatar_frame?`;border:2px solid ${c.avatar_frame};box-sizing:border-box`:''}">`:`<div style="width:28px;height:28px;border-radius:50%;background:${c.col||'#cc0000'};display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0">${(c.user||'?')[0]}</div>`}
               <div><div style="font-size:12px;font-weight:600;display:flex;align-items:center">${esc(c.user)}${verifiedBadge(c.email||'')} <span style="color:var(--text-tertiary);font-weight:400;margin-left:6px">${c.time||''}</span></div><div style="font-size:13px;color:var(--text-secondary)">${esc(c.text)}</div></div>
             </div>`).join('')}
           ${currentUser?`<div style="display:flex;gap:8px;margin-top:8px;align-items:center">
@@ -6432,7 +6432,7 @@ async function addPostComment(postId){
   const now=new Date().toLocaleString('pl-PL',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'});
   const{data:post}=await sb.from('posts').select('comments').eq('id',postId).single();
   if(!post)return;
-  const comments=[...(post.comments||[]),{user:getMyDisplayName(),text:inp.value.trim(),time:now,ts:Date.now(),col:'#cc0000',avatar:meta?.avatar_url||'',email:currentUser.email||'',user_id:currentUser.id,name_color:myNameColor||'',name_font:myNameFont||''}];
+  const comments=[...(post.comments||[]),{user:getMyDisplayName(),text:inp.value.trim(),time:now,ts:Date.now(),col:'#cc0000',avatar:meta?.avatar_url||'',email:currentUser.email||'',user_id:currentUser.id,name_color:myNameColor||'',name_font:myNameFont||'',avatar_frame:myAvatarFrame||''}];
   await sb.from('posts').update({comments}).eq('id',postId);
   renderPosts();
 }
