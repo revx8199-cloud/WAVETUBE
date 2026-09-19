@@ -138,7 +138,7 @@
     </div>
     <div class="sb-item" id="sb-findbug" onclick="openFindBugModal()">
       <svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor"><path d="M20 8h-2.81a5.985 5.985 0 0 0-1.82-1.96L17 4.41 15.59 3l-2.17 2.17a6.002 6.002 0 0 0-2.83 0L8.41 3 7 4.41l1.62 1.63C7.85 6.55 7.22 7.22 6.81 8H4v2h2.09c-.05.33-.09.66-.09 1v1H4v2h2v1c0 .34.04.67.09 1H4v2h2.81c1.04 1.79 2.97 3 5.19 3s4.15-1.21 5.19-3H20v-2h-2.09c.05-.33.09-.66.09-1v-1h2v-2h-2v-1c0-.34-.04-.67-.09-1H20V8zm-6 8h-4v-2h4v2zm0-4h-4v-2h4v2z"/></svg>
-      <span data-i18n="nav_findbug">🐛 Znajdź bug</span>
+      <span data-i18n="nav_findbug">Znajdź bug</span>
     </div>
   </div>
   <div class="sb-section" id="sb-subs-section" style="display:none">
@@ -626,11 +626,12 @@
 <!-- ZNAJDŹ BUG -->
 <div class="fmbg" id="findbug-modal">
   <div class="fbox" style="max-width:480px">
-    <h3 data-i18n="findbug_title">🐛 Znajdź bug</h3>
+    <h3 data-i18n="findbug_title">Znajdź bug</h3>
     <p class="sub" data-i18n="findbug_desc" style="margin-bottom:16px">Znalazłeś błąd albo dziurę w bezpieczeństwie? Napisz do nas!</p>
     <div style="background:var(--bg-sunken);border:1px solid var(--border);border-radius:10px;padding:16px;margin-bottom:16px">
       <p data-i18n="findbug_reward" style="font-size:13px;color:var(--text-secondary);line-height:1.6;margin-bottom:12px">Opisz znaleziony bug lub lukę bezpieczeństwa i wyślij nam maila. Jeśli zgłoszenie okaże się prawdziwe — dostaniesz nagrodę! 🎁</p>
-      <a href="mailto:wavetubebuisness@gmail.com?subject=Znaleziony%20bug&body=Opis%20buga%2Fluki%20bezpiecze%C5%84stwa%3A%0A%0AJak%20go%20odtworzy%C4%87%3A%0A" style="display:block;text-align:center;background:#3ea6ff;color:#0f0f0f;font-weight:700;font-size:13px;padding:10px 16px;border-radius:8px;text-decoration:none">📧 wavetubebuisness@gmail.com</a>
+      <a href="mailto:wavetubebuisness@gmail.com?subject=Znaleziony%20bug&body=Opis%20buga%2Fluki%20bezpiecze%C5%84stwa%3A%0A%0AJak%20go%20odtworzy%C4%87%3A%0A" style="display:block;text-align:center;background:#3ea6ff;color:#0f0f0f;font-weight:700;font-size:13px;padding:10px 16px;border-radius:8px;text-decoration:none;margin-bottom:8px">📧 wavetubebuisness@gmail.com</a>
+      <button onclick="copyFindBugEmail(this)" style="width:100%;background:var(--border-soft);border:none;color:var(--text-primary);font-weight:600;font-size:12px;padding:8px 16px;border-radius:8px;cursor:pointer" data-i18n="findbug_copy_btn">Kopiuj adres e-mail</button>
     </div>
     <div class="fbbtns">
       <button class="fcancel" onclick="closeFindBugModal()">Zamknij</button>
