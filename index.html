@@ -136,6 +136,10 @@
       <svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm.5 5H11v6l5.25 3.15.75-1.23-4.5-2.67V7z"/></svg>
       <span data-i18n="nav_watchlater">Obejrzę później</span>
     </div>
+    <div class="sb-item" id="sb-playlists" onclick="setSbActive('sb-playlists');showPlaylistsPage()">
+      <svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor"><path d="M15 6H3v2h12V6zm0 4H3v2h12v-2zM3 16h8v-2H3v2zM17 6v8.18c-.31-.11-.65-.18-1-.18-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3V8h3V6h-5z"/></svg>
+      <span data-i18n="nav_playlists">Playlisty</span>
+    </div>
     <div class="sb-item" id="sb-findbug" onclick="openFindBugModal()">
       <svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor"><path d="M20 8h-2.81a5.985 5.985 0 0 0-1.82-1.96L17 4.41 15.59 3l-2.17 2.17a6.002 6.002 0 0 0-2.83 0L8.41 3 7 4.41l1.62 1.63C7.85 6.55 7.22 7.22 6.81 8H4v2h2.09c-.05.33-.09.66-.09 1v1H4v2h2v1c0 .34.04.67.09 1H4v2h2.81c1.04 1.79 2.97 3 5.19 3s4.15-1.21 5.19-3H20v-2h-2.09c.05-.33.09-.66.09-1v-1h2v-2h-2v-1c0-.34-.04-.67-.09-1H20V8zm-6 8h-4v-2h4v2zm0-4h-4v-2h4v2z"/></svg>
       <span data-i18n="nav_findbug">Znajdź bug</span>
@@ -230,6 +234,10 @@
       <button class="abtn" id="player-save-btn" onclick="toggleSaveVideo(cur.id)">
         <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M17 3H7c-1.1 0-2 .9-2 2v16l7-3 7 3V5c0-1.1-.9-2-2-2z"/></svg>
         <span data-i18n="save_label">Zapisz</span>
+      </button>
+      <button class="abtn" onclick="openPlaylistPicker(cur.id)">
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M15 6H3v2h12V6zm0 4H3v2h12v-2zM3 16h8v-2H3v2zM17 6v8.18c-.31-.11-.65-.18-1-.18-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3V8h3V6h-5z"/></svg>
+        <span data-i18n="playlist_add_label">Dodaj do playlisty</span>
       </button>
       <button class="abtn" id="player-wl-btn" onclick="toggleWatchLater(cur.id)">
         <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm.5 5H11v6l5.25 3.15.75-1.23-4.5-2.67V7z"/></svg>
@@ -621,6 +629,21 @@
     </div>
     <button onclick="goToSupportAuthor()" style="width:100%;background:linear-gradient(90deg,#171a21,#2a475e);border:none;color:var(--text-primary);padding:13px;border-radius:24px;cursor:pointer;font-size:14px;font-weight:700;margin-bottom:10px;display:flex;align-items:center;justify-content:center;gap:8px">🎮 Wyślij trade na Steam</button>
     <button onclick="closePremiumModal()" style="width:100%;background:none;border:none;color:var(--text-tertiary);padding:8px;cursor:pointer;font-size:13px">Zamknij</button>
+  </div>
+</div>
+
+<!-- DODAJ DO PLAYLISTY -->
+<div class="fmbg" id="playlist-picker-modal">
+  <div class="fbox" style="max-width:420px">
+    <h3 data-i18n="playlist_picker_title">Dodaj do playlisty</h3>
+    <div id="playlist-picker-list" style="display:flex;flex-direction:column;gap:2px;max-height:280px;overflow-y:auto;margin-bottom:14px"></div>
+    <div style="display:flex;gap:8px;margin-bottom:14px">
+      <input id="playlist-new-inp" data-i18n-placeholder="playlist_new_ph" placeholder="Nazwa nowej playlisty" style="flex:1;background:var(--bg-sunken);border:1px solid var(--border);border-radius:8px;color:var(--text-primary);padding:9px 12px;font-size:13px;outline:none">
+      <button onclick="createPlaylistFromPicker()" style="background:#3ea6ff;border:none;color:#0f0f0f;font-weight:700;padding:9px 16px;border-radius:8px;cursor:pointer;font-size:13px;flex-shrink:0" data-i18n="btn_add">Dodaj</button>
+    </div>
+    <div class="fbbtns">
+      <button class="fcancel" onclick="closePlaylistPicker()" data-i18n="btn_close">Zamknij</button>
+    </div>
   </div>
 </div>
 
