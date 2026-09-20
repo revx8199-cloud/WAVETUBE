@@ -1623,6 +1623,7 @@ function changeBanner(e, key){
   if(file.size>8*1024*1024){toast('Zdjęcie za duże! Maksymalnie 8MB');return;}
   const img=new Image();
   img.onload=()=>{
+    document.getElementById('banner-crop-modal').classList.add('open');
     const frame=document.getElementById('banner-crop-frame');
     const frameW=frame.clientWidth,frameH=frame.clientHeight;
     const scale=Math.max(frameW/img.naturalWidth,frameH/img.naturalHeight);
@@ -1636,7 +1637,6 @@ function changeBanner(e, key){
     const imgEl=document.getElementById('banner-crop-img');
     imgEl.src=img.src;
     applyBannerCropTransform();
-    document.getElementById('banner-crop-modal').classList.add('open');
   };
   img.onerror=()=>toast('Nie udało się wczytać zdjęcia');
   img.src=URL.createObjectURL(file);
