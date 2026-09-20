@@ -657,6 +657,21 @@
   </div>
 </div>
 
+<!-- PODGLĄD/PRZYCINANIE BANERA -->
+<div class="fmbg" id="banner-crop-modal">
+  <div class="fbox" style="max-width:640px">
+    <h3 data-i18n="banner_crop_title">Podgląd banera</h3>
+    <p class="sub" data-i18n="banner_crop_sub">Tak będzie wyglądać Twój baner. Przeciągnij zdjęcie żeby ustawić kadr.</p>
+    <div id="banner-crop-frame" style="position:relative;width:100%;aspect-ratio:1920/480;overflow:hidden;border-radius:10px;background:#000;cursor:grab;user-select:none;margin-bottom:16px">
+      <img id="banner-crop-img" style="position:absolute;top:0;left:0;max-width:none;pointer-events:none" draggable="false">
+    </div>
+    <div class="fbbtns">
+      <button class="fcancel" onclick="closeBannerCropModal()" data-i18n="btn_close">Anuluj</button>
+      <button class="fsubmit" onclick="saveBannerCrop()" data-i18n="btn_save">Zapisz</button>
+    </div>
+  </div>
+</div>
+
 <!-- ZNAJDŹ BUG -->
 <div class="fmbg" id="findbug-modal">
   <div class="fbox" style="max-width:480px">
