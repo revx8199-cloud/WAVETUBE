@@ -571,9 +571,7 @@ function subscribeCallChannel(){
   callSignalChannel=sb.channel('call-'+currentUser.id,{config:{broadcast:{self:false}}});
   callSignalChannel.on('broadcast',{event:'signal'},({payload})=>handleCallSignal(payload));
   callSignalChannel.subscribe();
-  if(window.Notification&&Notification.permission==='default'){
-    Notification.requestPermission();
-  }
+  setupPushNotifications();
 }
 function unsubscribeCallChannel(){
   if(callSignalChannel){sb.removeChannel(callSignalChannel);callSignalChannel=null;}
@@ -618,6 +616,7 @@ async function startCall(otherId,otherName,otherAvatar){
   const offer=await callPC.createOffer();
   await callPC.setLocalDescription(offer);
   callPeerChannel.send({type:'broadcast',event:'signal',payload:{type:'offer',sdp:offer,from:currentUser.id,fromName:getMyDisplayName(),fromAvatar:currentUser.user_metadata?.avatar_url||''}});
+  triggerCallPush(otherId,getMyDisplayName());
 }
 
 async function handleCallSignal(payload){
@@ -830,4 +829,50 @@ function stopTitleFlash(){
     if(originalTitle)document.title=originalTitle;
     originalTitle=null;
   }
+}
+
+// ── PUSH NOTIFICATIONS (dzwonienie widoczne nawet gdy przeglądarka jest zamknięta) ──
+const VAPID_PUBLIC_KEY='BNZILvd_keJwELaDUnMLJkYutHPPfw7tbEHFJhBmv_U2s4w3N3OkuWovThCrrysFChPxL5Nc4FqES16bAc-_Hpw';
+
+function urlBase64ToUint8Array(base64String){
+  const padding='='.repeat((4-base64String.length%4)%4);
+  const base64=(base64String+padding).replace(/-/g,'+').replace(/_/g,'/');
+  const rawData=atob(base64);
+  const outputArray=new Uint8Array(rawData.length);
+  for(let i=0;i<rawData.length;++i)outputArray[i]=rawData.charCodeAt(i);
+  return outputArray;
+}
+
+async function setupPushNotifications(){
+  if(!('serviceWorker'in navigator)||!('PushManager'in window)||!currentUser)return;
+  try{
+    const reg=await navigator.serviceWorker.register('sw.js');
+    let sub=await reg.pushManager.getSubscription();
+    if(!sub){
+      const perm=await Notification.requestPermission();
+      if(perm!=='granted')return;
+      sub=await reg.pushManager.subscribe({
+        userVisibleOnly:true,
+        applicationServerKey:urlBase64ToUint8Array(VAPID_PUBLIC_KEY)
+      });
+    }
+    const subJson=sub.toJSON();
+    await sb.from('push_subscriptions').upsert([{
+      user_id:currentUser.id,
+      endpoint:subJson.endpoint,
+      subscription:subJson
+    }],{onConflict:'user_id,endpoint'});
+  }catch(e){console.warn('Push setup failed:',e);}
+}
+
+function triggerCallPush(toUserId,fromName){
+  fetch(`${SUPABASE_URL}/functions/v1/send-call-push`,{
+    method:'POST',
+    headers:{
+      'Content-Type':'application/json',
+      'Authorization':'Bearer '+SUPABASE_KEY,
+      'apikey':SUPABASE_KEY
+    },
+    body:JSON.stringify({toUserId,fromName})
+  }).catch(()=>{});
 }
