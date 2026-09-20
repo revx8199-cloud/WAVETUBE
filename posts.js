@@ -492,6 +492,7 @@ document.addEventListener('keydown',e=>{
       subscribePresence();
       subscribeCallChannel();
       startHeartbeat();
+      checkIncomingCallFromUrl();
     }
   }
   await loadVideos();

@@ -558,6 +558,7 @@ let callLocalStream=null;
 let callSignalChannel=null;   // mój własny "numer" - nasłuch przychodzących połączeń
 let callPeerChannel=null;     // kanał do wysyłania do drugiej strony podczas aktywnego połączenia
 let callState='idle';         // idle | calling | ringing | active
+let callLastOfferSDP=null;    // trzymane, żeby móc wysłać ofertę ponownie na prośbę (np. gdy druga strona odpala appkę z powiadomienia push)
 let callOtherUser=null;       // {id,name,avatar}
 let callIncomingOffer=null;
 let callPendingCandidates=[];
@@ -615,6 +616,7 @@ async function startCall(otherId,otherName,otherAvatar){
   await callPeerChannel.subscribe();
   const offer=await callPC.createOffer();
   await callPC.setLocalDescription(offer);
+  callLastOfferSDP=offer;
   callPeerChannel.send({type:'broadcast',event:'signal',payload:{type:'offer',sdp:offer,from:currentUser.id,fromName:getMyDisplayName(),fromAvatar:currentUser.user_metadata?.avatar_url||''}});
   triggerCallPush(otherId,getMyDisplayName());
 }
@@ -652,6 +654,10 @@ async function handleCallSignal(payload){
   } else if(payload.type==='end'){
     toast(t('call_ended_toast'));
     endCallCleanup();
+  } else if(payload.type==='request-offer'){
+    if(callState==='calling'&&callLastOfferSDP&&callPeerChannel){
+      callPeerChannel.send({type:'broadcast',event:'signal',payload:{type:'offer',sdp:callLastOfferSDP,from:currentUser.id,fromName:getMyDisplayName(),fromAvatar:currentUser.user_metadata?.avatar_url||''}});
+    }
   }
 }
 
@@ -720,6 +726,7 @@ function endCallCleanup(){
   if(callPeerChannel){sb.removeChannel(callPeerChannel);callPeerChannel=null;}
   callPendingCandidates=[];
   callIncomingOffer=null;
+  callLastOfferSDP=null;
   callState='idle';
   callOtherUser=null;
   callMuted=false;
@@ -873,6 +880,22 @@ function triggerCallPush(toUserId,fromName){
       'Authorization':'Bearer '+SUPABASE_KEY,
       'apikey':SUPABASE_KEY
     },
-    body:JSON.stringify({toUserId,fromName})
+    body:JSON.stringify({toUserId,fromName,fromId:currentUser.id})
   }).catch(()=>{});
+}
+
+// ── OTWARCIE APPKI Z POWIADOMIENIA PUSH O POŁĄCZENIU ────────────────────────
+// Push tylko informuje "ktoś dzwoni" - nie niesie samej oferty WebRTC (ta
+// poleciała przez Realtime broadcast, gdy karta była zamknięta, więc nikt
+// jej nie odebrał). Jeśli appka odpaliła się z linku w powiadomieniu, prosimy
+// dzwoniącego o ponowne wysłanie oferty (o ile dalej czeka w stanie "calling").
+function checkIncomingCallFromUrl(){
+  const params=new URLSearchParams(window.location.search);
+  const callFrom=params.get('call_from');
+  if(!callFrom||!currentUser)return;
+  sendQuickSignal(callFrom,{type:'request-offer'});
+  const url=new URL(window.location.href);
+  url.searchParams.delete('call_from');
+  url.searchParams.delete('call_name');
+  window.history.replaceState({},'',url.toString());
 }
