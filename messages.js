@@ -866,7 +866,7 @@ async function setupPushNotifications(){
 }
 
 function triggerCallPush(toUserId,fromName){
-  fetch(`${SUPABASE_URL}/functions/v1/send-call-push`,{
+  fetch(`${SUPABASE_URL}/functions/v1/send-caal-push`,{
     method:'POST',
     headers:{
       'Content-Type':'application/json',
