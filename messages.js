@@ -571,6 +571,9 @@ function subscribeCallChannel(){
   callSignalChannel=sb.channel('call-'+currentUser.id,{config:{broadcast:{self:false}}});
   callSignalChannel.on('broadcast',{event:'signal'},({payload})=>handleCallSignal(payload));
   callSignalChannel.subscribe();
+  if(window.Notification&&Notification.permission==='default'){
+    Notification.requestPermission();
+  }
 }
 function unsubscribeCallChannel(){
   if(callSignalChannel){sb.removeChannel(callSignalChannel);callSignalChannel=null;}
@@ -628,6 +631,8 @@ async function handleCallSignal(payload){
     callState='ringing';
     showCallUI();
     playRingtone();
+    notifyIncomingCall(payload.fromName);
+    startTitleFlash(`📞 ${payload.fromName} ${t('call_status_incoming')}`);
   } else if(payload.type==='answer'){
     if(callPC){
       await callPC.setRemoteDescription(new RTCSessionDescription(payload.sdp));
@@ -669,6 +674,7 @@ async function flushPendingCandidates(){
 async function acceptCall(){
   if(callState!=='ringing'||!callOtherUser)return;
   stopRingtone();
+  stopTitleFlash();
   try{
     callLocalStream=await navigator.mediaDevices.getUserMedia({audio:true});
   }catch(e){toast(t('call_mic_denied_toast'));rejectCall();return;}
@@ -708,6 +714,7 @@ function toggleCallMute(){
 
 function endCallCleanup(){
   stopRingtone();
+  stopTitleFlash();
   clearInterval(callTimerInt);callTimerInt=null;
   if(callPC){callPC.close();callPC=null;}
   if(callLocalStream){callLocalStream.getTracks().forEach(tr=>tr.stop());callLocalStream=null;}
@@ -787,4 +794,40 @@ function showCallUI(){
 function hideCallUI(){
   const el=document.getElementById('call-overlay');
   if(el)el.style.display='none';
+}
+
+// ── POWIADOMIENIE O POŁĄCZENIU (widoczne nawet na innej karcie) ────────────
+let titleFlashInt=null,originalTitle=null;
+
+function notifyIncomingCall(fromName){
+  if(!window.Notification||Notification.permission!=='granted')return;
+  try{
+    const n=new Notification(`📞 ${fromName}`,{
+      body:t('call_status_incoming'),
+      tag:'wavetube-call',
+      requireInteraction:true
+    });
+    n.onclick=()=>{
+      window.focus();
+      n.close();
+    };
+  }catch(e){}
+}
+
+function startTitleFlash(text){
+  if(titleFlashInt)return;
+  originalTitle=document.title;
+  let toggle=false;
+  titleFlashInt=setInterval(()=>{
+    document.title=toggle?text:originalTitle;
+    toggle=!toggle;
+  },1000);
+}
+function stopTitleFlash(){
+  if(titleFlashInt){
+    clearInterval(titleFlashInt);
+    titleFlashInt=null;
+    if(originalTitle)document.title=originalTitle;
+    originalTitle=null;
+  }
 }
