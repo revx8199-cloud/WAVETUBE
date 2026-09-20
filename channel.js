@@ -3,6 +3,7 @@
 // ── PANEL VIP ────────────────────────────────────────────────────────────
 const VIP_BADGE_COLORS=['#ffd700','#ff6b35','#c084fc','#4ade80','#f472b6','#fb7185','#facc15','#a78bfa','#22d3ee','#ef4444','#84cc16','#e879f9','#fb923c','#14b8a6','#eab308','#f43f5e','#3ea6ff','#00e676','#2979ff','#d500f9','#ff3d00','#76ff03','#00e5ff','#ff4081','#651fff','#1de9b6'];
 const AVATAR_FRAME_COLORS=['#ffd700','#ff6b35','#c084fc','#4ade80','#f472b6','#fb7185','#facc15','#a78bfa','#22d3ee','#ef4444','#84cc16','#e879f9','#fb923c','#14b8a6','#eab308','#f43f5e','#3ea6ff','#ffffff','#000000','#ff1744','#00e676','#2979ff','#d500f9','#ff3d00','#76ff03','#00e5ff','#c6ff00','#ff4081','#651fff','#1de9b6','#ffab00','#6d4c41'];
+const AVATAR_PARTICLE_TYPES=['✨','💖','🔥','❄️','🍀','⭐','💎','🌸','⚡','🌟','💫','🎈','🦋','🌈','☠️','👑','🎃','💀'];
 
 function openVipPanel(){
   if(!isVIP()){toast('Brak uprawnień');return;}
@@ -216,7 +217,7 @@ function renderVipPanel(){
               ${meta?.avatar_url?`<img src="${meta.avatar_url}" style="width:100%;height:100%;object-fit:cover">`:`<span style="font-size:22px;font-weight:700">${(myDisplayName[0]||'?').toUpperCase()}</span>`}
             </div>
           </div>
-          ${myAvatarParticles?'<span class="av-particle p1">✨</span><span class="av-particle p2">✨</span><span class="av-particle p3">✨</span><span class="av-particle p4">✨</span><span class="av-particle p5">✨</span><span class="av-particle p6">✨</span>':''}
+          ${myAvatarParticles?`<span class="av-particle p1">${myAvatarParticleType}</span><span class="av-particle p2">${myAvatarParticleType}</span><span class="av-particle p3">${myAvatarParticleType}</span><span class="av-particle p4">${myAvatarParticleType}</span><span class="av-particle p5">${myAvatarParticleType}</span><span class="av-particle p6">${myAvatarParticleType}</span>`:''}
         </div>
         <div style="font-size:12px;color:var(--text-tertiary)">Podgląd</div>
       </div>
@@ -225,11 +226,14 @@ function renderVipPanel(){
         ${AVATAR_FRAME_COLORS.map(c=>`<div onclick="saveAvatarFrame('${c}')" style="width:34px;height:34px;border-radius:50%;background:${c};cursor:pointer;border:3px solid ${myAvatarFrame===c?'#fff':'transparent'};display:flex;align-items:center;justify-content:center">${myAvatarFrame===c?'<svg viewBox="0 0 24 24" width="14" height="14"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z" fill="#fff" stroke="#000" stroke-width="1"/></svg>':''}</div>`).join('')}
       </div>
       <div onclick="toggleAvatarParticles()" style="display:flex;align-items:center;justify-content:space-between;cursor:pointer;background:var(--bg-sunken);border-radius:10px;padding:12px 14px">
-        <div><div style="font-size:13px;font-weight:600">✨ Efekt cząsteczek</div><div style="font-size:11px;color:var(--text-tertiary)">Subtelne iskierki wokół avatara na Twoim kanale</div></div>
+        <div><div style="font-size:13px;font-weight:600">${myAvatarParticleType} Efekt cząsteczek</div><div style="font-size:11px;color:var(--text-tertiary)">Subtelne iskierki wokół avatara na Twoim kanale</div></div>
         <div style="width:40px;height:22px;border-radius:12px;background:${myAvatarParticles?'#3ea6ff':'var(--border)'};position:relative;flex-shrink:0;transition:background .2s">
           <div style="width:18px;height:18px;border-radius:50%;background:#fff;position:absolute;top:2px;left:${myAvatarParticles?'20px':'2px'};transition:left .2s"></div>
         </div>
       </div>
+      ${myAvatarParticles?`<div style="display:flex;flex-wrap:wrap;gap:10px;margin-top:12px">
+        ${AVATAR_PARTICLE_TYPES.map(e=>`<div onclick="saveAvatarParticleType('${e}')" style="width:34px;height:34px;border-radius:8px;background:var(--bg-sunken);cursor:pointer;border:2px solid ${myAvatarParticleType===e?'#3ea6ff':'transparent'};display:flex;align-items:center;justify-content:center;font-size:16px">${e}</div>`).join('')}
+      </div>`:''}
     </div>
 
     <div>
@@ -336,6 +340,7 @@ function isAdmin(){return!!(currentUser&&currentUser.email===ADMIN_EMAIL);}
 let myNameColor='';
 let myAvatarFrame='';
 let myAvatarParticles=false;
+let myAvatarParticleType='✨';
 let myDisplayNick='';
 let vipBadgeColor='';
 let adminBadgeColor='';
@@ -406,13 +411,23 @@ function fontCssFor(fontId){
 }
 
 async function loadMyNameColor(){
-  if(!currentUser){myNameColor='';myNameFont='';myDisplayNick='';myAvatarFrame='';myAvatarParticles=false;return;}
-  const{data}=await sb.from('profiles').select('name_color,name_font,name,avatar_frame,avatar_particles').eq('id',currentUser.id).single();
+  if(!currentUser){myNameColor='';myNameFont='';myDisplayNick='';myAvatarFrame='';myAvatarParticles=false;myAvatarParticleType='✨';return;}
+  const{data}=await sb.from('profiles').select('name_color,name_font,name,avatar_frame,avatar_particles,avatar_particle_type').eq('id',currentUser.id).single();
   myNameColor=data?.name_color||'';
   myNameFont=data?.name_font||'';
   myDisplayNick=data?.name||'';
   myAvatarFrame=data?.avatar_frame||'';
   myAvatarParticles=!!data?.avatar_particles;
+  myAvatarParticleType=data?.avatar_particle_type||'✨';
+}
+
+async function saveAvatarParticleType(emoji){
+  if(!isVIP())return;
+  myAvatarParticleType=emoji;
+  const{error}=await sb.from('profiles').upsert([{id:currentUser.id,avatar_particle_type:emoji}],{onConflict:'id'});
+  if(error){toast('Błąd: '+error.message);return;}
+  renderVipPanel();
+  updateAuthUI();
 }
 
 async function toggleAvatarParticles(){
@@ -576,9 +591,9 @@ async function showChannel(userId,nameIn,avatar,email){
   let chBannerUrl=localStorage.getItem('banner_'+bannerKey)||'';
   const savedDescFallback=localStorage.getItem('desc_'+(userId||email))||'';
   const{count:subCount}=await sb.from('subscriptions').select('*',{count:'exact',head:true}).eq('channel_id',userId||email);
-  let chNameColor='',chNameFont='',savedDesc=savedDescFallback,joinedAt='',country='',chAvatarFrame='',chAvatarParticles=false;
+  let chNameColor='',chNameFont='',savedDesc=savedDescFallback,joinedAt='',country='',chAvatarFrame='',chAvatarParticles=false,chAvatarParticleType='✨';
   if(userId){
-    const{data:profStyle}=await sb.from('profiles').select('name_color,name_font,description,created_at,country,banner_url,avatar_frame,avatar_particles').eq('id',userId).single();
+    const{data:profStyle}=await sb.from('profiles').select('name_color,name_font,description,created_at,country,banner_url,avatar_frame,avatar_particles,avatar_particle_type').eq('id',userId).single();
     chNameColor=profStyle?.name_color||'';
     chNameFont=profStyle?.name_font||'';
     if(profStyle&&profStyle.description)savedDesc=profStyle.description;
@@ -587,10 +602,11 @@ async function showChannel(userId,nameIn,avatar,email){
     if(profStyle&&profStyle.banner_url)chBannerUrl=profStyle.banner_url;
     chAvatarFrame=profStyle?.avatar_frame||'';
     chAvatarParticles=!!profStyle?.avatar_particles;
+    chAvatarParticleType=profStyle?.avatar_particle_type||'✨';
   }
   const avFrameStyle=chAvatarFrame?`border:3px solid ${chAvatarFrame};box-sizing:border-box`:'';
   const avBlockHtml=chAvatarParticles
-    ?`<div class="avatar-particle-wrap"><div class="channel-big-av" style="${avFrameStyle}">${avHtml}</div><span class="av-particle p1">✨</span><span class="av-particle p2">✨</span><span class="av-particle p3">✨</span><span class="av-particle p4">✨</span><span class="av-particle p5">✨</span><span class="av-particle p6">✨</span></div>`
+    ?`<div class="avatar-particle-wrap"><div class="channel-big-av" style="${avFrameStyle}">${avHtml}</div><span class="av-particle p1">${chAvatarParticleType}</span><span class="av-particle p2">${chAvatarParticleType}</span><span class="av-particle p3">${chAvatarParticleType}</span><span class="av-particle p4">${chAvatarParticleType}</span><span class="av-particle p5">${chAvatarParticleType}</span><span class="av-particle p6">${chAvatarParticleType}</span></div>`
     :`<div class="channel-big-av" style="${avFrameStyle}">${avHtml}</div>`;
   const bannerBg=chBannerUrl?(chBannerUrl.startsWith('url(')?chBannerUrl:'url('+chBannerUrl+')'):'linear-gradient(135deg,#1a1a2e,#16213e)';
   cc.innerHTML=`
