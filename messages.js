@@ -239,13 +239,14 @@ async function loadConvList(){
     const m=c.lastMsg;
     const otherId=m.sender_id===currentUser.id?m.receiver_id:m.sender_id;
     const theirVideo=videos.find(v=>v.user_id===otherId);
+    const theirProfile=profileCache[otherId];
     // Get name/avatar from message data (sender_name/sender_avatar saved when sending)
     const otherIsReceiver=m.sender_id===currentUser.id;
     const nameFromMsg=otherIsReceiver?(m.receiver_name||''):(m.sender_name||'');
     const avatarFromMsg=otherIsReceiver?(m.receiver_avatar||''):(m.sender_avatar||'');
-    const name=theirVideo?.user_name||theirVideo?.user_email?.split('@')[0]||nameFromMsg||'Użytkownik';
-    const avatar=theirVideo?.user_avatar||avatarFromMsg||'';
-    const email=theirVideo?.user_email||'';
+    const name=theirProfile?.name||theirVideo?.user_name||theirVideo?.user_email?.split('@')[0]||nameFromMsg||'Użytkownik';
+    const avatar=theirProfile?.avatar||theirVideo?.user_avatar||avatarFromMsg||'';
+    const email=theirProfile?.email||theirVideo?.user_email||'';
     const time=new Date(m.created_at).toLocaleString('pl-PL',{hour:'2-digit',minute:'2-digit'});
     const isBlocked=!!blockedUsers[otherId];
     return`<div class="msg-conv-item${currentConvId===m.conv_id?' active':''}" onclick="openConv('${m.conv_id}','${otherId}','${jsesc(name)}','${avatar}','${email}')" style="${isBlocked?'opacity:.5':''}">
