@@ -690,7 +690,7 @@
 
 <!-- USTAWIENIA -->
 <div class="fmbg" id="settings-modal">
-  <div class="fbox" style="max-width:560px">
+  <div class="fbox" style="max-width:720px">
     <h3 data-i18n="settings_title">⚙️ Ustawienia</h3>
     <div class="field" style="margin-bottom:24px;padding-bottom:20px;border-bottom:1px solid var(--border)">
       <label data-i18n="settings_nick">Twój nick</label>
@@ -739,6 +739,13 @@
         <span class="toggle-switch" id="allowmsg-toggle" onclick="toggleAllowMessages()"><span class="toggle-knob"></span></span>
       </label>
       <p style="color:var(--text-tertiary);font-size:11px;margin-top:8px" data-i18n="settings_allow_msg_desc">Gdy wyłączone, nikt nie założy z Tobą nowej rozmowy w Wiadomościach.</p>
+    </div>
+    <div class="field" style="margin-top:24px;padding-top:20px;border-top:1px solid var(--border)">
+      <label style="display:flex;align-items:center;justify-content:space-between;cursor:pointer" onclick="event.preventDefault()">
+        <span data-i18n="settings_allow_calls">📞 Zezwalaj innym na dzwonienie do mnie</span>
+        <span class="toggle-switch" id="allowcalls-toggle" onclick="toggleAllowCalls()"><span class="toggle-knob"></span></span>
+      </label>
+      <p style="color:var(--text-tertiary);font-size:11px;margin-top:8px" data-i18n="settings_allow_calls_desc">Gdy wyłączone, nikt nie zadzwoni do Ciebie w Wiadomościach.</p>
     </div>
     <div class="field" style="margin-top:24px;padding-top:20px;border-top:1px solid var(--border)">
       <div style="display:flex;justify-content:center;gap:24px;flex-wrap:wrap">

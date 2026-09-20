@@ -16,6 +16,22 @@ async function toggleAllowMessages(){
   if(el)el.classList.toggle('on',newVal);
 }
 
+// ── ZEZWALAJ NA DZWONIENIE ───────────────────────────────────────────────
+async function loadAllowCallsIntoSettings(){
+  const el=document.getElementById('allowcalls-toggle');
+  if(!el||!currentUser)return;
+  const{data}=await sb.from('profiles').select('allow_calls').eq('id',currentUser.id).single();
+  el.classList.toggle('on',data?.allow_calls!==false);
+}
+async function toggleAllowCalls(){
+  if(!currentUser)return;
+  const el=document.getElementById('allowcalls-toggle');
+  const{data}=await sb.from('profiles').select('allow_calls').eq('id',currentUser.id).single();
+  const newVal=!(data?.allow_calls!==false);
+  await sb.from('profiles').upsert([{id:currentUser.id,allow_calls:newVal}],{onConflict:'id'});
+  if(el)el.classList.toggle('on',newVal);
+}
+
 function getNextVideoId(currentId){
   const pool=videos.filter(v=>v.is_short!==true&&isDiscoverable(v)&&(!v.premiere||new Date(v.premiere)<=new Date()));
   if(pool.length<2)return null;
@@ -604,6 +620,8 @@ function createCallPC(){
 async function startCall(otherId,otherName,otherAvatar){
   if(!currentUser)return;
   if(callState!=='idle'){toast(t('call_busy_self_toast'));return;}
+  const{data:targetProf}=await sb.from('profiles').select('allow_calls').eq('id',otherId).single();
+  if(targetProf?.allow_calls===false){toast(t('call_disabled_toast'));return;}
   try{
     callLocalStream=await navigator.mediaDevices.getUserMedia({audio:true});
   }catch(e){toast(t('call_mic_denied_toast'));return;}

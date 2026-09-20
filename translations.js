@@ -97,6 +97,7 @@ const TRANSLATIONS={
     hint_gdrive:'✅ <b style="color:#1a73e8">Google Drive</b> — upewnij się że plik jest publiczny',
     hint_mp4_detecting:'✅ <b style="color:#188038">MP4</b> — wykrywam długość...',hint_unknown_format:'⚠️ Nierozpoznany format',hint_mp4_detected:'✅ <b style="color:#188038">MP4</b> — długość wykryta automatycznie',
     settings_allow_msg:'✉️ Zezwalaj innym na pisanie do mnie',settings_allow_msg_desc:'Gdy wyłączone, nikt nie założy z Tobą nowej rozmowy w Wiadomościach.',toast_msg_disabled:'Ten użytkownik wyłączył możliwość pisania do niego',
+    settings_allow_calls:'📞 Zezwalaj innym na dzwonienie do mnie',settings_allow_calls_desc:'Gdy wyłączone, nikt nie zadzwoni do Ciebie w Wiadomościach.',call_disabled_toast:'Ten użytkownik wyłączył możliwość dzwonienia do niego',
     announce_load_error:'Nie udało się wczytać ogłoszeń',announce_empty:'Brak ogłoszeń',announce_empty_sub:'Tutaj pojawią się wiadomości od twórcy WaveTube'
   },
   en:{
@@ -194,6 +195,7 @@ const TRANSLATIONS={
     hint_gdrive:'✅ <b style="color:#1a73e8">Google Drive</b> — make sure the file is public',
     hint_mp4_detecting:'✅ <b style="color:#188038">MP4</b> — detecting duration...',hint_unknown_format:'⚠️ Unrecognized format',hint_mp4_detected:'✅ <b style="color:#188038">MP4</b> — duration detected automatically',
     settings_allow_msg:'✉️ Allow others to message me',settings_allow_msg_desc:'When off, no one can start a new conversation with you in Messages.',toast_msg_disabled:'This user has disabled messages',
+    settings_allow_calls:'📞 Allow others to call me',settings_allow_calls_desc:'When off, no one can call you in Messages.',call_disabled_toast:'This user has disabled calls',
     announce_load_error:'Failed to load announcements',announce_empty:'No announcements',announce_empty_sub:'Messages from the WaveTube creator will appear here'
   },
   ru:{
@@ -291,6 +293,7 @@ const TRANSLATIONS={
     hint_gdrive:'✅ <b style="color:#1a73e8">Google Диск</b> — убедитесь, что файл публичный',
     hint_mp4_detecting:'✅ <b style="color:#188038">MP4</b> — определяю длительность...',hint_unknown_format:'⚠️ Формат не распознан',hint_mp4_detected:'✅ <b style="color:#188038">MP4</b> — длительность определена автоматически',
     settings_allow_msg:'✉️ Разрешить другим писать мне',settings_allow_msg_desc:'Если выключено, никто не сможет начать с вами новый разговор в Сообщениях.',toast_msg_disabled:'Этот пользователь отключил возможность писать ему',
+    settings_allow_calls:'📞 Разрешить другим звонить мне',settings_allow_calls_desc:'Если выключено, никто не сможет позвонить вам в Сообщениях.',call_disabled_toast:'Этот пользователь отключил звонки',
     announce_load_error:'Не удалось загрузить объявления',announce_empty:'Нет объявлений',announce_empty_sub:'Здесь появятся сообщения от автора WaveTube'
   }
 };
@@ -336,6 +339,7 @@ function openSettingsModal(){
   updateThemeButtons();
   syncAutoplayToggleUI();
   loadAllowMsgIntoSettings();
+  loadAllowCallsIntoSettings();
 }
 
 async function loadMyCountryIntoSettings(){
