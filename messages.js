@@ -663,9 +663,11 @@ async function handleCallSignal(payload){
 
 function sendQuickSignal(toUserId,payload){
   const tmp=sb.channel('call-'+toUserId,{config:{broadcast:{self:false}}});
-  tmp.subscribe().then(()=>{
-    tmp.send({type:'broadcast',event:'signal',payload:{...payload,from:currentUser.id}});
-    setTimeout(()=>sb.removeChannel(tmp),1200);
+  tmp.subscribe(status=>{
+    if(status==='SUBSCRIBED'){
+      tmp.send({type:'broadcast',event:'signal',payload:{...payload,from:currentUser.id}});
+      setTimeout(()=>sb.removeChannel(tmp),1200);
+    }
   });
 }
 
