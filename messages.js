@@ -608,7 +608,8 @@ function createCallPC(){
     }
   };
   pc.ontrack=e=>{
-    setupCallAudioGraph(e.streams[0]);
+    const el=document.getElementById('call-remote-audio');
+    if(el)el.srcObject=e.streams[0];
   };
   pc.onconnectionstatechange=()=>{
     if(pc.connectionState==='connected'&&callState==='calling'){
@@ -735,23 +736,26 @@ function hangupCall(){
   endCallCleanup();
 }
 
-function setupCallAudioGraph(stream){
+function ensureCallBoostGraph(){
+  if(callAudioCtx)return;
+  const el=document.getElementById('call-remote-audio');
+  if(!el)return;
   try{
     callAudioCtx=new(window.AudioContext||window.webkitAudioContext)();
-    if(callAudioCtx.state==='suspended')callAudioCtx.resume().catch(()=>{});
-    const src=callAudioCtx.createMediaStreamSource(stream);
+    const src=callAudioCtx.createMediaElementSource(el);
     callGainNode=callAudioCtx.createGain();
-    callGainNode.gain.value=callBoostOn?CALL_BOOST_GAIN:1;
+    callGainNode.gain.value=1;
     src.connect(callGainNode);
     callGainNode.connect(callAudioCtx.destination);
+    if(callAudioCtx.state==='suspended')callAudioCtx.resume().catch(()=>{});
   }catch(e){
-    const el=document.getElementById('call-remote-audio');
-    if(el)el.srcObject=stream;
+    callAudioCtx=null;callGainNode=null;
   }
 }
 
 function toggleCallBoost(){
   callBoostOn=!callBoostOn;
+  if(callBoostOn)ensureCallBoostGraph();
   if(callGainNode)callGainNode.gain.value=callBoostOn?CALL_BOOST_GAIN:1;
   updateCallUI();
 }
