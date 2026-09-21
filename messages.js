@@ -582,6 +582,8 @@ let callPendingCandidates=[];
 let callStartTs=0;
 let callTimerInt=null;
 let callMuted=false;
+let callAudioCtx=null,callGainNode=null,callBoostOn=false;
+const CALL_BOOST_GAIN=2.5;
 let ringtoneInt=null,ringCtx=null;
 
 function subscribeCallChannel(){
@@ -604,8 +606,7 @@ function createCallPC(){
     }
   };
   pc.ontrack=e=>{
-    const el=document.getElementById('call-remote-audio');
-    if(el)el.srcObject=e.streams[0];
+    setupCallAudioGraph(e.streams[0]);
   };
   pc.onconnectionstatechange=()=>{
     if(pc.connectionState==='connected'&&callState==='calling'){
@@ -731,6 +732,27 @@ function hangupCall(){
   endCallCleanup();
 }
 
+function setupCallAudioGraph(stream){
+  try{
+    callAudioCtx=new(window.AudioContext||window.webkitAudioContext)();
+    if(callAudioCtx.state==='suspended')callAudioCtx.resume().catch(()=>{});
+    const src=callAudioCtx.createMediaStreamSource(stream);
+    callGainNode=callAudioCtx.createGain();
+    callGainNode.gain.value=callBoostOn?CALL_BOOST_GAIN:1;
+    src.connect(callGainNode);
+    callGainNode.connect(callAudioCtx.destination);
+  }catch(e){
+    const el=document.getElementById('call-remote-audio');
+    if(el)el.srcObject=stream;
+  }
+}
+
+function toggleCallBoost(){
+  callBoostOn=!callBoostOn;
+  if(callGainNode)callGainNode.gain.value=callBoostOn?CALL_BOOST_GAIN:1;
+  updateCallUI();
+}
+
 function toggleCallMute(){
   if(!callLocalStream)return;
   callMuted=!callMuted;
@@ -745,6 +767,8 @@ function endCallCleanup(){
   if(callPC){callPC.close();callPC=null;}
   if(callLocalStream){callLocalStream.getTracks().forEach(tr=>tr.stop());callLocalStream=null;}
   if(callPeerChannel){sb.removeChannel(callPeerChannel);callPeerChannel=null;}
+  if(callAudioCtx){callAudioCtx.close();callAudioCtx=null;callGainNode=null;}
+  callBoostOn=false;
   callPendingCandidates=[];
   callIncomingOffer=null;
   callLastOfferSDP=null;
@@ -809,7 +833,7 @@ function updateCallUI(){
     ctrlEl.innerHTML=callBtnHtml('#cc0000','rejectCall()','📵',t('call_reject'))+callBtnHtml('#2ecc71','acceptCall()','📞',t('call_accept'));
   }else if(callState==='active'){
     statusEl.textContent='0:00';
-    ctrlEl.innerHTML=callBtnHtml(callMuted?'#3ea6ff':'var(--border-soft)','toggleCallMute()',callMuted?'🔇':'🎤',t('call_mute'))+callBtnHtml('#cc0000','hangupCall()','📵',t('call_hangup'));
+    ctrlEl.innerHTML=callBtnHtml(callMuted?'#3ea6ff':'var(--border-soft)','toggleCallMute()',callMuted?'🔇':'🎤',t('call_mute'))+callBtnHtml(callBoostOn?'#f5a623':'var(--border-soft)','toggleCallBoost()','🔊',t('call_boost'))+callBtnHtml('#cc0000','hangupCall()','📵',t('call_hangup'));
   }
 }
 
