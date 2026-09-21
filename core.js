@@ -1765,7 +1765,7 @@ function renderNotifications(){
   const list=document.getElementById('notif-list');
   if(!notificationsList.length){list.innerHTML=`<div class="notif-empty">${t('notif_empty')}</div>`;return;}
   list.innerHTML=notificationsList.map(n=>`
-    <div class="notif-item${n.read?'':' unread'}" onclick="handleNotifClick('${n.id}','${n.sender_id||''}','${n.sender_name||''}','${n.sender_avatar||''}','${n.sender_email||''}')">
+    <div class="notif-item${n.read?'':' unread'}" onclick="handleNotifClick('${jsesc(n.id)}','${jsesc(n.sender_id||'')}','${jsesc(n.sender_name||'')}','${jsesc(n.sender_avatar||'')}','${jsesc(n.sender_email||'')}')">
       ${n.avatar?`<img class="notif-av" src="${n.avatar}">`:`<div class="notif-av-ph" style="background:#cc0000">🔔</div>`}
       <div>
         <div class="notif-text">${n.message}</div>

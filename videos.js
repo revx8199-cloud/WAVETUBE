@@ -181,7 +181,7 @@ async function addVideo(v){
     const meta=currentUser.user_metadata;
     const{data:subs}=await sb.from('subscriptions').select('subscriber_id').eq('channel_id',currentUser.id);
     if(subs&&subs.length){
-      const notifs=subs.map(s=>({user_id:s.subscriber_id,message:`<b>${getMyDisplayName()}</b> dodał nowy film 🎬`,avatar:meta?.avatar_url||''}));
+      const notifs=subs.map(s=>({user_id:s.subscriber_id,message:`<b>${esc(getMyDisplayName())}</b> dodał nowy film 🎬`,avatar:meta?.avatar_url||''}));
       await sb.from('notifications').insert(notifs);
     }
   }
@@ -381,7 +381,7 @@ async function toggleSubInPlayer(key,name){
     }
     if(!chName)chName=name;
     await sb.from('subscriptions').insert([{subscriber_id:currentUser.id,subscriber_email:currentUser.email,channel_id:key,channel_name:chName,channel_avatar:chAvatar}]);
-    await sb.from('notifications').insert([{user_id:key,message:`<b>${getMyDisplayName()}</b> zasubskrybował Twój kanał 🔔`,avatar:currentUser.user_metadata?.avatar_url||'',sender_id:currentUser.id,sender_name:getMyDisplayName(),sender_avatar:currentUser.user_metadata?.avatar_url||'',sender_email:currentUser.email}]);
+    await sb.from('notifications').insert([{user_id:key,message:`<b>${esc(getMyDisplayName())}</b> zasubskrybował Twój kanał 🔔`,avatar:currentUser.user_metadata?.avatar_url||'',sender_id:currentUser.id,sender_name:getMyDisplayName(),sender_avatar:currentUser.user_metadata?.avatar_url||'',sender_email:currentUser.email}]);
     toast(`${t('toast_subscribing')}: ${name} 🔔`);
   }
   const btn=document.getElementById('sub-btn');

@@ -220,14 +220,14 @@ function renderPoll(p){
   const myVote=currentUser?poll.voters?.[currentUser.id]:undefined;
   const hasVoted=myVote!==undefined;
   return`<div style="margin-top:10px;background:var(--bg-sunken);border:1px solid var(--border-soft);border-radius:10px;padding:14px">
-    <div style="font-size:14px;font-weight:600;margin-bottom:12px">📊 ${poll.question}</div>
+    <div style="font-size:14px;font-weight:600;margin-bottom:12px">📊 ${esc(poll.question)}</div>
     ${poll.options.map((o,oi)=>{
       const pct=totalVotes?Math.round((o.votes||0)/totalVotes*100):0;
       const isMine=hasVoted&&myVote===oi;
       return`<div onclick="votePoll('${p.id}',${oi})" style="position:relative;margin-bottom:8px;cursor:pointer;border-radius:8px;overflow:hidden;background:var(--bg-sunken);border:1px solid ${isMine?'#3ea6ff':'var(--border)'}">
         ${hasVoted?`<div style="position:absolute;inset:0;width:${pct}%;background:${isMine?'rgba(62,166,255,.25)':'rgba(255,255,255,.08)'};transition:width .3s"></div>`:''}
         <div style="position:relative;display:flex;justify-content:space-between;align-items:center;padding:9px 12px;font-size:13px">
-          <span style="display:flex;align-items:center;gap:6px">${isMine?'✓ ':''}${o.text}</span>
+          <span style="display:flex;align-items:center;gap:6px">${isMine?'✓ ':''}${esc(o.text)}</span>
           ${hasVoted?`<span style="color:var(--text-secondary);font-size:12px">${pct}% (${o.votes||0})</span>`:''}
         </div>
       </div>`;
@@ -439,7 +439,7 @@ async function submitPost(){
     // notify subscribers
     const{data:subs}=await sb.from('subscriptions').select('subscriber_id').eq('channel_id',currentUser.id);
     if(subs&&subs.length){
-      const notifs=subs.map(s=>({user_id:s.subscriber_id,message:`<b>${getMyDisplayName()}</b> ${t('post_new_notification')}`,avatar:meta?.avatar_url||''}));
+      const notifs=subs.map(s=>({user_id:s.subscriber_id,message:`<b>${esc(getMyDisplayName())}</b> ${t('post_new_notification')}`,avatar:meta?.avatar_url||''}));
       await sb.from('notifications').insert(notifs);
     }
     document.getElementById('post-text-inp').value='';

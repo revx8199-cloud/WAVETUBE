@@ -254,7 +254,7 @@ async function loadConvList(){
       <div class="msg-conv-av-ph" style="background:#cc0000;cursor:pointer;${avatar?'display:none':''}" onclick="event.stopPropagation();closeMessages();showChannel('${otherId}','${jsesc(name)}','${avatar}','${email}')">${(name||'?')[0].toUpperCase()}</div>
       <div class="msg-conv-info">
         <div class="msg-conv-name" style="cursor:pointer" onclick="event.stopPropagation();closeMessages();showChannel('${otherId}','${jsesc(name)}','${avatar}','${email}')">${esc(name)}${verifiedBadge(email)}${isBlocked?' <span style="color:#cc0000;font-size:11px">🚫 zablokowany</span>':''}</div>
-        <div class="msg-conv-last">${m.image_url?'📷 Zdjęcie':m.audio_url?'🎤 Wiadomość głosowa':m.text.substring(0,40)}</div>
+        <div class="msg-conv-last">${m.image_url?'📷 Zdjęcie':m.audio_url?'🎤 Wiadomość głosowa':esc(m.text.substring(0,40))}</div>
       </div>
       <div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px">
         <div class="msg-conv-time">${time}</div>

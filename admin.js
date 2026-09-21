@@ -1477,7 +1477,7 @@ async function sendAnnouncement(){
 
   const notifs=[...userIds].map(uid=>({
     user_id:uid,
-    message:`📢 <b>Ogłoszenie:</b> ${text||poll.question}`,
+    message:`📢 <b>Ogłoszenie:</b> ${esc(text||poll.question)}`,
     avatar:''
   }));
   status.textContent=`Wysyłanie do ${notifs.length} użytkowników...`;
