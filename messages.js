@@ -584,6 +584,8 @@ let callTimerInt=null;
 let callMuted=false;
 let callAudioCtx=null,callGainNode=null,callBoostOn=false;
 const CALL_BOOST_GAIN=2.5;
+let callQualityInt=null;
+let callStatsPrev={lost:0,received:0};
 let ringtoneInt=null,ringCtx=null;
 
 function subscribeCallChannel(){
@@ -610,7 +612,7 @@ function createCallPC(){
   };
   pc.onconnectionstatechange=()=>{
     if(pc.connectionState==='connected'&&callState==='calling'){
-      callState='active';callStartTs=Date.now();updateCallUI();startCallTimer();
+      callState='active';callStartTs=Date.now();updateCallUI();startCallTimer();startCallQualityMonitor();
     }
     if(['failed','disconnected','closed'].includes(pc.connectionState)&&callState!=='idle'){
       endCallCleanup();
@@ -718,6 +720,7 @@ async function acceptCall(){
   callStartTs=Date.now();
   updateCallUI();
   startCallTimer();
+  startCallQualityMonitor();
 }
 
 function rejectCall(){
@@ -753,6 +756,57 @@ function toggleCallBoost(){
   updateCallUI();
 }
 
+function startCallQualityMonitor(){
+  stopCallQualityMonitor();
+  callStatsPrev={lost:0,received:0};
+  const el=document.getElementById('call-quality');
+  if(el)el.style.display='block';
+  pollCallQuality();
+  callQualityInt=setInterval(pollCallQuality,3000);
+}
+
+function stopCallQualityMonitor(){
+  clearInterval(callQualityInt);
+  callQualityInt=null;
+  const el=document.getElementById('call-quality');
+  if(el){el.style.display='none';el.textContent='';}
+}
+
+async function pollCallQuality(){
+  if(!callPC)return;
+  try{
+    const stats=await callPC.getStats();
+    let rtt=null,lost=0,received=0;
+    stats.forEach(r=>{
+      if(r.type==='inbound-rtp'&&r.kind==='audio'){
+        lost=r.packetsLost||0;
+        received=r.packetsReceived||0;
+      }
+      if(r.type==='candidate-pair'&&r.state==='succeeded'&&r.nominated&&typeof r.currentRoundTripTime==='number'){
+        rtt=r.currentRoundTripTime*1000;
+      }
+    });
+    const dLost=Math.max(0,lost-callStatsPrev.lost);
+    const dReceived=Math.max(0,received-callStatsPrev.received);
+    const total=dLost+dReceived;
+    const lossPct=total>0?(dLost/total*100):0;
+    callStatsPrev={lost,received};
+    renderCallQuality(rtt,lossPct);
+  }catch(e){}
+}
+
+function renderCallQuality(rtt,lossPct){
+  const el=document.getElementById('call-quality');
+  if(!el)return;
+  let label,color;
+  if(rtt===null){label=t('call_quality_checking');color='#888';}
+  else if(rtt<150&&lossPct<2){label='🟢 '+t('call_quality_good');color='#2ecc71';}
+  else if(rtt<350&&lossPct<8){label='🟡 '+t('call_quality_medium');color='#f5a623';}
+  else{label='🔴 '+t('call_quality_bad');color='#e74c3c';}
+  el.textContent=label;
+  el.style.color=color;
+}
+
 function toggleCallMute(){
   if(!callLocalStream)return;
   callMuted=!callMuted;
@@ -769,6 +823,7 @@ function endCallCleanup(){
   if(callPeerChannel){sb.removeChannel(callPeerChannel);callPeerChannel=null;}
   if(callAudioCtx){callAudioCtx.close();callAudioCtx=null;callGainNode=null;}
   callBoostOn=false;
+  stopCallQualityMonitor();
   callPendingCandidates=[];
   callIncomingOffer=null;
   callLastOfferSDP=null;
