@@ -1039,18 +1039,20 @@ function renderAnnouncementPoll(a){
   </div>`;
 }
 
+async function refreshAnnouncementRow(id){
+  const{data}=await sb.from('announcements').select('*').eq('id',id).single();
+  if(!data)return;
+  const idx=announcementsCache.findIndex(x=>x.id===id);
+  if(idx>-1)announcementsCache[idx]=data;
+}
+
 async function voteAnnouncementPoll(id,optionIndex){
   if(!currentUser){toast('Zaloguj się żeby zagłosować!');return;}
   const a=announcementsCache.find(x=>x.id===id);
   if(!a||!a.poll)return;
-  const poll=a.poll;
-  if(!poll.voters)poll.voters={};
-  const prevVote=poll.voters[currentUser.id];
-  if(prevVote===optionIndex)return;
-  if(prevVote!==undefined)poll.options[prevVote].votes=Math.max(0,(poll.options[prevVote].votes||0)-1);
-  poll.options[optionIndex].votes=(poll.options[optionIndex].votes||0)+1;
-  poll.voters[currentUser.id]=optionIndex;
-  await sb.from('announcements').update({poll}).eq('id',id);
+  const{error}=await sb.rpc('vote_announcement_poll',{p_id:id,p_option:optionIndex});
+  if(error){toast('Błąd: '+error.message);return;}
+  await refreshAnnouncementRow(id);
   renderAnnouncementsList();
 }
 
@@ -1074,18 +1076,9 @@ async function voteAnnouncement(id,type){
   if(!currentUser){toast('Zaloguj się żeby ocenić!');return;}
   const a=announcementsCache.find(x=>x.id===id);
   if(!a)return;
-  const voters=a.voters||{};
-  const prev=voters[currentUser.id];
-  if(prev===type){
-    delete voters[currentUser.id];
-    a[type+'s']=Math.max(0,(a[type+'s']||0)-1);
-  } else {
-    if(prev){a[prev+'s']=Math.max(0,(a[prev+'s']||0)-1);}
-    voters[currentUser.id]=type;
-    a[type+'s']=(a[type+'s']||0)+1;
-  }
-  a.voters=voters;
-  await sb.from('announcements').update({likes:a.likes||0,dislikes:a.dislikes||0,voters}).eq('id',id);
+  const{error}=await sb.rpc('vote_announcement',{p_id:id,p_type:type});
+  if(error){toast('Błąd: '+error.message);return;}
+  await refreshAnnouncementRow(id);
   renderAnnouncementsList();
 }
 
@@ -1098,13 +1091,14 @@ async function addAnnouncementComment(id){
   const a=announcementsCache.find(x=>x.id===id);
   if(!a)return;
   const meta=currentUser.user_metadata;
-  const comments=[...(a.comments||[]),{
+  const comment={
     user:getMyDisplayName(),
     text,ts:Date.now(),avatar:meta?.avatar_url||'',
     user_id:currentUser.id,name_color:myNameColor||'',name_font:myNameFont||'',avatar_frame:myAvatarFrame||''
-  }];
-  a.comments=comments;
-  await sb.from('announcements').update({comments}).eq('id',id);
+  };
+  const{error}=await sb.rpc('add_announcement_comment',{p_id:id,p_comment:comment});
+  if(error){toast('Błąd: '+error.message);return;}
+  await refreshAnnouncementRow(id);
   renderAnnouncementsList();
   const el=document.getElementById(`ann-comments-${id}`);
   if(el)el.style.display='block';
