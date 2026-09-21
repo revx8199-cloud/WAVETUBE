@@ -827,6 +827,7 @@ const FireworksFX=(()=>{
   let dpr=1,W=0,H=0;
   let rockets=[],particles=[];
   let nextLaunchAt=0,lastTs=0;
+  let audioCtx=null;
   const GRAVITY=140;
   const PALETTES=[
     ['#ff4757','#ffa502','#ffd166'],
@@ -862,7 +863,75 @@ const FireworksFX=(()=>{
     return`rgba(${r},${g},${b},${a})`;
   }
 
+  function ensureAudio(){
+    try{
+      audioCtx=audioCtx||new(window.AudioContext||window.webkitAudioContext)();
+      if(audioCtx.state==='suspended')audioCtx.resume();
+    }catch(e){audioCtx=null;}
+  }
+
+  function noiseBuffer(dur){
+    const size=Math.floor(audioCtx.sampleRate*dur);
+    const buf=audioCtx.createBuffer(1,size,audioCtx.sampleRate);
+    const d=buf.getChannelData(0);
+    for(let i=0;i<size;i++)d[i]=Math.random()*2-1;
+    return buf;
+  }
+
+  function playLaunchSound(){
+    if(!audioCtx)return;
+    try{
+      const t=audioCtx.currentTime;
+      const noise=audioCtx.createBufferSource();
+      noise.buffer=noiseBuffer(.5);
+      const bp=audioCtx.createBiquadFilter();
+      bp.type='bandpass';
+      bp.Q.value=.8;
+      bp.frequency.setValueAtTime(700,t);
+      bp.frequency.exponentialRampToValueAtTime(2600,t+.5);
+      const g=audioCtx.createGain();
+      g.gain.setValueAtTime(.001,t);
+      g.gain.exponentialRampToValueAtTime(.12,t+.08);
+      g.gain.exponentialRampToValueAtTime(.001,t+.5);
+      noise.connect(bp);bp.connect(g);g.connect(audioCtx.destination);
+      noise.start(t);noise.stop(t+.5);
+    }catch(e){}
+  }
+
+  function playExplosionSound(big){
+    if(!audioCtx)return;
+    try{
+      const t=audioCtx.currentTime;
+      // niski "bum"
+      const osc=audioCtx.createOscillator();
+      const og=audioCtx.createGain();
+      osc.type='sine';
+      osc.frequency.setValueAtTime(big?90:130,t);
+      osc.frequency.exponentialRampToValueAtTime(30,t+.25);
+      og.gain.setValueAtTime(big?.4:.25,t);
+      og.gain.exponentialRampToValueAtTime(.01,t+.35);
+      osc.connect(og);og.connect(audioCtx.destination);
+      osc.start(t);osc.stop(t+.36);
+      // trzask iskier - kilka rozsypanych paczek szumu
+      const crackles=big?7:4;
+      for(let i=0;i<crackles;i++){
+        const dt=Math.random()*.4;
+        const cNoise=audioCtx.createBufferSource();
+        cNoise.buffer=noiseBuffer(.12);
+        const hp=audioCtx.createBiquadFilter();
+        hp.type='highpass';hp.frequency.value=3500+Math.random()*2500;
+        const cg=audioCtx.createGain();
+        cg.gain.setValueAtTime(.001,t+dt);
+        cg.gain.exponentialRampToValueAtTime(.06+Math.random()*.05,t+dt+.01);
+        cg.gain.exponentialRampToValueAtTime(.001,t+dt+.12);
+        cNoise.connect(hp);hp.connect(cg);cg.connect(audioCtx.destination);
+        cNoise.start(t+dt);cNoise.stop(t+dt+.13);
+      }
+    }catch(e){}
+  }
+
   function launchRocket(){
+    playLaunchSound();
     const x=W*0.1+Math.random()*W*0.8;
     const targetY=H*0.12+Math.random()*H*0.35;
     const palette=PALETTES[Math.floor(Math.random()*PALETTES.length)];
@@ -870,6 +939,7 @@ const FireworksFX=(()=>{
   }
 
   function explode(r){
+    playExplosionSound(r.spinShell);
     const count=60+Math.floor(Math.random()*50);
     const speed=90+Math.random()*90;
     for(let i=0;i<count;i++){
@@ -963,6 +1033,7 @@ const FireworksFX=(()=>{
     ensureCanvas();
     if(!canvas)return;
     resize();
+    ensureAudio();
     active=true;
     lastTs=0;nextLaunchAt=0;
     canvas.style.display='block';
