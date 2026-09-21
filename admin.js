@@ -370,6 +370,7 @@ async function checkDiscoState(){
   toggleRainbowEffect(data.active_effect==='rainbow');
   toggleBlurEffect(data.active_effect==='blur');
   toggleSpinEffect(data.active_effect==='spin');
+  toggleFireworksEffect(data.active_effect==='fireworks');
   syncMusicState(data.music_url,!!data.music_active);
   syncBroadcastText(data.broadcast_text||'',data.broadcast_by||'');
   if(lastSeenBurstAt===null){
@@ -379,7 +380,6 @@ async function checkDiscoState(){
     lastSeenBurstAt=data.last_burst_at;
     if(data.last_burst==='confetti')fireConfetti();
     if(data.last_burst==='shake')fireShake();
-    if(data.last_burst==='fireworks')fireFireworks();
     if(data.last_burst==='hearts')fireHearts();
     if(data.last_burst==='flash')fireFlash();
   }
@@ -817,6 +817,177 @@ function toggleRainEffect(on){
   RainFX.toggle(on);
 }
 
+// ── FAJERWERKI (globalny przełącznik, trwa dopóki admin nie wyłączy) ──────
+// Canvas na całą stronę: rakiety z ogonem lecą w górę, w losowym momencie
+// wybuchają w kulę iskier z grawitacją/oporem powietrza i zanikaniem alpha,
+// część wybuchów dostaje dodatkowy "crackle" (doleciałe iskry z opóźnieniem).
+// Nowe rakiety odpalane w losowych odstępach, czasem podwójnie - ciągły pokaz.
+const FireworksFX=(()=>{
+  let canvas=null,ctx=null,rafId=null,active=false;
+  let dpr=1,W=0,H=0;
+  let rockets=[],particles=[];
+  let nextLaunchAt=0,lastTs=0;
+  const GRAVITY=140;
+  const PALETTES=[
+    ['#ff4757','#ffa502','#ffd166'],
+    ['#1e90ff','#70a1ff','#a4e8ff'],
+    ['#2ed573','#7bed9f','#c3ffce'],
+    ['#a55eea','#d3a5ff','#ffe0ff'],
+    ['#ff6b81','#ff9ff3','#ffe6f0'],
+    ['#00ffff','#7afcff','#ffffff'],
+    ['#ffdd59','#ffe58f','#fff6d5']
+  ];
+
+  function ensureCanvas(){
+    if(canvas)return;
+    canvas=document.getElementById('fireworks-canvas');
+    if(!canvas)return;
+    ctx=canvas.getContext('2d');
+    window.addEventListener('resize',resize);
+  }
+
+  function resize(){
+    if(!canvas)return;
+    dpr=Math.min(window.devicePixelRatio||1,2);
+    W=window.innerWidth;H=window.innerHeight;
+    canvas.width=W*dpr;canvas.height=H*dpr;
+    ctx.setTransform(dpr,0,0,dpr,0,0);
+  }
+
+  function hexToRgba(hex,a){
+    const h=hex.replace('#','');
+    const r=parseInt(h.length===3?h[0]+h[0]:h.substring(0,2),16);
+    const g=parseInt(h.length===3?h[1]+h[1]:h.substring(2,4),16);
+    const b=parseInt(h.length===3?h[2]+h[2]:h.substring(4,6),16);
+    return`rgba(${r},${g},${b},${a})`;
+  }
+
+  function launchRocket(){
+    const x=W*0.1+Math.random()*W*0.8;
+    const targetY=H*0.12+Math.random()*H*0.35;
+    const palette=PALETTES[Math.floor(Math.random()*PALETTES.length)];
+    rockets.push({x,y:H+10,targetY,vy:-(520+Math.random()*160),trail:[],palette,spinShell:Math.random()<0.25});
+  }
+
+  function explode(r){
+    const count=60+Math.floor(Math.random()*50);
+    const speed=90+Math.random()*90;
+    for(let i=0;i<count;i++){
+      const angle=(Math.PI*2*i)/count+Math.random()*0.15;
+      const s=speed*(0.6+Math.random()*0.5);
+      particles.push({
+        x:r.x,y:r.y,vx:Math.cos(angle)*s,vy:Math.sin(angle)*s,
+        color:r.palette[Math.floor(Math.random()*r.palette.length)],
+        life:0,maxLife:1+Math.random()*0.8,trail:[],
+        size:1.4+Math.random()*1.6,glitter:Math.random()<0.3
+      });
+    }
+    if(r.spinShell){
+      setTimeout(()=>{
+        for(let i=0;i<24;i++){
+          const angle=Math.random()*Math.PI*2;
+          const s=40+Math.random()*40;
+          particles.push({x:r.x,y:r.y,vx:Math.cos(angle)*s,vy:Math.sin(angle)*s-30,color:'#fff',life:0,maxLife:0.5+Math.random()*0.4,trail:[],size:1,glitter:true});
+        }
+      },250);
+    }
+  }
+
+  function tick(ts){
+    if(!lastTs)lastTs=ts;
+    const dt=Math.min(.05,(ts-lastTs)/1000);
+    lastTs=ts;
+    ctx.clearRect(0,0,W,H);
+
+    if(active&&ts>=nextLaunchAt){
+      launchRocket();
+      if(Math.random()<0.3)setTimeout(launchRocket,150+Math.random()*250);
+      nextLaunchAt=ts+700+Math.random()*1200;
+    }
+
+    for(let i=rockets.length-1;i>=0;i--){
+      const r=rockets[i];
+      r.trail.push({x:r.x,y:r.y});
+      if(r.trail.length>6)r.trail.shift();
+      r.vy+=GRAVITY*0.35*dt;
+      r.y+=r.vy*dt;
+      r.x+=Math.sin(r.y*0.02)*6*dt;
+
+      for(let t=0;t<r.trail.length;t++){
+        const p=r.trail[t];
+        const a=(t+1)/r.trail.length;
+        ctx.fillStyle=`rgba(255,220,150,${a*0.6})`;
+        ctx.beginPath();ctx.arc(p.x,p.y,1.6*a,0,Math.PI*2);ctx.fill();
+      }
+      ctx.fillStyle='#fff8e0';
+      ctx.beginPath();ctx.arc(r.x,r.y,2.2,0,Math.PI*2);ctx.fill();
+
+      if(r.y<=r.targetY||r.vy>=0){
+        explode(r);
+        rockets.splice(i,1);
+      }
+    }
+
+    for(let i=particles.length-1;i>=0;i--){
+      const p=particles[i];
+      p.life+=dt;
+      const lt=p.life/p.maxLife;
+      if(lt>=1){particles.splice(i,1);continue;}
+      p.trail.push({x:p.x,y:p.y});
+      if(p.trail.length>5)p.trail.shift();
+      p.vy+=GRAVITY*dt;
+      p.vx*=(1-0.9*dt);
+      p.x+=p.vx*dt;
+      p.y+=p.vy*dt;
+
+      const alpha=1-lt;
+      for(let k=0;k<p.trail.length;k++){
+        const tp=p.trail[k];
+        const a2=((k+1)/p.trail.length)*alpha*0.5;
+        ctx.fillStyle=hexToRgba(p.color,a2);
+        ctx.beginPath();ctx.arc(tp.x,tp.y,p.size*0.7,0,Math.PI*2);ctx.fill();
+      }
+      const flicker=p.glitter&&Math.random()<0.5?0:1;
+      ctx.fillStyle=hexToRgba(p.color,alpha*flicker);
+      ctx.beginPath();ctx.arc(p.x,p.y,p.size,0,Math.PI*2);ctx.fill();
+    }
+
+    if(active||rockets.length||particles.length){
+      rafId=requestAnimationFrame(tick);
+    }else{
+      rafId=null;
+    }
+  }
+
+  function start(){
+    ensureCanvas();
+    if(!canvas)return;
+    resize();
+    active=true;
+    lastTs=0;nextLaunchAt=0;
+    canvas.style.display='block';
+    requestAnimationFrame(()=>{canvas.style.opacity='1';});
+    if(!rafId)rafId=requestAnimationFrame(tick);
+  }
+
+  function stop(){
+    active=false;
+    if(canvas)canvas.style.opacity='0';
+    setTimeout(()=>{if(canvas)canvas.style.display='none';},700);
+  }
+
+  return{
+    toggle(on){
+      if(on&&!active)start();
+      else if(!on&&active)stop();
+    }
+  };
+})();
+
+function toggleFireworksEffect(on){
+  FireworksFX.toggle(on);
+}
+
 // ── MATRIX ───────────────────────────────────────────────────────────────
 let matrixCanvasEl=null,matrixAnimFrame=null;
 function toggleMatrixEffect(on){
@@ -896,27 +1067,6 @@ function fireFlash(){
   flash.style.cssText='position:fixed;inset:0;background:#fff;z-index:9998;pointer-events:none;animation:flashPulse .4s ease-out forwards';
   document.body.appendChild(flash);
   setTimeout(()=>flash.remove(),450);
-}
-
-// ── FAJERWERKI (jednorazowy wybuch) ────────────────────────────────────
-function fireFireworks(){
-  const colors=['#ff4757','#ffa502','#2ed573','#1e90ff','#eccc68','#a55eea','#ff6b81','#00ffff'];
-  const points=5;
-  for(let p=0;p<points;p++){
-    const cx=10+Math.random()*80;
-    const cy=15+Math.random()*50;
-    setTimeout(()=>{
-      for(let i=0;i<40;i++){
-        const angle=(Math.PI*2*i)/40;
-        const dist=60+Math.random()*80;
-        const dot=document.createElement('div');
-        const size=4+Math.random()*4;
-        dot.style.cssText=`position:fixed;top:${cy}vh;left:${cx}vw;width:${size}px;height:${size}px;border-radius:50%;background:${colors[Math.floor(Math.random()*colors.length)]};z-index:8600;pointer-events:none;--fx:${Math.cos(angle)*dist}px;--fy:${Math.sin(angle)*dist}px;animation:fireworkBurst ${.8+Math.random()*.4}s ease-out forwards`;
-        document.body.appendChild(dot);
-        setTimeout(()=>dot.remove(),1300);
-      }
-    },p*300);
-  }
 }
 
 // ── SERDUSZKA (jednorazowy wybuch) ─────────────────────────────────────
@@ -1017,6 +1167,10 @@ async function runConsoleCommand(raw){
     const on=await setActiveEffect('rain');
     consoleLog(on?'🌧️ DESZCZ: ON dla wszystkich':'Deszcz: OFF dla wszystkich');
   }
+  else if(base==='fireworks'){
+    const on=await setActiveEffect('fireworks');
+    consoleLog(on?'🎆 FAJERWERKI: ON dla wszystkich':'Fajerwerki: OFF dla wszystkich');
+  }
   else if(base==='flash'){
     await fireGlobalBurst('flash');
     consoleLog('⚡ Błysk u wszystkich!');
@@ -1028,10 +1182,6 @@ async function runConsoleCommand(raw){
   else if(base==='shake'){
     await fireGlobalBurst('shake');
     consoleLog('💥 Ekran zatrząsł się u wszystkich!');
-  }
-  else if(base==='fireworks'){
-    await fireGlobalBurst('fireworks');
-    consoleLog('🎆 Fajerwerki wystrzelone u wszystkich!');
   }
   else if(base==='hearts'){
     await fireGlobalBurst('hearts');
@@ -1068,12 +1218,12 @@ async function runConsoleCommand(raw){
     consoleLog('  rainbow            - włącz/wyłącz cykl kolorów tęczy 🌈');
     consoleLog('  blur               - włącz/wyłącz rozmycie ekranu 🌫️');
     consoleLog('  spin               - włącz/wyłącz obracanie ekranu 🌀');
+    consoleLog('  fireworks          - włącz/wyłącz ciągłe fajerwerki, wł/wył dla wszystkich 🎆');
     consoleLog('  music <url>        - włącz relaksującą muzykę dla wszystkich 🎵');
     consoleLog('  music off          - wyłącz muzykę u wszystkich');
     consoleLog('  music link         - pokaż aktualny link do muzyki (do skopiowania)');
     consoleLog('  confetti           - jednorazowy wybuch konfetti 🎉');
     consoleLog('  shake              - jednorazowe zatrzęsienie ekranem 💥');
-    consoleLog('  fireworks          - jednorazowe fajerwerki 🎆');
     consoleLog('  hearts             - jednorazowe serduszka 💕');
     consoleLog('  rain               - deszcz z wodą, wł/wył dla wszystkich (nie da się jej usunąć, tylko przesunąć) 🌧️');
     consoleLog('  flash              - jednorazowy błysk ekranu ⚡');
