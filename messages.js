@@ -586,6 +586,7 @@ let callAudioCtx=null,callGainNode=null,callBoostOn=false;
 const CALL_BOOST_GAIN=2.5;
 let callQualityInt=null;
 let callStatsPrev={lost:0,received:0};
+let callRemoteStream=null;
 let ringtoneInt=null,ringCtx=null;
 
 function subscribeCallChannel(){
@@ -608,6 +609,7 @@ function createCallPC(){
     }
   };
   pc.ontrack=e=>{
+    callRemoteStream=e.streams[0];
     const el=document.getElementById('call-remote-audio');
     if(el)el.srcObject=e.streams[0];
   };
@@ -737,14 +739,12 @@ function hangupCall(){
 }
 
 function ensureCallBoostGraph(){
-  if(callAudioCtx)return;
-  const el=document.getElementById('call-remote-audio');
-  if(!el)return;
+  if(callAudioCtx||!callRemoteStream)return;
   try{
     callAudioCtx=new(window.AudioContext||window.webkitAudioContext)();
-    const src=callAudioCtx.createMediaElementSource(el);
+    const src=callAudioCtx.createMediaStreamSource(callRemoteStream);
     callGainNode=callAudioCtx.createGain();
-    callGainNode.gain.value=1;
+    callGainNode.gain.value=CALL_BOOST_GAIN;
     src.connect(callGainNode);
     callGainNode.connect(callAudioCtx.destination);
     if(callAudioCtx.state==='suspended')callAudioCtx.resume().catch(()=>{});
@@ -755,8 +755,15 @@ function ensureCallBoostGraph(){
 
 function toggleCallBoost(){
   callBoostOn=!callBoostOn;
-  if(callBoostOn)ensureCallBoostGraph();
-  if(callGainNode)callGainNode.gain.value=callBoostOn?CALL_BOOST_GAIN:1;
+  const el=document.getElementById('call-remote-audio');
+  if(callBoostOn){
+    ensureCallBoostGraph();
+    if(callGainNode)callGainNode.gain.value=CALL_BOOST_GAIN;
+    if(el)el.muted=true;
+  }else{
+    if(callGainNode)callGainNode.gain.value=0;
+    if(el)el.muted=false;
+  }
   updateCallUI();
 }
 
@@ -827,6 +834,8 @@ function endCallCleanup(){
   if(callPeerChannel){sb.removeChannel(callPeerChannel);callPeerChannel=null;}
   if(callAudioCtx){callAudioCtx.close();callAudioCtx=null;callGainNode=null;}
   callBoostOn=false;
+  callRemoteStream=null;
+  {const el=document.getElementById('call-remote-audio');if(el)el.muted=false;}
   stopCallQualityMonitor();
   callPendingCandidates=[];
   callIncomingOffer=null;
