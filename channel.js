@@ -85,10 +85,10 @@ async function openStatsPanel(){
 
   let savedCount=0,wlCount=0;
   if(ownVideoIds.length){
-    const{count:sc}=await sb.from('saved_videos').select('*',{count:'exact',head:true}).in('video_id',ownVideoIds);
-    savedCount=sc||0;
-    const{count:wc}=await sb.from('watch_later').select('*',{count:'exact',head:true}).in('video_id',ownVideoIds);
-    wlCount=wc||0;
+    const savedCounts=await Promise.all(ownVideoIds.map(vid=>sb.rpc('count_saved_video',{p_video_id:vid})));
+    savedCount=savedCounts.reduce((s,r)=>s+(r.data||0),0);
+    const wlCounts=await Promise.all(ownVideoIds.map(vid=>sb.rpc('count_watch_later',{p_video_id:vid})));
+    wlCount=wlCounts.reduce((s,r)=>s+(r.data||0),0);
   }
 
   const{data:ownPosts}=await sb.from('posts').select('likes,comments').eq('user_id',currentUser.id);
