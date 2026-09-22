@@ -6,13 +6,29 @@ const AVATAR_FRAME_COLORS=['#ffd700','#ff6b35','#c084fc','#4ade80','#f472b6','#f
 const AVATAR_PARTICLE_TYPES=['✨','💖','🔥','❄️','🍀','⭐','💎','🌸','⚡','🌟','💫','🎈','🦋','🌈','☠️','👑','🎃','💀'];
 
 function openVipPanel(){
-  if(!isVIP()){toast('Brak uprawnień');return;}
+  if(!isVIP()){openBuyVipModal();return;}
   document.getElementById('vip-panel-modal').classList.add('open');
   renderVipPanel();
 }
 
 function closeVipPanel(){
   document.getElementById('vip-panel-modal').classList.remove('open');
+}
+
+function openBuyVipModal(){
+  if(!currentUser){toast('Zaloguj się, żeby kupić VIP');return;}
+  const el=document.getElementById('buy-vip-email');
+  if(el)el.textContent=currentUser.email;
+  document.getElementById('buy-vip-modal').classList.add('open');
+}
+
+function closeBuyVipModal(){
+  document.getElementById('buy-vip-modal').classList.remove('open');
+}
+
+function copyBuyVipEmail(){
+  if(!currentUser)return;
+  navigator.clipboard.writeText(currentUser.email).then(()=>toast('Skopiowano e-mail')).catch(()=>{});
 }
 
 
@@ -352,6 +368,8 @@ async function loadVipEmails(){
   vipBadgeColor=currentUser?(vipEmailsMap.get(currentUser.email)||'#ffd700'):'';
   const vipItem=document.getElementById('vip-dropdown-item');
   if(vipItem)vipItem.style.display=isVIP()?'flex':'none';
+  const buyVipItem=document.getElementById('buy-vip-dropdown-item');
+  if(buyVipItem)buyVipItem.style.display=(currentUser&&!isVIP())?'flex':'none';
 }
 
 async function loadAdminBadgeColor(){

@@ -74,6 +74,10 @@
             <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
             <span>Panel VIP</span>
           </div>
+          <div class="dropdown-item" id="buy-vip-dropdown-item" onclick="openBuyVipModal()" style="display:none">
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
+            <span>Kup panel VIP 💎</span>
+          </div>
           <div class="dropdown-item" id="admin-dropdown-item" onclick="openAdminPanel()" style="display:none">
             <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm0 10.99h7c-.53 4.12-3.28 7.79-7 8.94V12H5V6.3l7-3.11v8.8z"/></svg>
             <span>Panel administratora</span>
@@ -641,6 +645,26 @@
     </div>
     <button onclick="goToSupportAuthor()" style="width:100%;background:linear-gradient(90deg,#171a21,#2a475e);border:none;color:var(--text-primary);padding:13px;border-radius:24px;cursor:pointer;font-size:14px;font-weight:700;margin-bottom:10px;display:flex;align-items:center;justify-content:center;gap:8px">🎮 Wyślij trade na Steam</button>
     <button onclick="closePremiumModal()" style="width:100%;background:none;border:none;color:var(--text-tertiary);padding:8px;cursor:pointer;font-size:13px">Zamknij</button>
+  </div>
+</div>
+
+<!-- KUP PANEL VIP -->
+<div class="fmbg" id="buy-vip-modal">
+  <div class="fbox" style="max-width:440px;text-align:center">
+    <div style="font-size:40px;margin-bottom:6px">💎</div>
+    <h3 style="font-size:19px">Kup panel VIP</h3>
+    <p class="sub" style="margin-bottom:14px">Panel VIP odblokowuje kolor nicku, ramkę avatara, cząsteczki wokół avatara, plakietkę VIP i inne ozdobniki na Twoim kanale.</p>
+    <div style="text-align:left;background:var(--bg-sunken);border:1px solid var(--border);border-radius:10px;padding:16px;margin-bottom:16px;font-size:13px;color:var(--text-secondary);line-height:1.7">
+      ☕ Wesprzyj przez Buy Me a Coffee, a w polu <b>wiadomości/notatki</b> przy wpłacie koniecznie wpisz e-mail, na który jesteś zalogowany/a w WaveTube — inaczej nie będziemy wiedzieć, komu przyznać VIP.
+    </div>
+    <div style="display:flex;align-items:center;gap:8px;background:var(--bg-sunken);border:1px solid var(--border);border-radius:8px;padding:10px 12px;margin-bottom:14px">
+      <span style="font-size:12px;color:var(--text-tertiary);flex-shrink:0">Twój e-mail:</span>
+      <span id="buy-vip-email" style="font-size:13px;font-weight:600;word-break:break-all;flex:1;text-align:left"></span>
+      <button onclick="copyBuyVipEmail()" style="background:none;border:none;color:#3ea6ff;cursor:pointer;font-size:12px;flex-shrink:0">Kopiuj</button>
+    </div>
+    <div style="font-size:22px;font-weight:800;margin-bottom:16px">18 zł</div>
+    <a href="https://www.buymeacoffee.com/rev01" target="_blank" rel="noopener" style="width:100%;box-sizing:border-box;background:#ffdd00;border:none;color:#000;padding:13px;border-radius:24px;cursor:pointer;font-size:14px;font-weight:700;margin-bottom:10px;display:flex;align-items:center;justify-content:center;gap:8px;text-decoration:none">☕ Przejdź do Buy Me a Coffee</a>
+    <button onclick="closeBuyVipModal()" style="width:100%;background:none;border:none;color:var(--text-tertiary);padding:8px;cursor:pointer;font-size:13px">Zamknij</button>
   </div>
 </div>
 
