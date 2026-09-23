@@ -234,6 +234,16 @@ function layoutActsForShorts(isShort){
   }
 }
 
+const VIEW_COOLDOWN_MS=24*60*60*1000; // jeden zliczony widok na film na 24h (per przeglądarka)
+function shouldCountView(videoId){
+  const key='wt_viewed_'+videoId;
+  const last=localStorage.getItem(key);
+  const now=Date.now();
+  if(last&&(now-parseInt(last,10))<VIEW_COOLDOWN_MS)return false;
+  localStorage.setItem(key,String(now));
+  return true;
+}
+
 async function openP(id){
   const v=videos.find(x=>x.id===id);if(!v)return;
   if(!canViewVideo(v)){toast('Ten film jest prywatny 🔒');return;}
@@ -245,7 +255,9 @@ async function openP(id){
   const isUpcoming=v.premiere&&new Date(v.premiere)>new Date();
   cur=v;
   if(!isUpcoming){
-    updateVideo(v.id,{views:(v.views||0)+1});v.views=(v.views||0)+1;
+    if(shouldCountView(v.id)){
+      updateVideo(v.id,{views:(v.views||0)+1});v.views=(v.views||0)+1;
+    }
     updateSaveButtonUI(v.id);
     updateWatchLaterButtonUI(v.id);
     addToWatchHistory(v);
