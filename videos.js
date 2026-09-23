@@ -87,7 +87,7 @@ async function downloadVideo(videoId){
 
 
 // ── ZGŁASZANIE FILMÓW ─────────────────────────────────────────────────────
-const REPORT_EMAIL='revx8199@gmail.com';
+const REPORT_EMAIL='wavetubebuisness@gmail.com';
 let reportingVideoId=null;
 
 function openReportModal(videoId){

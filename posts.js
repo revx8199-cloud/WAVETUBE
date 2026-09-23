@@ -477,7 +477,7 @@ document.addEventListener('keydown',e=>{
   checkDiscoState();
   setInterval(checkDiscoState,4000);
   loadVipEmails();
-  loadAdminBadgeColor();
+  loadAdminEmail().then(loadAdminBadgeColor);
   if(currentUser){
     const banned=await checkIfBanned();
     if(!banned){

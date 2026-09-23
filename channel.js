@@ -325,7 +325,12 @@ async function saveVipFont(fontId){
 
 
 // ── ADMIN ────────────────────────────────────────────────────────────────
-const ADMIN_EMAIL='revx8199@gmail.com';
+let ADMIN_EMAIL='';
+async function loadAdminEmail(){
+  const{data}=await sb.from('site_state').select('admin_email').eq('id',1).single();
+  ADMIN_EMAIL=data?.admin_email||'';
+  updateAuthUI();
+}
 
 // ── KRAJ KANAŁU ───────────────────────────────────────────────────────────
 const COUNTRIES=[
