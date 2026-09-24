@@ -2,7 +2,7 @@
 
 // ── PANEL VIP ────────────────────────────────────────────────────────────
 const VIP_BADGE_COLORS=['#ffd700','#ff6b35','#c084fc','#4ade80','#f472b6','#fb7185','#facc15','#a78bfa','#22d3ee','#ef4444','#84cc16','#e879f9','#fb923c','#14b8a6','#eab308','#f43f5e','#3ea6ff','#00e676','#2979ff','#d500f9','#ff3d00','#76ff03','#00e5ff','#ff4081','#651fff','#1de9b6'];
-const AVATAR_FRAME_COLORS=['#ffd700','#ff6b35','#c084fc','#4ade80','#f472b6','#fb7185','#facc15','#a78bfa','#22d3ee','#ef4444','#84cc16','#e879f9','#fb923c','#14b8a6','#eab308','#f43f5e','#3ea6ff','#ffffff','#000000','#ff1744','#00e676','#2979ff','#d500f9','#ff3d00','#76ff03','#00e5ff','#c6ff00','#ff4081','#651fff','#1de9b6','#ffab00','#6d4c41'];
+const AVATAR_FRAME_COLORS=['#ffd700','#ff6b35','#c084fc','#4ade80','#f472b6','#fb7185','#facc15','#a78bfa','#22d3ee','#ef4444','#84cc16','#e879f9','#fb923c','#14b8a6','#eab308','#f43f5e','#3ea6ff','#ffffff','#000000','#ff1744','#00e676','#2979ff','#d500f9','#ff3d00','#76ff03','#00e5ff','#c6ff00','#ff4081','#651fff','#1de9b6','#ffab00','#6d4c41','#ff8a80','#b388ff','#8c9eff','#80d8ff','#a7ffeb','#ccff90','#f4ff81','#ffe57f','#ff9e80'];
 const AVATAR_PARTICLE_TYPES=['✨','💖','🔥','❄️','🍀','⭐','💎','🌸','⚡','🌟','💫','🎈','🦋','🌈','☠️','👑','🎃','💀'];
 
 // ── GOTOWE BANERY VIP (styl "domyślny baner Google" - gradient + rozmyte plamy) ──
