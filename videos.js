@@ -286,7 +286,7 @@ async function openP(id){
     </div>`;
   } else {
     const{type,src}=getPlayer(v.url);
-    if(type==='yt'||type==='gd'||type==='od')html=`<iframe id="${type==='yt'?'yt-player-iframe':''}" src="${src}" allow="autoplay;encrypted-media;fullscreen" allowfullscreen></iframe>`;
+    if(type==='yt'||type==='gd'||type==='od'||type==='mega')html=`<iframe id="${type==='yt'?'yt-player-iframe':''}" src="${src}" allow="autoplay;encrypted-media;fullscreen" allowfullscreen></iframe>`;
     else if(type==='tt')html=`<iframe src="${src}" allow="encrypted-media" allowfullscreen style="border:none;width:100%;height:100%"></iframe>`;
     else if(type==='mp4')html=`<video src="${src}" controls autoplay preload="metadata" poster="${v.thumb||''}"></video>`;
     else html=`<div style="display:flex;align-items:center;justify-content:center;height:100%;flex-direction:column;gap:12px;color:#555;padding:20px;text-align:center"><div style="font-size:48px">⚠️</div><p>Nie można odtworzyć</p><a href="${src}" target="_blank" style="color:#3ea6ff;font-size:13px">Otwórz zewnętrznie ↗</a></div>`;

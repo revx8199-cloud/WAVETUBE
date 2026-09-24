@@ -405,11 +405,22 @@ function dropboxDirectUrl(url){
 function isOneDriveEmbed(url){
   return /onedrive\.live\.com\/embed/.test(url||'')||/1drv\.ms/.test(url||'');
 }
+function megaEmbedUrl(url){
+  const u=url||'';
+  // nowy format: mega.nz/file/<id>#<key>
+  let m=u.match(/mega\.nz\/file\/([a-zA-Z0-9]+)#([^/?\s]+)/);
+  if(m)return`https://mega.nz/embed/${m[1]}#${m[2]}`;
+  // stary format: mega.nz/#!<id>!<key>
+  m=u.match(/mega\.nz\/#!([a-zA-Z0-9]+)!([^/?\s]+)/);
+  if(m)return`https://mega.nz/embed#!${m[1]}!${m[2]}`;
+  return null;
+}
 function getPlayer(url){
   const ytid=ytId(url);if(ytid)return{type:'yt',src:`https://www.youtube.com/embed/${ytid}?autoplay=1&enablejsapi=1&origin=${encodeURIComponent(location.origin)}`};
   const gdid=gdId(url);if(gdid)return{type:'gd',src:`https://drive.google.com/file/d/${gdid}/preview`};
   const ttid=ttId(url);if(ttid)return{type:'tt',src:`https://www.tiktok.com/embed/v2/${ttid}`};
   if(isOneDriveEmbed(url))return{type:'od',src:url};
+  const mega=megaEmbedUrl(url);if(mega)return{type:'mega',src:mega};
   const dbx=dropboxDirectUrl(url);if(dbx)return{type:'mp4',src:dbx};
   if((url||'').match(/\.(mp4|webm|mov)(\?|$)/i))return{type:'mp4',src:url};
   return{type:'unknown',src:url};
@@ -580,6 +591,7 @@ function detectSource(){
   if(ytId(url))hint.innerHTML='✅ <b style="color:#cc0000">YouTube</b>';
   else if(gdId(url))hint.innerHTML=t('hint_gdrive');
   else if(ttId(url))hint.innerHTML='✅ <b style="color:#000;background:#69C9D0;padding:2px 6px;border-radius:4px">TikTok</b>';
+  else if(megaEmbedUrl(url))hint.innerHTML='✅ <b style="color:#d9272e">MEGA</b>';
   else if(url.match(/\.(mp4|webm|mov)(\?|$)/i)){
     hint.innerHTML=t('hint_mp4_detecting');
     detectVideoDuration(url);

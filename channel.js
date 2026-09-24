@@ -317,6 +317,16 @@ function renderVipPanel(){
     </div>
 
     <div>
+      <div style="font-size:13px;font-weight:700;color:var(--text-primary);margin-bottom:4px">🖼️ Ramka banera</div>
+      <div style="font-size:11px;color:var(--text-tertiary);margin-bottom:10px">Kolorowa obwódka wokół banera kanału</div>
+      <div style="height:60px;border-radius:8px;background:linear-gradient(135deg,#1a1a2e,#16213e);margin-bottom:12px;${myBannerFrame?`border:4px solid ${myBannerFrame};box-sizing:border-box`:''}"></div>
+      <div style="display:flex;flex-wrap:wrap;gap:10px">
+        <div onclick="resetBannerFrame()" style="width:34px;height:34px;border-radius:8px;background:var(--bg-sunken);border:2px dashed var(--border);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:14px" title="Brak ramki">${!myBannerFrame?'✓':'✕'}</div>
+        ${AVATAR_FRAME_COLORS.map(c=>`<div onclick="saveBannerFrame('${c}')" style="width:34px;height:34px;border-radius:8px;background:${c};cursor:pointer;border:3px solid ${myBannerFrame===c?'#fff':'transparent'};display:flex;align-items:center;justify-content:center">${myBannerFrame===c?'<svg viewBox="0 0 24 24" width="14" height="14"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z" fill="#fff" stroke="#000" stroke-width="1"/></svg>':''}</div>`).join('')}
+      </div>
+    </div>
+
+    <div>
       <div style="font-size:13px;font-weight:700;color:var(--text-primary);margin-bottom:4px">🔤 Czcionka nicku</div>
       <p style="color:var(--text-secondary);font-size:12px;margin-bottom:14px">Wybierz styl czcionki dla swojego nicku.</p>
       <div style="display:flex;flex-direction:column;gap:8px">
@@ -424,6 +434,7 @@ function isAdmin(){return!!(currentUser&&currentUser.email===ADMIN_EMAIL);}
 
 let myNameColor='';
 let myAvatarFrame='';
+let myBannerFrame='';
 let myAvatarParticles=false;
 let myAvatarParticleType='✨';
 let myDisplayNick='';
@@ -498,14 +509,34 @@ function fontCssFor(fontId){
 }
 
 async function loadMyNameColor(){
-  if(!currentUser){myNameColor='';myNameFont='';myDisplayNick='';myAvatarFrame='';myAvatarParticles=false;myAvatarParticleType='✨';return;}
-  const{data}=await sb.from('profiles').select('name_color,name_font,name,avatar_frame,avatar_particles,avatar_particle_type').eq('id',currentUser.id).single();
+  if(!currentUser){myNameColor='';myNameFont='';myDisplayNick='';myAvatarFrame='';myAvatarParticles=false;myAvatarParticleType='✨';myBannerFrame='';return;}
+  const{data}=await sb.from('profiles').select('name_color,name_font,name,avatar_frame,avatar_particles,avatar_particle_type,banner_frame').eq('id',currentUser.id).single();
   myNameColor=data?.name_color||'';
   myNameFont=data?.name_font||'';
   myDisplayNick=data?.name||'';
   myAvatarFrame=data?.avatar_frame||'';
   myAvatarParticles=!!data?.avatar_particles;
   myAvatarParticleType=data?.avatar_particle_type||'✨';
+  myBannerFrame=data?.banner_frame||'';
+}
+
+async function saveBannerFrame(color){
+  if(!isVIP())return;
+  const{error}=await sb.from('profiles').upsert([{id:currentUser.id,banner_frame:color}],{onConflict:'id'});
+  if(error){toast('Błąd: '+error.message);return;}
+  myBannerFrame=color;
+  renderVipPanel();
+  updateAuthUI();
+  toast('Ramka banera zapisana! 🖼️');
+}
+
+async function resetBannerFrame(){
+  if(!isVIP())return;
+  await sb.from('profiles').upsert([{id:currentUser.id,banner_frame:''}],{onConflict:'id'});
+  myBannerFrame='';
+  renderVipPanel();
+  updateAuthUI();
+  toast('Ramka banera usunięta');
 }
 
 async function saveAvatarParticleType(emoji){
@@ -678,9 +709,9 @@ async function showChannel(userId,nameIn,avatar,email){
   let chBannerUrl=localStorage.getItem('banner_'+bannerKey)||'';
   const savedDescFallback=localStorage.getItem('desc_'+(userId||email))||'';
   const{count:subCount}=await sb.from('subscriptions').select('*',{count:'exact',head:true}).eq('channel_id',userId||email);
-  let chNameColor='',chNameFont='',savedDesc=savedDescFallback,joinedAt='',country='',chAvatarFrame='',chAvatarParticles=false,chAvatarParticleType='✨';
+  let chNameColor='',chNameFont='',savedDesc=savedDescFallback,joinedAt='',country='',chAvatarFrame='',chAvatarParticles=false,chAvatarParticleType='✨',chBannerFrame='';
   if(userId){
-    const{data:profStyle}=await sb.from('profiles').select('name_color,name_font,description,created_at,country,banner_url,avatar_frame,avatar_particles,avatar_particle_type').eq('id',userId).single();
+    const{data:profStyle}=await sb.from('profiles').select('name_color,name_font,description,created_at,country,banner_url,avatar_frame,avatar_particles,avatar_particle_type,banner_frame').eq('id',userId).single();
     chNameColor=profStyle?.name_color||'';
     chNameFont=profStyle?.name_font||'';
     if(profStyle&&profStyle.description)savedDesc=profStyle.description;
@@ -690,15 +721,17 @@ async function showChannel(userId,nameIn,avatar,email){
     chAvatarFrame=profStyle?.avatar_frame||'';
     chAvatarParticles=!!profStyle?.avatar_particles;
     chAvatarParticleType=profStyle?.avatar_particle_type||'✨';
+    chBannerFrame=profStyle?.banner_frame||'';
   }
   const avFrameStyle=chAvatarFrame?`border:3px solid ${chAvatarFrame};box-sizing:border-box`:'';
   const avBlockHtml=chAvatarParticles
     ?`<div class="avatar-particle-wrap"><div class="channel-big-av" style="${avFrameStyle}">${avHtml}</div><span class="av-particle p1">${chAvatarParticleType}</span><span class="av-particle p2">${chAvatarParticleType}</span><span class="av-particle p3">${chAvatarParticleType}</span><span class="av-particle p4">${chAvatarParticleType}</span><span class="av-particle p5">${chAvatarParticleType}</span><span class="av-particle p6">${chAvatarParticleType}</span></div>`
     :`<div class="channel-big-av" style="${avFrameStyle}">${avHtml}</div>`;
   const bannerBg=chBannerUrl?(chBannerUrl.startsWith('url(')?chBannerUrl:'url('+chBannerUrl+')'):'linear-gradient(135deg,#1a1a2e,#16213e)';
+  const bannerFrameStyle=chBannerFrame?`border:4px solid ${chBannerFrame};box-sizing:border-box`:'';
   cc.innerHTML=`
     <div style="position:relative">
-      <div id="channel-banner" style="height:230px;background:${bannerBg};background-size:cover;background-position:center;position:relative">
+      <div id="channel-banner" style="height:230px;background:${bannerBg};background-size:cover;background-position:center;position:relative;${bannerFrameStyle}">
         ${isOwner?`
           <div style="position:absolute;bottom:0;left:0;right:0;background:rgba(0,0,0,0);display:flex;align-items:center;justify-content:center;gap:10px;opacity:0;transition:opacity .2s;height:100%" id="banner-hover-area" onmouseover="this.style.opacity=1;this.style.background='rgba(0,0,0,0.4)'" onmouseout="this.style.opacity=0;this.style.background='rgba(0,0,0,0)'">
             <label style="background:rgba(0,0,0,0.7);color:var(--text-primary);padding:10px 20px;border-radius:24px;cursor:pointer;font-size:14px;font-weight:600;display:flex;align-items:center;gap:8px;border:2px solid rgba(255,255,255,0.3)">
