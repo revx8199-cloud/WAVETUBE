@@ -415,6 +415,32 @@ function megaEmbedUrl(url){
   if(m)return`https://mega.nz/embed#!${m[1]}!${m[2]}`;
   return null;
 }
+function isYandexDiskLink(url){
+  return /disk\.yandex\.(ru|com|by|kz|ua)\/[di]\//.test(url||'')||/yadi\.sk\//.test(url||'');
+}
+function pcloudCode(url){
+  const m=(url||'').match(/pcloud\.link\/publink\/show\?code=([a-zA-Z0-9]+)/);
+  return m?m[1]:null;
+}
+async function resolveCloudDirectUrl(url){
+  if(isYandexDiskLink(url)){
+    try{
+      const res=await fetch(`https://cloud-api.yandex.net/v1/disk/public/resources/download?public_key=${encodeURIComponent(url)}`);
+      const data=await res.json();
+      return data.href||null;
+    }catch(e){return null;}
+  }
+  const code=pcloudCode(url);
+  if(code){
+    try{
+      const res=await fetch(`https://api.pcloud.com/getpublinkdownload?code=${code}`);
+      const data=await res.json();
+      if(data.hosts&&data.hosts[0]&&data.path)return`https://${data.hosts[0]}${data.path}`;
+      return null;
+    }catch(e){return null;}
+  }
+  return null;
+}
 function getPlayer(url){
   const ytid=ytId(url);if(ytid)return{type:'yt',src:`https://www.youtube.com/embed/${ytid}?autoplay=1&enablejsapi=1&origin=${encodeURIComponent(location.origin)}`};
   const gdid=gdId(url);if(gdid)return{type:'gd',src:`https://drive.google.com/file/d/${gdid}/preview`};
@@ -422,6 +448,7 @@ function getPlayer(url){
   if(isOneDriveEmbed(url))return{type:'od',src:url};
   const mega=megaEmbedUrl(url);if(mega)return{type:'mega',src:mega};
   const dbx=dropboxDirectUrl(url);if(dbx)return{type:'mp4',src:dbx};
+  if(isYandexDiskLink(url)||pcloudCode(url))return{type:'resolve',src:url};
   if((url||'').match(/\.(mp4|webm|mov)(\?|$)/i))return{type:'mp4',src:url};
   return{type:'unknown',src:url};
 }
@@ -592,6 +619,8 @@ function detectSource(){
   else if(gdId(url))hint.innerHTML=t('hint_gdrive');
   else if(ttId(url))hint.innerHTML='✅ <b style="color:#000;background:#69C9D0;padding:2px 6px;border-radius:4px">TikTok</b>';
   else if(megaEmbedUrl(url))hint.innerHTML='✅ <b style="color:#d9272e">MEGA</b>';
+  else if(isYandexDiskLink(url))hint.innerHTML='✅ <b style="color:#ffcc00;background:#000;padding:2px 6px;border-radius:4px">Яндекс.Диск</b>';
+  else if(pcloudCode(url))hint.innerHTML='✅ <b style="color:#17bed0">pCloud</b>';
   else if(url.match(/\.(mp4|webm|mov)(\?|$)/i)){
     hint.innerHTML=t('hint_mp4_detecting');
     detectVideoDuration(url);
