@@ -464,6 +464,31 @@ document.addEventListener('keydown',e=>{
     if(e.key==='ArrowLeft')lightboxNav(-1);
     if(e.key==='ArrowRight')lightboxNav(1);
   }
+  // ── skróty klawiszowe playera (jak na YouTube) — tylko gdy player otwarty i nie piszemy w polu ──
+  const pmOpen=document.getElementById('pm').classList.contains('open');
+  const typing=['INPUT','TEXTAREA'].includes(document.activeElement?.tagName)||document.activeElement?.isContentEditable;
+  if(pmOpen&&!typing){
+    const vid=document.querySelector('#pw video');
+    if(e.key===' '||e.key==='k'||e.key==='K'){
+      if(vid){e.preventDefault();vid.paused?vid.play():vid.pause();}
+    } else if(e.key==='ArrowLeft'){
+      if(vid){e.preventDefault();vid.currentTime=Math.max(0,vid.currentTime-5);}
+    } else if(e.key==='ArrowRight'){
+      if(vid){e.preventDefault();vid.currentTime=Math.min(vid.duration||Infinity,vid.currentTime+5);}
+    } else if(e.key==='ArrowUp'){
+      if(vid){e.preventDefault();vid.volume=Math.min(1,vid.volume+0.05);}
+    } else if(e.key==='ArrowDown'){
+      if(vid){e.preventDefault();vid.volume=Math.max(0,vid.volume-0.05);}
+    } else if(e.key==='m'||e.key==='M'){
+      if(vid)vid.muted=!vid.muted;
+    } else if(e.key==='f'||e.key==='F'){
+      const wrap=document.getElementById('pw');
+      if(wrap){
+        if(document.fullscreenElement)document.exitFullscreen();
+        else wrap.requestFullscreen?.();
+      }
+    }
+  }
 });
 
 (async()=>{
