@@ -5,6 +5,70 @@ const VIP_BADGE_COLORS=['#ffd700','#ff6b35','#c084fc','#4ade80','#f472b6','#fb71
 const AVATAR_FRAME_COLORS=['#ffd700','#ff6b35','#c084fc','#4ade80','#f472b6','#fb7185','#facc15','#a78bfa','#22d3ee','#ef4444','#84cc16','#e879f9','#fb923c','#14b8a6','#eab308','#f43f5e','#3ea6ff','#ffffff','#000000','#ff1744','#00e676','#2979ff','#d500f9','#ff3d00','#76ff03','#00e5ff','#c6ff00','#ff4081','#651fff','#1de9b6','#ffab00','#6d4c41'];
 const AVATAR_PARTICLE_TYPES=['✨','💖','🔥','❄️','🍀','⭐','💎','🌸','⚡','🌟','💫','🎈','🦋','🌈','☠️','👑','🎃','💀'];
 
+// ── GOTOWE BANERY VIP (styl "domyślny baner Google" - gradient + rozmyte plamy) ──
+const VIP_BANNER_PALETTES=[
+  ['#667eea','#764ba2'],['#f093fb','#f5576c'],['#4facfe','#00f2fe'],
+  ['#43e97b','#38f9d7'],['#fa709a','#fee140'],['#30cfd0','#330867'],
+  ['#a8edea','#fed6e3'],['#ff9a9e','#c86dd7'],['#0ba360','#3cba92'],
+  ['#f7797d','#fbd786'],['#c471f5','#fa71cd'],['#16222a','#3a6073']
+];
+
+function buildVipBannerSVG(seedIndex){
+  const[c1,c2]=VIP_BANNER_PALETTES[seedIndex%VIP_BANNER_PALETTES.length];
+  const rnd=n=>{const x=Math.sin(seedIndex*999+n*57.13)*10000;return x-Math.floor(x);};
+  let blobs='';
+  for(let i=0;i<5;i++){
+    const cx=(rnd(i)*1920).toFixed(0);
+    const cy=(rnd(i+10)*480).toFixed(0);
+    const r=(120+rnd(i+20)*220).toFixed(0);
+    const op=(0.10+rnd(i+30)*0.18).toFixed(2);
+    blobs+=`<circle cx="${cx}" cy="${cy}" r="${r}" fill="#fff" opacity="${op}"/>`;
+  }
+  const svg=`<svg xmlns="http://www.w3.org/2000/svg" width="1920" height="480" viewBox="0 0 1920 480">
+    <defs>
+      <linearGradient id="g" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" stop-color="${c1}"/><stop offset="100%" stop-color="${c2}"/>
+      </linearGradient>
+      <filter id="b"><feGaussianBlur stdDeviation="55"/></filter>
+    </defs>
+    <rect width="1920" height="480" fill="url(#g)"/>
+    <g filter="url(#b)">${blobs}</g>
+  </svg>`;
+  return'data:image/svg+xml;base64,'+btoa(unescape(encodeURIComponent(svg)));
+}
+
+let vipBannerGalleryKey=null;
+
+function openVipBannerGallery(key){
+  if(!isVIP()){toast('Tylko dla VIP');return;}
+  vipBannerGalleryKey=key;
+  const grid=document.getElementById('vip-banner-grid');
+  if(grid){
+    grid.innerHTML=VIP_BANNER_PALETTES.map((_,i)=>
+      `<div onclick="selectVipBannerPreset(${i})" style="aspect-ratio:16/4;border-radius:8px;cursor:pointer;background:url('${buildVipBannerSVG(i)}') center/cover;border:2px solid transparent" onmouseover="this.style.borderColor='#ffd700'" onmouseout="this.style.borderColor='transparent'"></div>`
+    ).join('');
+  }
+  document.getElementById('vip-banner-gallery-modal').classList.add('open');
+}
+
+function closeVipBannerGallery(){
+  document.getElementById('vip-banner-gallery-modal').classList.remove('open');
+}
+
+async function selectVipBannerPreset(i){
+  if(!isVIP()||!vipBannerGalleryKey)return;
+  const dataUri=buildVipBannerSVG(i);
+  const el=document.getElementById('channel-banner');
+  if(el)el.style.background=`url(${dataUri}) center/cover no-repeat`;
+  try{localStorage.setItem('banner_'+vipBannerGalleryKey,dataUri);}catch(e){}
+  if(currentUser){
+    const{error}=await sb.from('profiles').update({banner_url:dataUri}).eq('id',currentUser.id);
+    if(error){toast('Błąd zapisu: '+error.message);return;}
+  }
+  toast('Baner ustawiony! 🎨');
+  closeVipBannerGallery();
+}
+
 function openVipPanel(){
   if(!isVIP()){openBuyVipModal();return;}
   document.getElementById('vip-panel-modal').classList.add('open');
@@ -636,12 +700,13 @@ async function showChannel(userId,nameIn,avatar,email){
     <div style="position:relative">
       <div id="channel-banner" style="height:230px;background:${bannerBg};background-size:cover;background-position:center;position:relative">
         ${isOwner?`
-          <div style="position:absolute;bottom:0;left:0;right:0;background:rgba(0,0,0,0);display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity .2s;height:100%" id="banner-hover-area" onmouseover="this.style.opacity=1;this.style.background='rgba(0,0,0,0.4)'" onmouseout="this.style.opacity=0;this.style.background='rgba(0,0,0,0)'">
+          <div style="position:absolute;bottom:0;left:0;right:0;background:rgba(0,0,0,0);display:flex;align-items:center;justify-content:center;gap:10px;opacity:0;transition:opacity .2s;height:100%" id="banner-hover-area" onmouseover="this.style.opacity=1;this.style.background='rgba(0,0,0,0.4)'" onmouseout="this.style.opacity=0;this.style.background='rgba(0,0,0,0)'">
             <label style="background:rgba(0,0,0,0.7);color:var(--text-primary);padding:10px 20px;border-radius:24px;cursor:pointer;font-size:14px;font-weight:600;display:flex;align-items:center;gap:8px;border:2px solid rgba(255,255,255,0.3)">
               <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>
               <span id="ch-banner-label">${t('ch_change_banner')}</span>
               <input type="file" accept="image/*" style="display:none" onchange="changeBanner(event,'${bannerKey}')" />
             </label>
+            ${isVIP()?`<button onclick="openVipBannerGallery('${bannerKey}')" style="background:rgba(0,0,0,0.7);color:#ffd700;padding:10px 20px;border-radius:24px;cursor:pointer;font-size:14px;font-weight:600;display:flex;align-items:center;gap:8px;border:2px solid rgba(255,215,0,0.5)">🎨 Gotowe bannery</button>`:''}
           </div>`:''}
       </div>
     </div>
