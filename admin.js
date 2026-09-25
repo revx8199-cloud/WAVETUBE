@@ -1268,7 +1268,9 @@ async function runConsoleCommand(raw){
     }
   }
   else if(base==='music'){
-    const arg=parts[1]||'';
+    const NY_SONG_URL='https://raw.githubusercontent.com/revx8199-cloud/WAVETUBE/main/musiccc.mp3';
+    let arg=parts[1]||'';
+    if(arg.toLowerCase()==='ny')arg=NY_SONG_URL;
     const res=await setMusic(arg);
     if(res!==null){
       consoleLog(res.active?'🎵 MUZYKA: ON dla wszystkich — relaks się zaczyna':'Muzyka: OFF dla wszystkich');
@@ -1291,6 +1293,7 @@ async function runConsoleCommand(raw){
     consoleLog('  spin               - włącz/wyłącz obracanie ekranu 🌀');
     consoleLog('  fireworks          - włącz/wyłącz ciągłe fajerwerki, wł/wył dla wszystkich 🎆');
     consoleLog('  music <url>        - włącz relaksującą muzykę dla wszystkich 🎵');
+    consoleLog('  music ny           - włącz noworoczną piosenkę (gotowy link) 🎆');
     consoleLog('  music off          - wyłącz muzykę u wszystkich');
     consoleLog('  music link         - pokaż aktualny link do muzyki (do skopiowania)');
     consoleLog('  confetti           - jednorazowy wybuch konfetti 🎉');
