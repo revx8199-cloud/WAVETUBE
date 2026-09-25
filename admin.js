@@ -382,6 +382,7 @@ async function checkDiscoState(){
     if(data.last_burst==='shake')fireShake();
     if(data.last_burst==='hearts')fireHearts();
     if(data.last_burst==='flash')fireFlash();
+    if(data.last_burst==='newyear2027')fireNewYear2027();
   }
 }
 
@@ -1153,6 +1154,35 @@ function fireHearts(){
   }
 }
 
+// ── 2027 (jednorazowy "wow" efekt: fajerwerki + napis 2027 + Happy New Year) ──
+function fireNewYear2027(){
+  FireworksFX.toggle(true);
+  fireConfetti();
+  setTimeout(fireConfetti,500);
+  setTimeout(fireConfetti,1100);
+  const ov=document.createElement('div');
+  ov.style.cssText='position:fixed;inset:0;z-index:9700;display:flex;flex-direction:column;align-items:center;justify-content:center;pointer-events:none;opacity:0;transition:opacity .6s ease;text-align:center;padding:0 16px';
+  ov.innerHTML='<div style="font-size:min(22vw,190px);line-height:1;font-weight:900;background:linear-gradient(135deg,#ffd700,#ff6b6b,#a55eea,#3ea6ff);-webkit-background-clip:text;background-clip:text;color:transparent;filter:drop-shadow(0 0 40px rgba(255,215,0,.55));animation:ny2027Pulse 1.6s ease-in-out infinite;letter-spacing:4px">2027</div><div style="font-size:min(6vw,44px);font-weight:800;color:#fff;text-shadow:0 0 20px rgba(0,0,0,.85);margin-top:10px;letter-spacing:2px">🎉 HAPPY NEW YEAR 🎉</div>';
+  document.body.appendChild(ov);
+  requestAnimationFrame(()=>{ov.style.opacity='1';});
+  setTimeout(()=>{ov.style.opacity='0';},8000);
+  setTimeout(()=>{ov.remove();FireworksFX.toggle(false);},8700);
+}
+// odpala się automatycznie u KAŻDEGO otwartego klienta dokładnie o 00:00 1 stycznia 2027 (czas polski, UTC+1)
+function scheduleNewYear2027Auto(){
+  const target=Date.UTC(2026,11,31,23,0,0);
+  const check=()=>{
+    const diff=target-Date.now();
+    if(diff<=0){
+      if(diff>-60000)fireNewYear2027(); // nie odpalaj jeśli strona wróciła do życia dużo później
+      return;
+    }
+    if(diff<=2147000000)setTimeout(fireNewYear2027,diff); // limit setTimeout ~24.8 dnia
+    else setTimeout(check,24*60*60*1000);
+  };
+  check();
+}
+
 let adminConsoleOpen=false;
 
 function toggleAdminConsole(){
@@ -1197,6 +1227,8 @@ async function runConsoleCommand(raw){
   consoleLog('wavetube> '+cmd,'#3ea6ff');
   const parts=cmd.split(' ');
   const base=parts[0].toLowerCase();
+  const RELAKS_SONG_URL='https://raw.githubusercontent.com/revx8199-cloud/WAVETUBE/main/music.mp3';
+  const NY_SONG_URL='https://raw.githubusercontent.com/revx8199-cloud/WAVETUBE/main/musiccc.mp3';
 
   if(base==='disco'){
     const on=await setActiveEffect('disco');
@@ -1258,22 +1290,20 @@ async function runConsoleCommand(raw){
     await fireGlobalBurst('hearts');
     consoleLog('💕 Serduszka wysłane do wszystkich!');
   }
+  else if(base==='2027'){
+    await fireGlobalBurst('newyear2027');
+    consoleLog('🎊 2027 WOW efekt odpalony dla wszystkich!');
+  }
   else if(base==='music'&&(parts[1]||'').toLowerCase()==='link'){
-    const{data}=await sb.from('site_state').select('music_url').eq('id',1).single();
-    if(data?.music_url){
-      consoleLog('Aktualny link do muzyki (skopiuj):');
-      consoleLog(data.music_url,'#3ea6ff');
-    }else{
-      consoleLog('Nie ustawiono jeszcze żadnego linku do muzyki.','#ffd700');
-    }
+    consoleLog('relaks:');
+    consoleLog(RELAKS_SONG_URL,'#3ea6ff');
+    consoleLog('ny:');
+    consoleLog(NY_SONG_URL,'#3ea6ff');
   }
   else if(base==='music'){
-    const NY_SONG_URL='https://raw.githubusercontent.com/revx8199-cloud/WAVETUBE/main/musiccc.mp3';
-    const RELAKS_SONG_URL='https://raw.githubusercontent.com/revx8199-cloud/WAVETUBE/main/music.mp3';
-    let arg=parts[1]||'';
-    const al=arg.toLowerCase();
-    if(al==='ny')arg=NY_SONG_URL;
-    else if(al==='relaks')arg=RELAKS_SONG_URL;
+    const al=(parts[1]||'').toLowerCase();
+    const arg=al==='ny'?NY_SONG_URL:al==='relaks'?RELAKS_SONG_URL:al==='off'?'off':'';
+    if(!arg){consoleLog('Użyj: music relaks / music ny / music off','#ff6b6b');return;}
     const res=await setMusic(arg);
     if(res!==null){
       consoleLog(res.active?'🎵 MUZYKA: ON dla wszystkich — relaks się zaczyna':'Muzyka: OFF dla wszystkich');
@@ -1295,14 +1325,14 @@ async function runConsoleCommand(raw){
     consoleLog('  blur               - włącz/wyłącz rozmycie ekranu 🌫️');
     consoleLog('  spin               - włącz/wyłącz obracanie ekranu 🌀');
     consoleLog('  fireworks          - włącz/wyłącz ciągłe fajerwerki, wł/wył dla wszystkich 🎆');
-    consoleLog('  music <url>        - włącz relaksującą muzykę dla wszystkich 🎵');
-    consoleLog('  music ny           - włącz noworoczną piosenkę (gotowy link) 🎆');
-    consoleLog('  music relaks       - włącz relaksującą piosenkę (gotowy link)');
+    consoleLog('  music relaks       - włącz relaksującą muzykę dla wszystkich 🎵');
+    consoleLog('  music ny           - włącz noworoczną piosenkę 🎆');
     consoleLog('  music off          - wyłącz muzykę u wszystkich');
     consoleLog('  music link         - pokaż aktualny link do muzyki (do skopiowania)');
     consoleLog('  confetti           - jednorazowy wybuch konfetti 🎉');
     consoleLog('  shake              - jednorazowe zatrzęsienie ekranem 💥');
     consoleLog('  hearts             - jednorazowe serduszka 💕');
+    consoleLog('  2027               - WOW: fajerwerki + napis 2027 + Happy New Year (odpala się też SAM o 00:00 1.01.2027)');
     consoleLog('  rain               - deszcz z wodą, wł/wył dla wszystkich (nie da się jej usunąć, tylko przesunąć) 🌧️');
     consoleLog('  flash              - jednorazowy błysk ekranu ⚡');
     consoleLog('  say <tekst>        - pokaż baner z tekstem u wszystkich 📢');
@@ -1409,6 +1439,7 @@ let consoleHistory=JSON.parse(localStorage.getItem('wt_console_history')||'[]');
 let consoleHistoryIdx=consoleHistory.length;
 
 document.addEventListener('DOMContentLoaded',()=>{
+  scheduleNewYear2027Auto();
   const inp=document.getElementById('console-input');
   if(inp)inp.addEventListener('keydown',e=>{
     if(e.key==='Enter'){
