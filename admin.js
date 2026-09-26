@@ -824,7 +824,7 @@ function toggleRainEffect(on){
 // część wybuchów dostaje dodatkowy "crackle" (doleciałe iskry z opóźnieniem).
 // Nowe rakiety odpalane w losowych odstępach, czasem podwójnie - ciągły pokaz.
 const FireworksFX=(()=>{
-  let canvas=null,ctx=null,rafId=null,active=false;
+  let canvas=null,ctx=null,rafId=null,active=false,boostMode=false;
   let dpr=1,W=0,H=0;
   let rockets=[],particles=[];
   let nextLaunchAt=0,lastTs=0;
@@ -936,21 +936,23 @@ const FireworksFX=(()=>{
     const x=W*0.1+Math.random()*W*0.8;
     const targetY=H*0.12+Math.random()*H*0.35;
     const palette=PALETTES[Math.floor(Math.random()*PALETTES.length)];
-    rockets.push({x,y:H+10,targetY,vy:-(520+Math.random()*160),trail:[],palette,spinShell:Math.random()<0.25});
+    const big=boostMode&&Math.random()<0.4;
+    rockets.push({x,y:H+10,targetY,vy:-(520+Math.random()*160),trail:[],palette,spinShell:Math.random()<(boostMode?0.4:0.25),big});
   }
 
   function explode(r){
-    playExplosionSound(r.spinShell);
-    const count=60+Math.floor(Math.random()*50);
-    const speed=90+Math.random()*90;
+    playExplosionSound(r.spinShell||r.big);
+    const mul=r.big?2.6:(boostMode?1.6:1);
+    const count=Math.floor((60+Math.floor(Math.random()*50))*mul);
+    const speed=(90+Math.random()*90)*(r.big?1.5:(boostMode?1.2:1));
     for(let i=0;i<count;i++){
       const angle=(Math.PI*2*i)/count+Math.random()*0.15;
       const s=speed*(0.6+Math.random()*0.5);
       particles.push({
         x:r.x,y:r.y,vx:Math.cos(angle)*s,vy:Math.sin(angle)*s,
         color:r.palette[Math.floor(Math.random()*r.palette.length)],
-        life:0,maxLife:1+Math.random()*0.8,trail:[],
-        size:1.4+Math.random()*1.6,glitter:Math.random()<0.3
+        life:0,maxLife:(r.big?1.5:1)+Math.random()*0.8,trail:[],
+        size:(1.4+Math.random()*1.6)*(r.big?1.8:(boostMode?1.3:1)),glitter:Math.random()<0.3
       });
     }
     if(r.spinShell){
@@ -972,8 +974,8 @@ const FireworksFX=(()=>{
 
     if(active&&ts>=nextLaunchAt){
       launchRocket();
-      if(Math.random()<0.3)setTimeout(launchRocket,150+Math.random()*250);
-      nextLaunchAt=ts+700+Math.random()*1200;
+      if(Math.random()<(boostMode?0.65:0.3))setTimeout(launchRocket,150+Math.random()*250);
+      nextLaunchAt=ts+(boostMode?250+Math.random()*450:700+Math.random()*1200);
     }
 
     for(let i=rockets.length-1;i>=0;i--){
@@ -1049,7 +1051,8 @@ const FireworksFX=(()=>{
   }
 
   return{
-    toggle(on){
+    toggle(on,opts){
+      boostMode=!!(opts&&opts.boost);
       if(on&&!active)start();
       else if(!on&&active)stop();
     }
@@ -1156,7 +1159,7 @@ function fireHearts(){
 
 // ── 2027 (jednorazowy "wow" efekt: fajerwerki + napis 2027 + Happy New Year) ──
 function fireNewYear2027(){
-  FireworksFX.toggle(true);
+  FireworksFX.toggle(true,{boost:true});
   for(let i=0;i<12;i++)setTimeout(fireConfetti,i*2200);
   const ov=document.createElement('div');
   ov.style.cssText='position:fixed;inset:0;z-index:9700;display:flex;flex-direction:column;align-items:center;justify-content:center;pointer-events:none;opacity:0;transition:opacity 1s ease;text-align:center;padding:0 16px;background:radial-gradient(ellipse at center,rgba(0,0,0,.35),rgba(0,0,0,0) 70%)';
