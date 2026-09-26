@@ -588,6 +588,8 @@ let callQualityInt=null;
 let callStatsPrev={lost:0,received:0};
 let callRemoteStream=null;
 let ringtoneInt=null,ringCtx=null;
+let callVideoOn=false;
+let callHasCamera=true;
 
 function subscribeCallChannel(){
   if(!currentUser||callSignalChannel)return;
@@ -612,6 +614,18 @@ function createCallPC(){
     callRemoteStream=e.streams[0];
     const el=document.getElementById('call-remote-audio');
     if(el)el.srcObject=e.streams[0];
+    const vEl=document.getElementById('call-remote-video');
+    if(vEl&&e.track.kind==='video'){
+      vEl.srcObject=e.streams[0];
+      const showVideo=()=>{
+        const on=e.streams[0].getVideoTracks().some(t=>t.enabled&&t.readyState==='live');
+        vEl.style.display=on?'block':'none';
+        const av=document.getElementById('call-avatar-wrap');
+        if(av)av.style.display=on?'none':'flex';
+      };
+      e.track.onmute=showVideo;e.track.onunmute=showVideo;
+      showVideo();
+    }
   };
   pc.onconnectionstatechange=()=>{
     if(pc.connectionState==='connected'&&callState==='calling'){
@@ -630,8 +644,14 @@ async function startCall(otherId,otherName,otherAvatar){
   const{data:targetProf}=await sb.from('profiles').select('allow_calls').eq('id',otherId).single();
   if(targetProf?.allow_calls===false){toast(t('call_disabled_toast'));return;}
   try{
-    callLocalStream=await navigator.mediaDevices.getUserMedia({audio:true});
-  }catch(e){toast(t('call_mic_denied_toast'));return;}
+    callLocalStream=await navigator.mediaDevices.getUserMedia({audio:true,video:true});
+    callHasCamera=true;
+  }catch(e){
+    try{callLocalStream=await navigator.mediaDevices.getUserMedia({audio:true});callHasCamera=false;}
+    catch(e2){toast(t('call_mic_denied_toast'));return;}
+  }
+  callLocalStream.getVideoTracks().forEach(tr=>tr.enabled=false);
+  callVideoOn=false;
   callOtherUser={id:otherId,name:otherName,avatar:otherAvatar};
   callState='calling';
   showCallUI();
@@ -708,8 +728,14 @@ async function acceptCall(){
   stopRingtone();
   stopTitleFlash();
   try{
-    callLocalStream=await navigator.mediaDevices.getUserMedia({audio:true});
-  }catch(e){toast(t('call_mic_denied_toast'));rejectCall();return;}
+    callLocalStream=await navigator.mediaDevices.getUserMedia({audio:true,video:true});
+    callHasCamera=true;
+  }catch(e){
+    try{callLocalStream=await navigator.mediaDevices.getUserMedia({audio:true});callHasCamera=false;}
+    catch(e2){toast(t('call_mic_denied_toast'));rejectCall();return;}
+  }
+  callLocalStream.getVideoTracks().forEach(tr=>tr.enabled=false);
+  callVideoOn=false;
   callPC=createCallPC();
   callLocalStream.getTracks().forEach(tr=>callPC.addTrack(tr,callLocalStream));
   await callPC.setRemoteDescription(new RTCSessionDescription(callIncomingOffer));
@@ -825,6 +851,18 @@ function toggleCallMute(){
   updateCallUI();
 }
 
+function toggleCallVideo(){
+  if(!callLocalStream||!callHasCamera)return;
+  callVideoOn=!callVideoOn;
+  callLocalStream.getVideoTracks().forEach(tr=>tr.enabled=callVideoOn);
+  const localEl=document.getElementById('call-local-video');
+  if(localEl){
+    localEl.srcObject=callVideoOn?callLocalStream:null;
+    localEl.style.display=callVideoOn?'block':'none';
+  }
+  updateCallUI();
+}
+
 function endCallCleanup(){
   stopRingtone();
   stopTitleFlash();
@@ -834,8 +872,13 @@ function endCallCleanup(){
   if(callPeerChannel){sb.removeChannel(callPeerChannel);callPeerChannel=null;}
   if(callAudioCtx){callAudioCtx.close();callAudioCtx=null;callGainNode=null;}
   callBoostOn=false;
+  callVideoOn=false;
+  callHasCamera=true;
   callRemoteStream=null;
   {const el=document.getElementById('call-remote-audio');if(el)el.muted=false;}
+  {const el=document.getElementById('call-remote-video');if(el){el.style.display='none';el.srcObject=null;}}
+  {const el=document.getElementById('call-local-video');if(el){el.style.display='none';el.srcObject=null;}}
+  {const el=document.getElementById('call-avatar-wrap');if(el)el.style.display='flex';}
   stopCallQualityMonitor();
   callPendingCandidates=[];
   callIncomingOffer=null;
@@ -901,7 +944,7 @@ function updateCallUI(){
     ctrlEl.innerHTML=callBtnHtml('#cc0000','rejectCall()','📵',t('call_reject'))+callBtnHtml('#2ecc71','acceptCall()','📞',t('call_accept'));
   }else if(callState==='active'){
     statusEl.textContent='0:00';
-    ctrlEl.innerHTML=callBtnHtml(callMuted?'#3ea6ff':'var(--border-soft)','toggleCallMute()',callMuted?'🔇':'🎤',t('call_mute'))+callBtnHtml(callBoostOn?'#f5a623':'var(--border-soft)','toggleCallBoost()','🔊',t('call_boost'))+callBtnHtml('#cc0000','hangupCall()','📵',t('call_hangup'));
+    ctrlEl.innerHTML=callBtnHtml(callMuted?'#3ea6ff':'var(--border-soft)','toggleCallMute()',callMuted?'🔇':'🎤',t('call_mute'))+(callHasCamera?callBtnHtml(callVideoOn?'#3ea6ff':'var(--border-soft)','toggleCallVideo()','📹','Kamera'):'')+callBtnHtml(callBoostOn?'#f5a623':'var(--border-soft)','toggleCallBoost()','🔊',t('call_boost'))+callBtnHtml('#cc0000','hangupCall()','📵',t('call_hangup'));
   }
 }
 
