@@ -1529,7 +1529,7 @@ if(adminTab==='users'){
     body.innerHTML=reports.map(r=>`
       <div class="admin-row" style="align-items:flex-start">
         <div style="flex:1;min-width:0">
-          <div style="font-size:13px;font-weight:600">${esc(r.video_title)||'(usunięty film)'}</div>
+          <div style="font-size:13px;font-weight:600">${r.post_id!=null?'📝 Post: '+esc(r.post_text||'(usunięty post)'):esc(r.video_title)||'(usunięty film)'}</div>
           <div style="font-size:12px;color:#ff8a8a;margin:3px 0">${esc(r.reason)}</div>
           ${r.details?`<div style="font-size:12px;color:var(--text-secondary);margin-bottom:4px">${esc(r.details)}</div>`:''}
           <div style="font-size:11px;color:var(--text-tertiary)">Zgłosił: ${esc(r.reporter_email)} · ${new Date(r.created_at).toLocaleString('pl-PL')}</div>

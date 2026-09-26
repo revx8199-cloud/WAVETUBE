@@ -89,15 +89,27 @@ async function downloadVideo(videoId){
 // ── ZGŁASZANIE FILMÓW ─────────────────────────────────────────────────────
 const REPORT_EMAIL='wavetubebuisness@gmail.com';
 let reportingVideoId=null;
+let reportingPostId=null;
 
 function openReportModal(videoId){
   reportingVideoId=videoId;
+  reportingPostId=null;
+  const h=document.querySelector('#report-modal h3');if(h)h.textContent='🚩 Zgłoś film';
+  const el=document.getElementById('report-modal');
+  if(el)el.classList.add('open');
+}
+
+function openPostReportModal(postId){
+  reportingPostId=postId;
+  reportingVideoId=null;
+  const h=document.querySelector('#report-modal h3');if(h)h.textContent='🚩 Zgłoś post';
   const el=document.getElementById('report-modal');
   if(el)el.classList.add('open');
 }
 
 function closeReportModal(){
   reportingVideoId=null;
+  reportingPostId=null;
   const el=document.getElementById('report-modal');
   if(el)el.classList.remove('open');
   const r=document.querySelector('input[name="report-reason"]:checked');
@@ -111,6 +123,24 @@ async function submitReport(){
   if(!reasonEl){toast('Wybierz powód zgłoszenia');return;}
   const reason=reasonEl.value;
   const details=document.getElementById('report-details').value.trim();
+  if(reportingPostId!=null){
+    const p=(typeof posts!=='undefined'?posts:[]).find(x=>String(x.id)===String(reportingPostId));
+    const{error}=await sb.from('reports').insert([{
+      post_id:reportingPostId,
+      post_text:(p?.text||'').slice(0,300),
+      reason,
+      details,
+      reporter_id:currentUser.id,
+      reporter_email:currentUser.email||''
+    }]);
+    if(error){
+      toast(error.message.includes('RATE_LIMIT')?'Za dużo zgłoszeń naraz — odczekaj chwilę 🐢':'Błąd: '+error.message);
+      return;
+    }
+    toast('Zgłoszenie wysłane. Dziękujemy!');
+    closeReportModal();
+    return;
+  }
   const v=videos.find(x=>String(x.id)===String(reportingVideoId));
   const{error}=await sb.from('reports').insert([{
     video_id:reportingVideoId,

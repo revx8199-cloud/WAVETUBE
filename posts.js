@@ -114,7 +114,10 @@ async function renderPosts(){
             <div class="post-user" style="${p.user_color?`color:${p.user_color};`:''}${p.user_font?`font-family:${fontCssFor(p.user_font)};`:''}">${esc(uname)}${verifiedBadge(p.user_email||'')}</div>
             <div class="post-time">${p.created_at?new Date(p.created_at).toLocaleString('pl-PL',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'}):p.time||''}</div>
           </div>
-          ${isOwner?`<button onclick="deletePost(${p.id})" style="margin-left:auto;background:none;border:none;color:#555;cursor:pointer;font-size:16px" title="${t('post_delete_title')}">🗑</button>`:''}
+          <div style="margin-left:auto;display:flex;align-items:center;gap:2px">
+            <button onclick="event.stopPropagation();togglePostMenu(${p.id},this)" style="background:none;border:none;color:#555;cursor:pointer;font-size:18px;padding:4px 8px" title="Więcej">⋮</button>
+            ${isOwner?`<button onclick="deletePost(${p.id})" style="background:none;border:none;color:#555;cursor:pointer;font-size:16px" title="${t('post_delete_title')}">🗑</button>`:''}
+          </div>
         </div>
         ${p.text?`<div class="post-text">${esc(p.text)}</div>`:''}
         ${renderPostImages(p)}
@@ -296,6 +299,36 @@ async function addPostComment(postId){
   const c={user:getMyDisplayName(),text:inp.value.trim(),time:now,ts:Date.now(),col:'#cc0000',avatar:meta?.avatar_url||'',email:currentUser.email||'',user_id:currentUser.id,name_color:myNameColor||'',name_font:myNameFont||'',avatar_frame:myAvatarFrame||''};
   await sb.rpc('add_post_comment',{p_id:postId,c});
   renderPosts();
+}
+
+// ── MENU NA POŚCIE (⋮) ─────────────────────────────────────────────
+let postMenuOpenId=null;
+let postMenuOutsideListener=null;
+
+function closePostMenu(){
+  const el=document.getElementById('post-menu-popup');
+  if(el)el.remove();
+  if(postMenuOutsideListener){document.removeEventListener('click',postMenuOutsideListener);postMenuOutsideListener=null;}
+  postMenuOpenId=null;
+}
+
+function togglePostMenu(postId,btnEl){
+  if(postMenuOpenId===postId){closePostMenu();return;}
+  closePostMenu();
+  postMenuOpenId=postId;
+  const rect=btnEl.getBoundingClientRect();
+  const menu=document.createElement('div');
+  menu.id='post-menu-popup';
+  const top=rect.bottom+6+50>window.innerHeight?rect.top-56:rect.bottom+6;
+  menu.style.cssText=`position:fixed;top:${top}px;left:${Math.min(rect.left,window.innerWidth-190)}px;background:var(--bg-panel);border:1px solid var(--border);border-radius:10px;min-width:170px;z-index:1000;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,.6)`;
+  menu.innerHTML=`<div onclick="event.stopPropagation();closePostMenu();openPostReportModal(${postId})" style="padding:12px 16px;cursor:pointer;font-size:13px;display:flex;align-items:center;gap:10px;color:#ff6b6b" onmouseover="this.style.background='var(--border)'" onmouseout="this.style.background='none'">🚩 Zgłoś post</div>`;
+  document.body.appendChild(menu);
+  setTimeout(()=>{
+    postMenuOutsideListener=function(e){
+      if(!menu.contains(e.target)&&e.target!==btnEl){closePostMenu();}
+    };
+    document.addEventListener('click',postMenuOutsideListener);
+  },0);
 }
 
 async function deletePost(postId){
