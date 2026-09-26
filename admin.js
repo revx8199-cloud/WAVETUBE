@@ -1512,7 +1512,9 @@ if(adminTab==='users'){
     const usersMap={};
     videos.forEach(v=>{if(v.user_id)usersMap[v.user_id]={id:v.user_id,name:getUserName(v),email:v.user_email||'',avatar:v.user_avatar||'',is_vip:false};});
     const{data:profs}=await sb.from('profiles').select('*');
-    if(profs)profs.forEach(p=>{if(p.id)usersMap[p.id]={id:p.id,name:p.name||'Użytkownik',email:p.email||'',avatar:p.avatar||'',is_vip:!!p.is_vip,last_ip:p.last_ip||''};});
+    const{data:ips}=await sb.rpc('admin_get_user_ips');
+    const ipMap={};if(ips)ips.forEach(r=>{ipMap[r.id]=r.last_ip;});
+    if(profs)profs.forEach(p=>{if(p.id)usersMap[p.id]={id:p.id,name:p.name||'Użytkownik',email:p.email||'',avatar:p.avatar||'',is_vip:!!p.is_vip,last_ip:ipMap[p.id]||''};});
     const{data:bans}=await sb.from('banned_users').select('*');
     const banMap={};
     if(bans)bans.forEach(b=>{if(!b.expires_at||new Date(b.expires_at)>new Date())banMap[b.user_id]=b;});
@@ -1740,7 +1742,8 @@ async function sendAnnouncement(){
   const notifs=[...userIds].map(uid=>({
     user_id:uid,
     message:`📢 <b>Ogłoszenie:</b> ${esc(text||poll.question)}`,
-    avatar:''
+    avatar:'',
+    sender_id:currentUser.id
   }));
   status.textContent=`Wysyłanie do ${notifs.length} użytkowników...`;
   const{error}=await sb.from('notifications').insert(notifs);

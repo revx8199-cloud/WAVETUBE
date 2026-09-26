@@ -238,17 +238,8 @@ function renderPoll(p){
 
 async function votePoll(postId,optionIndex){
   if(!currentUser){toast(t('post_login_vote_toast'));return;}
-  const{data:post}=await sb.from('posts').select('poll').eq('id',postId).single();
-  if(!post||!post.poll)return;
-  const poll=post.poll;
-  if(!poll.voters)poll.voters={};
-  const prevVote=poll.voters[currentUser.id];
-  if(prevVote===optionIndex)return; // już na to głosował
-  if(prevVote!==undefined)poll.options[prevVote].votes=Math.max(0,(poll.options[prevVote].votes||0)-1);
-  poll.options[optionIndex].votes=(poll.options[optionIndex].votes||0)+1;
-  poll.voters[currentUser.id]=optionIndex;
-  await sb.rpc('vote_post_poll',{p_id:postId,new_poll:poll});
-  renderPosts();
+  await sb.rpc('vote_post_poll',{p_id:postId,p_option:optionIndex});
+  await renderPosts();
 }
 
 function togglePostComments(id){
@@ -439,7 +430,7 @@ async function submitPost(){
     // notify subscribers
     const{data:subs}=await sb.from('subscriptions').select('subscriber_id').eq('channel_id',currentUser.id);
     if(subs&&subs.length){
-      const notifs=subs.map(s=>({user_id:s.subscriber_id,message:`<b>${esc(getMyDisplayName())}</b> ${t('post_new_notification')}`,avatar:meta?.avatar_url||''}));
+      const notifs=subs.map(s=>({user_id:s.subscriber_id,message:`<b>${esc(getMyDisplayName())}</b> ${t('post_new_notification')}`,avatar:meta?.avatar_url||'',sender_id:currentUser.id}));
       await sb.from('notifications').insert(notifs);
     }
     document.getElementById('post-text-inp').value='';

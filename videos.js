@@ -181,7 +181,7 @@ async function addVideo(v){
     const meta=currentUser.user_metadata;
     const{data:subs}=await sb.from('subscriptions').select('subscriber_id').eq('channel_id',currentUser.id);
     if(subs&&subs.length){
-      const notifs=subs.map(s=>({user_id:s.subscriber_id,message:`<b>${esc(getMyDisplayName())}</b> dodał nowy film 🎬`,avatar:meta?.avatar_url||''}));
+      const notifs=subs.map(s=>({user_id:s.subscriber_id,message:`<b>${esc(getMyDisplayName())}</b> dodał nowy film 🎬`,avatar:meta?.avatar_url||'',sender_id:currentUser.id}));
       await sb.from('notifications').insert(notifs);
     }
   }
