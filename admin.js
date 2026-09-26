@@ -1157,16 +1157,15 @@ function fireHearts(){
 // ── 2027 (jednorazowy "wow" efekt: fajerwerki + napis 2027 + Happy New Year) ──
 function fireNewYear2027(){
   FireworksFX.toggle(true);
-  fireConfetti();
-  setTimeout(fireConfetti,500);
-  setTimeout(fireConfetti,1100);
+  for(let i=0;i<8;i++)setTimeout(fireConfetti,i*900);
+  for(let i=0;i<3;i++)setTimeout(fireHearts,1500+i*2500);
   const ov=document.createElement('div');
-  ov.style.cssText='position:fixed;inset:0;z-index:9700;display:flex;flex-direction:column;align-items:center;justify-content:center;pointer-events:none;opacity:0;transition:opacity .6s ease;text-align:center;padding:0 16px';
-  ov.innerHTML='<div style="font-size:min(22vw,190px);line-height:1;font-weight:900;background:linear-gradient(135deg,#ffd700,#ff6b6b,#a55eea,#3ea6ff);-webkit-background-clip:text;background-clip:text;color:transparent;filter:drop-shadow(0 0 40px rgba(255,215,0,.55));animation:ny2027Pulse 1.6s ease-in-out infinite;letter-spacing:4px">2027</div><div style="font-size:min(6vw,44px);font-weight:800;color:#fff;text-shadow:0 0 20px rgba(0,0,0,.85);margin-top:10px;letter-spacing:2px">🎉 HAPPY NEW YEAR 🎉</div>';
+  ov.style.cssText='position:fixed;inset:0;z-index:9700;display:flex;flex-direction:column;align-items:center;justify-content:center;pointer-events:none;opacity:0;transition:opacity 1s ease;text-align:center;padding:0 16px;background:radial-gradient(ellipse at center,rgba(0,0,0,.35),rgba(0,0,0,0) 70%)';
+  ov.innerHTML='<div style="font-size:min(22vw,190px);line-height:1;font-weight:900;background:linear-gradient(135deg,#ffd700,#ff6b6b,#a55eea,#3ea6ff,#ffd700);background-size:300% 300%;-webkit-background-clip:text;background-clip:text;color:transparent;filter:drop-shadow(0 0 50px rgba(255,215,0,.65));animation:ny2027Pulse 1.6s ease-in-out infinite,ny2027Shine 4s linear infinite;letter-spacing:4px">2027</div><div style="font-size:min(6vw,46px);font-weight:800;color:#fff;text-shadow:0 0 24px rgba(0,0,0,.9);margin-top:12px;letter-spacing:2px;animation:ny2027Pulse 1.6s ease-in-out infinite .3s">🎉 HAPPY NEW YEAR 🎉</div>';
   document.body.appendChild(ov);
   requestAnimationFrame(()=>{ov.style.opacity='1';});
-  setTimeout(()=>{ov.style.opacity='0';},8000);
-  setTimeout(()=>{ov.remove();FireworksFX.toggle(false);},8700);
+  setTimeout(()=>{ov.style.opacity='0';},19000);
+  setTimeout(()=>{ov.remove();FireworksFX.toggle(false);},20000);
 }
 // odpala się automatycznie u KAŻDEGO otwartego klienta dokładnie o 00:00 1 stycznia 2027 (czas polski, UTC+1)
 function scheduleNewYear2027Auto(){

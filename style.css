@@ -339,6 +339,7 @@ body.blur-mode #main-content,body.blur-mode header,body.blur-mode .sidebar-left{
 @keyframes rainDrop{from{transform:translateY(-40px)}to{transform:translateY(105vh)}}
 @keyframes flashPulse{0%{opacity:0}15%{opacity:1}100%{opacity:0}}
 @keyframes ny2027Pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.08)}}
+@keyframes ny2027Shine{0%{background-position:0% 50%}100%{background-position:300% 50%}}
 @keyframes broadcastSlideIn{from{transform:translateX(-50%) translateY(-30px);opacity:0}to{transform:translateX(-50%) translateY(0);opacity:1}}
 #console-output::-webkit-scrollbar{width:8px}
 #console-output::-webkit-scrollbar-thumb{background:#333;border-radius:4px}
