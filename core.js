@@ -557,6 +557,16 @@ function setThumbMode(mode){
     if(panel)panel.style.display=m===mode?'block':'none';
     if(tab){tab.style.background=m===mode?'#cc0000':'transparent';tab.style.borderColor=m===mode?'#cc0000':'var(--border)';tab.style.color=m===mode?'#fff':'#aaa';}
   });
+  if(mode==='auto'){
+    const url=document.getElementById('furl')?.value.trim()||'';
+    const type=getPlayer(url).type;
+    const hint=document.getElementById('thumb-auto-hint-text');
+    if(hint){
+      if(type==='yt')hint.textContent=t('form_thumb_auto_hint');
+      else if(type==='gd')hint.textContent='Miniaturka zostanie pobrana automatycznie z Google Drive';
+      else hint.textContent='⚠️ Auto nie działa dla tego linku (np. MEGA) — nie da się pobrać kadru z tego hostingu. Wybierz "Z dysku" albo "Link URL".';
+    }
+  }
 }
 
 document.getElementById('fthumb-file')?.addEventListener('change',function(){
