@@ -370,7 +370,7 @@ async function checkDiscoState(){
   toggleRainbowEffect(data.active_effect==='rainbow');
   toggleBlurEffect(data.active_effect==='blur');
   toggleSpinEffect(data.active_effect==='spin');
-  toggleFireworksEffect(data.active_effect==='fireworks');
+  if(!ny2027Playing)toggleFireworksEffect(data.active_effect==='fireworks');
   syncMusicState(data.music_url,!!data.music_active);
   syncBroadcastText(data.broadcast_text||'',data.broadcast_by||'');
   if(lastSeenBurstAt===null){
@@ -1158,7 +1158,9 @@ function fireHearts(){
 }
 
 // ── 2027 (jednorazowy "wow" efekt: fajerwerki + napis 2027 + Happy New Year) ──
+let ny2027Playing=false;
 function fireNewYear2027(){
+  ny2027Playing=true;
   FireworksFX.toggle(true,{boost:true});
   for(let i=0;i<12;i++)setTimeout(fireConfetti,i*2200);
   const ov=document.createElement('div');
@@ -1167,7 +1169,7 @@ function fireNewYear2027(){
   document.body.appendChild(ov);
   requestAnimationFrame(()=>{ov.style.opacity='1';});
   setTimeout(()=>{ov.style.opacity='0';},29000);
-  setTimeout(()=>{ov.remove();FireworksFX.toggle(false);},30000);
+  setTimeout(()=>{ov.remove();FireworksFX.toggle(false);ny2027Playing=false;},30000);
 }
 // odpala się automatycznie u KAŻDEGO otwartego klienta dokładnie o 00:00 1 stycznia 2027 (czas polski, UTC+1)
 function scheduleNewYear2027Auto(){
