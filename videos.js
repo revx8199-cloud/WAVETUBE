@@ -137,7 +137,7 @@ async function getProfile(userId){
   if(profileCache[userId])return profileCache[userId];
   // Tabela profiles jest źródłem prawdy (aktualny nick/avatar) — sprawdzamy ją najpierw,
   // żeby zmiana nicku od razu było widać wszędzie, a nie tylko na starych, "zamrożonych" wpisach.
-  const{data}=await sb.from('profiles').select('*').eq('id',userId).single();
+  const{data}=await sb.from('profiles').select('id,name,avatar,email,created_at,name_color,name_font,vip_badge_color,is_vip,description,country,last_seen_at,banner_url,allow_messages,avatar_frame,vip_since,avatar_particles,allow_calls,avatar_particle_type,banner_frame').eq('id',userId).single();
   if(data&&(data.avatar||data.name)){profileCache[userId]=data;return data;}
   // Fallback dla userów bez wiersza w profiles: dane z ich filmu (najszybsze)
   const vid=videos.find(v=>v.user_id===userId);
