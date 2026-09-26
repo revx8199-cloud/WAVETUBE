@@ -618,10 +618,9 @@ function createCallPC(){
     if(vEl&&e.track.kind==='video'){
       vEl.srcObject=e.streams[0];
       const showVideo=()=>{
-        const on=e.streams[0].getVideoTracks().some(t=>t.enabled&&t.readyState==='live');
-        vEl.style.display=on?'block':'none';
         const av=document.getElementById('call-avatar-wrap');
-        if(av)av.style.display=on?'none':'flex';
+        vEl.style.display=e.track.muted?'none':'block';
+        if(av)av.style.display=e.track.muted?'flex':'none';
       };
       e.track.onmute=showVideo;e.track.onunmute=showVideo;
       showVideo();
