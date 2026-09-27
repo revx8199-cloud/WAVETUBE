@@ -394,3 +394,11 @@ body.blur-mode #main-content,body.blur-mode header,body.blur-mode .sidebar-left{
 
 .call-ctrl-btn:hover{transform:scale(1.08);filter:brightness(1.15)}
 .call-ctrl-btn:active{transform:scale(.95)}
+
+.call-blob{position:absolute;border-radius:50%;filter:blur(60px);opacity:.5;will-change:transform}
+.call-blob-1{width:340px;height:340px;background:#cc0000;top:-90px;left:-70px;animation:callBlobMove1 14s ease-in-out infinite}
+.call-blob-2{width:300px;height:300px;background:#3ea6ff;bottom:-70px;right:-50px;animation:callBlobMove2 18s ease-in-out infinite}
+.call-blob-3{width:260px;height:260px;background:#7c4dff;top:45%;left:50%;animation:callBlobMove3 16s ease-in-out infinite}
+@keyframes callBlobMove1{0%,100%{transform:translate(0,0) scale(1)}50%{transform:translate(60px,80px) scale(1.15)}}
+@keyframes callBlobMove2{0%,100%{transform:translate(0,0) scale(1)}50%{transform:translate(-50px,-60px) scale(1.1)}}
+@keyframes callBlobMove3{0%,100%{transform:translate(-50%,-50%) scale(1)}50%{transform:translate(-50%,-60%) scale(1.2)}}

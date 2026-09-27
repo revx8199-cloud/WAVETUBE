@@ -515,6 +515,11 @@
 <!-- KONSOLA ADMINA -->
 <!-- NAKŁADKA ROZMOWY GŁOSOWEJ -->
 <div id="call-overlay" style="display:none;position:fixed;inset:0;z-index:10000;background:#202124;align-items:center;justify-content:center;flex-direction:column;color:#fff;text-align:center;padding:0;overflow:hidden">
+  <div id="call-bg-anim" style="position:absolute;inset:0;z-index:0;overflow:hidden">
+    <div class="call-blob call-blob-1"></div>
+    <div class="call-blob call-blob-2"></div>
+    <div class="call-blob call-blob-3"></div>
+  </div>
   <video id="call-remote-video" autoplay playsinline style="display:none;position:absolute;inset:0;width:100%;height:100%;object-fit:cover;background:#000"></video>
   <div style="position:absolute;top:0;left:0;right:0;height:110px;background:linear-gradient(rgba(0,0,0,.55),transparent);z-index:1;pointer-events:none"></div>
   <div style="position:absolute;top:18px;left:0;right:0;z-index:2;padding:0 20px">
