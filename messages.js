@@ -590,6 +590,8 @@ let callRemoteStream=null;
 let ringtoneInt=null,ringCtx=null;
 let callVideoOn=false;
 let callHasCamera=true;
+let callScreenSharing=false;
+let callScreenStream=null;
 
 function subscribeCallChannel(){
   if(!currentUser||callSignalChannel)return;
@@ -863,9 +865,47 @@ function toggleCallVideo(){
   updateCallUI();
 }
 
+async function toggleScreenShare(){
+  if(!callPC||!callLocalStream)return;
+  const sender=callPC.getSenders().find(s=>s.track&&s.track.kind==='video');
+  if(!sender)return;
+  if(callScreenSharing){
+    stopScreenShare();
+    return;
+  }
+  let stream;
+  try{stream=await navigator.mediaDevices.getDisplayMedia({video:true,audio:false});}
+  catch(e){return;}
+  const screenTrack=stream.getVideoTracks()[0];
+  callScreenStream=stream;
+  await sender.replaceTrack(screenTrack);
+  screenTrack.onended=()=>stopScreenShare();
+  callScreenSharing=true;
+  const localEl=document.getElementById('call-local-video');
+  if(localEl){localEl.srcObject=stream;localEl.style.display='block';}
+  updateCallUI();
+}
+
+async function stopScreenShare(){
+  if(!callScreenSharing)return;
+  if(callScreenStream){callScreenStream.getTracks().forEach(tr=>tr.stop());callScreenStream=null;}
+  callScreenSharing=false;
+  const sender=callPC?callPC.getSenders().find(s=>s.track===null||s.track&&s.track.kind==='video'):null;
+  const camTrack=callLocalStream?callLocalStream.getVideoTracks()[0]:null;
+  if(sender&&camTrack)await sender.replaceTrack(camTrack);
+  const localEl=document.getElementById('call-local-video');
+  if(localEl){
+    localEl.srcObject=callVideoOn&&callLocalStream?callLocalStream:null;
+    localEl.style.display=callVideoOn?'block':'none';
+  }
+  updateCallUI();
+}
+
 function endCallCleanup(){
   stopRingtone();
   stopTitleFlash();
+  if(callScreenStream){callScreenStream.getTracks().forEach(tr=>tr.stop());callScreenStream=null;}
+  callScreenSharing=false;
   clearInterval(callTimerInt);callTimerInt=null;
   if(callPC){callPC.close();callPC=null;}
   if(callLocalStream){callLocalStream.getTracks().forEach(tr=>tr.stop());callLocalStream=null;}
@@ -924,8 +964,9 @@ function callAvatarHtml(){
   return u.avatar?`<img src="${u.avatar}" style="width:100%;height:100%;object-fit:cover">`:esc((u.name||'?')[0].toUpperCase());
 }
 
-function callBtnHtml(bg,onclick,icon,label){
-  return`<button onclick="${onclick}" title="${label}" style="width:54px;height:54px;border-radius:50%;background:${bg};border:none;color:#fff;font-size:22px;cursor:pointer;display:flex;align-items:center;justify-content:center">${icon}</button>`;
+function callBtnHtml(bg,onclick,icon,label,big){
+  const s=big?60:48;
+  return`<button class="call-ctrl-btn" onclick="${onclick}" title="${label}" style="width:${s}px;height:${s}px;border-radius:50%;background:${bg};border:none;color:#fff;font-size:${big?24:20}px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:transform .15s,background .15s,filter .15s">${icon}</button>`;
 }
 
 function updateCallUI(){
@@ -943,7 +984,12 @@ function updateCallUI(){
     statusEl.textContent=t('call_status_incoming');
     ctrlEl.innerHTML=callBtnHtml('#cc0000','rejectCall()','📵',t('call_reject'))+callBtnHtml('#2ecc71','acceptCall()','📞',t('call_accept'));
   }else if(callState==='active'){
-    ctrlEl.innerHTML=callBtnHtml(callMuted?'#3ea6ff':'var(--border-soft)','toggleCallMute()',callMuted?'🔇':'🎤',t('call_mute'))+(callHasCamera?callBtnHtml(callVideoOn?'#3ea6ff':'var(--border-soft)','toggleCallVideo()','📹','Kamera'):'')+callBtnHtml(callBoostOn?'#f5a623':'var(--border-soft)','toggleCallBoost()','🔊',t('call_boost'))+callBtnHtml('#cc0000','hangupCall()','📵',t('call_hangup'));
+    ctrlEl.innerHTML=
+      callBtnHtml(callMuted?'#ea4335':'rgba(255,255,255,.16)','toggleCallMute()',callMuted?'🔇':'🎤',t('call_mute'))+
+      (callHasCamera?callBtnHtml(callVideoOn?'rgba(255,255,255,.16)':'#3c4043','toggleCallVideo()',callVideoOn?'📹':'📷','Kamera'):'')+
+      (callHasCamera?callBtnHtml(callScreenSharing?'#1a73e8':'rgba(255,255,255,.16)','toggleScreenShare()','🖥️',callScreenSharing?t('call_screenshare_stop'):t('call_screenshare')):'')+
+      callBtnHtml(callBoostOn?'#f5a623':'rgba(255,255,255,.16)','toggleCallBoost()','🔊',t('call_boost'))+
+      callBtnHtml('#ea4335','hangupCall()','📵',t('call_hangup'),true);
   }
 }
 

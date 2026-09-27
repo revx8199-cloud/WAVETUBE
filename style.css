@@ -391,3 +391,6 @@ body.blur-mode #main-content,body.blur-mode header,body.blur-mode .sidebar-left{
 /* TOAST */
 .toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:#333;color:var(--text-primary);padding:10px 20px;border-radius:20px;font-size:13px;z-index:999;display:none;animation:fadeIn .3s}
 @keyframes fadeIn{from{opacity:0;transform:translateX(-50%) translateY(10px)}to{opacity:1;transform:translateX(-50%) translateY(0)}}
+
+.call-ctrl-btn:hover{transform:scale(1.08);filter:brightness(1.15)}
+.call-ctrl-btn:active{transform:scale(.95)}
