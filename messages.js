@@ -628,7 +628,7 @@ function createCallPC(){
   };
   pc.onconnectionstatechange=()=>{
     if(pc.connectionState==='connected'&&callState==='calling'){
-      callState='active';callStartTs=Date.now();updateCallUI();startCallTimer();startCallQualityMonitor();
+      callState='active';callStartTs=Date.now();updateCallUI();{const el=document.getElementById('call-status');if(el)el.textContent='0:00';}startCallTimer();startCallQualityMonitor();
     }
     if(['failed','disconnected','closed'].includes(pc.connectionState)&&callState!=='idle'){
       endCallCleanup();
@@ -747,6 +747,7 @@ async function acceptCall(){
   callState='active';
   callStartTs=Date.now();
   updateCallUI();
+  {const el=document.getElementById('call-status');if(el)el.textContent='0:00';}
   startCallTimer();
   startCallQualityMonitor();
 }
@@ -942,7 +943,6 @@ function updateCallUI(){
     statusEl.textContent=t('call_status_incoming');
     ctrlEl.innerHTML=callBtnHtml('#cc0000','rejectCall()','📵',t('call_reject'))+callBtnHtml('#2ecc71','acceptCall()','📞',t('call_accept'));
   }else if(callState==='active'){
-    statusEl.textContent='0:00';
     ctrlEl.innerHTML=callBtnHtml(callMuted?'#3ea6ff':'var(--border-soft)','toggleCallMute()',callMuted?'🔇':'🎤',t('call_mute'))+(callHasCamera?callBtnHtml(callVideoOn?'#3ea6ff':'var(--border-soft)','toggleCallVideo()','📹','Kamera'):'')+callBtnHtml(callBoostOn?'#f5a623':'var(--border-soft)','toggleCallBoost()','🔊',t('call_boost'))+callBtnHtml('#cc0000','hangupCall()','📵',t('call_hangup'));
   }
 }
