@@ -621,11 +621,16 @@ function createCallPC(){
       vEl.srcObject=e.streams[0];
       const showVideo=()=>{
         const av=document.getElementById('call-avatar-wrap');
-        vEl.style.display=e.track.muted?'none':'block';
-        if(av)av.style.display=e.track.muted?'flex':'none';
+        vEl.style.display='block';
+        if(av)av.style.display='none';
       };
-      e.track.onmute=showVideo;e.track.onunmute=showVideo;
-      showVideo();
+      const hideVideo=()=>{
+        const av=document.getElementById('call-avatar-wrap');
+        vEl.style.display='none';
+        if(av)av.style.display='flex';
+      };
+      e.track.onmute=hideVideo;e.track.onunmute=showVideo;
+      hideVideo(); // domyślnie ukryte (tło+avatar), dopóki realnie nie napłyną klatki wideo
     }
   };
   pc.onconnectionstatechange=()=>{
