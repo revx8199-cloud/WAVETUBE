@@ -765,43 +765,23 @@
 
 <div class="fmbg" id="terms-gate">
   <div class="fbox" style="max-width:480px;text-align:center">
-    <h3 style="margin-bottom:14px">👋 Witaj w WaveTube</h3>
-    <p style="color:var(--text-secondary);font-size:14px;margin-bottom:18px">Zanim zaczniesz korzystać z aplikacji, zapoznaj się z zasadami i je zaakceptuj.</p>
+    <h3 style="margin-bottom:14px" data-i18n="terms_welcome_title">👋 Witaj w WaveTube</h3>
+    <p style="color:var(--text-secondary);font-size:14px;margin-bottom:18px" data-i18n="terms_welcome_sub">Zanim zaczniesz korzystać z aplikacji, zapoznaj się z zasadami i je zaakceptuj.</p>
     <label style="display:flex;align-items:flex-start;gap:10px;text-align:left;cursor:pointer;font-size:13px;color:var(--text-primary);margin-bottom:20px">
       <input type="checkbox" id="terms-checkbox" onchange="toggleTermsContinue()" style="margin-top:2px;width:18px;height:18px;flex-shrink:0">
-      <span>Zgadzam się z <a href="javascript:void(0)" onclick="event.preventDefault();openTermsModal()" style="color:#3ea6ff;text-decoration:underline">zasadami WaveTube</a></span>
+      <span><span data-i18n="terms_agree_prefix">Zgadzam się z</span> <a href="javascript:void(0)" onclick="event.preventDefault();openTermsModal()" style="color:#3ea6ff;text-decoration:underline" data-i18n="terms_agree_link">zasadami WaveTube</a></span>
     </label>
-    <button id="terms-continue-btn" onclick="acceptTerms()" disabled style="width:100%;background:#3ea6ff;border:none;color:#0f0f0f;padding:12px;border-radius:8px;cursor:pointer;font-size:14px;font-weight:700;opacity:.5">Kontynuuj</button>
+    <button id="terms-continue-btn" onclick="acceptTerms()" disabled style="width:100%;background:#3ea6ff;border:none;color:#0f0f0f;padding:12px;border-radius:8px;cursor:pointer;font-size:14px;font-weight:700;opacity:.5" data-i18n="terms_continue">Kontynuuj</button>
   </div>
 </div>
 
-<div class="fmbg" id="terms-modal">
-  <div class="fbox" style="max-width:680px;max-height:85vh;display:flex;flex-direction:column">
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;flex-shrink:0">
-      <h3 style="margin:0">📜 Zasady WaveTube</h3>
-      <button onclick="closeTermsModal()" style="background:none;border:none;color:var(--text-secondary);font-size:22px;cursor:pointer;line-height:1;padding:4px">✕</button>
+<div class="fmbg" id="terms-modal" style="padding:0">
+  <div style="position:fixed;inset:0;background:var(--bg-primary);display:flex;flex-direction:column;z-index:1;overflow:hidden">
+    <div style="display:flex;justify-content:space-between;align-items:center;padding:16px 20px;border-bottom:1px solid var(--border);flex-shrink:0">
+      <h3 style="margin:0" data-i18n="terms_modal_title">📜 Zasady WaveTube</h3>
+      <button onclick="closeTermsModal()" style="background:none;border:none;color:var(--text-secondary);font-size:24px;cursor:pointer;line-height:1;padding:4px">✕</button>
     </div>
-    <div style="overflow-y:auto;font-size:13px;color:var(--text-secondary);line-height:1.6;padding-right:6px"><h4>1. Postanowienia ogólne</h4>
-<p>Korzystając z WaveTube akceptujesz niniejszy regulamin. Jeśli się z nim nie zgadzasz, nie możesz korzystać z aplikacji. Administrator zastrzega sobie prawo do zmiany regulaminu — o istotnych zmianach poinformujemy w aplikacji.</p>
-<h4>2. Konto</h4>
-<p>Logujesz się przez konto Google. Odpowiadasz za wszystko, co dzieje się na Twoim koncie. Jedno konto należy do jednej osoby — zakaz odsprzedaży i udostępniania kont osobom trzecim.</p>
-<h4>3. Treści i zachowanie</h4>
-<p>Zakazane jest publikowanie treści: niezgodnych z prawem, nawołujących do nienawiści lub przemocy, o charakterze pornograficznym lub seksualizującym osoby niepełnoletnie, naruszających prawa autorskie, będących spamem lub reklamą bez zgody administratora, oraz podszywania się pod inne osoby.</p>
-<p>Dotyczy to filmów, postów, komentarzy, wiadomości oraz treści przesyłanych podczas rozmów (w tym udostępniania ekranu).</p>
-<h4>4. Moderacja</h4>
-<p>Administrator może usuwać treści naruszające regulamin oraz nakładać bany lub wyciszenia na konta, które go łamią — czasowo lub na stałe, bez wcześniejszego ostrzeżenia w przypadku poważnych naruszeń.</p>
-<h4>5. Zgłoszenia</h4>
-<p>Możesz zgłaszać posty i inne treści naruszające regulamin przy użyciu funkcji zgłoszeń w aplikacji. Nadużywanie funkcji zgłoszeń (fałszywe zgłoszenia) samo w sobie może skutkować sankcjami.</p>
-<h4>6. Panel VIP</h4>
-<p>Funkcje VIP są dodatkiem do standardowego konta i nie zwalniają z przestrzegania niniejszego regulaminu.</p>
-<h4>7. Prywatność</h4>
-<p>Przetwarzamy dane niezbędne do działania aplikacji (profil, adres IP dla celów bezpieczeństwa, treści, które publikujesz). Adres IP jest widoczny wyłącznie dla administratora.</p>
-<h4>8. Odpowiedzialność</h4>
-<p>Aplikacja dostarczana jest "tak jak jest". Administrator nie ponosi odpowiedzialności za treści publikowane przez użytkowników ani za przerwy w działaniu serwisu.</p>
-<h4>9. Wiek</h4>
-<p>Z aplikacji mogą korzystać osoby, które ukończyły 13 lat. Jeśli nie spełniasz tego wymogu, nie zakładaj konta.</p>
-<h4>10. Kontakt</h4>
-<p>W sprawach regulaminu, zgłoszeń lub odwołań od bana skontaktuj się z administratorem przez wiadomości w aplikacji.</p></div>
+    <div id="terms-modal-body" style="flex:1;overflow-y:auto;padding:24px 20px 60px;max-width:760px;margin:0 auto;width:100%;box-sizing:border-box;font-size:14px;line-height:1.7;color:var(--text-secondary)"></div>
   </div>
 </div>
 

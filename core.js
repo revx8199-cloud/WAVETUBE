@@ -299,7 +299,11 @@ async function acceptTerms(){
   if(error){toast('Błąd zapisu: '+error.message);return;}
   document.getElementById('terms-gate').classList.remove('open');
 }
-function openTermsModal(){document.getElementById('terms-modal').classList.add('open');}
+function openTermsModal(){
+  const body=document.getElementById('terms-modal-body');
+  if(body)body.innerHTML=TERMS_CONTENT[getLang()]||TERMS_CONTENT.pl;
+  document.getElementById('terms-modal').classList.add('open');
+}
 function closeTermsModal(){document.getElementById('terms-modal').classList.remove('open');}
 
 let heartbeatInterval=null;
