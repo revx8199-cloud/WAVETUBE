@@ -952,6 +952,7 @@ function startCallTimer(){
 }
 
 function playRingtone(){
+  stopRingtone();
   try{
     ringCtx=new(window.AudioContext||window.webkitAudioContext)();
     const beep=()=>{
@@ -965,9 +966,22 @@ function playRingtone(){
     ringtoneInt=setInterval(beep,1500);
   }catch(e){}
 }
+let callNotifObj=null;
+function closeCallNotifications(){
+  try{if(callNotifObj){callNotifObj.close();callNotifObj=null;}}catch(e){}
+  try{
+    if(navigator.serviceWorker&&navigator.serviceWorker.getRegistration){
+      navigator.serviceWorker.getRegistration().then(reg=>{
+        if(!reg)return;
+        reg.getNotifications({tag:'wavetube-call'}).then(list=>list.forEach(n=>n.close()));
+      }).catch(()=>{});
+    }
+  }catch(e){}
+}
 function stopRingtone(){
   clearInterval(ringtoneInt);ringtoneInt=null;
-  if(ringCtx){ringCtx.close();ringCtx=null;}
+  if(ringCtx){try{ringCtx.close();}catch(e){}ringCtx=null;}
+  closeCallNotifications();
 }
 
 function callAvatarHtml(){
@@ -1021,7 +1035,7 @@ let titleFlashInt=null,originalTitle=null;
 function notifyIncomingCall(fromName){
   if(!window.Notification||Notification.permission!=='granted')return;
   try{
-    const n=new Notification(`📞 ${fromName}`,{
+    const n=callNotifObj=new Notification(`📞 ${fromName}`,{
       body:t('call_status_incoming'),
       tag:'wavetube-call',
       requireInteraction:true
