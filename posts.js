@@ -483,7 +483,7 @@ async function submitPost(){
 
 document.getElementById('pm').addEventListener('click',function(e){if(e.target===this)closeP();});
 document.addEventListener('keydown',e=>{
-  if(e.key==='Escape'){closeShortcutsModal();closeP();closeForm();closeEditModal();closeMessages();document.getElementById('add-post-modal').classList.remove('open');closeLightbox();closeStatsPanel();}
+  if(e.key==='Escape'){closeTermsModal();closeShortcutsModal();closeP();closeForm();closeEditModal();closeMessages();document.getElementById('add-post-modal').classList.remove('open');closeLightbox();closeStatsPanel();}
   if(document.getElementById('post-img-lightbox').classList.contains('open')){
     if(e.key==='ArrowLeft')lightboxNav(-1);
     if(e.key==='ArrowRight')lightboxNav(1);
@@ -537,6 +537,7 @@ document.addEventListener('keydown',e=>{
       await loadNotifications();
       await loadMyNameColor();
       await checkIfMuted();
+      await checkAndShowTermsGate();
       await loadSavedVideos();
       await loadWatchLater();
       subscribeRealtime();
@@ -558,6 +559,7 @@ document.addEventListener('keydown',e=>{
         await loadNotifications();
         await loadMyNameColor();
       await checkIfMuted();
+      await checkAndShowTermsGate();
       await loadSavedVideos();
       await loadWatchLater();
       await loadVipEmails();

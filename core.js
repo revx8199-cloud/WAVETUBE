@@ -278,6 +278,30 @@ async function saveProfile(user){
   if(myDetectedIp)sb.rpc('set_my_last_ip',{p_ip:myDetectedIp});
 }
 
+async function checkAndShowTermsGate(){
+  if(!currentUser)return;
+  const{data}=await sb.from('profiles').select('terms_accepted').eq('id',currentUser.id).single();
+  if(!data?.terms_accepted){
+    document.getElementById('terms-checkbox').checked=false;
+    toggleTermsContinue();
+    document.getElementById('terms-gate').classList.add('open');
+  }
+}
+function toggleTermsContinue(){
+  const cb=document.getElementById('terms-checkbox');
+  const btn=document.getElementById('terms-continue-btn');
+  btn.disabled=!cb.checked;
+  btn.style.opacity=cb.checked?'1':'.5';
+}
+async function acceptTerms(){
+  if(!currentUser||!document.getElementById('terms-checkbox').checked)return;
+  const{error}=await sb.from('profiles').update({terms_accepted:true}).eq('id',currentUser.id);
+  if(error){toast('Błąd zapisu: '+error.message);return;}
+  document.getElementById('terms-gate').classList.remove('open');
+}
+function openTermsModal(){document.getElementById('terms-modal').classList.add('open');}
+function closeTermsModal(){document.getElementById('terms-modal').classList.remove('open');}
+
 let heartbeatInterval=null;
 function startHeartbeat(){
   stopHeartbeat();
