@@ -453,16 +453,17 @@ async function resolveCloudDirectUrl(url){
   }
   return null;
 }
+function safeHttp(u){return /^https?:\/\//i.test(String(u||'').trim())?String(u).trim():'';}
 function getPlayer(url){
   const ytid=ytId(url);if(ytid)return{type:'yt',src:`https://www.youtube.com/embed/${ytid}?autoplay=1&enablejsapi=1&origin=${encodeURIComponent(location.origin)}`};
   const gdid=gdId(url);if(gdid)return{type:'gd',src:`https://drive.google.com/file/d/${gdid}/preview`};
   const ttid=ttId(url);if(ttid)return{type:'tt',src:`https://www.tiktok.com/embed/v2/${ttid}`};
-  if(isOneDriveEmbed(url))return{type:'od',src:url};
+  if(isOneDriveEmbed(url)&&safeHttp(url))return{type:'od',src:safeHttp(url)};
   const mega=megaEmbedUrl(url);if(mega)return{type:'mega',src:mega};
   const dbx=dropboxDirectUrl(url);if(dbx)return{type:'mp4',src:dbx};
-  if(isYandexDiskLink(url)||pcloudCode(url))return{type:'resolve',src:url};
-  if((url||'').match(/\.(mp4|webm|mov)(\?|$)/i))return{type:'mp4',src:url};
-  return{type:'unknown',src:url};
+  if(isYandexDiskLink(url)||pcloudCode(url))return{type:'resolve',src:safeHttp(url)};
+  if((url||'').match(/\.(mp4|webm|mov)(\?|$)/i))return{type:'mp4',src:safeHttp(url)};
+  return{type:'unknown',src:safeHttp(url)};
 }
 function relativeDate(dateStr){
   if(!dateStr)return'';

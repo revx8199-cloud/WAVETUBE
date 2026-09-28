@@ -279,10 +279,10 @@ async function resolveAndPlayCloud(v,src){
   const pw=document.getElementById('pw');
   if(!pw||!cur||cur.id!==v.id)return;
   if(direct){
-    pw.innerHTML=`<video src="${esc(direct)}" controls autoplay preload="metadata" poster="${v.thumb||''}"></video>`;
+    pw.innerHTML=`<video src="${esc(direct)}" controls autoplay preload="metadata" poster="${esc(v.thumb||'')}"></video>`;
     setupNativePlayer(v);
   }else{
-    pw.innerHTML=`<div style="display:flex;align-items:center;justify-content:center;height:100%;flex-direction:column;gap:12px;color:#555;padding:20px;text-align:center"><div style="font-size:48px">⚠️</div><p>Nie udało się połączyć z chmurą — sprawdź, czy link jest publicznie udostępniony</p><a href="${src}" target="_blank" style="color:#3ea6ff;font-size:13px">Otwórz zewnętrznie ↗</a></div>`;
+    pw.innerHTML=`<div style="display:flex;align-items:center;justify-content:center;height:100%;flex-direction:column;gap:12px;color:#555;padding:20px;text-align:center"><div style="font-size:48px">⚠️</div><p>Nie udało się połączyć z chmurą — sprawdź, czy link jest publicznie udostępniony</p><a href="${esc(src)}" target="_blank" style="color:#3ea6ff;font-size:13px">Otwórz zewnętrznie ↗</a></div>`;
   }
 }
 
@@ -330,9 +330,9 @@ async function openP(id){
     const{type,src}=getPlayer(v.url);
     if(type==='yt'||type==='gd'||type==='od'||type==='mega')html=`<iframe id="${type==='yt'?'yt-player-iframe':''}" src="${esc(src)}" allow="autoplay;encrypted-media;fullscreen" allowfullscreen></iframe>`;
     else if(type==='tt')html=`<iframe src="${esc(src)}" allow="encrypted-media" allowfullscreen style="border:none;width:100%;height:100%"></iframe>`;
-    else if(type==='mp4')html=`<video src="${esc(src)}" controls autoplay preload="metadata" poster="${v.thumb||''}"></video>`;
+    else if(type==='mp4')html=`<video src="${esc(src)}" controls autoplay preload="metadata" poster="${esc(v.thumb||'')}"></video>`;
     else if(type==='resolve')html=`<div style="display:flex;align-items:center;justify-content:center;height:100%;flex-direction:column;gap:12px;color:#aaa;background:#000"><div style="font-size:40px">⏳</div><p style="font-size:13px">Łączenie z chmurą...</p></div>`;
-    else html=`<div style="display:flex;align-items:center;justify-content:center;height:100%;flex-direction:column;gap:12px;color:#555;padding:20px;text-align:center"><div style="font-size:48px">⚠️</div><p>Nie można odtworzyć</p><a href="${src}" target="_blank" style="color:#3ea6ff;font-size:13px">Otwórz zewnętrznie ↗</a></div>`;
+    else html=`<div style="display:flex;align-items:center;justify-content:center;height:100%;flex-direction:column;gap:12px;color:#555;padding:20px;text-align:center"><div style="font-size:48px">⚠️</div><p>Nie można odtworzyć</p><a href="${esc(src)}" target="_blank" style="color:#3ea6ff;font-size:13px">Otwórz zewnętrznie ↗</a></div>`;
   }
   document.getElementById('pw').innerHTML=html;
   cancelAutoplayCountdown();
