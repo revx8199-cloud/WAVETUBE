@@ -37,7 +37,7 @@ function renderChannelHome(){
       const th=thumbFor(v);
       html+=`<div onclick="openP(${v.id})" style="flex-shrink:0;width:130px;cursor:pointer">
         <div style="position:relative;width:130px;height:231px;background:var(--bg-card);border-radius:10px;overflow:hidden">
-          ${th?`<img src="${th}" style="width:100%;height:100%;object-fit:cover">`:'<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;color:#333;font-size:28px">📱</div>'}
+          ${th?`<img src="${esc(th)}" style="width:100%;height:100%;object-fit:cover">`:'<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;color:#333;font-size:28px">📱</div>'}
         </div>
         <div style="font-size:12px;font-weight:500;margin-top:6px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden">${esc(v.title)}</div>
       </div>`;
@@ -51,7 +51,7 @@ function renderChannelHome(){
       const th=thumbFor(v);
       html+=`<div onclick="openP(${v.id})" style="cursor:pointer">
         <div style="position:relative;aspect-ratio:16/9;background:var(--bg-card);border-radius:8px;overflow:hidden">
-          ${th?`<img src="${th}" style="width:100%;height:100%;object-fit:cover">`:'<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;color:#333;font-size:32px">🎬</div>'}
+          ${th?`<img src="${esc(th)}" style="width:100%;height:100%;object-fit:cover">`:'<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;color:#333;font-size:32px">🎬</div>'}
           ${v.dur?`<div style="position:absolute;bottom:5px;right:7px;background:rgba(0,0,0,.85);font-size:11px;padding:2px 6px;border-radius:4px">${v.dur}</div>`:''}
         </div>
         <div style="font-size:13px;font-weight:500;margin-top:7px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden">${esc(v.title)}</div>
@@ -75,7 +75,7 @@ function renderChannelShorts(){
     const th=thumbFor(v);
     html+=`<div onclick="openP(${v.id})" style="width:160px;cursor:pointer">
       <div style="position:relative;width:160px;height:284px;background:var(--bg-card);border-radius:12px;overflow:hidden">
-        ${th?`<img src="${th}" style="width:100%;height:100%;object-fit:cover">`:'<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;color:#333;font-size:36px">📱</div>'}
+        ${th?`<img src="${esc(th)}" style="width:100%;height:100%;object-fit:cover">`:'<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;color:#333;font-size:36px">📱</div>'}
         <div style="position:absolute;top:8px;left:8px;background:#ff0000;color:var(--text-primary);font-size:10px;font-weight:700;padding:2px 6px;border-radius:4px">SHORT</div>
         <div style="position:absolute;bottom:0;left:0;right:0;background:linear-gradient(transparent,rgba(0,0,0,.85));padding:16px 10px 8px;font-size:11px;color:rgba(255,255,255,.85)">${viewsLabel(v)} · ${v.likes||0} ${likeIcon()}</div>
       </div>
@@ -106,7 +106,7 @@ async function renderPosts(){
     posts.forEach((p,i)=>{
       const likedPosts=new Set(JSON.parse(localStorage.getItem('liked_posts')||'[]'));
       const isLiked=likedPosts.has(String(p.id));
-      const uname=p.user_name||p.user||t('anonim');const avHtml=p.user_avatar?`<img class="post-av" src="${p.user_avatar}" style="${p.user_avatar_frame?`border:2px solid ${p.user_avatar_frame};box-sizing:border-box`:''}">`:`<div class="post-av-ph" style="background:${getUserColor(p.user_email)}">${uname[0]}</div>`;
+      const uname=p.user_name||p.user||t('anonim');const avHtml=p.user_avatar?`<img class="post-av" src="${esc(p.user_avatar)}" style="${p.user_avatar_frame?`border:2px solid ${p.user_avatar_frame};box-sizing:border-box`:''}">`:`<div class="post-av-ph" style="background:${getUserColor(p.user_email)}">${uname[0]}</div>`;
       html+=`<div class="post-card" id="post-${p.id}">
         <div class="post-header">
           ${avHtml}
@@ -127,7 +127,7 @@ async function renderPosts(){
             <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M1 21h4V9H1v12zm22-11c0-1.1-.9-2-2-2h-6.31l.95-4.57.03-.32c0-.41-.17-.79-.44-1.06L14.17 1 7.59 7.59C7.22 7.95 7 8.45 7 9v10c0 1.1.9 2 2 2h9c.83 0 1.54-.5 1.84-1.22l3.02-7.05c.09-.23.14-.47.14-.73v-2z"/></svg>
             ${p.likes||0}
           </button>
-          <button class="post-btn" onclick="togglePostComments('${p.id}')">
+          <button class="post-btn" onclick="togglePostComments('${jsesc(p.id)}')">
             💬 ${(p.comments||[]).length}
           </button>
         </div>
@@ -136,22 +136,22 @@ async function renderPosts(){
             const replies=c.replies||[];
             return`
             <div style="display:flex;gap:8px;margin-bottom:10px">
-              ${c.avatar?`<img src="${c.avatar}" style="width:28px;height:28px;border-radius:50%;object-fit:cover;flex-shrink:0${c.avatar_frame?`;border:2px solid ${c.avatar_frame};box-sizing:border-box`:''}">`:`<div style="width:28px;height:28px;border-radius:50%;background:${c.col||'#cc0000'};display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0">${(c.user||'?')[0]}</div>`}
+              ${c.avatar?`<img src="${esc(c.avatar)}" style="width:28px;height:28px;border-radius:50%;object-fit:cover;flex-shrink:0${c.avatar_frame?`;border:2px solid ${c.avatar_frame};box-sizing:border-box`:''}">`:`<div style="width:28px;height:28px;border-radius:50%;background:${c.col||'#cc0000'};display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0">${(c.user||'?')[0]}</div>`}
               <div style="flex:1">
                 <div style="font-size:12px;font-weight:600;display:flex;align-items:center">${esc(c.user)}${verifiedBadge(c.email||'')} <span style="color:var(--text-tertiary);font-weight:400;margin-left:6px">${c.time||''}</span></div>
                 <div style="font-size:13px;color:var(--text-secondary)">${esc(c.text)}</div>
-                ${currentUser?`<button onclick="togglePostReplyForm('${p.id}',${ci})" style="background:none;border:none;color:var(--text-secondary);cursor:pointer;font-size:11px;font-weight:600;padding:3px 0;margin-top:2px">${t('reply_btn')||'Odpowiedz'}</button>`:''}
+                ${currentUser?`<button onclick="togglePostReplyForm('${jsesc(p.id)}',${ci})" style="background:none;border:none;color:var(--text-secondary);cursor:pointer;font-size:11px;font-weight:600;padding:3px 0;margin-top:2px">${t('reply_btn')||'Odpowiedz'}</button>`:''}
                 <div id="preply-form-${p.id}-${ci}" style="display:none;margin-top:6px;gap:6px;align-items:center">
                   <input id="preply-inp-${p.id}-${ci}" placeholder="${t('post_comment_ph')}" style="width:100%;background:transparent;border:none;border-bottom:1px solid #444;color:var(--text-primary);padding:5px 0;font-size:12px;outline:none">
                   <div style="display:flex;gap:6px;margin-top:4px">
-                    <button onclick="togglePostReplyForm('${p.id}',${ci})" style="background:none;border:none;color:var(--text-secondary);padding:4px 10px;border-radius:16px;cursor:pointer;font-size:11px">Anuluj</button>
-                    <button onclick="postPostReply('${p.id}',${ci})" style="background:#3ea6ff;border:none;color:#0f0f0f;padding:4px 12px;border-radius:16px;cursor:pointer;font-size:11px;font-weight:700">${t('btn_send')}</button>
+                    <button onclick="togglePostReplyForm('${jsesc(p.id)}',${ci})" style="background:none;border:none;color:var(--text-secondary);padding:4px 10px;border-radius:16px;cursor:pointer;font-size:11px">Anuluj</button>
+                    <button onclick="postPostReply('${jsesc(p.id)}',${ci})" style="background:#3ea6ff;border:none;color:#0f0f0f;padding:4px 12px;border-radius:16px;cursor:pointer;font-size:11px;font-weight:700">${t('btn_send')}</button>
                   </div>
                 </div>
-                ${replies.length?`<button onclick="togglePostReplies('${p.id}',${ci})" style="background:none;border:none;color:#3ea6ff;cursor:pointer;font-size:11px;font-weight:600;padding:4px 0;margin-top:4px;display:block">${replies.length} ${replies.length===1?'odpowiedź':'odpowiedzi'}</button>
+                ${replies.length?`<button onclick="togglePostReplies('${jsesc(p.id)}',${ci})" style="background:none;border:none;color:#3ea6ff;cursor:pointer;font-size:11px;font-weight:600;padding:4px 0;margin-top:4px;display:block">${replies.length} ${replies.length===1?'odpowiedź':'odpowiedzi'}</button>
                 <div id="preplies-${p.id}-${ci}" style="display:none;margin-top:6px;padding-left:8px;border-left:2px solid var(--border-soft)">
                   ${replies.map((r,ri)=>`<div style="display:flex;gap:6px;margin-bottom:8px">
-                    ${r.avatar?`<img src="${r.avatar}" style="width:22px;height:22px;border-radius:50%;object-fit:cover;flex-shrink:0">`:`<div style="width:22px;height:22px;border-radius:50%;background:#cc0000;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;flex-shrink:0">${(r.user||'?')[0]}</div>`}
+                    ${r.avatar?`<img src="${esc(r.avatar)}" style="width:22px;height:22px;border-radius:50%;object-fit:cover;flex-shrink:0">`:`<div style="width:22px;height:22px;border-radius:50%;background:#cc0000;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;flex-shrink:0">${(r.user||'?')[0]}</div>`}
                     <div><div style="font-size:11px;font-weight:600">${esc(r.user)}${verifiedBadge(r.email||'')}</div><div style="font-size:12px;color:var(--text-secondary)">${esc(r.text)}</div></div>
                   </div>`).join('')}
                 </div>`:''}
@@ -159,7 +159,7 @@ async function renderPosts(){
             </div>`;
           }).join('')}
           ${currentUser?`<div style="display:flex;gap:8px;margin-top:8px;align-items:center">
-            ${currentUser.user_metadata?.avatar_url?`<img src="${currentUser.user_metadata.avatar_url}" style="width:28px;height:28px;border-radius:50%;object-fit:cover;flex-shrink:0">`:`<div style="width:28px;height:28px;border-radius:50%;background:#cc0000;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0">${(currentUser.user_metadata?.full_name||currentUser.email||'?')[0].toUpperCase()}</div>`}
+            ${currentUser.user_metadata?.avatar_url?`<img src="${esc(currentUser.user_metadata.avatar_url)}" style="width:28px;height:28px;border-radius:50%;object-fit:cover;flex-shrink:0">`:`<div style="width:28px;height:28px;border-radius:50%;background:#cc0000;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0">${(currentUser.user_metadata?.full_name||currentUser.email||'?')[0].toUpperCase()}</div>`}
             <input id="pci-${p.id}" placeholder="${t('post_comment_ph')}" style="flex:1;background:transparent;border:none;border-bottom:1px solid #444;color:var(--text-primary);padding:5px 0;font-size:13px;outline:none">
             <button onclick="toggleEmojiPicker('pci-${p.id}',this)" style="background:none;border:none;color:var(--text-secondary);cursor:pointer;font-size:16px" title="Emotki">😊</button>
             <button onclick="addPostComment(${p.id})" style="background:#cc0000;border:none;color:var(--text-primary);padding:5px 12px;border-radius:16px;cursor:pointer;font-size:12px">${t('btn_send')}</button>
@@ -175,13 +175,13 @@ async function renderPosts(){
 function renderPostImages(p){
   const imgs=(p.images&&p.images.length?p.images:(p.image?[p.image]:[]));
   if(!imgs.length)return'';
-  if(imgs.length===1)return`<div class="post-img-grid n1"><div class="pig-item" onclick="openPostLightbox('${p.id}',0)"><img src="${imgs[0]}" alt="post"></div></div>`;
+  if(imgs.length===1)return`<div class="post-img-grid n1"><div class="pig-item" onclick="openPostLightbox('${jsesc(p.id)}',0)"><img src="${esc(imgs[0])}" alt="post"></div></div>`;
   const cls=imgs.length===2?'n2':imgs.length===3?'n3':'n4plus';
   const shown=imgs.slice(0,4);
   return`<div class="post-img-grid ${cls}">${shown.map((src,i)=>{
     const isLastWithMore=cls==='n4plus'&&i===3&&imgs.length>4;
-    return`<div class="pig-item" onclick="openPostLightbox('${p.id}',${i})">
-      <img src="${src}" alt="post">
+    return`<div class="pig-item" onclick="openPostLightbox('${jsesc(p.id)}',${i})">
+      <img src="${esc(src)}" alt="post">
       ${isLastWithMore?`<div class="pig-more">+${imgs.length-4}</div>`:''}
     </div>`;
   }).join('')}</div>`;
@@ -227,7 +227,7 @@ function renderPoll(p){
     ${poll.options.map((o,oi)=>{
       const pct=totalVotes?Math.round((o.votes||0)/totalVotes*100):0;
       const isMine=hasVoted&&myVote===oi;
-      return`<div onclick="votePoll('${p.id}',${oi})" style="position:relative;margin-bottom:8px;cursor:pointer;border-radius:8px;overflow:hidden;background:var(--bg-sunken);border:1px solid ${isMine?'#3ea6ff':'var(--border)'}">
+      return`<div onclick="votePoll('${jsesc(p.id)}',${oi})" style="position:relative;margin-bottom:8px;cursor:pointer;border-radius:8px;overflow:hidden;background:var(--bg-sunken);border:1px solid ${isMine?'#3ea6ff':'var(--border)'}">
         ${hasVoted?`<div style="position:absolute;inset:0;width:${pct}%;background:${isMine?'rgba(62,166,255,.25)':'rgba(255,255,255,.08)'};transition:width .3s"></div>`:''}
         <div style="position:relative;display:flex;justify-content:space-between;align-items:center;padding:9px 12px;font-size:13px">
           <span style="display:flex;align-items:center;gap:6px">${isMine?'✓ ':''}${esc(o.text)}</span>
@@ -355,7 +355,7 @@ function renderPostImgPreview(){
   wrap.innerHTML=postImgFiles.map((f,i)=>{
     const url=URL.createObjectURL(f);
     return`<div style="position:relative">
-      <img src="${url}" style="width:100%;height:90px;object-fit:cover;border-radius:8px;display:block">
+      <img src="${esc(url)}" style="width:100%;height:90px;object-fit:cover;border-radius:8px;display:block">
       <button onclick="removePostImgAt(${i})" style="position:absolute;top:4px;right:4px;background:rgba(0,0,0,.7);border:none;color:var(--text-primary);border-radius:50%;width:22px;height:22px;cursor:pointer;font-size:13px;display:flex;align-items:center;justify-content:center">✕</button>
     </div>`;
   }).join('');

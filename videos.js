@@ -41,15 +41,15 @@ function toggleCardMenu(videoId,btnEl){
   const top=rect.bottom+6+180>window.innerHeight?rect.top-186:rect.bottom+6;
   menu.style.cssText=`position:fixed;top:${top}px;left:${Math.min(rect.left,window.innerWidth-210)}px;background:var(--bg-panel);border:1px solid var(--border);border-radius:10px;min-width:190px;z-index:1000;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,.6)`;
   menu.innerHTML=`
-    <div onclick="event.stopPropagation();closeCardMenu();openPlaylistPicker('${videoId}')" style="padding:12px 16px;cursor:pointer;font-size:13px;display:flex;align-items:center;gap:10px" onmouseover="this.style.background='var(--border)'" onmouseout="this.style.background='none'"><span>➕ ${t('playlist_add_label')}</span></div>
-    <div onclick="event.stopPropagation();closeCardMenu();toggleSaveVideo('${videoId}')" style="padding:12px 16px;cursor:pointer;font-size:13px;display:flex;align-items:center;gap:10px" onmouseover="this.style.background='var(--border)'" onmouseout="this.style.background='none'"><span id="save-menu-label-${videoId}">${savedVideoIds.has(String(videoId))?'✅ '+t('save_added_label'):'💾 '+t('save_label')}</span></div>
-    <div onclick="event.stopPropagation();closeCardMenu();toggleWatchLater('${videoId}')" style="padding:12px 16px;cursor:pointer;font-size:13px;display:flex;align-items:center;gap:10px" onmouseover="this.style.background='var(--border)'" onmouseout="this.style.background='none'"><span id="wl-menu-label-${videoId}">${watchLaterIds.has(String(videoId))?'✅ '+t('wl_added_label'):'⏰ '+t('wl_label')}</span></div>
-    <div onclick="event.stopPropagation();closeCardMenu();downloadVideo('${videoId}')" style="padding:12px 16px;cursor:pointer;font-size:13px;display:flex;align-items:center;gap:10px" onmouseover="this.style.background='var(--border)'" onmouseout="this.style.background='none'">⬇️ Pobierz</div>
-    <div onclick="event.stopPropagation();closeCardMenu();shareVideoCard('${videoId}')" style="padding:12px 16px;cursor:pointer;font-size:13px;display:flex;align-items:center;gap:10px" onmouseover="this.style.background='var(--border)'" onmouseout="this.style.background='none'">🔗 Udostępnij</div>
+    <div onclick="event.stopPropagation();closeCardMenu();openPlaylistPicker('${jsesc(videoId)}')" style="padding:12px 16px;cursor:pointer;font-size:13px;display:flex;align-items:center;gap:10px" onmouseover="this.style.background='var(--border)'" onmouseout="this.style.background='none'"><span>➕ ${t('playlist_add_label')}</span></div>
+    <div onclick="event.stopPropagation();closeCardMenu();toggleSaveVideo('${jsesc(videoId)}')" style="padding:12px 16px;cursor:pointer;font-size:13px;display:flex;align-items:center;gap:10px" onmouseover="this.style.background='var(--border)'" onmouseout="this.style.background='none'"><span id="save-menu-label-${videoId}">${savedVideoIds.has(String(videoId))?'✅ '+t('save_added_label'):'💾 '+t('save_label')}</span></div>
+    <div onclick="event.stopPropagation();closeCardMenu();toggleWatchLater('${jsesc(videoId)}')" style="padding:12px 16px;cursor:pointer;font-size:13px;display:flex;align-items:center;gap:10px" onmouseover="this.style.background='var(--border)'" onmouseout="this.style.background='none'"><span id="wl-menu-label-${videoId}">${watchLaterIds.has(String(videoId))?'✅ '+t('wl_added_label'):'⏰ '+t('wl_label')}</span></div>
+    <div onclick="event.stopPropagation();closeCardMenu();downloadVideo('${jsesc(videoId)}')" style="padding:12px 16px;cursor:pointer;font-size:13px;display:flex;align-items:center;gap:10px" onmouseover="this.style.background='var(--border)'" onmouseout="this.style.background='none'">⬇️ Pobierz</div>
+    <div onclick="event.stopPropagation();closeCardMenu();shareVideoCard('${jsesc(videoId)}')" style="padding:12px 16px;cursor:pointer;font-size:13px;display:flex;align-items:center;gap:10px" onmouseover="this.style.background='var(--border)'" onmouseout="this.style.background='none'">🔗 Udostępnij</div>
     <div style="border-top:1px solid var(--border)"></div>
     <div onclick="event.stopPropagation();closeCardMenu();openPremiumModal()" style="padding:12px 16px;cursor:pointer;font-size:13px;display:flex;align-items:center;gap:10px;color:#7fd3ff" onmouseover="this.style.background='var(--border)'" onmouseout="this.style.background='none'">💙 Wesprzyj autora</div>
     <div style="border-top:1px solid var(--border)"></div>
-    <div onclick="event.stopPropagation();closeCardMenu();openReportModal('${videoId}')" style="padding:12px 16px;cursor:pointer;font-size:13px;display:flex;align-items:center;gap:10px;color:#ff6b6b" onmouseover="this.style.background='var(--border)'" onmouseout="this.style.background='none'">🚩 Zgłoś</div>
+    <div onclick="event.stopPropagation();closeCardMenu();openReportModal('${jsesc(videoId)}')" style="padding:12px 16px;cursor:pointer;font-size:13px;display:flex;align-items:center;gap:10px;color:#ff6b6b" onmouseover="this.style.background='var(--border)'" onmouseout="this.style.background='none'">🚩 Zgłoś</div>
   `;
   document.body.appendChild(menu);
   setTimeout(()=>{
@@ -279,7 +279,7 @@ async function resolveAndPlayCloud(v,src){
   const pw=document.getElementById('pw');
   if(!pw||!cur||cur.id!==v.id)return;
   if(direct){
-    pw.innerHTML=`<video src="${direct}" controls autoplay preload="metadata" poster="${v.thumb||''}"></video>`;
+    pw.innerHTML=`<video src="${esc(direct)}" controls autoplay preload="metadata" poster="${v.thumb||''}"></video>`;
     setupNativePlayer(v);
   }else{
     pw.innerHTML=`<div style="display:flex;align-items:center;justify-content:center;height:100%;flex-direction:column;gap:12px;color:#555;padding:20px;text-align:center"><div style="font-size:48px">⚠️</div><p>Nie udało się połączyć z chmurą — sprawdź, czy link jest publicznie udostępniony</p><a href="${src}" target="_blank" style="color:#3ea6ff;font-size:13px">Otwórz zewnętrznie ↗</a></div>`;
@@ -328,9 +328,9 @@ async function openP(id){
     </div>`;
   } else {
     const{type,src}=getPlayer(v.url);
-    if(type==='yt'||type==='gd'||type==='od'||type==='mega')html=`<iframe id="${type==='yt'?'yt-player-iframe':''}" src="${src}" allow="autoplay;encrypted-media;fullscreen" allowfullscreen></iframe>`;
-    else if(type==='tt')html=`<iframe src="${src}" allow="encrypted-media" allowfullscreen style="border:none;width:100%;height:100%"></iframe>`;
-    else if(type==='mp4')html=`<video src="${src}" controls autoplay preload="metadata" poster="${v.thumb||''}"></video>`;
+    if(type==='yt'||type==='gd'||type==='od'||type==='mega')html=`<iframe id="${type==='yt'?'yt-player-iframe':''}" src="${esc(src)}" allow="autoplay;encrypted-media;fullscreen" allowfullscreen></iframe>`;
+    else if(type==='tt')html=`<iframe src="${esc(src)}" allow="encrypted-media" allowfullscreen style="border:none;width:100%;height:100%"></iframe>`;
+    else if(type==='mp4')html=`<video src="${esc(src)}" controls autoplay preload="metadata" poster="${v.thumb||''}"></video>`;
     else if(type==='resolve')html=`<div style="display:flex;align-items:center;justify-content:center;height:100%;flex-direction:column;gap:12px;color:#aaa;background:#000"><div style="font-size:40px">⏳</div><p style="font-size:13px">Łączenie z chmurą...</p></div>`;
     else html=`<div style="display:flex;align-items:center;justify-content:center;height:100%;flex-direction:column;gap:12px;color:#555;padding:20px;text-align:center"><div style="font-size:48px">⚠️</div><p>Nie można odtworzyć</p><a href="${src}" target="_blank" style="color:#3ea6ff;font-size:13px">Otwórz zewnętrznie ↗</a></div>`;
   }
@@ -356,13 +356,13 @@ async function openP(id){
   const uname=getUserName(v);
   const ucol=getUserColor(v.user_email);
   const isSub=subscribedSet.has(v.user_id||v.user_email);
-  const avHtml=v.user_avatar?`<img src="${v.user_avatar}" style="width:40px;height:40px;border-radius:50%;object-fit:cover">`:`<div class="ch-av" style="background:${ucol}">${uname[0].toUpperCase()}</div>`;
+  const avHtml=v.user_avatar?`<img src="${esc(v.user_avatar)}" style="width:40px;height:40px;border-radius:50%;object-fit:cover">`:`<div class="ch-av" style="background:${ucol}">${uname[0].toUpperCase()}</div>`;
   document.getElementById('channel-row').innerHTML=`
     ${avHtml}
     <div class="ch-info">
-      <div class="ch-name" onclick="closeP();showChannel('${v.user_id||''}','${jsesc(uname)}','${v.user_avatar||''}','${v.user_email||''}')">${esc(uname)}</div>
+      <div class="ch-name" onclick="closeP();showChannel('${jsesc(v.user_id||'')}','${jsesc(uname)}','${jsesc(v.user_avatar||'')}','${jsesc(v.user_email||'')}')">${esc(uname)}</div>
     </div>
-    <button class="btn-sub${isSub?' subscribed':''}" id="sub-btn" onclick="toggleSubInPlayer('${v.user_id||v.user_email||''}','${jsesc(uname)}')">${isSub?'✓ '+t('btn_subscribed'):t('btn_subscribe')}</button>`;
+    <button class="btn-sub${isSub?' subscribed':''}" id="sub-btn" onclick="toggleSubInPlayer('${jsesc(v.user_id||v.user_email||'')}','${jsesc(uname)}')">${isSub?'✓ '+t('btn_subscribed'):t('btn_subscribe')}</button>`;
 
   renderC();
   document.getElementById('pm').classList.add('open');

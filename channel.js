@@ -45,7 +45,7 @@ function openVipBannerGallery(key){
   const grid=document.getElementById('vip-banner-grid');
   if(grid){
     grid.innerHTML=VIP_BANNER_PALETTES.map((_,i)=>
-      `<div onclick="selectVipBannerPreset(${i})" style="aspect-ratio:16/4;border-radius:8px;cursor:pointer;background:url('${buildVipBannerSVG(i)}') center/cover;border:2px solid transparent" onmouseover="this.style.borderColor='#ffd700'" onmouseout="this.style.borderColor='transparent'"></div>`
+      `<div onclick="selectVipBannerPreset(${i})" style="aspect-ratio:16/4;border-radius:8px;cursor:pointer;background:url('${jsesc(buildVipBannerSVG(i))}') center/cover;border:2px solid transparent" onmouseover="this.style.borderColor='#ffd700'" onmouseout="this.style.borderColor='transparent'"></div>`
     ).join('');
   }
   document.getElementById('vip-banner-gallery-modal').classList.add('open');
@@ -266,7 +266,7 @@ function renderVipPanel(){
       <div style="font-size:13px;font-weight:700;color:var(--text-primary);margin-bottom:4px">🏅 Kolor plakietki VIP</div>
       <p style="color:var(--text-secondary);font-size:12px;margin-bottom:12px">Wybierz kolor swojej plakietki widocznej obok nicku (niebieski zarezerwowany dla administratora).</p>
       <div style="display:flex;flex-wrap:wrap;gap:10px;margin-bottom:10px">
-        ${VIP_BADGE_COLORS.map(c=>`<div onclick="saveVipBadgeColor('${c}')" style="width:34px;height:34px;border-radius:50%;background:${c};cursor:pointer;border:3px solid ${vipBadgeColor===c?'#fff':'transparent'};display:flex;align-items:center;justify-content:center">${vipBadgeColor===c?'<svg viewBox="0 0 24 24" width="14" height="14" fill="#000"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/></svg>':''}</div>`).join('')}
+        ${VIP_BADGE_COLORS.map(c=>`<div onclick="saveVipBadgeColor('${jsesc(c)}')" style="width:34px;height:34px;border-radius:50%;background:${c};cursor:pointer;border:3px solid ${vipBadgeColor===c?'#fff':'transparent'};display:flex;align-items:center;justify-content:center">${vipBadgeColor===c?'<svg viewBox="0 0 24 24" width="14" height="14" fill="#000"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/></svg>':''}</div>`).join('')}
       </div>
       <div style="display:flex;align-items:center;gap:8px;font-size:14px;font-weight:700">
         <span>${myDisplayName}</span>
@@ -294,7 +294,7 @@ function renderVipPanel(){
         <div class="${myAvatarParticles?'avatar-particle-wrap':''}" style="${myAvatarParticles?'margin-top:0':''}">
           <div style="width:64px;height:64px;border-radius:50%;padding:3px;${myAvatarFrame?`background:${myAvatarFrame}`:'background:transparent'}">
             <div style="width:100%;height:100%;border-radius:50%;overflow:hidden;background:var(--bg-sunken);display:flex;align-items:center;justify-content:center">
-              ${meta?.avatar_url?`<img src="${meta.avatar_url}" style="width:100%;height:100%;object-fit:cover">`:`<span style="font-size:22px;font-weight:700">${(myDisplayName[0]||'?').toUpperCase()}</span>`}
+              ${meta?.avatar_url?`<img src="${esc(meta.avatar_url)}" style="width:100%;height:100%;object-fit:cover">`:`<span style="font-size:22px;font-weight:700">${(myDisplayName[0]||'?').toUpperCase()}</span>`}
             </div>
           </div>
           ${myAvatarParticles?`<span class="av-particle p1">${myAvatarParticleType}</span><span class="av-particle p2">${myAvatarParticleType}</span><span class="av-particle p3">${myAvatarParticleType}</span><span class="av-particle p4">${myAvatarParticleType}</span><span class="av-particle p5">${myAvatarParticleType}</span><span class="av-particle p6">${myAvatarParticleType}</span>`:''}
@@ -303,7 +303,7 @@ function renderVipPanel(){
       </div>
       <div style="display:flex;flex-wrap:wrap;gap:10px;margin-bottom:16px">
         <div onclick="resetAvatarFrame()" style="width:34px;height:34px;border-radius:50%;background:var(--bg-sunken);border:2px dashed var(--border);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:14px" title="Brak ramki">${!myAvatarFrame?'✓':'✕'}</div>
-        ${AVATAR_FRAME_COLORS.map(c=>`<div onclick="saveAvatarFrame('${c}')" style="width:34px;height:34px;border-radius:50%;background:${c};cursor:pointer;border:3px solid ${myAvatarFrame===c?'#fff':'transparent'};display:flex;align-items:center;justify-content:center">${myAvatarFrame===c?'<svg viewBox="0 0 24 24" width="14" height="14"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z" fill="#fff" stroke="#000" stroke-width="1"/></svg>':''}</div>`).join('')}
+        ${AVATAR_FRAME_COLORS.map(c=>`<div onclick="saveAvatarFrame('${jsesc(c)}')" style="width:34px;height:34px;border-radius:50%;background:${c};cursor:pointer;border:3px solid ${myAvatarFrame===c?'#fff':'transparent'};display:flex;align-items:center;justify-content:center">${myAvatarFrame===c?'<svg viewBox="0 0 24 24" width="14" height="14"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z" fill="#fff" stroke="#000" stroke-width="1"/></svg>':''}</div>`).join('')}
       </div>
       <div onclick="toggleAvatarParticles()" style="display:flex;align-items:center;justify-content:space-between;cursor:pointer;background:var(--bg-sunken);border-radius:10px;padding:12px 14px">
         <div><div style="font-size:13px;font-weight:600">${myAvatarParticleType} Efekt cząsteczek</div><div style="font-size:11px;color:var(--text-tertiary)">Subtelne iskierki wokół avatara na Twoim kanale</div></div>
@@ -312,7 +312,7 @@ function renderVipPanel(){
         </div>
       </div>
       ${myAvatarParticles?`<div style="display:flex;flex-wrap:wrap;gap:10px;margin-top:12px">
-        ${AVATAR_PARTICLE_TYPES.map(e=>`<div onclick="saveAvatarParticleType('${e}')" style="width:34px;height:34px;border-radius:8px;background:var(--bg-sunken);cursor:pointer;border:2px solid ${myAvatarParticleType===e?'#3ea6ff':'transparent'};display:flex;align-items:center;justify-content:center;font-size:16px">${e}</div>`).join('')}
+        ${AVATAR_PARTICLE_TYPES.map(e=>`<div onclick="saveAvatarParticleType('${jsesc(e)}')" style="width:34px;height:34px;border-radius:8px;background:var(--bg-sunken);cursor:pointer;border:2px solid ${myAvatarParticleType===e?'#3ea6ff':'transparent'};display:flex;align-items:center;justify-content:center;font-size:16px">${e}</div>`).join('')}
       </div>`:''}
     </div>
 
@@ -322,7 +322,7 @@ function renderVipPanel(){
       <div style="height:60px;border-radius:8px;background:linear-gradient(135deg,#1a1a2e,#16213e);margin-bottom:12px;${myBannerFrame?`border:4px solid ${myBannerFrame};box-sizing:border-box`:''}"></div>
       <div style="display:flex;flex-wrap:wrap;gap:10px">
         <div onclick="resetBannerFrame()" style="width:34px;height:34px;border-radius:8px;background:var(--bg-sunken);border:2px dashed var(--border);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:14px" title="Brak ramki">${!myBannerFrame?'✓':'✕'}</div>
-        ${AVATAR_FRAME_COLORS.map(c=>`<div onclick="saveBannerFrame('${c}')" style="width:34px;height:34px;border-radius:8px;background:${c};cursor:pointer;border:3px solid ${myBannerFrame===c?'#fff':'transparent'};display:flex;align-items:center;justify-content:center">${myBannerFrame===c?'<svg viewBox="0 0 24 24" width="14" height="14"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z" fill="#fff" stroke="#000" stroke-width="1"/></svg>':''}</div>`).join('')}
+        ${AVATAR_FRAME_COLORS.map(c=>`<div onclick="saveBannerFrame('${jsesc(c)}')" style="width:34px;height:34px;border-radius:8px;background:${c};cursor:pointer;border:3px solid ${myBannerFrame===c?'#fff':'transparent'};display:flex;align-items:center;justify-content:center">${myBannerFrame===c?'<svg viewBox="0 0 24 24" width="14" height="14"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z" fill="#fff" stroke="#000" stroke-width="1"/></svg>':''}</div>`).join('')}
       </div>
     </div>
 
@@ -331,7 +331,7 @@ function renderVipPanel(){
       <p style="color:var(--text-secondary);font-size:12px;margin-bottom:14px">Wybierz styl czcionki dla swojego nicku.</p>
       <div style="display:flex;flex-direction:column;gap:8px">
         ${FONT_OPTIONS.map(f=>`
-          <div onclick="saveVipFont('${f.id}')" style="display:flex;align-items:center;justify-content:space-between;padding:12px 16px;border-radius:10px;cursor:pointer;background:${myNameFont===f.id?'rgba(255,215,0,.12)':'var(--bg-sunken)'};border:1px solid ${myNameFont===f.id?'#ffd700':'var(--border)'}">
+          <div onclick="saveVipFont('${jsesc(f.id)}')" style="display:flex;align-items:center;justify-content:space-between;padding:12px 16px;border-radius:10px;cursor:pointer;background:${myNameFont===f.id?'rgba(255,215,0,.12)':'var(--bg-sunken)'};border:1px solid ${myNameFont===f.id?'#ffd700':'var(--border)'}">
             <span style="font-family:${f.css};font-size:16px;color:${myNameColor||'#fff'}">${myDisplayName||f.label}</span>
             <span style="font-size:11px;color:var(--text-tertiary)">${f.label}${myNameFont===f.id?' ✓':''}</span>
           </div>`).join('')}
@@ -693,7 +693,7 @@ async function showChannel(userId,nameIn,avatar,email){
   cc.classList.add('open');
   const userVideos=videos.filter(v=>(v.user_id===userId||(v.user_email===email&&email))&&isDiscoverable(v));
   const ucol=getUserColor(email);
-  let avHtml=avatar?`<img src="${avatar}">`:`<span>${name[0]||'?'}</span>`;
+  let avHtml=avatar?`<img src="${esc(avatar)}">`:`<span>${name[0]||'?'}</span>`;
   const isSub=subscribedSet.has(userId||email);
   // Clean up name if it's a UUID
   name=name&&!name.match(/^[0-9a-f-]{8,}$/i)?name:t('ch_default_name');
@@ -739,7 +739,7 @@ async function showChannel(userId,nameIn,avatar,email){
               <span id="ch-banner-label">${t('ch_change_banner')}</span>
               <input type="file" accept="image/*" style="display:none" onchange="changeBanner(event,'${bannerKey}')" />
             </label>
-            ${isVIP()?`<button onclick="openVipBannerGallery('${bannerKey}')" style="background:rgba(0,0,0,0.7);color:#ffd700;padding:10px 20px;border-radius:24px;cursor:pointer;font-size:14px;font-weight:600;display:flex;align-items:center;gap:8px;border:2px solid rgba(255,215,0,0.5)">🎨 Gotowe bannery</button>`:''}
+            ${isVIP()?`<button onclick="openVipBannerGallery('${jsesc(bannerKey)}')" style="background:rgba(0,0,0,0.7);color:#ffd700;padding:10px 20px;border-radius:24px;cursor:pointer;font-size:14px;font-weight:600;display:flex;align-items:center;gap:8px;border:2px solid rgba(255,215,0,0.5)">🎨 Gotowe bannery</button>`:''}
           </div>`:''}
       </div>
     </div>
@@ -752,14 +752,14 @@ async function showChannel(userId,nameIn,avatar,email){
           <span style="font-size:13px;color:var(--text-secondary)"><span id="sub-count-big">${subCount}</span> ${t('subscribers_label')} · ${userVideos.length} ${t('videos_label')}</span>
           ${joinedAt?`<span style="font-size:12px;color:var(--text-tertiary)">· ${t('ch_joined')} ${new Date(joinedAt).toLocaleDateString(getLang()==='ru'?'ru-RU':'pl-PL',{day:'numeric',month:'long',year:'numeric'})}</span>`:''}
           ${country?`<span style="font-size:12px;color:var(--text-tertiary)">· ${flagEmoji(country)} ${countryName(country)}</span>`:(isOwner?`<span style="font-size:12px;color:var(--text-tertiary);cursor:pointer;text-decoration:underline" onclick="openSettingsModal()">· 🌍 ${t('ch_set_country')}</span>`:'')}
-          ${!isOwner?`<button class="btn-sub-big${isSub?' subscribed':''}" onclick="toggleSub('${userId||email}','${jsesc(name)}')" id="sub-big-btn" style="margin-left:0">${isSub?'✓ '+t('btn_subscribed'):t('btn_subscribe')}</button>
-          <button onclick="openMsg('${jsesc(name)}','${email}','${userId}')" style="background:var(--border-soft);border:none;color:var(--text-primary);padding:8px 16px;border-radius:20px;cursor:pointer;font-size:13px;display:flex;align-items:center;gap:6px">✉️ ${t('ch_message')}</button>`
+          ${!isOwner?`<button class="btn-sub-big${isSub?' subscribed':''}" onclick="toggleSub('${jsesc(userId||email)}','${jsesc(name)}')" id="sub-big-btn" style="margin-left:0">${isSub?'✓ '+t('btn_subscribed'):t('btn_subscribe')}</button>
+          <button onclick="openMsg('${jsesc(name)}','${jsesc(email)}','${jsesc(userId)}')" style="background:var(--border-soft);border:none;color:var(--text-primary);padding:8px 16px;border-radius:20px;cursor:pointer;font-size:13px;display:flex;align-items:center;gap:6px">✉️ ${t('ch_message')}</button>`
           :`<button class="btn-sub-big subscribed" style="margin-left:0;cursor:default">${t('your_channel_label')}</button>
           <button onclick="openStatsPanel()" style="background:var(--border-soft);border:none;color:var(--text-primary);padding:8px 16px;border-radius:20px;cursor:pointer;font-size:13px;display:flex;align-items:center;gap:6px">📊 ${t('ch_stats')}</button>`}
         </div>
         <div id="ch-desc-wrap">
           ${isOwner
-            ?`<div id="ch-desc-text" style="font-size:13px;color:var(--text-secondary);cursor:pointer" onclick="editDesc('${userId||email}')">${savedDesc||'<span style="color:#555">'+t('ch_add_desc')+'</span>'}</div>`
+            ?`<div id="ch-desc-text" style="font-size:13px;color:var(--text-secondary);cursor:pointer" onclick="editDesc('${jsesc(userId||email)}')">${savedDesc||'<span style="color:#555">'+t('ch_add_desc')+'</span>'}</div>`
             :`<div style="font-size:13px;color:var(--text-secondary)">${esc(savedDesc)}</div>`
           }
         </div>
@@ -785,7 +785,7 @@ async function showChannel(userId,nameIn,avatar,email){
     const el=document.createElement('div');
     el.className='card';
     el.innerHTML=`<div class="thumb">
-      ${th?`<img src="${th}" alt="${esc(v.title)}" onerror="this.style.display='none'">`:'<div class="no-thumb">🎬</div>'}
+      ${th?`<img src="${esc(th)}" alt="${esc(v.title)}" onerror="this.style.display='none'">`:'<div class="no-thumb">🎬</div>'}
       <div class="play-ov"><div class="pb">▶</div></div>
       ${v.dur?`<div class="dur">${v.dur}</div>`:''}
     </div>
@@ -873,8 +873,8 @@ function renderSidebarSubs(subs){
     const name=rawName&&!rawName.match(/^[0-9a-f-]{8,}$/i)?rawName:'Kanał';
     const avatar=vid?.user_avatar||s.channel_avatar||'';
     const email=vid?.user_email||'';
-    return`<div class="sb-item" onclick="showChannel('${s.channel_id}','${jsesc(name)}','${avatar}','${email}')">
-      ${avatar?`<img class="sb-av" src="${avatar}" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">`:''}
+    return`<div class="sb-item" onclick="showChannel('${jsesc(s.channel_id)}','${jsesc(name)}','${jsesc(avatar)}','${jsesc(email)}')">
+      ${avatar?`<img class="sb-av" src="${esc(avatar)}" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">`:''}
       <div class="sb-av" style="background:#cc0000;${avatar?'display:none':''}">${esc(name[0].toUpperCase())}</div>
       <span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(name)}</span>
     </div>`;
@@ -929,12 +929,12 @@ function showSubscriptions(){
     const chVideos=videos.filter(v=>v.user_id===ch.userId&&isDiscoverable(v));
     el.innerHTML=`<div style="background:var(--bg-card);border-radius:10px;padding:24px;text-align:center;border:1px solid var(--border-soft)">
       ${ch.avatar
-        ?`<img src="${ch.avatar}" style="width:80px;height:80px;border-radius:50%;object-fit:cover;margin-bottom:12px">`
+        ?`<img src="${esc(ch.avatar)}" style="width:80px;height:80px;border-radius:50%;object-fit:cover;margin-bottom:12px">`
         :`<div style="width:80px;height:80px;border-radius:50%;background:#cc0000;display:flex;align-items:center;justify-content:center;font-size:28px;font-weight:700;color:var(--text-primary);margin:0 auto 12px">${ch.name[0].toUpperCase()}</div>`
       }
       <div style="font-size:15px;font-weight:600;margin-bottom:4px;display:flex;align-items:center;justify-content:center;gap:4px">${ch.name}${verifiedBadge(ch.email)}</div>
       <div style="font-size:12px;color:var(--text-secondary)">${chVideos.length} filmów</div>
-      <button style="margin-top:12px;background:#cc0000;border:none;color:var(--text-primary);padding:6px 20px;border-radius:16px;cursor:pointer;font-size:13px;font-weight:600" onclick="event.stopPropagation();toggleSub('${ch.userId}','${ch.name}')">✓ Subskrybujesz</button>
+      <button style="margin-top:12px;background:#cc0000;border:none;color:var(--text-primary);padding:6px 20px;border-radius:16px;cursor:pointer;font-size:13px;font-weight:600" onclick="event.stopPropagation();toggleSub('${jsesc(ch.userId)}','${jsesc(ch.name)}')">✓ Subskrybujesz</button>
     </div>`;
     el.onclick=()=>showChannel(ch.userId,ch.name,ch.avatar,ch.email);
     g.appendChild(el);

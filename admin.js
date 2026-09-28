@@ -19,7 +19,7 @@ function toggleRenameUser(userId,btnEl){
     <input id="rename-inp-${userId}" maxlength="30" value="${esc(user?.name||'')}" style="width:100%;background:var(--bg-sunken);border:1px solid var(--border);border-radius:6px;color:var(--text-primary);padding:8px 10px;font-size:13px;outline:none;margin-bottom:10px" onkeydown="if(event.key==='Enter')saveRenameUser('${userId}')">
     <div style="display:flex;gap:8px;justify-content:flex-end">
       <button onclick="document.getElementById('admin-rename-popup').remove()" style="background:none;border:none;color:var(--text-tertiary);padding:6px 12px;border-radius:8px;cursor:pointer;font-size:12px">Anuluj</button>
-      <button onclick="saveRenameUser('${userId}')" style="background:#3ea6ff;border:none;color:#0f0f0f;padding:6px 14px;border-radius:8px;cursor:pointer;font-size:12px;font-weight:700">Zapisz</button>
+      <button onclick="saveRenameUser('${jsesc(userId)}')" style="background:#3ea6ff;border:none;color:#0f0f0f;padding:6px 14px;border-radius:8px;cursor:pointer;font-size:12px;font-weight:700">Zapisz</button>
     </div>`;
   document.body.appendChild(popup);
   const inp=document.getElementById(`rename-inp-${userId}`);
@@ -58,7 +58,7 @@ function renderOnlineUsersList(){
   body.innerHTML=sorted.map(u=>`
     <div class="admin-row">
       <div style="position:relative;flex-shrink:0">
-        ${u.avatar?`<img src="${u.avatar}" style="width:36px;height:36px;border-radius:50%;object-fit:cover">`:`<div style="width:36px;height:36px;border-radius:50%;background:${getUserColor(u.email||'')};display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px">${(u.name||'?')[0].toUpperCase()}</div>`}
+        ${u.avatar?`<img src="${esc(u.avatar)}" style="width:36px;height:36px;border-radius:50%;object-fit:cover">`:`<div style="width:36px;height:36px;border-radius:50%;background:${getUserColor(u.email||'')};display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px">${(u.name||'?')[0].toUpperCase()}</div>`}
         <span style="position:absolute;bottom:-1px;right:-1px;width:11px;height:11px;background:#4ade80;border:2px solid var(--bg-panel);border-radius:50%"></span>
       </div>
       <div style="flex:1;min-width:0">
@@ -79,7 +79,7 @@ async function renderActivityList(){
     const isOnline=!!onlineUsersState[u.id];
     return`<div class="admin-row">
       <div style="position:relative;flex-shrink:0">
-        ${u.avatar?`<img src="${u.avatar}" style="width:36px;height:36px;border-radius:50%;object-fit:cover">`:`<div style="width:36px;height:36px;border-radius:50%;background:${getUserColor(u.email||'')};display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px">${(u.name||'?')[0]?.toUpperCase()||'?'}</div>`}
+        ${u.avatar?`<img src="${esc(u.avatar)}" style="width:36px;height:36px;border-radius:50%;object-fit:cover">`:`<div style="width:36px;height:36px;border-radius:50%;background:${getUserColor(u.email||'')};display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px">${(u.name||'?')[0]?.toUpperCase()||'?'}</div>`}
         ${isOnline?`<span style="position:absolute;bottom:-1px;right:-1px;width:11px;height:11px;background:#4ade80;border:2px solid var(--bg-panel);border-radius:50%"></span>`:''}
       </div>
       <div style="flex:1;min-width:0">
@@ -120,8 +120,8 @@ async function renderTrashList(){
         <div style="font-size:13px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(it.label)}</div>
         <div style="font-size:11px;color:var(--text-tertiary)">${esc(it.user_email||it.user_id||'')} · usunięte ${relativeDate(it.deleted_at)} · ${expired?'<span style="color:#ff6b6b">wygasło</span>':`wygasa za ${hoursLeft}h`}</div>
       </div>
-      <button onclick="restoreFromTrash('${it.type}','${it.id}')" style="background:#14301a;border:1px solid #1f5c2a;color:#7fe08a;padding:6px 12px;border-radius:8px;cursor:pointer;font-size:12px;flex-shrink:0">↩️ Przywróć</button>
-      <button onclick="hardDeleteFromTrash('${it.type}','${it.id}')" style="background:#3a1414;border:1px solid #5c1f1f;color:#ff6b6b;padding:6px 12px;border-radius:8px;cursor:pointer;font-size:12px;flex-shrink:0">Usuń na stałe</button>
+      <button onclick="restoreFromTrash('${jsesc(it.type)}','${jsesc(it.id)}')" style="background:#14301a;border:1px solid #1f5c2a;color:#7fe08a;padding:6px 12px;border-radius:8px;cursor:pointer;font-size:12px;flex-shrink:0">↩️ Przywróć</button>
+      <button onclick="hardDeleteFromTrash('${jsesc(it.type)}','${jsesc(it.id)}')" style="background:#3a1414;border:1px solid #5c1f1f;color:#ff6b6b;padding:6px 12px;border-radius:8px;cursor:pointer;font-size:12px;flex-shrink:0">Usuń na stałe</button>
     </div>`;
   }).join('');
 }
@@ -246,20 +246,20 @@ function renderAdminUsersList(banMap){
     :filtered.map(u=>{
       const ban=adminUsersBanMap[u.id];
       return`<div style="display:flex;align-items:center;gap:12px;padding:10px 14px;border-bottom:1px solid var(--border-soft)">
-        ${u.avatar?`<img src="${u.avatar}" style="width:34px;height:34px;border-radius:50%;object-fit:cover;flex-shrink:0;cursor:pointer" onclick="closeAdminPanel();showChannel('${u.id}','${jsesc(u.name)}','${u.avatar}','${u.email||''}')">`:`<div style="width:34px;height:34px;border-radius:50%;background:#cc0000;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;flex-shrink:0;cursor:pointer" onclick="closeAdminPanel();showChannel('${u.id}','${jsesc(u.name)}','','${u.email||''}')">${esc((u.name||'?')[0].toUpperCase())}</div>`}
-        <div style="flex:1;min-width:0;cursor:pointer" onclick="closeAdminPanel();showChannel('${u.id}','${jsesc(u.name)}','${u.avatar||''}','${u.email||''}')">
+        ${u.avatar?`<img src="${esc(u.avatar)}" style="width:34px;height:34px;border-radius:50%;object-fit:cover;flex-shrink:0;cursor:pointer" onclick="closeAdminPanel();showChannel('${jsesc(u.id)}','${jsesc(u.name)}','${jsesc(u.avatar)}','${jsesc(u.email||'')}')">`:`<div style="width:34px;height:34px;border-radius:50%;background:#cc0000;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;flex-shrink:0;cursor:pointer" onclick="closeAdminPanel();showChannel('${jsesc(u.id)}','${jsesc(u.name)}','','${jsesc(u.email||'')}')">${esc((u.name||'?')[0].toUpperCase())}</div>`}
+        <div style="flex:1;min-width:0;cursor:pointer" onclick="closeAdminPanel();showChannel('${jsesc(u.id)}','${jsesc(u.name)}','${jsesc(u.avatar||'')}','${jsesc(u.email||'')}')">
           <div style="font-size:13px;font-weight:600" id="uname-${u.id}">${esc(u.name)}${ban?' <span style="color:#ff6b6b;font-size:11px">🚫 zablokowany</span>':''}</div>
           <div style="font-size:11px;color:var(--text-tertiary)">${esc(u.email)}${u.last_ip?` · IP: ${esc(u.last_ip)}`:''}</div>
         </div>
-        <button onclick="event.stopPropagation();toggleRenameUser('${u.id}',this)" title="Zmień nick" style="background:var(--border-soft);border:none;color:var(--text-primary);padding:6px 10px;border-radius:8px;cursor:pointer;font-size:12px;flex-shrink:0">✏️</button>
-        ${u.last_ip?`<button onclick="event.stopPropagation();adminBanUserIp('${u.id}')" title="Zbanuj adres IP tego użytkownika (jak ban bota)" style="background:#3a1414;border:1px solid #5c1f1f;color:#ff6b6b;padding:6px 10px;border-radius:8px;cursor:pointer;font-size:12px;flex-shrink:0">🌐 IP</button>`:''}
+        <button onclick="event.stopPropagation();toggleRenameUser('${jsesc(u.id)}',this)" title="Zmień nick" style="background:var(--border-soft);border:none;color:var(--text-primary);padding:6px 10px;border-radius:8px;cursor:pointer;font-size:12px;flex-shrink:0">✏️</button>
+        ${u.last_ip?`<button onclick="event.stopPropagation();adminBanUserIp('${jsesc(u.id)}')" title="Zbanuj adres IP tego użytkownika (jak ban bota)" style="background:#3a1414;border:1px solid #5c1f1f;color:#ff6b6b;padding:6px 10px;border-radius:8px;cursor:pointer;font-size:12px;flex-shrink:0">🌐 IP</button>`:''}
         ${u.is_vip?
-          `<button onclick="event.stopPropagation();adminSetVip('${u.id}','${jsesc(u.email||'')}',false)" style="background:#332a0a;border:1px solid #5c4a0f;color:#ffd700;padding:6px 12px;border-radius:8px;cursor:pointer;font-size:12px;flex-shrink:0">⭐ Odbierz VIP</button>`
-          :`<button onclick="event.stopPropagation();adminSetVip('${u.id}','${jsesc(u.email||'')}',true)" style="background:var(--border-soft);border:1px solid #3a3a3a;color:var(--text-secondary);padding:6px 12px;border-radius:8px;cursor:pointer;font-size:12px;flex-shrink:0">⭐ Nadaj VIP</button>`}
+          `<button onclick="event.stopPropagation();adminSetVip('${jsesc(u.id)}','${jsesc(u.email||'')}',false)" style="background:#332a0a;border:1px solid #5c4a0f;color:#ffd700;padding:6px 12px;border-radius:8px;cursor:pointer;font-size:12px;flex-shrink:0">⭐ Odbierz VIP</button>`
+          :`<button onclick="event.stopPropagation();adminSetVip('${jsesc(u.id)}','${jsesc(u.email||'')}',true)" style="background:var(--border-soft);border:1px solid #3a3a3a;color:var(--text-secondary);padding:6px 12px;border-radius:8px;cursor:pointer;font-size:12px;flex-shrink:0">⭐ Nadaj VIP</button>`}
         ${ban?
-          `<button onclick="event.stopPropagation();adminUnbanUser('${u.id}')" style="background:#14301a;border:1px solid #1f5c2a;color:#7fe08a;padding:6px 12px;border-radius:8px;cursor:pointer;font-size:12px;flex-shrink:0">Odblokuj</button>`
+          `<button onclick="event.stopPropagation();adminUnbanUser('${jsesc(u.id)}')" style="background:#14301a;border:1px solid #1f5c2a;color:#7fe08a;padding:6px 12px;border-radius:8px;cursor:pointer;font-size:12px;flex-shrink:0">Odblokuj</button>`
           :`<div style="position:relative;flex-shrink:0">
-            <button onclick="event.stopPropagation();toggleAdminBanMenu('${u.id}',this)" style="background:#3a1414;border:1px solid #5c1f1f;color:#ff6b6b;padding:6px 12px;border-radius:8px;cursor:pointer;font-size:12px">🚫 Zablokuj</button>
+            <button onclick="event.stopPropagation();toggleAdminBanMenu('${jsesc(u.id)}',this)" style="background:#3a1414;border:1px solid #5c1f1f;color:#ff6b6b;padding:6px 12px;border-radius:8px;cursor:pointer;font-size:12px">🚫 Zablokuj</button>
           </div>`}
       </div>`;
     }).join('');
@@ -1558,7 +1558,7 @@ if(adminTab==='users'){
           <div style="font-size:13px;font-weight:700;color:var(--text-primary);margin-bottom:4px">🏅 Kolor plakietki</div>
           <p style="color:var(--text-secondary);font-size:12px;margin-bottom:12px">Kolor Twojej plakietki "ADMIN" widocznej obok nicku.</p>
           <div style="display:flex;flex-wrap:wrap;gap:10px;margin-bottom:12px">
-            ${VIP_BADGE_COLORS_ADMIN.map(c=>`<div onclick="saveAdminBadgeColor('${c}')" style="width:34px;height:34px;border-radius:50%;background:${c};cursor:pointer;border:3px solid ${adminBadgeColor===c?'#fff':'transparent'};display:flex;align-items:center;justify-content:center">${adminBadgeColor===c?'<svg viewBox="0 0 24 24" width="14" height="14" fill="#fff"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/></svg>':''}</div>`).join('')}
+            ${VIP_BADGE_COLORS_ADMIN.map(c=>`<div onclick="saveAdminBadgeColor('${jsesc(c)}')" style="width:34px;height:34px;border-radius:50%;background:${c};cursor:pointer;border:3px solid ${adminBadgeColor===c?'#fff':'transparent'};display:flex;align-items:center;justify-content:center">${adminBadgeColor===c?'<svg viewBox="0 0 24 24" width="14" height="14" fill="#fff"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/></svg>':''}</div>`).join('')}
           </div>
           <div style="display:flex;align-items:center;gap:8px;font-size:14px;font-weight:700">
             <span>${myDisplayName}</span>
@@ -1587,7 +1587,7 @@ if(adminTab==='users'){
           <p style="color:var(--text-secondary);font-size:12px;margin-bottom:14px">Wybierz styl czcionki dla swojego nicku.</p>
           <div style="display:flex;flex-direction:column;gap:8px">
             ${FONT_OPTIONS.map(f=>`
-              <div onclick="saveMyFont('${f.id}')" style="display:flex;align-items:center;justify-content:space-between;padding:12px 16px;border-radius:10px;cursor:pointer;background:${myNameFont===f.id?'rgba(62,166,255,.15)':'var(--bg-sunken)'};border:1px solid ${myNameFont===f.id?'#3ea6ff':'var(--border)'}">
+              <div onclick="saveMyFont('${jsesc(f.id)}')" style="display:flex;align-items:center;justify-content:space-between;padding:12px 16px;border-radius:10px;cursor:pointer;background:${myNameFont===f.id?'rgba(62,166,255,.15)':'var(--bg-sunken)'};border:1px solid ${myNameFont===f.id?'#3ea6ff':'var(--border)'}">
                 <span style="font-family:${f.css};font-size:16px;color:${myNameColor||'#fff'}">${myDisplayName||f.label}</span>
                 <span style="font-size:11px;color:var(--text-tertiary)">${f.label}${myNameFont===f.id?' ✓':''}</span>
               </div>`).join('')}
@@ -1661,7 +1661,7 @@ function renderAdminVideosList(){
     ?`<p style="color:var(--text-tertiary);padding:20px;text-align:center">${q?'Brak wyników dla "'+esc(q)+'"':'Brak filmów'}</p>`
     :filtered.map(v=>`
       <div style="display:flex;align-items:center;gap:12px;padding:10px 14px;border-bottom:1px solid var(--border-soft)">
-        <div style="width:64px;height:38px;background:var(--bg-card);border-radius:6px;overflow:hidden;flex-shrink:0">${thumbFor(v)?`<img src="${thumbFor(v)}" style="width:100%;height:100%;object-fit:cover">`:''}</div>
+        <div style="width:64px;height:38px;background:var(--bg-card);border-radius:6px;overflow:hidden;flex-shrink:0">${thumbFor(v)?`<img src="${esc(thumbFor(v))}" style="width:100%;height:100%;object-fit:cover">`:''}</div>
         <div style="flex:1;min-width:0">
           <div style="font-size:13px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(v.title)}</div>
           <div style="font-size:11px;color:var(--text-tertiary)">${esc(getUserName(v))} · ${esc(v.user_email)}</div>
@@ -1787,13 +1787,13 @@ function toggleAdminBanMenu(userId,btnEl){
   menu.dataset.user=userId;
   menu.style.cssText=`position:fixed;top:${rect.bottom+4}px;left:${Math.min(rect.left,window.innerWidth-190)}px;background:var(--bg-panel);border:1px solid var(--border);border-radius:10px;min-width:170px;z-index:2000;overflow:hidden;box-shadow:0 4px 20px rgba(0,0,0,.5)`;
   menu.innerHTML=`
-    <div onclick="adminBanUser('${userId}',1/60)" style="padding:11px 16px;cursor:pointer;font-size:13px" onmouseover="this.style.background='var(--border)'" onmouseout="this.style.background='none'">1 minuta</div>
-    <div onclick="adminBanUser('${userId}',24)" style="padding:11px 16px;cursor:pointer;font-size:13px" onmouseover="this.style.background='var(--border)'" onmouseout="this.style.background='none'">24 godziny</div>
-    <div onclick="adminBanUser('${userId}',168)" style="padding:11px 16px;cursor:pointer;font-size:13px" onmouseover="this.style.background='var(--border)'" onmouseout="this.style.background='none'">7 dni</div>
-    <div onclick="adminBanUser('${userId}',240)" style="padding:11px 16px;cursor:pointer;font-size:13px" onmouseover="this.style.background='var(--border)'" onmouseout="this.style.background='none'">10 dni</div>
-    <div onclick="adminBanUser('${userId}',720)" style="padding:11px 16px;cursor:pointer;font-size:13px" onmouseover="this.style.background='var(--border)'" onmouseout="this.style.background='none'">30 dni</div>
-    <div onclick="adminBanUser('${userId}',43800)" style="padding:11px 16px;cursor:pointer;font-size:13px" onmouseover="this.style.background='var(--border)'" onmouseout="this.style.background='none'">5 lat</div>
-    <div onclick="adminBanUser('${userId}',null)" style="padding:11px 16px;cursor:pointer;font-size:13px;color:#ff6b6b" onmouseover="this.style.background='var(--border)'" onmouseout="this.style.background='none'">Na zawsze</div>
+    <div onclick="adminBanUser('${jsesc(userId)}',1/60)" style="padding:11px 16px;cursor:pointer;font-size:13px" onmouseover="this.style.background='var(--border)'" onmouseout="this.style.background='none'">1 minuta</div>
+    <div onclick="adminBanUser('${jsesc(userId)}',24)" style="padding:11px 16px;cursor:pointer;font-size:13px" onmouseover="this.style.background='var(--border)'" onmouseout="this.style.background='none'">24 godziny</div>
+    <div onclick="adminBanUser('${jsesc(userId)}',168)" style="padding:11px 16px;cursor:pointer;font-size:13px" onmouseover="this.style.background='var(--border)'" onmouseout="this.style.background='none'">7 dni</div>
+    <div onclick="adminBanUser('${jsesc(userId)}',240)" style="padding:11px 16px;cursor:pointer;font-size:13px" onmouseover="this.style.background='var(--border)'" onmouseout="this.style.background='none'">10 dni</div>
+    <div onclick="adminBanUser('${jsesc(userId)}',720)" style="padding:11px 16px;cursor:pointer;font-size:13px" onmouseover="this.style.background='var(--border)'" onmouseout="this.style.background='none'">30 dni</div>
+    <div onclick="adminBanUser('${jsesc(userId)}',43800)" style="padding:11px 16px;cursor:pointer;font-size:13px" onmouseover="this.style.background='var(--border)'" onmouseout="this.style.background='none'">5 lat</div>
+    <div onclick="adminBanUser('${jsesc(userId)}',null)" style="padding:11px 16px;cursor:pointer;font-size:13px;color:#ff6b6b" onmouseover="this.style.background='var(--border)'" onmouseout="this.style.background='none'">Na zawsze</div>
   `;
   document.body.appendChild(menu);
   setTimeout(()=>{

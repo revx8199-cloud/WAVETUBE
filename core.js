@@ -132,7 +132,7 @@ function esc(str){
     .replace(/'/g,'&#039;');
 }
 
-// Bezpieczne wstawianie tekstu użytkownika do onclick="...('${x}')" - zapobiega "wyrwaniu się" z apostrofu
+// Bezpieczne wstawianie tekstu użytkownika do onclick="...('${jsesc(x)}')" - zapobiega "wyrwaniu się" z apostrofu
 function jsesc(str){
   if(str===null||str===undefined)return'';
   return String(str)
@@ -211,7 +211,7 @@ function updateAuthUI(){
     const meta=currentUser.user_metadata;
     const frameBorder=myAvatarFrame?`3px solid ${myAvatarFrame}`:'2px solid #cc0000';
     if(meta&&meta.avatar_url){
-      av.innerHTML=`<img src="${meta.avatar_url}" style="width:34px;height:34px;border-radius:50%;object-fit:cover;border:${frameBorder}">`;
+      av.innerHTML=`<img src="${esc(meta.avatar_url)}" style="width:34px;height:34px;border-radius:50%;object-fit:cover;border:${frameBorder}">`;
     } else {
       av.textContent=(meta&&meta.full_name?meta.full_name[0]:(currentUser.email?currentUser.email[0]:'?')).toUpperCase();
     }
@@ -221,7 +221,7 @@ function updateAuthUI(){
     const headerName=document.getElementById('dropdown-header-name');
     const headerEmail=document.getElementById('dropdown-header-email');
     if(headerAv){
-      headerAv.innerHTML=meta&&meta.avatar_url?`<img src="${meta.avatar_url}">`:esc((dispName[0]||'?').toUpperCase());
+      headerAv.innerHTML=meta&&meta.avatar_url?`<img src="${esc(meta.avatar_url)}">`:esc((dispName[0]||'?').toUpperCase());
       headerAv.style.border=myAvatarFrame?`3px solid ${myAvatarFrame}`:'';
     }
     if(headerName)headerName.textContent=dispName;
@@ -229,7 +229,7 @@ function updateAuthUI(){
     // update comment avatar
     const comAv=document.getElementById('com-av');
     if(meta&&meta.avatar_url){
-      comAv.innerHTML=`<img src="${meta.avatar_url}">`;
+      comAv.innerHTML=`<img src="${esc(meta.avatar_url)}">`;
     } else {
       comAv.textContent=(meta&&meta.full_name?meta.full_name[0]:'?').toUpperCase();
     }
@@ -353,13 +353,13 @@ function toggleMuteMenu(userId,btnEl){
   menu.style.cssText=`position:fixed;top:${rect.bottom+4}px;left:${Math.min(rect.left,window.innerWidth-190)}px;background:var(--bg-panel);border:1px solid var(--border);border-radius:10px;min-width:170px;z-index:2000;overflow:hidden;box-shadow:0 4px 20px rgba(0,0,0,.5)`;
   menu.innerHTML=`
     <div style="padding:9px 16px;font-size:11px;color:var(--text-tertiary);text-transform:uppercase">Wycisz na</div>
-    <div onclick="muteUser('${userId}',1)" style="padding:11px 16px;cursor:pointer;font-size:13px" onmouseover="this.style.background='var(--border)'" onmouseout="this.style.background='none'">1 godzinę</div>
-    <div onclick="muteUser('${userId}',24)" style="padding:11px 16px;cursor:pointer;font-size:13px" onmouseover="this.style.background='var(--border)'" onmouseout="this.style.background='none'">24 godziny</div>
-    <div onclick="muteUser('${userId}',168)" style="padding:11px 16px;cursor:pointer;font-size:13px" onmouseover="this.style.background='var(--border)'" onmouseout="this.style.background='none'">7 dni</div>
-    <div onclick="muteUser('${userId}',720)" style="padding:11px 16px;cursor:pointer;font-size:13px" onmouseover="this.style.background='var(--border)'" onmouseout="this.style.background='none'">30 dni</div>
-    <div onclick="muteUser('${userId}',null)" style="padding:11px 16px;cursor:pointer;font-size:13px;color:#ff6b6b" onmouseover="this.style.background='var(--border)'" onmouseout="this.style.background='none'">Na zawsze</div>
+    <div onclick="muteUser('${jsesc(userId)}',1)" style="padding:11px 16px;cursor:pointer;font-size:13px" onmouseover="this.style.background='var(--border)'" onmouseout="this.style.background='none'">1 godzinę</div>
+    <div onclick="muteUser('${jsesc(userId)}',24)" style="padding:11px 16px;cursor:pointer;font-size:13px" onmouseover="this.style.background='var(--border)'" onmouseout="this.style.background='none'">24 godziny</div>
+    <div onclick="muteUser('${jsesc(userId)}',168)" style="padding:11px 16px;cursor:pointer;font-size:13px" onmouseover="this.style.background='var(--border)'" onmouseout="this.style.background='none'">7 dni</div>
+    <div onclick="muteUser('${jsesc(userId)}',720)" style="padding:11px 16px;cursor:pointer;font-size:13px" onmouseover="this.style.background='var(--border)'" onmouseout="this.style.background='none'">30 dni</div>
+    <div onclick="muteUser('${jsesc(userId)}',null)" style="padding:11px 16px;cursor:pointer;font-size:13px;color:#ff6b6b" onmouseover="this.style.background='var(--border)'" onmouseout="this.style.background='none'">Na zawsze</div>
     <div style="border-top:1px solid var(--border)"></div>
-    <div onclick="unmuteUser('${userId}')" style="padding:11px 16px;cursor:pointer;font-size:13px;color:#7fe08a" onmouseover="this.style.background='var(--border)'" onmouseout="this.style.background='none'">🔊 Cofnij wyciszenie</div>
+    <div onclick="unmuteUser('${jsesc(userId)}')" style="padding:11px 16px;cursor:pointer;font-size:13px;color:#7fe08a" onmouseover="this.style.background='var(--border)'" onmouseout="this.style.background='none'">🔊 Cofnij wyciszenie</div>
   `;
   document.body.appendChild(menu);
   setTimeout(()=>{
@@ -687,7 +687,7 @@ function showShortsPage(){
     const el=document.createElement('div');
     el.style.cssText='width:180px;cursor:pointer';
     el.innerHTML=`<div style="position:relative;width:180px;height:320px;background:var(--bg-card);border-radius:12px;overflow:hidden">
-      ${th?`<img src="${th}" style="width:100%;height:100%;object-fit:cover">`:'<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;color:#333;font-size:48px">📱</div>'}
+      ${th?`<img src="${esc(th)}" style="width:100%;height:100%;object-fit:cover">`:'<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;color:#333;font-size:48px">📱</div>'}
       <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;opacity:0;background:rgba(0,0,0,.3);transition:opacity .2s" onmouseover="this.style.opacity=1" onmouseout="this.style.opacity=0"><div style="width:54px;height:54px;background:rgba(0,0,0,.75);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:22px">▶</div></div>
       <div style="position:absolute;top:8px;left:8px;background:#ff0000;color:var(--text-primary);font-size:10px;font-weight:700;padding:2px 6px;border-radius:4px">SHORT</div>
       <div style="position:absolute;bottom:0;left:0;right:0;background:linear-gradient(transparent,rgba(0,0,0,.8));padding:12px 10px 10px">
@@ -776,22 +776,22 @@ function appendVideoCards(list,g){
     const th=thumbFor(v);
     const uname=getUserName(v);
     const ucol=getUserColor(v.user_email);
-    const uav=v.user_avatar?`<img src="${v.user_avatar}" style="width:36px;height:36px;border-radius:50%;object-fit:cover;cursor:pointer" onclick="event.stopPropagation();showChannel('${v.user_id||''}','${jsesc(uname)}','${v.user_avatar||''}','${v.user_email||''}')">`:`<div class="card-avatar-placeholder" style="background:${ucol}" onclick="event.stopPropagation();showChannel('${v.user_id||''}','${jsesc(uname)}','','${v.user_email||''}')">${uname[0].toUpperCase()}</div>`;
+    const uav=v.user_avatar?`<img src="${esc(v.user_avatar)}" style="width:36px;height:36px;border-radius:50%;object-fit:cover;cursor:pointer" onclick="event.stopPropagation();showChannel('${jsesc(v.user_id||'')}','${jsesc(uname)}','${jsesc(v.user_avatar||'')}','${jsesc(v.user_email||'')}')">`:`<div class="card-avatar-placeholder" style="background:${ucol}" onclick="event.stopPropagation();showChannel('${jsesc(v.user_id||'')}','${jsesc(uname)}','','${jsesc(v.user_email||'')}')">${uname[0].toUpperCase()}</div>`;
     const el=document.createElement('div');
     el.className='card';
     el.innerHTML=`<div class="thumb">
-      ${th?`<img src="${th}" alt="${esc(v.title)}" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"><div class="no-thumb" style="display:none">🎬</div>`:'<div class="no-thumb">🎬</div>'}
+      ${th?`<img src="${esc(th)}" alt="${esc(v.title)}" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"><div class="no-thumb" style="display:none">🎬</div>`:'<div class="no-thumb">🎬</div>'}
       <div class="play-ov"><div class="pb">▶</div></div>
       ${v.dur?`<div class="dur">${v.dur}</div>`:''}
       <button class="del" onclick="event.stopPropagation();askDelete(${v.id})">🗑</button>
       ${currentUser&&(currentUser.id===v.user_id||isAdmin())?`<button class="del" style="top:6px;right:40px;background:rgba(30,100,255,.75)" onclick="event.stopPropagation();openEditModal(${v.id})">✏️</button>`:''}
-      <button class="del" style="display:flex;top:6px;left:6px;right:auto" onclick="event.stopPropagation();toggleCardMenu('${v.id}',this)">⋮</button>
+      <button class="del" style="display:flex;top:6px;left:6px;right:auto" onclick="event.stopPropagation();toggleCardMenu('${jsesc(v.id)}',this)">⋮</button>
     </div>
     <div class="card-bottom">
       ${uav}
       <div class="card-info">
         <h3>${esc(v.title)}</h3>
-        <div class="channel-name" style="${v.user_color?`color:${v.user_color};font-weight:700;`:''}${v.user_font?`font-family:${fontCssFor(v.user_font)};`:''}" onclick="event.stopPropagation();showChannel('${v.user_id||''}','${jsesc(uname)}','${v.user_avatar||''}','${v.user_email||''}')">${esc(uname)}</div>
+        <div class="channel-name" style="${v.user_color?`color:${v.user_color};font-weight:700;`:''}${v.user_font?`font-family:${fontCssFor(v.user_font)};`:''}" onclick="event.stopPropagation();showChannel('${jsesc(v.user_id||'')}','${jsesc(uname)}','${jsesc(v.user_avatar||'')}','${jsesc(v.user_email||'')}')">${esc(uname)}</div>
         <p>${viewsLabel(v,' wyśw.')} · ${v.likes||0} ${likeIcon()} · ${relativeDate(v.created_at)}</p>
       </div>
     </div>`;
@@ -1051,9 +1051,9 @@ function renderAnnouncementCard(a){
     <div id="ann-comments-${a.id}" style="display:none;margin-top:14px;padding-top:14px;border-top:1px solid var(--border-soft)">
       <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:12px">
         ${comments.map(c=>`<div style="display:flex;gap:8px">
-          ${c.avatar?`<img src="${c.avatar}" style="width:28px;height:28px;border-radius:50%;object-fit:cover;flex-shrink:0;cursor:pointer${c.avatar_frame?`;border:2px solid ${c.avatar_frame};box-sizing:border-box`:''}" onclick="showChannel('${c.user_id||''}','${jsesc(c.user)}','${c.avatar||''}','')">`:`<div style="width:28px;height:28px;border-radius:50%;background:#cc0000;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0;cursor:pointer" onclick="showChannel('${c.user_id||''}','${jsesc(c.user)}','','')">${(c.user||'?')[0].toUpperCase()}</div>`}
+          ${c.avatar?`<img src="${esc(c.avatar)}" style="width:28px;height:28px;border-radius:50%;object-fit:cover;flex-shrink:0;cursor:pointer${c.avatar_frame?`;border:2px solid ${c.avatar_frame};box-sizing:border-box`:''}" onclick="showChannel('${jsesc(c.user_id||'')}','${jsesc(c.user)}','${jsesc(c.avatar||'')}','')">`:`<div style="width:28px;height:28px;border-radius:50%;background:#cc0000;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0;cursor:pointer" onclick="showChannel('${jsesc(c.user_id||'')}','${jsesc(c.user)}','','')">${(c.user||'?')[0].toUpperCase()}</div>`}
           <div>
-            <div style="font-size:12px;font-weight:600;cursor:pointer${c.name_color?`;color:${c.name_color}`:''}${c.name_font?`;font-family:${fontCssFor(c.name_font)}`:''}" onclick="showChannel('${c.user_id||''}','${jsesc(c.user)}','${c.avatar||''}','')">${esc(c.user)}</div>
+            <div style="font-size:12px;font-weight:600;cursor:pointer${c.name_color?`;color:${c.name_color}`:''}${c.name_font?`;font-family:${fontCssFor(c.name_font)}`:''}" onclick="showChannel('${jsesc(c.user_id||'')}','${jsesc(c.user)}','${jsesc(c.avatar||'')}','')">${esc(c.user)}</div>
             <div style="font-size:13px;color:var(--text-secondary)">${esc(c.text)}</div>
           </div>
         </div>`).join('')||'<p style="color:var(--text-tertiary);font-size:12px">Brak komentarzy — bądź pierwszy!</p>'}
@@ -1201,12 +1201,12 @@ async function showHistory(){
     const el=document.createElement('div');
     el.className='card';
     el.innerHTML=`<div class="thumb">
-      ${th?`<img src="${th}" alt="${esc(v.title)}" onerror="this.style.display='none'">`:'<div class="no-thumb">🎬</div>'}
+      ${th?`<img src="${esc(th)}" alt="${esc(v.title)}" onerror="this.style.display='none'">`:'<div class="no-thumb">🎬</div>'}
       <div class="play-ov"><div class="pb">▶</div></div>
       ${v.dur?`<div class="dur">${v.dur}</div>`:''}
     </div>
     <div class="card-bottom">
-      ${v.user_avatar?`<img src="${v.user_avatar}" class="card-avatar" style="width:36px;height:36px" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">`:''}
+      ${v.user_avatar?`<img src="${esc(v.user_avatar)}" class="card-avatar" style="width:36px;height:36px" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">`:''}
       <div class="card-avatar-placeholder" style="background:${getUserColor(v.user_email)};width:36px;height:36px;border-radius:50%;display:${v.user_avatar?'none':'flex'};align-items:center;justify-content:center;font-size:13px;font-weight:700;color:var(--text-primary);flex-shrink:0">${esc((getUserName(v)||'?')[0])}</div>
       <div class="card-info">
         <h3>${esc(v.title)}</h3>
@@ -1246,14 +1246,14 @@ function showTrending(){
     const el=document.createElement('div');
     el.className='card';
     el.innerHTML=`<div class="thumb">
-      ${th?`<img src="${th}" alt="${esc(v.title)}" onerror="this.style.display='none'">`:'<div class="no-thumb">🎬</div>'}
+      ${th?`<img src="${esc(th)}" alt="${esc(v.title)}" onerror="this.style.display='none'">`:'<div class="no-thumb">🎬</div>'}
       <div class="play-ov"><div class="pb">▶</div></div>
       ${v.dur?`<div class="dur">${v.dur}</div>`:''}
     </div>
     <div class="card-bottom">
       ${avatarUrl
-        ?`<img src="${avatarUrl}" style="width:36px;height:36px;border-radius:50%;object-fit:cover;flex-shrink:0;cursor:pointer" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'" onclick="event.stopPropagation();showChannel('${v.user_id||''}','${jsesc(uname)}','${avatarUrl}','${v.user_email||''}')"><div class="card-avatar-placeholder" style="background:${ucol};display:none;cursor:pointer" onclick="event.stopPropagation();showChannel('${v.user_id||''}','${jsesc(uname)}','','${v.user_email||''}')">${uname[0].toUpperCase()}</div>`
-        :`<div class="card-avatar-placeholder" style="background:${ucol};cursor:pointer" onclick="event.stopPropagation();showChannel('${v.user_id||''}','${jsesc(uname)}','','${v.user_email||''}')">${uname[0].toUpperCase()}</div>`
+        ?`<img src="${esc(avatarUrl)}" style="width:36px;height:36px;border-radius:50%;object-fit:cover;flex-shrink:0;cursor:pointer" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'" onclick="event.stopPropagation();showChannel('${jsesc(v.user_id||'')}','${jsesc(uname)}','${jsesc(avatarUrl)}','${jsesc(v.user_email||'')}')"><div class="card-avatar-placeholder" style="background:${ucol};display:none;cursor:pointer" onclick="event.stopPropagation();showChannel('${jsesc(v.user_id||'')}','${jsesc(uname)}','','${jsesc(v.user_email||'')}')">${uname[0].toUpperCase()}</div>`
+        :`<div class="card-avatar-placeholder" style="background:${ucol};cursor:pointer" onclick="event.stopPropagation();showChannel('${jsesc(v.user_id||'')}','${jsesc(uname)}','','${jsesc(v.user_email||'')}')">${uname[0].toUpperCase()}</div>`
       }
       <div class="card-info"><h3>${esc(v.title)}</h3><div class="channel-name">${esc(uname)}</div><p>${viewsLabel(v)}</p></div>
     </div>`;
@@ -1336,7 +1336,7 @@ function renderC(){
   const dislikedComments=new Set(JSON.parse(localStorage.getItem('disliked_comments')||'[]'));
   const sortedList=getSortedComments();
   document.getElementById('clist').innerHTML=sortedList.map((c,i)=>{
-    const av=c.avatar?`<img src="${c.avatar}">`:`${(c.user||'?')[0].toUpperCase()}`;
+    const av=c.avatar?`<img src="${esc(c.avatar)}">`:`${(c.user||'?')[0].toUpperCase()}`;
     const uid=c.user_id||'';
     const uemail=c.user_email||'';
     const uavatar=c.avatar||'';
@@ -1352,11 +1352,11 @@ function renderC(){
     const displayTime=c.ts?timeAgo(c.ts):(c.time||'');
     return`<div class="citem" id="citem-${i}" style="${isPinned?'background:#1a2a1a;border-radius:8px;padding:8px 8px 4px;margin-bottom:8px':'margin-bottom:16px'}">
       ${isPinned?`<div style="color:#3ea6ff;font-size:11px;margin-bottom:6px;display:flex;align-items:center;gap:4px"><svg viewBox="0 0 24 24" width="12" height="12" fill="currentColor"><path d="M17 4v7l2 3H5l2-3V4h10m0-2H7c-.55 0-1 .45-1 1v1H5v2h1v5.5L4 14v2h7v5h2v-5h7v-2l-2-2.5V6h1V4h-1V3c0-.55-.45-1-1-1z"/></svg> Przypięty komentarz</div>`:''}
-      <div class="cav" style="${c.avatar?'':'background:'+( c.col||colors[i%colors.length])};cursor:pointer;flex-shrink:0${c.avatar_frame?`;border:2px solid ${c.avatar_frame};box-sizing:border-box`:''}" onclick="closeP();showChannel('${uid}','${jsesc(c.user)}','${uavatar}','${uemail}')">${av}</div>
+      <div class="cav" style="${c.avatar?'':'background:'+( c.col||colors[i%colors.length])};cursor:pointer;flex-shrink:0${c.avatar_frame?`;border:2px solid ${c.avatar_frame};box-sizing:border-box`:''}" onclick="closeP();showChannel('${jsesc(uid)}','${jsesc(c.user)}','${jsesc(uavatar)}','${jsesc(uemail)}')">${av}</div>
       <div class="cbody" style="flex:1;min-width:0">
         <div class="cname" style="display:flex;align-items:center;gap:4px;flex-wrap:wrap;justify-content:space-between;margin-bottom:4px">
           <div style="display:flex;align-items:center;gap:4px;flex-wrap:wrap">
-            <span style="cursor:pointer;font-weight:600;font-size:14px${c.name_color?`;color:${c.name_color}`:''}${c.name_font?`;font-family:${fontCssFor(c.name_font)}`:''}" onclick="closeP();showChannel('${uid}','${jsesc(c.user)}','${uavatar}','${uemail}')">${esc(c.user)}</span>${verifiedBadge(uemail||'')}
+            <span style="cursor:pointer;font-weight:600;font-size:14px${c.name_color?`;color:${c.name_color}`:''}${c.name_font?`;font-family:${fontCssFor(c.name_font)}`:''}" onclick="closeP();showChannel('${jsesc(uid)}','${jsesc(c.user)}','${jsesc(uavatar)}','${jsesc(uemail)}')">${esc(c.user)}</span>${verifiedBadge(uemail||'')}
             <span style="color:var(--text-secondary);font-weight:400;font-size:11px">${displayTime}${c.edited?' <span style=\"color:var(--text-tertiary)\">(edytowano)</span>':''}</span>
           </div>
           <div style="display:flex;gap:4px;position:relative">
@@ -1373,7 +1373,7 @@ function renderC(){
                 <svg viewBox="0 0 24 24" width="17" height="17" fill="currentColor"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>
                 Edytuj
               </div>`:''}
-              ${isAdmin()&&!isAuthor&&uid?`<div class="cmt-dropdown-item" onclick="closeCmtMenu();toggleMuteMenu('${uid}',document.getElementById('cmtdots-${i}'))">
+              ${isAdmin()&&!isAuthor&&uid?`<div class="cmt-dropdown-item" onclick="closeCmtMenu();toggleMuteMenu('${jsesc(uid)}',document.getElementById('cmtdots-${i}'))">
                 <svg viewBox="0 0 24 24" width="17" height="17" fill="currentColor"><path d="M16.5 12c0-1.77-1.02-3.29-2.5-4.03v2.21l2.45 2.45c.03-.2.05-.42.05-.63zm2.5 0c0 .94-.2 1.82-.54 2.64l1.51 1.51C20.63 14.91 21 13.5 21 12c0-4.28-2.99-7.86-7-8.77v2.06c2.89.86 5 3.54 5 6.71zM4.27 3L3 4.27 7.73 9H3v6h4l5 5v-6.73l4.25 4.25c-.67.52-1.42.93-2.25 1.18v2.06c1.38-.31 2.63-.95 3.69-1.81L19.73 21 21 19.73l-9-9L4.27 3zM12 4L9.91 6.09 12 8.18V4z"/></svg>
                 Wycisz użytkownika
               </div>`:''}
@@ -1404,7 +1404,7 @@ function renderC(){
         </div>
         <div id="reply-form-${i}" style="display:none;margin-top:10px;display:none">
           <div style="display:flex;gap:8px;align-items:flex-start">
-            ${currentUser&&currentUser.user_metadata?.avatar_url?`<img src="${currentUser.user_metadata.avatar_url}" style="width:28px;height:28px;border-radius:50%;object-fit:cover;flex-shrink:0">`:`<div style="width:28px;height:28px;border-radius:50%;background:#cc0000;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:var(--text-primary);flex-shrink:0">${currentUser?(currentUser.user_metadata?.full_name||currentUser.email||'?')[0].toUpperCase():'?'}</div>`}
+            ${currentUser&&currentUser.user_metadata?.avatar_url?`<img src="${esc(currentUser.user_metadata.avatar_url)}" style="width:28px;height:28px;border-radius:50%;object-fit:cover;flex-shrink:0">`:`<div style="width:28px;height:28px;border-radius:50%;background:#cc0000;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:var(--text-primary);flex-shrink:0">${currentUser?(currentUser.user_metadata?.full_name||currentUser.email||'?')[0].toUpperCase():'?'}</div>`}
             <div style="flex:1">
               <input id="reply-inp-${i}" placeholder="Odpowiedz..." style="width:100%;background:transparent;border:none;border-bottom:1px solid #444;color:var(--text-primary);padding:6px 0;font-size:13px;outline:none">
               <div style="display:flex;justify-content:flex-end;gap:8px;margin-top:6px">
@@ -1425,12 +1425,12 @@ function renderC(){
               const replyIsAuthor=currentUser&&currentUser.id===r.user_id;
               const replyCanDelete=isVideoOwner||replyIsAuthor||isAdmin();
               return`<div style="display:flex;gap:10px;margin-bottom:12px">
-              ${r.avatar?`<img src="${r.avatar}" style="width:28px;height:28px;border-radius:50%;object-fit:cover;flex-shrink:0${r.avatar_frame?`;border:2px solid ${r.avatar_frame};box-sizing:border-box`:''}">`:`<div style="width:28px;height:28px;border-radius:50%;background:#cc0000;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:var(--text-primary);flex-shrink:0">${(r.user||'?')[0]}</div>`}
+              ${r.avatar?`<img src="${esc(r.avatar)}" style="width:28px;height:28px;border-radius:50%;object-fit:cover;flex-shrink:0${r.avatar_frame?`;border:2px solid ${r.avatar_frame};box-sizing:border-box`:''}">`:`<div style="width:28px;height:28px;border-radius:50%;background:#cc0000;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:var(--text-primary);flex-shrink:0">${(r.user||'?')[0]}</div>`}
               <div style="flex:1">
                 <div style="font-size:12px;font-weight:600;display:flex;align-items:center;gap:4px;justify-content:space-between">
                   <span style="display:flex;align-items:center;gap:4px"><span style="${r.name_color?`color:${r.name_color};`:''}${r.name_font?`font-family:${fontCssFor(r.name_font)};`:''}">${esc(r.user)}</span>${verifiedBadge(r.user_email||'')} <span style="color:var(--text-secondary);font-weight:400;font-size:11px">${r.ts?timeAgo(r.ts):(r.time||'')}</span></span>
                   <span style="display:flex;gap:2px">
-                    ${isAdmin()&&!replyIsAuthor&&r.user_id?`<button onclick="event.stopPropagation();toggleMuteMenu('${r.user_id}',this)" title="Wycisz użytkownika" class="cmt-icon-btn" style="width:26px;height:26px;font-size:12px">🔇</button>`:''}
+                    ${isAdmin()&&!replyIsAuthor&&r.user_id?`<button onclick="event.stopPropagation();toggleMuteMenu('${jsesc(r.user_id)}',this)" title="Wycisz użytkownika" class="cmt-icon-btn" style="width:26px;height:26px;font-size:12px">🔇</button>`:''}
                     ${replyCanDelete?`<button onclick="deleteReply(${i},${ri})" title="Usuń" class="cmt-icon-btn" style="width:26px;height:26px;font-size:12px">🗑</button>`:''}
                   </span>
                 </div>
@@ -1642,7 +1642,7 @@ async function editDesc(key){
   }
   wrap.innerHTML=`<textarea id="desc-inp" style="width:100%;background:var(--bg-card);border:1px solid #444;border-radius:8px;color:var(--text-primary);padding:8px;font-size:13px;resize:none;outline:none;margin-bottom:6px" rows="2" placeholder="${t('desc_placeholder')}">${current}</textarea>
   <div style="display:flex;gap:8px">
-    <button onclick="saveDesc('${key}')" style="background:#cc0000;border:none;color:var(--text-primary);padding:6px 14px;border-radius:16px;cursor:pointer;font-size:12px;font-weight:600">${t('btn_save')}</button>
+    <button onclick="saveDesc('${jsesc(key)}')" style="background:#cc0000;border:none;color:var(--text-primary);padding:6px 14px;border-radius:16px;cursor:pointer;font-size:12px;font-weight:600">${t('btn_save')}</button>
     <button onclick="showMyChannel()" style="background:var(--border-soft);border:none;color:var(--text-primary);padding:6px 14px;border-radius:16px;cursor:pointer;font-size:12px">${t('btn_cancel')}</button>
   </div>`;
   document.getElementById('desc-inp').focus();
@@ -1811,7 +1811,7 @@ function renderNotifications(){
   if(!notificationsList.length){list.innerHTML=`<div class="notif-empty">${t('notif_empty')}</div>`;return;}
   list.innerHTML=notificationsList.map(n=>`
     <div class="notif-item${n.read?'':' unread'}" onclick="handleNotifClick('${jsesc(n.id)}','${jsesc(n.sender_id||'')}','${jsesc(n.sender_name||'')}','${jsesc(n.sender_avatar||'')}','${jsesc(n.sender_email||'')}')">
-      ${n.avatar?`<img class="notif-av" src="${n.avatar}">`:`<div class="notif-av-ph" style="background:#cc0000">🔔</div>`}
+      ${n.avatar?`<img class="notif-av" src="${esc(n.avatar)}">`:`<div class="notif-av-ph" style="background:#cc0000">🔔</div>`}
       <div>
         <div class="notif-text">${n.message}</div>
         <div class="notif-time">${new Date(n.created_at).toLocaleString('pl-PL',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'})}</div>
@@ -1861,7 +1861,7 @@ function toggleEmojiPicker(targetId,btnEl){
   const picker=document.createElement('div');
   picker.id='emoji-picker';
   picker.dataset.target=targetId;
-  picker.innerHTML=EMOJI_LIST.map(e=>`<span onclick="insertEmoji('${targetId}','${e}')" style="cursor:pointer;font-size:20px;padding:5px;border-radius:6px;text-align:center" onmouseover="this.style.background='var(--border)'" onmouseout="this.style.background='none'">${e}</span>`).join('');
+  picker.innerHTML=EMOJI_LIST.map(e=>`<span onclick="insertEmoji('${jsesc(targetId)}','${jsesc(e)}')" style="cursor:pointer;font-size:20px;padding:5px;border-radius:6px;text-align:center" onmouseover="this.style.background='var(--border)'" onmouseout="this.style.background='none'">${e}</span>`).join('');
 
   const rect=btnEl.getBoundingClientRect();
   const maxPickerHeight=Math.min(320,window.innerHeight-32); // nie więcej niż ekran minus margines
@@ -1933,7 +1933,7 @@ function renderPlaylistCards(list,g){
     const count=(pl.video_ids||[]).length;
     return`<div class="card" onclick="openPlaylistDetail(${pl.id})">
       <div class="thumb">
-        ${thumb?`<img src="${thumb}" style="width:100%;height:100%;object-fit:cover">`:'<div class="no-thumb">🎵</div>'}
+        ${thumb?`<img src="${esc(thumb)}" style="width:100%;height:100%;object-fit:cover">`:'<div class="no-thumb">🎵</div>'}
         <div class="play-ov"><div class="pb">▶</div></div>
         <div class="dur" style="background:rgba(0,0,0,.85)">${count} ${t('playlist_videos_count')}</div>
         <button class="del" onclick="event.stopPropagation();deletePlaylist(${pl.id})">🗑</button>
@@ -2038,7 +2038,7 @@ function renderPlaylistPickerList(){
   const idStr=String(playlistPickerVideoId);
   el.innerHTML=myPlaylists.map(pl=>{
     const checked=(pl.video_ids||[]).map(String).includes(idStr);
-    return`<div onclick="togglePlaylistVideo(${pl.id},'${idStr}')" style="display:flex;align-items:center;gap:12px;padding:10px 8px;cursor:pointer;border-radius:8px" onmouseover="this.style.background='var(--border-soft)'" onmouseout="this.style.background='none'">
+    return`<div onclick="togglePlaylistVideo(${pl.id},'${jsesc(idStr)}')" style="display:flex;align-items:center;gap:12px;padding:10px 8px;cursor:pointer;border-radius:8px" onmouseover="this.style.background='var(--border-soft)'" onmouseout="this.style.background='none'">
       <div style="width:20px;height:20px;border-radius:5px;border:2px solid ${checked?'#3ea6ff':'var(--border)'};background:${checked?'#3ea6ff':'transparent'};display:flex;align-items:center;justify-content:center;flex-shrink:0">${checked?'<svg viewBox="0 0 24 24" width="13" height="13" fill="#0f0f0f"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/></svg>':''}</div>
       <span style="font-size:13px;flex:1">${esc(pl.name)}</span>
       <span style="font-size:11px;color:var(--text-tertiary)">${(pl.video_ids||[]).length}</span>

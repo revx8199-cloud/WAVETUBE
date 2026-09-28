@@ -68,7 +68,7 @@ function showAutoplayOverlay(nextV){
   ov.className='autoplay-overlay';
   ov.innerHTML=`
     <div style="font-size:13px;color:#aaa">${t('autoplay_next_video')}</div>
-    <img src="${thumbFor(nextV)||''}" alt="">
+    <img src="${esc(thumbFor(nextV)||'')}" alt="">
     <div style="font-weight:600;max-width:80%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(nextV.title||'')}</div>
     <div class="autoplay-ring">
       <svg width="56" height="56"><circle class="bg" cx="28" cy="28" r="24"/><circle class="fg" id="autoplay-ring-fg" cx="28" cy="28" r="24" stroke-dashoffset="0"/></svg>
@@ -249,11 +249,11 @@ async function loadConvList(){
     const email=theirProfile?.email||theirVideo?.user_email||'';
     const time=new Date(m.created_at).toLocaleString('pl-PL',{hour:'2-digit',minute:'2-digit'});
     const isBlocked=!!blockedUsers[otherId];
-    return`<div class="msg-conv-item${currentConvId===m.conv_id?' active':''}" onclick="openConv('${m.conv_id}','${otherId}','${jsesc(name)}','${avatar}','${email}')" style="${isBlocked?'opacity:.5':''}">
-      ${avatar?`<img class="msg-conv-av" src="${avatar}" style="cursor:pointer" onclick="event.stopPropagation();closeMessages();showChannel('${otherId}','${jsesc(name)}','${avatar}','${email}')" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">`:''}
-      <div class="msg-conv-av-ph" style="background:#cc0000;cursor:pointer;${avatar?'display:none':''}" onclick="event.stopPropagation();closeMessages();showChannel('${otherId}','${jsesc(name)}','${avatar}','${email}')">${(name||'?')[0].toUpperCase()}</div>
+    return`<div class="msg-conv-item${currentConvId===m.conv_id?' active':''}" onclick="openConv('${jsesc(m.conv_id)}','${jsesc(otherId)}','${jsesc(name)}','${jsesc(avatar)}','${jsesc(email)}')" style="${isBlocked?'opacity:.5':''}">
+      ${avatar?`<img class="msg-conv-av" src="${esc(avatar)}" style="cursor:pointer" onclick="event.stopPropagation();closeMessages();showChannel('${jsesc(otherId)}','${jsesc(name)}','${jsesc(avatar)}','${jsesc(email)}')" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">`:''}
+      <div class="msg-conv-av-ph" style="background:#cc0000;cursor:pointer;${avatar?'display:none':''}" onclick="event.stopPropagation();closeMessages();showChannel('${jsesc(otherId)}','${jsesc(name)}','${jsesc(avatar)}','${jsesc(email)}')">${(name||'?')[0].toUpperCase()}</div>
       <div class="msg-conv-info">
-        <div class="msg-conv-name" style="cursor:pointer" onclick="event.stopPropagation();closeMessages();showChannel('${otherId}','${jsesc(name)}','${avatar}','${email}')">${esc(name)}${verifiedBadge(email)}${isBlocked?' <span style="color:#cc0000;font-size:11px">🚫 zablokowany</span>':''}</div>
+        <div class="msg-conv-name" style="cursor:pointer" onclick="event.stopPropagation();closeMessages();showChannel('${jsesc(otherId)}','${jsesc(name)}','${jsesc(avatar)}','${jsesc(email)}')">${esc(name)}${verifiedBadge(email)}${isBlocked?' <span style="color:#cc0000;font-size:11px">🚫 zablokowany</span>':''}</div>
         <div class="msg-conv-last">${m.image_url?'📷 Zdjęcie':m.audio_url?'🎤 Wiadomość głosowa':esc(m.text.substring(0,40))}</div>
       </div>
       <div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px">
@@ -289,10 +289,10 @@ function renderChatHeader(){
   const expiresAt=blockedUsers[o.id];
   area.innerHTML=`
     <div class="msg-chat-header" style="position:relative">
-      ${avatar?`<img class="msg-conv-av" src="${avatar}" style="width:36px;height:36px;cursor:pointer" onclick="closeMessages();showChannel('${o.id}','${jsesc(name)}','${avatar}','${email}')" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">`:''}
-      <div class="msg-conv-av-ph" style="background:#cc0000;width:36px;height:36px;font-size:14px;cursor:pointer;${avatar?'display:none':''}" onclick="closeMessages();showChannel('${o.id}','${jsesc(name)}','${avatar}','${email}')">${(name||'?')[0].toUpperCase()}</div>
-      <div class="msg-chat-name" style="flex:1;cursor:pointer" onclick="closeMessages();showChannel('${o.id}','${jsesc(name)}','${avatar}','${email}')">${esc(name)}${verifiedBadge(email)}</div>
-      <button onclick="startCall('${o.id}','${jsesc(name)}','${avatar}')" title="Zadzwoń" style="background:none;border:none;color:var(--text-secondary);cursor:pointer;font-size:19px;padding:6px 10px;border-radius:50%" onmouseover="this.style.background='var(--border-soft)'" onmouseout="this.style.background='none'">📞</button>
+      ${avatar?`<img class="msg-conv-av" src="${esc(avatar)}" style="width:36px;height:36px;cursor:pointer" onclick="closeMessages();showChannel('${jsesc(o.id)}','${jsesc(name)}','${jsesc(avatar)}','${jsesc(email)}')" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">`:''}
+      <div class="msg-conv-av-ph" style="background:#cc0000;width:36px;height:36px;font-size:14px;cursor:pointer;${avatar?'display:none':''}" onclick="closeMessages();showChannel('${jsesc(o.id)}','${jsesc(name)}','${jsesc(avatar)}','${jsesc(email)}')">${(name||'?')[0].toUpperCase()}</div>
+      <div class="msg-chat-name" style="flex:1;cursor:pointer" onclick="closeMessages();showChannel('${jsesc(o.id)}','${jsesc(name)}','${jsesc(avatar)}','${jsesc(email)}')">${esc(name)}${verifiedBadge(email)}</div>
+      <button onclick="startCall('${jsesc(o.id)}','${jsesc(name)}','${jsesc(avatar)}')" title="Zadzwoń" style="background:none;border:none;color:var(--text-secondary);cursor:pointer;font-size:19px;padding:6px 10px;border-radius:50%" onmouseover="this.style.background='var(--border-soft)'" onmouseout="this.style.background='none'">📞</button>
       <button onclick="toggleChatMenu()" style="background:none;border:none;color:var(--text-primary);cursor:pointer;font-size:20px;padding:4px 10px;border-radius:50%" onmouseover="this.style.background='var(--border-soft)'" onmouseout="this.style.background='none'">⋮</button>
       <div id="chat-menu" style="display:none;position:absolute;top:44px;right:0;background:var(--bg-panel);border:1px solid var(--border);border-radius:10px;min-width:210px;z-index:80;overflow:hidden">
         <div onclick="deleteConversation()" style="padding:12px 16px;cursor:pointer;font-size:13px;display:flex;align-items:center;gap:10px;color:#ff6b6b" onmouseover="this.style.background='var(--border)'" onmouseout="this.style.background='none'">🗑 Usuń czat</div>
@@ -380,8 +380,8 @@ async function loadMessages(){
   list.innerHTML=data.map(m=>{
     const isSent=m.sender_id===currentUser.id;
     const time=new Date(m.created_at).toLocaleString('pl-PL',{hour:'2-digit',minute:'2-digit'});
-    const imgHtml=m.image_url?`<img class="msg-bubble-img" src="${m.image_url}" onclick="openImgLightbox('${m.image_url}')">`:'';
-    const audioHtml=m.audio_url?`<audio class="msg-bubble-audio" controls src="${m.audio_url}" style="max-width:240px;display:block"></audio>`:'';
+    const imgHtml=m.image_url?`<img class="msg-bubble-img" src="${esc(m.image_url)}" onclick="openImgLightbox('${jsesc(m.image_url)}')">`:'';
+    const audioHtml=m.audio_url?`<audio class="msg-bubble-audio" controls src="${esc(m.audio_url)}" style="max-width:240px;display:block"></audio>`:'';
     const txtHtml=m.text?`<div class="msg-bubble ${isSent?'sent':'received'}">${esc(m.text)}</div>`:'';
     return`<div class="msg-bubble-wrap ${isSent?'sent':'received'}">
       ${imgHtml}${audioHtml}${txtHtml}
@@ -972,7 +972,7 @@ function stopRingtone(){
 function callAvatarHtml(){
   const u=callOtherUser;
   if(!u)return'';
-  return u.avatar?`<img src="${u.avatar}" style="width:100%;height:100%;object-fit:cover">`:esc((u.name||'?')[0].toUpperCase());
+  return u.avatar?`<img src="${esc(u.avatar)}" style="width:100%;height:100%;object-fit:cover">`:esc((u.name||'?')[0].toUpperCase());
 }
 
 function callBtnHtml(bg,onclick,icon,label,big){
