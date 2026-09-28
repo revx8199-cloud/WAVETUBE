@@ -592,6 +592,7 @@ let callVideoOn=false;
 let callHasCamera=true;
 let callScreenSharing=false;
 let callScreenStream=null;
+let callVideoFrameCheck=null;
 
 function subscribeCallChannel(){
   if(!currentUser||callSignalChannel)return;
@@ -619,18 +620,15 @@ function createCallPC(){
     const vEl=document.getElementById('call-remote-video');
     if(vEl&&e.track.kind==='video'){
       vEl.srcObject=e.streams[0];
-      const showVideo=()=>{
-        const av=document.getElementById('call-avatar-wrap');
-        vEl.style.display='block';
-        if(av)av.style.display='none';
-      };
-      const hideVideo=()=>{
-        const av=document.getElementById('call-avatar-wrap');
-        vEl.style.display='none';
-        if(av)av.style.display='flex';
-      };
-      e.track.onmute=hideVideo;e.track.onunmute=showVideo;
-      hideVideo(); // domyślnie ukryte (tło+avatar), dopóki realnie nie napłyną klatki wideo
+      const av=document.getElementById('call-avatar-wrap');
+      vEl.style.display='none';
+      if(av)av.style.display='flex';
+      clearInterval(callVideoFrameCheck);
+      callVideoFrameCheck=setInterval(()=>{
+        const hasFrame=vEl.videoWidth>0&&vEl.videoHeight>0&&!e.track.muted&&e.track.readyState==='live';
+        vEl.style.display=hasFrame?'block':'none';
+        if(av)av.style.display=hasFrame?'none':'flex';
+      },400);
     }
   };
   pc.onconnectionstatechange=()=>{
@@ -909,6 +907,7 @@ async function stopScreenShare(){
 function endCallCleanup(){
   stopRingtone();
   stopTitleFlash();
+  clearInterval(callVideoFrameCheck);callVideoFrameCheck=null;
   if(callScreenStream){callScreenStream.getTracks().forEach(tr=>tr.stop());callScreenStream=null;}
   callScreenSharing=false;
   clearInterval(callTimerInt);callTimerInt=null;
