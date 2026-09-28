@@ -402,3 +402,7 @@ body.blur-mode #main-content,body.blur-mode header,body.blur-mode .sidebar-left{
 @keyframes callBlobMove1{0%,100%{transform:translate(0,0) scale(1)}50%{transform:translate(60px,80px) scale(1.15)}}
 @keyframes callBlobMove2{0%,100%{transform:translate(0,0) scale(1)}50%{transform:translate(-50px,-60px) scale(1.1)}}
 @keyframes callBlobMove3{0%,100%{transform:translate(-50%,-50%) scale(1)}50%{transform:translate(-50%,-60%) scale(1.2)}}
+
+.sc-section{font-size:12px;font-weight:700;color:var(--text-tertiary);text-transform:uppercase;letter-spacing:.5px;margin:18px 0 6px}
+.sc-row{display:flex;justify-content:space-between;align-items:center;gap:16px;padding:9px 0;border-bottom:1px solid var(--border);font-size:14px;color:var(--text-primary)}
+.sc-row kbd{display:inline-block;min-width:26px;text-align:center;background:var(--bg-sunken);border:1px solid var(--border);border-bottom-width:2px;border-radius:6px;padding:3px 8px;font-family:inherit;font-size:12px;font-weight:600;color:var(--text-primary)}

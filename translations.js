@@ -10,7 +10,7 @@ const TRANSLATIONS={
     credits_code_label:'Kod',credits_lead_label:'Prowadzi projekt',vip_since_label:'od',
     banner_crop_title:'Podgląd banera',banner_crop_sub:'Tak będzie wyglądać Twój baner. Przeciągnij zdjęcie żeby ustawić kadr.',
     search_placeholder:'Szukaj filmów...',btn_add_video:'+ Dodaj film',
-    dd_mychannel:'Mój kanał',dd_settings:'Ustawienia',dd_logout:'Wyloguj',
+    dd_mychannel:'Mój kanał',dd_settings:'Ustawienia',dd_shortcuts:'Skróty klawiszowe',shortcuts_title:'⌨️ Skróty klawiszowe',sc_player:'Odtwarzacz wideo',sc_playpause:'Odtwórz / pauza',sc_seek:'Przewiń o 5 sekund',sc_volume:'Głośność +/- 5%',sc_mute:'Wycisz / włącz dźwięk',sc_fullscreen:'Pełny ekran',sc_general:'Ogólne',sc_close:'Zamknij okno / odtwarzacz',sc_lightbox:'Poprzednie / następne zdjęcie w podglądzie',sc_shortcuts:'Pokaż skróty klawiszowe',sc_messages:'Wiadomości',sc_send:'Wyślij wiadomość',sc_newline:'Nowa linia',dd_logout:'Wyloguj',
     btn_subscribe:'Subskrybuj',btn_subscribed:'Subskrybujesz',btn_share:'Udostępnij',
     btn_download:'Pobierz',btn_support:'Wesprzyj autora',btn_report:'Zgłoś',
     comments_label:'Komentarze',comment_placeholder:'Napisz komentarz...',comments_label_zero:'Komentarze (0)',
@@ -108,7 +108,7 @@ const TRANSLATIONS={
     credits_code_label:'Code',credits_lead_label:'Leads the project',vip_since_label:'since',
     banner_crop_title:'Banner preview',banner_crop_sub:'This is how your banner will look. Drag the image to set the crop.',
     search_placeholder:'Search videos...',btn_add_video:'+ Add video',
-    dd_mychannel:'My channel',dd_settings:'Settings',dd_logout:'Sign out',
+    dd_mychannel:'My channel',dd_settings:'Settings',dd_shortcuts:'Keyboard shortcuts',shortcuts_title:'⌨️ Keyboard shortcuts',sc_player:'Video player',sc_playpause:'Play / pause',sc_seek:'Seek 5 seconds',sc_volume:'Volume +/- 5%',sc_mute:'Mute / unmute',sc_fullscreen:'Full screen',sc_general:'General',sc_close:'Close window / player',sc_lightbox:'Previous / next photo in viewer',sc_shortcuts:'Show keyboard shortcuts',sc_messages:'Messages',sc_send:'Send message',sc_newline:'New line',dd_logout:'Sign out',
     btn_subscribe:'Subscribe',btn_subscribed:'Subscribed',btn_share:'Share',
     btn_download:'Download',btn_support:'Support creator',btn_report:'Report',
     comments_label:'Comments',comment_placeholder:'Add a comment...',comments_label_zero:'Comments (0)',
@@ -206,7 +206,7 @@ const TRANSLATIONS={
     credits_code_label:'Код',credits_lead_label:'Руководит проектом',vip_since_label:'с',
     banner_crop_title:'Предпросмотр баннера',banner_crop_sub:'Так будет выглядеть ваш баннер. Перетащите изображение, чтобы задать кадр.',
     search_placeholder:'Поиск видео...',btn_add_video:'+ Добавить видео',
-    dd_mychannel:'Мой канал',dd_settings:'Настройки',dd_logout:'Выйти',
+    dd_mychannel:'Мой канал',dd_settings:'Настройки',dd_shortcuts:'Быстрые клавиши',shortcuts_title:'⌨️ Быстрые клавиши',sc_player:'Видеоплеер',sc_playpause:'Воспроизведение / пауза',sc_seek:'Перемотка на 5 секунд',sc_volume:'Громкость +/- 5%',sc_mute:'Выключить / включить звук',sc_fullscreen:'Полный экран',sc_general:'Общие',sc_close:'Закрыть окно / плеер',sc_lightbox:'Предыдущее / следующее фото',sc_shortcuts:'Показать быстрые клавиши',sc_messages:'Сообщения',sc_send:'Отправить сообщение',sc_newline:'Новая строка',dd_logout:'Выйти',
     btn_subscribe:'Подписаться',btn_subscribed:'Вы подписаны',btn_share:'Поделиться',
     btn_download:'Скачать',btn_support:'Поддержать автора',btn_report:'Пожаловаться',
     comments_label:'Комментарии',comment_placeholder:'Напишите комментарий...',comments_label_zero:'Комментарии (0)',
@@ -359,6 +359,14 @@ async function saveMyCountry(){
   const{error}=await sb.from('profiles').upsert([{id:currentUser.id,country}],{onConflict:'id'});
   if(error){toast('Błąd: '+error.message);return;}
   toast(country?'Kraj zapisany! 🌍':'Kraj usunięty');
+}
+
+function openShortcutsModal(){
+  document.getElementById('shortcuts-modal').classList.add('open');
+  document.getElementById('dropdown')?.classList.remove('open');
+}
+function closeShortcutsModal(){
+  document.getElementById('shortcuts-modal')?.classList.remove('open');
 }
 
 function closeSettingsModal(){

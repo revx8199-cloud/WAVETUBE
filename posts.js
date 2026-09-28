@@ -483,11 +483,13 @@ async function submitPost(){
 
 document.getElementById('pm').addEventListener('click',function(e){if(e.target===this)closeP();});
 document.addEventListener('keydown',e=>{
-  if(e.key==='Escape'){closeP();closeForm();closeEditModal();closeMessages();document.getElementById('add-post-modal').classList.remove('open');closeLightbox();closeStatsPanel();}
+  if(e.key==='Escape'){closeShortcutsModal();closeP();closeForm();closeEditModal();closeMessages();document.getElementById('add-post-modal').classList.remove('open');closeLightbox();closeStatsPanel();}
   if(document.getElementById('post-img-lightbox').classList.contains('open')){
     if(e.key==='ArrowLeft')lightboxNav(-1);
     if(e.key==='ArrowRight')lightboxNav(1);
   }
+  {const tp=['INPUT','TEXTAREA'].includes(document.activeElement?.tagName)||document.activeElement?.isContentEditable;
+   if(e.key==='?'&&!tp){e.preventDefault();openShortcutsModal();}}
   // ── skróty klawiszowe playera (jak na YouTube) — tylko gdy player otwarty i nie piszemy w polu ──
   const pmOpen=document.getElementById('pm').classList.contains('open');
   const typing=['INPUT','TEXTAREA'].includes(document.activeElement?.tagName)||document.activeElement?.isContentEditable;

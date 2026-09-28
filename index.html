@@ -70,6 +70,10 @@
             <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/></svg>
             <span data-i18n="dd_settings">Ustawienia</span>
           </div>
+          <div class="dropdown-item" onclick="openShortcutsModal()">
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M20 5H4c-1.1 0-1.99.9-1.99 2L2 17c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm-9 3h2v2h-2V8zm0 3h2v2h-2v-2zM8 8h2v2H8V8zm0 3h2v2H8v-2zm-1 2H5v-2h2v2zm0-3H5V8h2v2zm9 7H8v-2h8v2zm0-4h-2v-2h2v2zm0-3h-2V8h2v2zm3 3h-2v-2h2v2zm0-3h-2V8h2v2z"/></svg>
+            <span data-i18n="dd_shortcuts">Skróty klawiszowe</span>
+          </div>
           <div class="dropdown-item" id="vip-dropdown-item" onclick="openVipPanel()" style="display:none">
             <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
             <span>Panel VIP</span>
@@ -736,6 +740,28 @@
 </div>
 
 <!-- USTAWIENIA -->
+<div class="fmbg" id="shortcuts-modal" onclick="if(event.target===this)closeShortcutsModal()">
+  <div class="fbox" style="max-width:560px">
+    <h3 data-i18n="shortcuts_title">⌨️ Skróty klawiszowe</h3>
+    <div class="sc-section" data-i18n="sc_player">Odtwarzacz wideo</div>
+    <div class="sc-row"><span data-i18n="sc_playpause">Odtwórz / pauza</span><span><kbd>K</kbd> <kbd>Spacja</kbd></span></div>
+    <div class="sc-row"><span data-i18n="sc_seek">Przewiń o 5 sekund</span><span><kbd>←</kbd> <kbd>→</kbd></span></div>
+    <div class="sc-row"><span data-i18n="sc_volume">Głośność +/- 5%</span><span><kbd>↑</kbd> <kbd>↓</kbd></span></div>
+    <div class="sc-row"><span data-i18n="sc_mute">Wycisz / włącz dźwięk</span><span><kbd>M</kbd></span></div>
+    <div class="sc-row"><span data-i18n="sc_fullscreen">Pełny ekran</span><span><kbd>F</kbd></span></div>
+    <div class="sc-section" data-i18n="sc_general">Ogólne</div>
+    <div class="sc-row"><span data-i18n="sc_close">Zamknij okno / odtwarzacz</span><span><kbd>Esc</kbd></span></div>
+    <div class="sc-row"><span data-i18n="sc_lightbox">Poprzednie / następne zdjęcie w podglądzie</span><span><kbd>←</kbd> <kbd>→</kbd></span></div>
+    <div class="sc-row"><span data-i18n="sc_shortcuts">Pokaż skróty klawiszowe</span><span><kbd>Shift</kbd> + <kbd>?</kbd></span></div>
+    <div class="sc-section" data-i18n="sc_messages">Wiadomości</div>
+    <div class="sc-row"><span data-i18n="sc_send">Wyślij wiadomość</span><span><kbd>Enter</kbd></span></div>
+    <div class="sc-row"><span data-i18n="sc_newline">Nowa linia</span><span><kbd>Shift</kbd> + <kbd>Enter</kbd></span></div>
+    <div style="display:flex;justify-content:flex-end;margin-top:18px">
+      <button onclick="closeShortcutsModal()" data-i18n="btn_close" style="background:#3ea6ff;border:none;color:#0f0f0f;padding:10px 20px;border-radius:8px;cursor:pointer;font-size:13px;font-weight:700">Zamknij</button>
+    </div>
+  </div>
+</div>
+
 <div class="fmbg" id="settings-modal">
   <div class="fbox" style="max-width:720px">
     <h3 data-i18n="settings_title">⚙️ Ustawienia</h3>
