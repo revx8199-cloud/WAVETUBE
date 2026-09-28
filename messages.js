@@ -593,6 +593,8 @@ let callHasCamera=true;
 let callScreenSharing=false;
 let callScreenStream=null;
 let callVideoFrameCheck=null;
+let callRemoteVideoOn=false;
+function sendVideoState(){if(callOtherUser&&callState==='active')sendQuickSignal(callOtherUser.id,{type:'video-state',on:!!(callVideoOn||callScreenSharing)});}
 
 function subscribeCallChannel(){
   if(!currentUser||callSignalChannel)return;
@@ -625,7 +627,7 @@ function createCallPC(){
       if(av)av.style.display='flex';
       clearInterval(callVideoFrameCheck);
       callVideoFrameCheck=setInterval(()=>{
-        const hasFrame=vEl.videoWidth>0&&vEl.videoHeight>0&&!e.track.muted&&e.track.readyState==='live';
+        const hasFrame=callRemoteVideoOn&&vEl.videoWidth>0&&vEl.videoHeight>0&&!e.track.muted&&e.track.readyState==='live';
         vEl.style.display=hasFrame?'block':'none';
         if(av)av.style.display=hasFrame?'none':'flex';
       },400);
@@ -703,6 +705,8 @@ async function handleCallSignal(payload){
   } else if(payload.type==='end'){
     toast(t('call_ended_toast'));
     endCallCleanup();
+  } else if(payload.type==='video-state'){
+    callRemoteVideoOn=!!payload.on;
   } else if(payload.type==='request-offer'){
     if(callState==='calling'&&callLastOfferSDP&&callPeerChannel){
       callPeerChannel.send({type:'broadcast',event:'signal',payload:{type:'offer',sdp:callLastOfferSDP,from:currentUser.id,fromName:getMyDisplayName(),fromAvatar:currentUser.user_metadata?.avatar_url||''}});
@@ -865,6 +869,7 @@ function toggleCallVideo(){
     localEl.srcObject=callVideoOn?callLocalStream:null;
     localEl.style.display=callVideoOn?'block':'none';
   }
+  sendVideoState();
   updateCallUI();
 }
 
@@ -884,6 +889,7 @@ async function toggleScreenShare(){
   await sender.replaceTrack(screenTrack);
   screenTrack.onended=()=>stopScreenShare();
   callScreenSharing=true;
+  sendVideoState();
   const localEl=document.getElementById('call-local-video');
   if(localEl){localEl.srcObject=stream;localEl.style.display='block';}
   updateCallUI();
@@ -893,6 +899,7 @@ async function stopScreenShare(){
   if(!callScreenSharing)return;
   if(callScreenStream){callScreenStream.getTracks().forEach(tr=>tr.stop());callScreenStream=null;}
   callScreenSharing=false;
+  sendVideoState();
   const sender=callPC?callPC.getSenders().find(s=>s.track===null||s.track&&s.track.kind==='video'):null;
   const camTrack=callLocalStream?callLocalStream.getVideoTracks()[0]:null;
   if(sender&&camTrack)await sender.replaceTrack(camTrack);
@@ -907,7 +914,7 @@ async function stopScreenShare(){
 function endCallCleanup(){
   stopRingtone();
   stopTitleFlash();
-  clearInterval(callVideoFrameCheck);callVideoFrameCheck=null;
+  clearInterval(callVideoFrameCheck);callVideoFrameCheck=null;callRemoteVideoOn=false;
   if(callScreenStream){callScreenStream.getTracks().forEach(tr=>tr.stop());callScreenStream=null;}
   callScreenSharing=false;
   clearInterval(callTimerInt);callTimerInt=null;
