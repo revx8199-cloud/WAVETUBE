@@ -133,6 +133,11 @@ function esc(str){
 }
 
 // Bezpieczne wstawianie tekstu użytkownika do onclick="...('${jsesc(x)}')" - zapobiega "wyrwaniu się" z apostrofu
+// Powiadomienia: dozwolone tylko <b>...</b>, reszta zescapowana
+function safeNotifHtml(m){
+  return esc(m).replace(/&lt;b&gt;/g,'<b>').replace(/&lt;\/b&gt;/g,'</b>');
+}
+
 function jsesc(str){
   if(str===null||str===undefined)return'';
   return String(str)
@@ -209,7 +214,7 @@ function updateAuthUI(){
     userArea.style.gap='10px';
     const av=document.getElementById('user-av');
     const meta=currentUser.user_metadata;
-    const frameBorder=myAvatarFrame?`3px solid ${myAvatarFrame}`:'2px solid #cc0000';
+    const frameBorder=myAvatarFrame?`3px solid ${esc(myAvatarFrame)}`:'2px solid #cc0000';
     if(meta&&meta.avatar_url){
       av.innerHTML=`<img src="${esc(meta.avatar_url)}" style="width:34px;height:34px;border-radius:50%;object-fit:cover;border:${frameBorder}">`;
     } else {
@@ -222,7 +227,7 @@ function updateAuthUI(){
     const headerEmail=document.getElementById('dropdown-header-email');
     if(headerAv){
       headerAv.innerHTML=meta&&meta.avatar_url?`<img src="${esc(meta.avatar_url)}">`:esc((dispName[0]||'?').toUpperCase());
-      headerAv.style.border=myAvatarFrame?`3px solid ${myAvatarFrame}`:'';
+      headerAv.style.border=myAvatarFrame?`3px solid ${esc(myAvatarFrame)}`:'';
     }
     if(headerName)headerName.textContent=dispName;
     if(headerEmail)headerEmail.textContent=currentUser.email||'';
@@ -535,13 +540,13 @@ async function adminSetVip(userId,email,makeVip){
 function verifiedBadge(email){
   if(email===ADMIN_EMAIL){
     const badgeColor=adminBadgeColor||'#3ea6ff';
-    return`<span title="Administrator" style="display:inline-flex;align-items:center;gap:3px;margin-left:5px;flex-shrink:0"><span style="display:inline-flex;align-items:center;justify-content:center;background:${badgeColor};border-radius:50%;width:16px;height:16px;flex-shrink:0"><svg viewBox="0 0 24 24" width="10" height="10" fill="#fff"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/></svg></span><span style="font-size:10px;font-weight:800;color:${badgeColor};letter-spacing:.5px">ADMIN</span></span>`;
+    return`<span title="Administrator" style="display:inline-flex;align-items:center;gap:3px;margin-left:5px;flex-shrink:0"><span style="display:inline-flex;align-items:center;justify-content:center;background:${esc(badgeColor)};border-radius:50%;width:16px;height:16px;flex-shrink:0"><svg viewBox="0 0 24 24" width="10" height="10" fill="#fff"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/></svg></span><span style="font-size:10px;font-weight:800;color:${esc(badgeColor)};letter-spacing:.5px">ADMIN</span></span>`;
   }
   if(email&&vipEmailsMap.has(email)){
     const badgeColor=vipEmailsMap.get(email)||'#ffd700';
     const since=vipSinceMap.get(email);
     const sinceTitle=since?` · VIP ${t('vip_since_label')} ${new Date(since).toLocaleDateString(getLang()==='ru'?'ru-RU':getLang()==='en'?'en-US':'pl-PL',{day:'numeric',month:'long',year:'numeric'})}`:'';
-    return`<span title="VIP${sinceTitle}" style="display:inline-flex;align-items:center;gap:3px;margin-left:5px;flex-shrink:0"><span style="display:inline-flex;align-items:center;justify-content:center;background:${badgeColor};border-radius:50%;width:16px;height:16px;flex-shrink:0"><svg viewBox="0 0 24 24" width="10" height="10" fill="#000"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/></svg></span><span style="font-size:10px;font-weight:800;color:${badgeColor};letter-spacing:.5px">VIP</span></span>`;
+    return`<span title="VIP${sinceTitle}" style="display:inline-flex;align-items:center;gap:3px;margin-left:5px;flex-shrink:0"><span style="display:inline-flex;align-items:center;justify-content:center;background:${esc(badgeColor)};border-radius:50%;width:16px;height:16px;flex-shrink:0"><svg viewBox="0 0 24 24" width="10" height="10" fill="#000"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/></svg></span><span style="font-size:10px;font-weight:800;color:${esc(badgeColor)};letter-spacing:.5px">VIP</span></span>`;
   }
   return'';
 }
@@ -791,7 +796,7 @@ function appendVideoCards(list,g){
       ${uav}
       <div class="card-info">
         <h3>${esc(v.title)}</h3>
-        <div class="channel-name" style="${v.user_color?`color:${v.user_color};font-weight:700;`:''}${v.user_font?`font-family:${fontCssFor(v.user_font)};`:''}" onclick="event.stopPropagation();showChannel('${jsesc(v.user_id||'')}','${jsesc(uname)}','${jsesc(v.user_avatar||'')}','${jsesc(v.user_email||'')}')">${esc(uname)}</div>
+        <div class="channel-name" style="${v.user_color?`color:${esc(v.user_color)};font-weight:700;`:''}${v.user_font?`font-family:${fontCssFor(v.user_font)};`:''}" onclick="event.stopPropagation();showChannel('${jsesc(v.user_id||'')}','${jsesc(uname)}','${jsesc(v.user_avatar||'')}','${jsesc(v.user_email||'')}')">${esc(uname)}</div>
         <p>${viewsLabel(v,' wyśw.')} · ${v.likes||0} ${likeIcon()} · ${relativeDate(v.created_at)}</p>
       </div>
     </div>`;
@@ -1051,9 +1056,9 @@ function renderAnnouncementCard(a){
     <div id="ann-comments-${a.id}" style="display:none;margin-top:14px;padding-top:14px;border-top:1px solid var(--border-soft)">
       <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:12px">
         ${comments.map(c=>`<div style="display:flex;gap:8px">
-          ${c.avatar?`<img src="${esc(c.avatar)}" style="width:28px;height:28px;border-radius:50%;object-fit:cover;flex-shrink:0;cursor:pointer${c.avatar_frame?`;border:2px solid ${c.avatar_frame};box-sizing:border-box`:''}" onclick="showChannel('${jsesc(c.user_id||'')}','${jsesc(c.user)}','${jsesc(c.avatar||'')}','')">`:`<div style="width:28px;height:28px;border-radius:50%;background:#cc0000;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0;cursor:pointer" onclick="showChannel('${jsesc(c.user_id||'')}','${jsesc(c.user)}','','')">${(c.user||'?')[0].toUpperCase()}</div>`}
+          ${c.avatar?`<img src="${esc(c.avatar)}" style="width:28px;height:28px;border-radius:50%;object-fit:cover;flex-shrink:0;cursor:pointer${c.avatar_frame?`;border:2px solid ${esc(c.avatar_frame)};box-sizing:border-box`:''}" onclick="showChannel('${jsesc(c.user_id||'')}','${jsesc(c.user)}','${jsesc(c.avatar||'')}','')">`:`<div style="width:28px;height:28px;border-radius:50%;background:#cc0000;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0;cursor:pointer" onclick="showChannel('${jsesc(c.user_id||'')}','${jsesc(c.user)}','','')">${(c.user||'?')[0].toUpperCase()}</div>`}
           <div>
-            <div style="font-size:12px;font-weight:600;cursor:pointer${c.name_color?`;color:${c.name_color}`:''}${c.name_font?`;font-family:${fontCssFor(c.name_font)}`:''}" onclick="showChannel('${jsesc(c.user_id||'')}','${jsesc(c.user)}','${jsesc(c.avatar||'')}','')">${esc(c.user)}</div>
+            <div style="font-size:12px;font-weight:600;cursor:pointer${c.name_color?`;color:${esc(c.name_color)}`:''}${c.name_font?`;font-family:${fontCssFor(c.name_font)}`:''}" onclick="showChannel('${jsesc(c.user_id||'')}','${jsesc(c.user)}','${jsesc(c.avatar||'')}','')">${esc(c.user)}</div>
             <div style="font-size:13px;color:var(--text-secondary)">${esc(c.text)}</div>
           </div>
         </div>`).join('')||'<p style="color:var(--text-tertiary);font-size:12px">Brak komentarzy — bądź pierwszy!</p>'}
@@ -1352,11 +1357,11 @@ function renderC(){
     const displayTime=c.ts?timeAgo(c.ts):(c.time||'');
     return`<div class="citem" id="citem-${i}" style="${isPinned?'background:#1a2a1a;border-radius:8px;padding:8px 8px 4px;margin-bottom:8px':'margin-bottom:16px'}">
       ${isPinned?`<div style="color:#3ea6ff;font-size:11px;margin-bottom:6px;display:flex;align-items:center;gap:4px"><svg viewBox="0 0 24 24" width="12" height="12" fill="currentColor"><path d="M17 4v7l2 3H5l2-3V4h10m0-2H7c-.55 0-1 .45-1 1v1H5v2h1v5.5L4 14v2h7v5h2v-5h7v-2l-2-2.5V6h1V4h-1V3c0-.55-.45-1-1-1z"/></svg> Przypięty komentarz</div>`:''}
-      <div class="cav" style="${c.avatar?'':'background:'+( c.col||colors[i%colors.length])};cursor:pointer;flex-shrink:0${c.avatar_frame?`;border:2px solid ${c.avatar_frame};box-sizing:border-box`:''}" onclick="closeP();showChannel('${jsesc(uid)}','${jsesc(c.user)}','${jsesc(uavatar)}','${jsesc(uemail)}')">${av}</div>
+      <div class="cav" style="${c.avatar?'':'background:'+( c.col||colors[i%colors.length])};cursor:pointer;flex-shrink:0${c.avatar_frame?`;border:2px solid ${esc(c.avatar_frame)};box-sizing:border-box`:''}" onclick="closeP();showChannel('${jsesc(uid)}','${jsesc(c.user)}','${jsesc(uavatar)}','${jsesc(uemail)}')">${av}</div>
       <div class="cbody" style="flex:1;min-width:0">
         <div class="cname" style="display:flex;align-items:center;gap:4px;flex-wrap:wrap;justify-content:space-between;margin-bottom:4px">
           <div style="display:flex;align-items:center;gap:4px;flex-wrap:wrap">
-            <span style="cursor:pointer;font-weight:600;font-size:14px${c.name_color?`;color:${c.name_color}`:''}${c.name_font?`;font-family:${fontCssFor(c.name_font)}`:''}" onclick="closeP();showChannel('${jsesc(uid)}','${jsesc(c.user)}','${jsesc(uavatar)}','${jsesc(uemail)}')">${esc(c.user)}</span>${verifiedBadge(uemail||'')}
+            <span style="cursor:pointer;font-weight:600;font-size:14px${c.name_color?`;color:${esc(c.name_color)}`:''}${c.name_font?`;font-family:${fontCssFor(c.name_font)}`:''}" onclick="closeP();showChannel('${jsesc(uid)}','${jsesc(c.user)}','${jsesc(uavatar)}','${jsesc(uemail)}')">${esc(c.user)}</span>${verifiedBadge(uemail||'')}
             <span style="color:var(--text-secondary);font-weight:400;font-size:11px">${displayTime}${c.edited?' <span style=\"color:var(--text-tertiary)\">(edytowano)</span>':''}</span>
           </div>
           <div style="display:flex;gap:4px;position:relative">
@@ -1425,10 +1430,10 @@ function renderC(){
               const replyIsAuthor=currentUser&&currentUser.id===r.user_id;
               const replyCanDelete=isVideoOwner||replyIsAuthor||isAdmin();
               return`<div style="display:flex;gap:10px;margin-bottom:12px">
-              ${r.avatar?`<img src="${esc(r.avatar)}" style="width:28px;height:28px;border-radius:50%;object-fit:cover;flex-shrink:0${r.avatar_frame?`;border:2px solid ${r.avatar_frame};box-sizing:border-box`:''}">`:`<div style="width:28px;height:28px;border-radius:50%;background:#cc0000;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:var(--text-primary);flex-shrink:0">${(r.user||'?')[0]}</div>`}
+              ${r.avatar?`<img src="${esc(r.avatar)}" style="width:28px;height:28px;border-radius:50%;object-fit:cover;flex-shrink:0${r.avatar_frame?`;border:2px solid ${esc(r.avatar_frame)};box-sizing:border-box`:''}">`:`<div style="width:28px;height:28px;border-radius:50%;background:#cc0000;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:var(--text-primary);flex-shrink:0">${(r.user||'?')[0]}</div>`}
               <div style="flex:1">
                 <div style="font-size:12px;font-weight:600;display:flex;align-items:center;gap:4px;justify-content:space-between">
-                  <span style="display:flex;align-items:center;gap:4px"><span style="${r.name_color?`color:${r.name_color};`:''}${r.name_font?`font-family:${fontCssFor(r.name_font)};`:''}">${esc(r.user)}</span>${verifiedBadge(r.user_email||'')} <span style="color:var(--text-secondary);font-weight:400;font-size:11px">${r.ts?timeAgo(r.ts):(r.time||'')}</span></span>
+                  <span style="display:flex;align-items:center;gap:4px"><span style="${r.name_color?`color:${esc(r.name_color)};`:''}${r.name_font?`font-family:${fontCssFor(r.name_font)};`:''}">${esc(r.user)}</span>${verifiedBadge(r.user_email||'')} <span style="color:var(--text-secondary);font-weight:400;font-size:11px">${r.ts?timeAgo(r.ts):(r.time||'')}</span></span>
                   <span style="display:flex;gap:2px">
                     ${isAdmin()&&!replyIsAuthor&&r.user_id?`<button onclick="event.stopPropagation();toggleMuteMenu('${jsesc(r.user_id)}',this)" title="Wycisz użytkownika" class="cmt-icon-btn" style="width:26px;height:26px;font-size:12px">🔇</button>`:''}
                     ${replyCanDelete?`<button onclick="deleteReply(${i},${ri})" title="Usuń" class="cmt-icon-btn" style="width:26px;height:26px;font-size:12px">🗑</button>`:''}
@@ -1813,7 +1818,7 @@ function renderNotifications(){
     <div class="notif-item${n.read?'':' unread'}" onclick="handleNotifClick('${jsesc(n.id)}','${jsesc(n.sender_id||'')}','${jsesc(n.sender_name||'')}','${jsesc(n.sender_avatar||'')}','${jsesc(n.sender_email||'')}')">
       ${n.avatar?`<img class="notif-av" src="${esc(n.avatar)}">`:`<div class="notif-av-ph" style="background:#cc0000">🔔</div>`}
       <div>
-        <div class="notif-text">${n.message}</div>
+        <div class="notif-text">${safeNotifHtml(n.message)}</div>
         <div class="notif-time">${new Date(n.created_at).toLocaleString('pl-PL',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'})}</div>
       </div>
     </div>`).join('');

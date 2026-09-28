@@ -1573,7 +1573,7 @@ if(adminTab==='users'){
             <input type="color" id="admin-color-inp" value="${current}" style="width:56px;height:56px;border:none;border-radius:10px;cursor:pointer;background:none;padding:0">
             <div>
               <div style="font-size:11px;color:var(--text-tertiary);margin-bottom:4px">Podgląd:</div>
-              <div id="admin-color-preview" style="font-size:16px;font-weight:700;color:${myNameColor||'#fff'};font-family:${fontCssFor(myNameFont)}">${myDisplayName}</div>
+              <div id="admin-color-preview" style="font-size:16px;font-weight:700;color:${esc(myNameColor||'#fff')};font-family:${fontCssFor(myNameFont)}">${myDisplayName}</div>
             </div>
           </div>
           <div style="display:flex;gap:10px">
@@ -1588,7 +1588,7 @@ if(adminTab==='users'){
           <div style="display:flex;flex-direction:column;gap:8px">
             ${FONT_OPTIONS.map(f=>`
               <div onclick="saveMyFont('${jsesc(f.id)}')" style="display:flex;align-items:center;justify-content:space-between;padding:12px 16px;border-radius:10px;cursor:pointer;background:${myNameFont===f.id?'rgba(62,166,255,.15)':'var(--bg-sunken)'};border:1px solid ${myNameFont===f.id?'#3ea6ff':'var(--border)'}">
-                <span style="font-family:${f.css};font-size:16px;color:${myNameColor||'#fff'}">${myDisplayName||f.label}</span>
+                <span style="font-family:${f.css};font-size:16px;color:${esc(myNameColor||'#fff')}">${myDisplayName||f.label}</span>
                 <span style="font-size:11px;color:var(--text-tertiary)">${f.label}${myNameFont===f.id?' ✓':''}</span>
               </div>`).join('')}
           </div>

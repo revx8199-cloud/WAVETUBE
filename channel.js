@@ -279,7 +279,7 @@ function renderVipPanel(){
       <p style="color:var(--text-secondary);font-size:12px;margin-bottom:14px">Kolor Twojej nazwy w komentarzach, na filmach i postach.</p>
       <div style="display:flex;align-items:center;gap:16px;margin-bottom:16px">
         <input type="color" id="vip-color-inp" value="${current}" style="width:56px;height:56px;border:none;border-radius:10px;cursor:pointer;background:none;padding:0">
-        <div id="vip-color-preview" style="font-size:16px;font-weight:700;color:${myNameColor||'#fff'};font-family:${fontCssFor(myNameFont)}">${myDisplayName}</div>
+        <div id="vip-color-preview" style="font-size:16px;font-weight:700;color:${esc(myNameColor||'#fff')};font-family:${fontCssFor(myNameFont)}">${myDisplayName}</div>
       </div>
       <div style="display:flex;gap:10px">
         <button onclick="saveVipColor()" style="background:#ffd700;border:none;color:#000;padding:10px 20px;border-radius:20px;cursor:pointer;font-size:13px;font-weight:700">Zapisz kolor</button>
@@ -292,7 +292,7 @@ function renderVipPanel(){
       <p style="color:var(--text-secondary);font-size:12px;margin-bottom:14px">Kolorowa obwódka wokół Twojego zdjęcia profilowego, widoczna na Twoim kanale.</p>
       <div style="display:flex;align-items:center;gap:16px;margin-bottom:14px">
         <div class="${myAvatarParticles?'avatar-particle-wrap':''}" style="${myAvatarParticles?'margin-top:0':''}">
-          <div style="width:64px;height:64px;border-radius:50%;padding:3px;${myAvatarFrame?`background:${myAvatarFrame}`:'background:transparent'}">
+          <div style="width:64px;height:64px;border-radius:50%;padding:3px;${myAvatarFrame?`background:${esc(myAvatarFrame)}`:'background:transparent'}">
             <div style="width:100%;height:100%;border-radius:50%;overflow:hidden;background:var(--bg-sunken);display:flex;align-items:center;justify-content:center">
               ${meta?.avatar_url?`<img src="${esc(meta.avatar_url)}" style="width:100%;height:100%;object-fit:cover">`:`<span style="font-size:22px;font-weight:700">${(myDisplayName[0]||'?').toUpperCase()}</span>`}
             </div>
@@ -319,7 +319,7 @@ function renderVipPanel(){
     <div>
       <div style="font-size:13px;font-weight:700;color:var(--text-primary);margin-bottom:4px">🖼️ Ramka banera</div>
       <div style="font-size:11px;color:var(--text-tertiary);margin-bottom:10px">Kolorowa obwódka wokół banera kanału</div>
-      <div style="height:60px;border-radius:8px;background:linear-gradient(135deg,#1a1a2e,#16213e);margin-bottom:12px;${myBannerFrame?`border:4px solid ${myBannerFrame};box-sizing:border-box`:''}"></div>
+      <div style="height:60px;border-radius:8px;background:linear-gradient(135deg,#1a1a2e,#16213e);margin-bottom:12px;${myBannerFrame?`border:4px solid ${esc(myBannerFrame)};box-sizing:border-box`:''}"></div>
       <div style="display:flex;flex-wrap:wrap;gap:10px">
         <div onclick="resetBannerFrame()" style="width:34px;height:34px;border-radius:8px;background:var(--bg-sunken);border:2px dashed var(--border);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:14px" title="Brak ramki">${!myBannerFrame?'✓':'✕'}</div>
         ${AVATAR_FRAME_COLORS.map(c=>`<div onclick="saveBannerFrame('${jsesc(c)}')" style="width:34px;height:34px;border-radius:8px;background:${c};cursor:pointer;border:3px solid ${myBannerFrame===c?'#fff':'transparent'};display:flex;align-items:center;justify-content:center">${myBannerFrame===c?'<svg viewBox="0 0 24 24" width="14" height="14"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z" fill="#fff" stroke="#000" stroke-width="1"/></svg>':''}</div>`).join('')}
@@ -332,7 +332,7 @@ function renderVipPanel(){
       <div style="display:flex;flex-direction:column;gap:8px">
         ${FONT_OPTIONS.map(f=>`
           <div onclick="saveVipFont('${jsesc(f.id)}')" style="display:flex;align-items:center;justify-content:space-between;padding:12px 16px;border-radius:10px;cursor:pointer;background:${myNameFont===f.id?'rgba(255,215,0,.12)':'var(--bg-sunken)'};border:1px solid ${myNameFont===f.id?'#ffd700':'var(--border)'}">
-            <span style="font-family:${f.css};font-size:16px;color:${myNameColor||'#fff'}">${myDisplayName||f.label}</span>
+            <span style="font-family:${f.css};font-size:16px;color:${esc(myNameColor||'#fff')}">${myDisplayName||f.label}</span>
             <span style="font-size:11px;color:var(--text-tertiary)">${f.label}${myNameFont===f.id?' ✓':''}</span>
           </div>`).join('')}
       </div>
@@ -723,15 +723,15 @@ async function showChannel(userId,nameIn,avatar,email){
     chAvatarParticleType=profStyle?.avatar_particle_type||'✨';
     chBannerFrame=profStyle?.banner_frame||'';
   }
-  const avFrameStyle=chAvatarFrame?`border:3px solid ${chAvatarFrame};box-sizing:border-box`:'';
+  const avFrameStyle=chAvatarFrame?`border:3px solid ${esc(chAvatarFrame)};box-sizing:border-box`:'';
   const avBlockHtml=chAvatarParticles
     ?`<div class="avatar-particle-wrap"><div class="channel-big-av" style="${avFrameStyle}">${avHtml}</div><span class="av-particle p1">${chAvatarParticleType}</span><span class="av-particle p2">${chAvatarParticleType}</span><span class="av-particle p3">${chAvatarParticleType}</span><span class="av-particle p4">${chAvatarParticleType}</span><span class="av-particle p5">${chAvatarParticleType}</span><span class="av-particle p6">${chAvatarParticleType}</span></div>`
     :`<div class="channel-big-av" style="${avFrameStyle}">${avHtml}</div>`;
   const bannerBg=chBannerUrl?(chBannerUrl.startsWith('url(')?chBannerUrl:'url('+chBannerUrl+')'):'linear-gradient(135deg,#1a1a2e,#16213e)';
-  const bannerFrameStyle=chBannerFrame?`border:4px solid ${chBannerFrame};box-sizing:border-box`:'';
+  const bannerFrameStyle=chBannerFrame?`border:4px solid ${esc(chBannerFrame)};box-sizing:border-box`:'';
   cc.innerHTML=`
     <div style="position:relative">
-      <div id="channel-banner" style="height:230px;background:${bannerBg};background-size:cover;background-position:center;position:relative;${bannerFrameStyle}">
+      <div id="channel-banner" style="height:230px;background:${esc(bannerBg)};background-size:cover;background-position:center;position:relative;${bannerFrameStyle}">
         ${isOwner?`
           <div style="position:absolute;bottom:0;left:0;right:0;background:rgba(0,0,0,0);display:flex;align-items:center;justify-content:center;gap:10px;opacity:0;transition:opacity .2s;height:100%" id="banner-hover-area" onmouseover="this.style.opacity=1;this.style.background='rgba(0,0,0,0.4)'" onmouseout="this.style.opacity=0;this.style.background='rgba(0,0,0,0)'">
             <label style="background:rgba(0,0,0,0.7);color:var(--text-primary);padding:10px 20px;border-radius:24px;cursor:pointer;font-size:14px;font-weight:600;display:flex;align-items:center;gap:8px;border:2px solid rgba(255,255,255,0.3)">
@@ -746,7 +746,7 @@ async function showChannel(userId,nameIn,avatar,email){
     <div class="channel-header">
       ${avBlockHtml}
       <div class="channel-big-info" style="flex:1">
-        <h2 style="margin-bottom:2px;display:flex;align-items:center;${chNameColor?`color:${chNameColor};`:''}${chNameFont?`font-family:${fontCssFor(chNameFont)};`:''}">${esc(name)}${verifiedBadge(email)}</h2>
+        <h2 style="margin-bottom:2px;display:flex;align-items:center;${chNameColor?`color:${esc(chNameColor)};`:''}${chNameFont?`font-family:${fontCssFor(chNameFont)};`:''}">${esc(name)}${verifiedBadge(email)}</h2>
         <div style="font-size:12px;color:var(--text-secondary);margin-bottom:6px">${makeNick(name,email)}</div>
         <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:4px">
           <span style="font-size:13px;color:var(--text-secondary)"><span id="sub-count-big">${subCount}</span> ${t('subscribers_label')} · ${userVideos.length} ${t('videos_label')}</span>
@@ -932,7 +932,7 @@ function showSubscriptions(){
         ?`<img src="${esc(ch.avatar)}" style="width:80px;height:80px;border-radius:50%;object-fit:cover;margin-bottom:12px">`
         :`<div style="width:80px;height:80px;border-radius:50%;background:#cc0000;display:flex;align-items:center;justify-content:center;font-size:28px;font-weight:700;color:var(--text-primary);margin:0 auto 12px">${ch.name[0].toUpperCase()}</div>`
       }
-      <div style="font-size:15px;font-weight:600;margin-bottom:4px;display:flex;align-items:center;justify-content:center;gap:4px">${ch.name}${verifiedBadge(ch.email)}</div>
+      <div style="font-size:15px;font-weight:600;margin-bottom:4px;display:flex;align-items:center;justify-content:center;gap:4px">${esc(ch.name)}${verifiedBadge(ch.email)}</div>
       <div style="font-size:12px;color:var(--text-secondary)">${chVideos.length} filmów</div>
       <button style="margin-top:12px;background:#cc0000;border:none;color:var(--text-primary);padding:6px 20px;border-radius:16px;cursor:pointer;font-size:13px;font-weight:600" onclick="event.stopPropagation();toggleSub('${jsesc(ch.userId)}','${jsesc(ch.name)}')">✓ Subskrybujesz</button>
     </div>`;

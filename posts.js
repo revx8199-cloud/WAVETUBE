@@ -106,12 +106,12 @@ async function renderPosts(){
     posts.forEach((p,i)=>{
       const likedPosts=new Set(JSON.parse(localStorage.getItem('liked_posts')||'[]'));
       const isLiked=likedPosts.has(String(p.id));
-      const uname=p.user_name||p.user||t('anonim');const avHtml=p.user_avatar?`<img class="post-av" src="${esc(p.user_avatar)}" style="${p.user_avatar_frame?`border:2px solid ${p.user_avatar_frame};box-sizing:border-box`:''}">`:`<div class="post-av-ph" style="background:${getUserColor(p.user_email)}">${uname[0]}</div>`;
+      const uname=p.user_name||p.user||t('anonim');const avHtml=p.user_avatar?`<img class="post-av" src="${esc(p.user_avatar)}" style="${p.user_avatar_frame?`border:2px solid ${esc(p.user_avatar_frame)};box-sizing:border-box`:''}">`:`<div class="post-av-ph" style="background:${getUserColor(p.user_email)}">${uname[0]}</div>`;
       html+=`<div class="post-card" id="post-${p.id}">
         <div class="post-header">
           ${avHtml}
           <div>
-            <div class="post-user" style="${p.user_color?`color:${p.user_color};`:''}${p.user_font?`font-family:${fontCssFor(p.user_font)};`:''}">${esc(uname)}${verifiedBadge(p.user_email||'')}</div>
+            <div class="post-user" style="${p.user_color?`color:${esc(p.user_color)};`:''}${p.user_font?`font-family:${fontCssFor(p.user_font)};`:''}">${esc(uname)}${verifiedBadge(p.user_email||'')}</div>
             <div class="post-time">${p.created_at?new Date(p.created_at).toLocaleString('pl-PL',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'}):p.time||''}</div>
           </div>
           <div style="margin-left:auto;display:flex;align-items:center;gap:2px">
@@ -136,7 +136,7 @@ async function renderPosts(){
             const replies=c.replies||[];
             return`
             <div style="display:flex;gap:8px;margin-bottom:10px">
-              ${c.avatar?`<img src="${esc(c.avatar)}" style="width:28px;height:28px;border-radius:50%;object-fit:cover;flex-shrink:0${c.avatar_frame?`;border:2px solid ${c.avatar_frame};box-sizing:border-box`:''}">`:`<div style="width:28px;height:28px;border-radius:50%;background:${c.col||'#cc0000'};display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0">${(c.user||'?')[0]}</div>`}
+              ${c.avatar?`<img src="${esc(c.avatar)}" style="width:28px;height:28px;border-radius:50%;object-fit:cover;flex-shrink:0${c.avatar_frame?`;border:2px solid ${esc(c.avatar_frame)};box-sizing:border-box`:''}">`:`<div style="width:28px;height:28px;border-radius:50%;background:${esc(c.col||'#cc0000')};display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0">${(c.user||'?')[0]}</div>`}
               <div style="flex:1">
                 <div style="font-size:12px;font-weight:600;display:flex;align-items:center">${esc(c.user)}${verifiedBadge(c.email||'')} <span style="color:var(--text-tertiary);font-weight:400;margin-left:6px">${c.time||''}</span></div>
                 <div style="font-size:13px;color:var(--text-secondary)">${esc(c.text)}</div>
