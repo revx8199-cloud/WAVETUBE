@@ -261,9 +261,9 @@ async function saveProfile(user){
     email:user.email||'',
     last_seen_at:new Date().toISOString()
   };
-  if(myDetectedIp)profile.last_ip=myDetectedIp;
   profileCache[user.id]=profile;
   await sb.from('profiles').upsert([profile],{onConflict:'id'});
+  if(myDetectedIp)sb.rpc('set_my_last_ip',{p_ip:myDetectedIp});
 }
 
 let heartbeatInterval=null;
