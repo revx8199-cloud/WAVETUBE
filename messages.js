@@ -594,7 +594,7 @@ let callScreenSharing=false;
 let callScreenStream=null;
 let callVideoFrameCheck=null;
 let callRemoteVideoOn=false;
-function sendVideoState(){if(callOtherUser&&callState==='active')sendQuickSignal(callOtherUser.id,{type:'video-state',on:!!(callVideoOn||callScreenSharing)});}
+function sendVideoState(){if(callPeerChannel&&callOtherUser)callPeerChannel.send({type:'broadcast',event:'signal',payload:{type:'video-state',on:!!(callVideoOn||callScreenSharing)}});}
 
 function subscribeCallChannel(){
   if(!currentUser||callSignalChannel)return;
@@ -627,6 +627,7 @@ function createCallPC(){
       if(av)av.style.display='flex';
       clearInterval(callVideoFrameCheck);
       callVideoFrameCheck=setInterval(()=>{
+        if((callVideoOn||callScreenSharing)&&(Date.now()%3000<400))sendVideoState();
         const hasFrame=callRemoteVideoOn&&vEl.videoWidth>0&&vEl.videoHeight>0&&!e.track.muted&&e.track.readyState==='live';
         vEl.style.display=hasFrame?'block':'none';
         if(av)av.style.display=hasFrame?'none':'flex';
