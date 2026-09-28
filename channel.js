@@ -442,7 +442,7 @@ let vipBadgeColor='';
 let adminBadgeColor='';
 
 async function loadVipEmails(){
-  const{data}=await sb.from('profiles').select('email,vip_badge_color,vip_since').eq('is_vip',true);
+  const{data}=await sb.rpc('get_vip_badges');
   vipEmailsMap=new Map((data||[]).map(p=>[p.email,p.vip_badge_color||'#ffd700']));
   vipSinceMap=new Map((data||[]).map(p=>[p.email,p.vip_since]).filter(([,s])=>s));
   vipBadgeColor=currentUser?(vipEmailsMap.get(currentUser.email)||'#ffd700'):'';
@@ -453,8 +453,8 @@ async function loadVipEmails(){
 }
 
 async function loadAdminBadgeColor(){
-  const{data}=await sb.from('profiles').select('vip_badge_color').eq('email',ADMIN_EMAIL).single();
-  adminBadgeColor=data?.vip_badge_color||'#3ea6ff';
+  const{data}=await sb.rpc('get_admin_badge_color');
+  adminBadgeColor=data||'#3ea6ff';
 }
 
 function getMyDisplayName(){
@@ -675,7 +675,7 @@ async function showChannel(userId,nameIn,avatar,email){
     userId=null;
   }
   if(!userId&&email){
-    const{data:profByEmail}=await sb.from('profiles').select('id').eq('email',email).maybeSingle();
+    const profByEmail=await profileIdByEmail(email);
     if(profByEmail?.id)userId=profByEmail.id;
   }
   // Zawsze bierzemy aktualny nick/avatar z profiles (jeśli istnieje) —
@@ -812,7 +812,7 @@ function showMyChannel(){
 async function toggleSub(key,name){
   if(!currentUser){toast('Zaloguj się żeby subskrybować!');return;}
   if(key&&key.includes('@')){
-    const{data:profByEmail}=await sb.from('profiles').select('id').eq('email',key).maybeSingle();
+    const profByEmail=await profileIdByEmail(key);
     if(profByEmail?.id)key=profByEmail.id;
   }
   const isSub=subscribedSet.has(key);

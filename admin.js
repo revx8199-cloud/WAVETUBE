@@ -72,7 +72,8 @@ function renderOnlineUsersList(){
 async function renderActivityList(){
   const body=document.getElementById('admin-panel-body');
   body.innerHTML='<p style="color:var(--text-tertiary);padding:30px 20px;text-align:center">Ładowanie...</p>';
-  const{data,error}=await sb.from('profiles').select('id,name,email,avatar,last_seen_at').order('last_seen_at',{ascending:false,nullsFirst:false}).limit(200);
+  const{data,error}=await sb.from('profiles').select('id,name,avatar,last_seen_at').order('last_seen_at',{ascending:false,nullsFirst:false}).limit(200);
+  if(data){const{data:em}=await sb.rpc('admin_list_profile_emails');const emMap={};(em||[]).forEach(r=>{emMap[r.id]=r.email;});data.forEach(u=>{u.email=emMap[u.id]||'';});}
   if(error){body.innerHTML=`<p style="color:#ff6b6b;padding:30px 20px;text-align:center">Błąd: ${error.message}</p>`;return;}
   if(!data||!data.length){body.innerHTML='<p style="color:var(--text-tertiary);padding:30px 20px;text-align:center">Brak danych</p>';return;}
   body.innerHTML=data.map(u=>{
@@ -1359,7 +1360,7 @@ async function runConsoleCommand(raw){
   }
   else if(base==='stats'){
     consoleLog('Ładowanie statystyk...');
-    const{count:userCount}=await sb.from('profiles').select('*',{count:'exact',head:true});
+    const{count:userCount}=await sb.from('profiles').select('id',{count:'exact',head:true});
     const{count:reportCount}=await sb.from('reports').select('*',{count:'exact',head:true});
     consoleLog(`👥 Użytkownicy: ${userCount||0}`);
     consoleLog(`🎬 Filmy: ${videos.length}`);
@@ -1368,7 +1369,7 @@ async function runConsoleCommand(raw){
   else if(base==='ban'||base==='unban'||base==='mute'||base==='unmute'||base==='vip'||base==='unvip'){
     const email=parts[1];
     if(!email){consoleLog('Podaj e-mail, np: ban jan@gmail.com 24','#ff6b6b');return;}
-    const{data:prof}=await sb.from('profiles').select('id').eq('email',email).single();
+    const prof=await profileIdByEmail(email);
     if(!prof){consoleLog('Nie znaleziono użytkownika o tym e-mailu','#ff6b6b');return;}
     if(base==='ban'){
       const hours=parseInt(parts[2])||0;
@@ -1511,10 +1512,12 @@ if(adminTab==='users'){
   body.innerHTML='<p style="color:var(--text-tertiary);padding:20px;text-align:center">Ładowanie użytkowników...</p>';
     const usersMap={};
     videos.forEach(v=>{if(v.user_id)usersMap[v.user_id]={id:v.user_id,name:getUserName(v),email:v.user_email||'',avatar:v.user_avatar||'',is_vip:false};});
-    const{data:profs}=await sb.from('profiles').select('id,name,avatar,email,created_at,name_color,name_font,vip_badge_color,is_vip,description,country,last_seen_at,banner_url,allow_messages,avatar_frame,vip_since,avatar_particles,allow_calls,avatar_particle_type,banner_frame');
+    const{data:profs}=await sb.from('profiles').select('id,name,avatar,created_at,name_color,name_font,vip_badge_color,is_vip,description,country,last_seen_at,banner_url,allow_messages,avatar_frame,vip_since,avatar_particles,allow_calls,avatar_particle_type,banner_frame');
     const{data:ips}=await sb.rpc('admin_get_user_ips');
+    const{data:emRows}=await sb.rpc('admin_list_profile_emails');
+    const emMap2={};(emRows||[]).forEach(r=>{emMap2[r.id]=r.email;});
     const ipMap={};if(ips)ips.forEach(r=>{ipMap[r.id]=r.last_ip;});
-    if(profs)profs.forEach(p=>{if(p.id)usersMap[p.id]={id:p.id,name:p.name||'Użytkownik',email:p.email||'',avatar:p.avatar||'',is_vip:!!p.is_vip,last_ip:ipMap[p.id]||''};});
+    if(profs)profs.forEach(p=>{if(p.id)usersMap[p.id]={id:p.id,name:p.name||'Użytkownik',email:emMap2[p.id]||'',avatar:p.avatar||'',is_vip:!!p.is_vip,last_ip:ipMap[p.id]||''};});
     const{data:bans}=await sb.from('banned_users').select('*');
     const banMap={};
     if(bans)bans.forEach(b=>{if(!b.expires_at||new Date(b.expires_at)>new Date())banMap[b.user_id]=b;});

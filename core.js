@@ -255,6 +255,13 @@ function updateAuthUI(){
 // ── PROFILES ─────────────────────────────────────────────────────────────────
 const profileCache={};
 
+// e-mail nie jest już publicznie czytelny w tabeli profiles - wyszukiwanie id po e-mailu idzie przez RPC
+async function profileIdByEmail(email){
+  if(!email)return null;
+  const{data}=await sb.rpc('profile_id_by_email',{p_email:email});
+  return data?{id:data}:null;
+}
+
 async function saveProfile(user){
   if(!user)return;
   const meta=user.user_metadata;
