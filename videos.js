@@ -549,7 +549,7 @@ async function submitForm(){
     comments_enabled:document.getElementById('fcomments').checked,
     likes_enabled:document.getElementById('flikes').checked,
     is_short:document.getElementById('fshort').checked,
-    tags:document.getElementById('ftags').value.trim().split(',').map(t=>t.trim()).filter(Boolean),
+    tags:document.getElementById('ftags').value.trim().split(',').map(t=>t.trim().slice(0,25)).filter(Boolean).slice(0,15),
     premiere:document.getElementById('fpremiere').value||null,
     language:document.getElementById('flang').value,
     license:document.getElementById('flicense').value,
@@ -622,7 +622,7 @@ async function submitEdit(){
     thumb:document.getElementById('edit-thumb').value.trim(),
     dur:document.getElementById('edit-dur').value.trim(),
     category:document.getElementById('edit-cat').value,
-    tags:document.getElementById('edit-tags').value.trim().split(',').map(t=>t.trim()).filter(Boolean),
+    tags:document.getElementById('edit-tags').value.trim().split(',').map(t=>t.trim().slice(0,25)).filter(Boolean).slice(0,15),
     comments_enabled:document.getElementById('edit-comments').checked,
     likes_enabled:document.getElementById('edit-likes').checked,
   };

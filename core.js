@@ -1653,7 +1653,7 @@ async function editDesc(key){
     const{data}=await sb.from('profiles').select('description').eq('id',key).single();
     if(data&&data.description)current=data.description;
   }
-  wrap.innerHTML=`<textarea id="desc-inp" style="width:100%;background:var(--bg-card);border:1px solid #444;border-radius:8px;color:var(--text-primary);padding:8px;font-size:13px;resize:none;outline:none;margin-bottom:6px" rows="2" placeholder="${t('desc_placeholder')}">${current}</textarea>
+  wrap.innerHTML=`<textarea id="desc-inp" maxlength="1000" style="width:100%;background:var(--bg-card);border:1px solid #444;border-radius:8px;color:var(--text-primary);padding:8px;font-size:13px;resize:none;outline:none;margin-bottom:6px" rows="2" placeholder="${t('desc_placeholder')}">${current}</textarea>
   <div style="display:flex;gap:8px">
     <button onclick="saveDesc('${jsesc(key)}')" style="background:#cc0000;border:none;color:var(--text-primary);padding:6px 14px;border-radius:16px;cursor:pointer;font-size:12px;font-weight:600">${t('btn_save')}</button>
     <button onclick="showMyChannel()" style="background:var(--border-soft);border:none;color:var(--text-primary);padding:6px 14px;border-radius:16px;cursor:pointer;font-size:12px">${t('btn_cancel')}</button>

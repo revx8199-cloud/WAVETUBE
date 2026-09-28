@@ -352,7 +352,7 @@
 
       <div class="field">
         <label data-i18n="form_tags_label">Tagi (opcjonalnie)</label>
-        <input type="text" id="ftags" placeholder="np. gaming, vlog, muzyka (oddziel przecinkami)" data-i18n-placeholder="form_tags_ph">
+        <input type="text" id="ftags" maxlength="200" placeholder="np. gaming, vlog, muzyka (oddziel przecinkami)" data-i18n-placeholder="form_tags_ph">
         <div class="hint" data-i18n="form_tags_hint">Tagi pomagają ludziom znaleźć Twój film</div>
       </div>
     </div>
@@ -560,7 +560,7 @@
     </div>
     <div class="field">
       <label>Opis</label>
-      <textarea id="edit-desc" style="width:100%;background:var(--bg-sunken);border:1px solid var(--border);border-radius:8px;color:var(--text-primary);padding:10px 14px;font-size:14px;outline:none;resize:none;height:80px" placeholder="Opis..."></textarea>
+      <textarea id="edit-desc" maxlength="5000" style="width:100%;background:var(--bg-sunken);border:1px solid var(--border);border-radius:8px;color:var(--text-primary);padding:10px 14px;font-size:14px;outline:none;resize:none;height:80px" placeholder="Opis..."></textarea>
     </div>
     <div class="field">
       <label>Miniaturka (URL)</label>
@@ -586,7 +586,7 @@
     </div>
     <div class="field">
       <label>Tagi</label>
-      <input type="text" id="edit-tags" placeholder="np. gaming, vlog (oddziel przecinkami)">
+      <input type="text" id="edit-tags" maxlength="200" placeholder="np. gaming, vlog (oddziel przecinkami)">
     </div>
     <div class="field">
       <label style="display:flex;align-items:center;gap:10px;cursor:pointer">
