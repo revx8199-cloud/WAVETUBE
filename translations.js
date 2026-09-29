@@ -304,22 +304,24 @@ const TERMS_CONTENT={
 <h4>2. Konto</h4>
 <p>Logujesz się przez konto Google. Odpowiadasz za wszystko, co dzieje się na Twoim koncie i za jego bezpieczeństwo.</p>
 <h4>3. Treści i zachowanie</h4>
-<p>Zakazane jest publikowanie treści: niezgodnych z prawem, nawołujących do nienawiści lub przemocy, o charakterze pornograficznym lub seksualizującym osoby niepełnoletnie, naruszających prawa autorskie, będących spamem lub reklamą bez zgody administratora, oraz podszywania się pod inne osoby. Dotyczy to filmów, postów, komentarzy, wiadomości oraz treści przesyłanych podczas rozmów (w tym udostępniania ekranu).</p>
-<h4>4. Szacunek do twórcy i administracji</h4>
+<p>Zakazane jest publikowanie treści: niezgodnych z prawem, nawołujących do nienawiści lub przemocy, o charakterze pornograficznym lub seksualizującym osoby niepełnoletnie, naruszających prawa autorskie, będących spamem, oraz podszywania się pod inne osoby. Dotyczy to filmów, postów, komentarzy, wiadomości oraz treści przesyłanych podczas rozmów (w tym udostępniania ekranu).</p>
+<h4>4. Reklama i promocja</h4>
+<p>Zabronione jest reklamowanie produktów, usług lub innych stron i kanałów w postach, komentarzach oraz wiadomościach bez zgody administratora. Dozwolone są natomiast reklamy i lokowanie produktu w samych filmach użytkowników (tak jak na YouTube) — to leży w gestii twórcy filmu.</p>
+<h4>5. Szacunek do twórcy i administracji</h4>
 <p>Zabronione jest wyzywanie, obrażanie i nękanie twórcy, administratorów oraz osób pracujących nad projektem. Dozwolona jest normalna, rzeczowa krytyka aplikacji i jej działania — bez wyzwisk, agresji i pomówień.</p>
-<h4>5. Moderacja</h4>
+<h4>6. Moderacja</h4>
 <p>Administrator może usuwać treści naruszające regulamin oraz nakładać bany lub wyciszenia na konta, które go łamią — czasowo lub na stałe, bez wcześniejszego ostrzeżenia w przypadku poważnych naruszeń.</p>
-<h4>6. Zgłoszenia</h4>
+<h4>7. Zgłoszenia</h4>
 <p>Możesz zgłaszać posty i inne treści naruszające regulamin przy użyciu funkcji zgłoszeń w aplikacji. Nadużywanie funkcji zgłoszeń (fałszywe zgłoszenia) samo w sobie może skutkować sankcjami.</p>
-<h4>7. Panel VIP</h4>
+<h4>8. Panel VIP</h4>
 <p>Funkcje VIP są dodatkiem do standardowego konta i nie zwalniają z przestrzegania niniejszego regulaminu.</p>
-<h4>8. Prywatność i dane osobowe</h4>
+<h4>9. Prywatność i dane osobowe</h4>
 <p>Twój adres e-mail oraz inne dane osobowe (w tym adres IP) są widoczne wyłącznie dla administratora — pozostali użytkownicy ich nie widzą. Przetwarzamy dane niezbędne do działania aplikacji (profil, treści, które publikujesz, adres IP dla celów bezpieczeństwa).</p>
-<h4>9. Odpowiedzialność</h4>
+<h4>10. Odpowiedzialność</h4>
 <p>Aplikacja dostarczana jest "tak jak jest". Administrator nie ponosi odpowiedzialności za treści publikowane przez użytkowników ani za przerwy w działaniu serwisu.</p>
-<h4>10. Wiek</h4>
+<h4>11. Wiek</h4>
 <p>Z aplikacji mogą korzystać osoby, które ukończyły 13 lat. Jeśli nie spełniasz tego wymogu, nie zakładaj konta.</p>
-<h4>11. Kontakt</h4>
+<h4>12. Kontakt</h4>
 <p>W sprawach regulaminu, zgłoszeń lub odwołań od bana skontaktuj się z administratorem przez wiadomości w aplikacji.</p>
 `,
   en:`<h4>1. General provisions</h4>
@@ -327,22 +329,24 @@ const TERMS_CONTENT={
 <h4>2. Account</h4>
 <p>You sign in with a Google account. You are responsible for everything that happens on your account and for keeping it secure.</p>
 <h4>3. Content and behavior</h4>
-<p>It is forbidden to publish content that is: illegal, inciting hatred or violence, pornographic or sexualizing minors, infringing copyright, spam or advertising without the administrator’s consent, or impersonating another person. This applies to videos, posts, comments, messages, and content shared during calls (including screen sharing).</p>
-<h4>4. Respect for the creator and administration</h4>
+<p>It is forbidden to publish content that is: illegal, inciting hatred or violence, pornographic or sexualizing minors, infringing copyright, spam, or impersonating another person. This applies to videos, posts, comments, messages, and content shared during calls (including screen sharing).</p>
+<h4>4. Advertising and promotion</h4>
+<p>Advertising products, services, or other sites/channels in posts, comments, or messages without the administrator’s consent is forbidden. However, ads and product placement within the app's users’ own videos (as on YouTube) are allowed — that is up to the video creator.</p>
+<h4>5. Respect for the creator and administration</h4>
 <p>Insulting, abusing, or harassing the creator, administrators, or anyone working on the project is forbidden. Normal, fact-based criticism of the app and how it works is allowed — without insults, aggression, or defamation.</p>
-<h4>5. Moderation</h4>
+<h4>6. Moderation</h4>
 <p>The administrator may remove content that violates these rules and impose bans or mutes on accounts that break them — temporarily or permanently, without prior warning in case of serious violations.</p>
-<h4>6. Reports</h4>
+<h4>7. Reports</h4>
 <p>You can report posts and other content that violates these rules using the report feature in the app. Abusing the report feature (false reports) may itself result in sanctions.</p>
-<h4>7. VIP panel</h4>
+<h4>8. VIP panel</h4>
 <p>VIP features are an addition to a standard account and do not exempt you from following these rules.</p>
-<h4>8. Privacy and personal data</h4>
+<h4>9. Privacy and personal data</h4>
 <p>Your email address and other personal data (including your IP address) are visible only to the administrator — other users cannot see them. We process data necessary for the app to work (profile, content you publish, IP address for security purposes).</p>
-<h4>9. Liability</h4>
+<h4>10. Liability</h4>
 <p>The app is provided "as is". The administrator is not responsible for content published by users or for service interruptions.</p>
-<h4>10. Age</h4>
+<h4>11. Age</h4>
 <p>The app may be used by people aged 13 and older. If you do not meet this requirement, do not create an account.</p>
-<h4>11. Contact</h4>
+<h4>12. Contact</h4>
 <p>For questions about these rules, reports, or ban appeals, contact the administrator via messages in the app.</p>
 `,
   ru:`<h4>1. Общие положения</h4>
@@ -350,22 +354,24 @@ const TERMS_CONTENT={
 <h4>2. Аккаунт</h4>
 <p>Вход осуществляется через аккаунт Google. Вы несёте ответственность за всё, что происходит на вашем аккаунте, и за его безопасность.</p>
 <h4>3. Контент и поведение</h4>
-<p>Запрещено публиковать контент: незаконный, разжигающий ненависть или насилие, порнографический или сексуализирующий несовершеннолетних, нарушающий авторские права, являющийся спамом или рекламой без согласия администратора, а также выдавать себя за другого человека. Это касается видео, постов, комментариев, сообщений и контента во время звонков (включая демонстрацию экрана).</p>
-<h4>4. Уважение к автору и администрации</h4>
+<p>Запрещено публиковать контент: незаконный, разжигающий ненависть или насилие, порнографический или сексуализирующий несовершеннолетних, нарушающий авторские права, являющийся спамом, а также выдавать себя за другого человека. Это касается видео, постов, комментариев, сообщений и контента во время звонков (включая демонстрацию экрана).</p>
+<h4>4. Реклама и продвижение</h4>
+<p>Запрещена реклама товаров, услуг или других сайтов и каналов в постах, комментариях и сообщениях без согласия администратора. При этом реклама и размещение продукта в самих видео пользователей (как на YouTube) разрешены — это на усмотрение автора видео.</p>
+<h4>5. Уважение к автору и администрации</h4>
 <p>Запрещено оскорблять, унижать и травить автора, администраторов и людей, работающих над проектом. Разрешена обычная, обоснованная критика приложения и его работы — без оскорблений, агрессии и клеветы.</p>
-<h4>5. Модерация</h4>
+<h4>6. Модерация</h4>
 <p>Администратор может удалять контент, нарушающий правила, а также блокировать или временно ограничивать аккаунты, которые их нарушают — на время или навсегда, без предварительного предупреждения в случае серьёзных нарушений.</p>
-<h4>6. Жалобы</h4>
+<h4>7. Жалобы</h4>
 <p>Вы можете жаловаться на посты и другой контент, нарушающий правила, с помощью функции жалоб в приложении. Злоупотребление функцией жалоб (ложные жалобы) само по себе может привести к санкциям.</p>
-<h4>7. VIP-панель</h4>
+<h4>8. VIP-панель</h4>
 <p>Функции VIP являются дополнением к обычному аккаунту и не освобождают от соблюдения настоящих правил.</p>
-<h4>8. Конфиденциальность и личные данные</h4>
+<h4>9. Конфиденциальность и личные данные</h4>
 <p>Ваш адрес электронной почты и другие личные данные (включая IP-адрес) видны только администратору — остальные пользователи их не видят. Мы обрабатываем данные, необходимые для работы приложения (профиль, публикуемый контент, IP-адрес в целях безопасности).</p>
-<h4>9. Ответственность</h4>
+<h4>10. Ответственность</h4>
 <p>Приложение предоставляется «как есть». Администратор не несёт ответственности за контент, публикуемый пользователями, или за перебои в работе сервиса.</p>
-<h4>10. Возраст</h4>
+<h4>11. Возраст</h4>
 <p>Приложением могут пользоваться лица старше 13 лет. Если вы не соответствуете этому требованию, не создавайте аккаунт.</p>
-<h4>11. Контакты</h4>
+<h4>12. Контакты</h4>
 <p>По вопросам правил, жалоб или обжалования бана обращайтесь к администратору через сообщения в приложении.</p>
 `
 };
