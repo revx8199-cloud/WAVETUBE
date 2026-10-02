@@ -176,17 +176,19 @@ async function openStatsPanel(){
   const postLikes=(ownPosts||[]).reduce((s,p)=>s+(p.likes||0),0);
   const postComments=(ownPosts||[]).reduce((s,p)=>s+((p.comments||[]).length),0);
 
+  const statsLocale={pl:'pl-PL',en:'en-US',ru:'ru-RU'}[getLang()]||'en-US';
+
   const topVideos=[...ownVideos].sort((a,b)=>(b.views||0)-(a.views||0)).slice(0,8)
-    .map(v=>({label:v.title||'Bez tytułu',value:v.views||0}));
+    .map(v=>({label:v.title||t('stats_no_title'),value:v.views||0}));
 
   const catMap={};
-  ownVideos.forEach(v=>{const c=v.category||'Bez kategorii';catMap[c]=(catMap[c]||0)+(v.views||0);});
+  ownVideos.forEach(v=>{const c=v.category||t('stats_no_category');catMap[c]=(catMap[c]||0)+(v.views||0);});
   const catData=Object.entries(catMap).sort((a,b)=>b[1]-a[1]).map(([label,value])=>({label,value}));
 
   const monthMap={};
   ownVideos.forEach(v=>{
     const d=new Date(v.created_at||Date.now());
-    const key=d.toLocaleDateString('pl-PL',{month:'short',year:'2-digit'});
+    const key=d.toLocaleDateString(statsLocale,{month:'short',year:'2-digit'});
     monthMap[key]=(monthMap[key]||0)+1;
   });
   const uploadPoints=Object.entries(monthMap).map(([label,y])=>({label,y}));
@@ -195,58 +197,58 @@ async function openStatsPanel(){
   const subMonthMap={};
   (subs||[]).forEach(s=>{
     const d=new Date(s.created_at);
-    const key=d.toLocaleDateString('pl-PL',{month:'short',year:'2-digit'});
+    const key=d.toLocaleDateString(statsLocale,{month:'short',year:'2-digit'});
     subMonthMap[key]=(subMonthMap[key]||0)+1;
   });
   const subPoints=Object.entries(subMonthMap).map(([label,c])=>{running+=c;return{label,y:running};});
 
   body.innerHTML=`
     <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:10px;margin-bottom:14px">
-      ${statCard('👁️','Wyświetlenia',totalViews)}
-      ${statCard(likeIcon(),'Polubienia',totalLikes)}
-      ${statCard('🔔','Subskrybenci',subCount)}
-      ${statCard('🎬','Filmy',ownVideos.length)}
-      ${statCard('💬','Komentarze',totalComments)}
+      ${statCard('👁️',t('stats_views'),totalViews)}
+      ${statCard(likeIcon(),t('stats_likes'),totalLikes)}
+      ${statCard('🔔',t('stats_subs'),subCount)}
+      ${statCard('🎬',t('stats_videos'),ownVideos.length)}
+      ${statCard('💬',t('stats_comments'),totalComments)}
     </div>
     <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:10px;margin-bottom:26px">
-      ${statCard('📊','Śr. wyświetleń/film',avgViews)}
-      ${statCard('🔥','Zaangażowanie',engagement+'%')}
-      ${statCard('👎','Dislajki',totalDislikes)}
-      ${statCard('💾','Zapisano',savedCount)}
-      ${statCard('⏰','Obejrzę później',wlCount)}
+      ${statCard('📊',t('stats_avg_views'),avgViews)}
+      ${statCard('🔥',t('stats_engagement'),engagement+'%')}
+      ${statCard('👎',t('stats_dislikes'),totalDislikes)}
+      ${statCard('💾',t('stats_saved'),savedCount)}
+      ${statCard('⏰',t('stats_watchlater'),wlCount)}
     </div>
 
     <div style="margin-bottom:24px">
-      <div style="font-size:13px;font-weight:700;margin-bottom:10px">📈 Wzrost subskrybentów (skumulowany)</div>
+      <div style="font-size:13px;font-weight:700;margin-bottom:10px">${t('stats_sub_growth')}</div>
       ${svgLineChart(subPoints)}
     </div>
 
     <div style="margin-bottom:24px">
-      <div style="font-size:13px;font-weight:700;margin-bottom:10px">🏆 Najpopularniejsze filmy</div>
-      ${topVideos.length?hBarChart(topVideos):'<div style="color:var(--text-tertiary);font-size:12px">Brak filmów</div>'}
+      <div style="font-size:13px;font-weight:700;margin-bottom:10px">${t('stats_top_videos')}</div>
+      ${topVideos.length?hBarChart(topVideos):`<div style="color:var(--text-tertiary);font-size:12px">${t('stats_no_videos')}</div>`}
     </div>
 
     <div style="margin-bottom:24px">
-      <div style="font-size:13px;font-weight:700;margin-bottom:10px">🎞️ Filmy vs Shorts</div>
-      ${hBarChart([{label:`🎬 Filmy (${longCount})`,value:longViews},{label:`📱 Shorts (${shortsCount})`,value:shortsViews}],{color:'#a78bfa'})}
+      <div style="font-size:13px;font-weight:700;margin-bottom:10px">${t('stats_longs_vs_shorts')}</div>
+      ${hBarChart([{label:`🎬 ${t('stats_videos')} (${longCount})`,value:longViews},{label:`📱 Shorts (${shortsCount})`,value:shortsViews}],{color:'#a78bfa'})}
     </div>
 
     <div style="margin-bottom:24px">
-      <div style="font-size:13px;font-weight:700;margin-bottom:10px">📂 Wyświetlenia wg kategorii</div>
-      ${catData.length?hBarChart(catData,{color:'#3ea6ff'}):'<div style="color:var(--text-tertiary);font-size:12px">Brak danych</div>'}
+      <div style="font-size:13px;font-weight:700;margin-bottom:10px">${t('stats_by_category')}</div>
+      ${catData.length?hBarChart(catData,{color:'#3ea6ff'}):`<div style="color:var(--text-tertiary);font-size:12px">${t('stats_no_data')}</div>`}
     </div>
 
     <div style="margin-bottom:24px">
-      <div style="font-size:13px;font-weight:700;margin-bottom:10px">🗓️ Publikacje wg miesiąca</div>
-      ${uploadPoints.length?hBarChart(uploadPoints.map(p=>({label:p.label,value:p.y})),{color:'#4ade80'}):'<div style="color:var(--text-tertiary);font-size:12px">Brak danych</div>'}
+      <div style="font-size:13px;font-weight:700;margin-bottom:10px">${t('stats_by_month')}</div>
+      ${uploadPoints.length?hBarChart(uploadPoints.map(p=>({label:p.label,value:p.y})),{color:'#4ade80'}):`<div style="color:var(--text-tertiary);font-size:12px">${t('stats_no_data')}</div>`}
     </div>
 
     <div style="padding-top:20px;border-top:1px solid var(--border)">
-      <div style="font-size:13px;font-weight:700;margin-bottom:10px">📝 Posty</div>
+      <div style="font-size:13px;font-weight:700;margin-bottom:10px">${t('stats_posts_section')}</div>
       <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:10px">
-        ${statCard('📝','Posty',postCount)}
-        ${statCard(likeIcon(),'Polubienia postów',postLikes)}
-        ${statCard('💬','Komentarze pod postami',postComments)}
+        ${statCard('📝',t('stats_posts'),postCount)}
+        ${statCard(likeIcon(),t('stats_post_likes'),postLikes)}
+        ${statCard('💬',t('stats_post_comments'),postComments)}
       </div>
     </div>
   `;
