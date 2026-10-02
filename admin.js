@@ -1483,7 +1483,7 @@ async function logAdminAction(action,details){
 
 async function renderAdminPanel(){
   const body=document.getElementById('admin-panel-body');
-  ['videos','users','online','activity','trash','bots','reports','color','announce','logs'].forEach(tab=>{
+  ['videos','users','vip','online','activity','trash','bots','reports','color','announce','logs'].forEach(tab=>{
     const el=document.getElementById('admin-tab-'+tab);
     if(el)el.classList.toggle('active',adminTab===tab);
   });
@@ -1523,6 +1523,29 @@ if(adminTab==='users'){
     if(bans)bans.forEach(b=>{if(!b.expires_at||new Date(b.expires_at)>new Date())banMap[b.user_id]=b;});
     adminUsersCache=Object.values(usersMap).filter(u=>u.email!==ADMIN_EMAIL);
     renderAdminUsersList(banMap);
+  }
+
+  if(adminTab==='vip'){
+    body.innerHTML='<p style="color:var(--text-tertiary);padding:30px 20px;text-align:center">Ładowanie listy VIP...</p>';
+    const{data:profs}=await sb.from('profiles').select('id,name,avatar,is_vip,vip_since,vip_badge_color').eq('is_vip',true).order('vip_since',{ascending:false});
+    const{data:emRows}=await sb.rpc('admin_list_profile_emails');
+    const emMap3={};(emRows||[]).forEach(r=>{emMap3[r.id]=r.email;});
+    if(!profs||!profs.length){body.innerHTML='<p style="color:var(--text-tertiary);padding:30px 20px;text-align:center">Brak użytkowników VIP</p>';return;}
+    body.innerHTML=`<div style="padding:14px 18px 4px;font-size:12px;color:var(--text-tertiary)">Łącznie: ${profs.length}</div>`+profs.map(p=>{
+      const email=emMap3[p.id]||'(brak e-maila)';
+      const since=p.vip_since?new Date(p.vip_since).toLocaleString('pl-PL',{day:'numeric',month:'long',year:'numeric',hour:'2-digit',minute:'2-digit'}):'nieznana data';
+      const color=p.vip_badge_color||'#ffd700';
+      return`
+      <div class="admin-row" style="align-items:center">
+        <img src="${esc(p.avatar||'')}" onerror="this.style.display='none'" style="width:36px;height:36px;border-radius:50%;object-fit:cover;flex-shrink:0;background:var(--bg-sunken)">
+        <div style="flex:1;min-width:0">
+          <div style="font-size:13px;font-weight:600;display:flex;align-items:center;gap:6px">${esc(p.name||'Użytkownik')} <span style="font-size:10px;font-weight:800;color:${esc(color)}">⭐ VIP</span></div>
+          <div style="font-size:12px;color:var(--text-secondary);word-break:break-all">${esc(email)}</div>
+          <div style="font-size:11px;color:var(--text-tertiary)">VIP od: ${since}</div>
+        </div>
+        <button onclick="adminSetVip('${jsesc(p.id)}','${jsesc(email)}',false)" class="admin-btn admin-btn-red" style="flex-shrink:0">⭐ Odbierz VIP</button>
+      </div>`;
+    }).join('');
   }
 
   if(adminTab==='reports'){
