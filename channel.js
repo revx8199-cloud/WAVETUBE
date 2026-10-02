@@ -204,18 +204,18 @@ async function openStatsPanel(){
 
   body.innerHTML=`
     <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:10px;margin-bottom:14px">
-      ${statCard('👁️',t('stats_views'),totalViews)}
-      ${statCard(likeIcon(),t('stats_likes'),totalLikes)}
-      ${statCard('🔔',t('stats_subs'),subCount)}
-      ${statCard('🎬',t('stats_videos'),ownVideos.length)}
-      ${statCard('💬',t('stats_comments'),totalComments)}
+      ${statCard(viewsIcon(20),t('stats_views'),totalViews)}
+      ${statCard(likeIcon(20),t('stats_likes'),totalLikes)}
+      ${statCard(subsIcon(20),t('stats_subs'),subCount)}
+      ${statCard(videosIcon(20),t('stats_videos'),ownVideos.length)}
+      ${statCard(commentsIcon(20),t('stats_comments'),totalComments)}
     </div>
     <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:10px;margin-bottom:26px">
-      ${statCard('📊',t('stats_avg_views'),avgViews)}
-      ${statCard('🔥',t('stats_engagement'),engagement+'%')}
-      ${statCard('👎',t('stats_dislikes'),totalDislikes)}
-      ${statCard('💾',t('stats_saved'),savedCount)}
-      ${statCard('⏰',t('stats_watchlater'),wlCount)}
+      ${statCard(barChartIcon(20),t('stats_avg_views'),avgViews)}
+      ${statCard(trendingIcon(20),t('stats_engagement'),engagement+'%')}
+      ${statCard(dislikeIcon(20),t('stats_dislikes'),totalDislikes)}
+      ${statCard(saveIcon(20),t('stats_saved'),savedCount)}
+      ${statCard(watchLaterIcon(20),t('stats_watchlater'),wlCount)}
     </div>
 
     <div style="margin-bottom:24px">
@@ -246,9 +246,9 @@ async function openStatsPanel(){
     <div style="padding-top:20px;border-top:1px solid var(--border)">
       <div style="font-size:13px;font-weight:700;margin-bottom:10px">${t('stats_posts_section')}</div>
       <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:10px">
-        ${statCard('📝',t('stats_posts'),postCount)}
-        ${statCard(likeIcon(),t('stats_post_likes'),postLikes)}
-        ${statCard('💬',t('stats_post_comments'),postComments)}
+        ${statCard(postIcon(20),t('stats_posts'),postCount)}
+        ${statCard(likeIcon(20),t('stats_post_likes'),postLikes)}
+        ${statCard(commentsIcon(20),t('stats_post_comments'),postComments)}
       </div>
     </div>
   `;
