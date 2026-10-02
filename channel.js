@@ -331,10 +331,10 @@ function renderVipPanel(){
     <div>
       <div style="font-size:13px;font-weight:700;color:var(--text-primary);margin-bottom:4px">🔤 Czcionka nicku</div>
       <p style="color:var(--text-secondary);font-size:12px;margin-bottom:14px">Wybierz styl czcionki dla swojego nicku.</p>
-      <div style="display:flex;flex-direction:column;gap:8px">
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:8px">
         ${FONT_OPTIONS.map(f=>`
-          <div onclick="saveVipFont('${jsesc(f.id)}')" style="display:flex;align-items:center;justify-content:space-between;padding:12px 16px;border-radius:10px;cursor:pointer;background:${myNameFont===f.id?'rgba(255,215,0,.12)':'var(--bg-sunken)'};border:1px solid ${myNameFont===f.id?'#ffd700':'var(--border)'}">
-            <span style="font-family:${f.css};font-size:16px;color:${esc(myNameColor||'#fff')}">${myDisplayName||f.label}</span>
+          <div onclick="saveVipFont('${jsesc(f.id)}')" style="display:flex;flex-direction:column;align-items:flex-start;gap:4px;padding:12px 14px;border-radius:10px;cursor:pointer;background:${myNameFont===f.id?'rgba(255,215,0,.12)':'var(--bg-sunken)'};border:1px solid ${myNameFont===f.id?'#ffd700':'var(--border)'};overflow:hidden">
+            <span style="font-family:${f.css};font-size:16px;color:${esc(myNameColor||'#fff')};white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%">${myDisplayName||f.label}</span>
             <span style="font-size:11px;color:var(--text-tertiary)">${f.label}${myNameFont===f.id?' ✓':''}</span>
           </div>`).join('')}
       </div>
