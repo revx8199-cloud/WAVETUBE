@@ -794,7 +794,7 @@ async function showChannel(userId,nameIn,avatar,email){
         <div id="ch-desc-wrap">
           ${isOwner
             ?`<div id="ch-desc-text" style="font-size:13px;color:var(--text-secondary);cursor:pointer" onclick="editDesc('${jsesc(userId||email)}')">${savedDesc||'<span style="color:#555">'+t('ch_add_desc')+'</span>'}</div>`
-            :`<div style="font-size:13px;color:var(--text-secondary)">${esc(savedDesc)}</div>`
+            :collapsibleDesc(esc(savedDesc),3)
           }
         </div>
       </div>

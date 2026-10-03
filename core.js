@@ -150,6 +150,25 @@ function esc(str){
     .replace(/'/g,'&#039;');
 }
 
+let collapsibleDescSeq=0;
+// Zwijany opis w stylu YouTube (X linii + przycisk "...więcej"/"mniej"). text ma być już zescapowany (lub bezpieczny HTML).
+function collapsibleDesc(text,lines,fontSize){
+  if(!text)return'';
+  lines=lines||2;fontSize=fontSize||13;
+  const id='cdesc-'+(++collapsibleDescSeq);
+  const showBtn=(text.replace(/<[^>]*>/g,'').length>120)||text.split('\n').length>lines;
+  return`<div>
+    <div id="${id}" class="desc-collapsed" style="color:var(--text-secondary);font-size:${fontSize}px;line-height:1.5;-webkit-line-clamp:${lines}">${text}</div>
+    ${showBtn?`<button onclick="toggleCollapsibleDesc('${id}',this)" style="background:none;border:none;color:var(--text-primary);font-weight:600;cursor:pointer;font-size:${fontSize}px;padding:4px 0">${t('btn_more')}</button>`:''}
+  </div>`;
+}
+function toggleCollapsibleDesc(id,btn){
+  const el=document.getElementById(id);
+  if(!el)return;
+  const collapsed=el.classList.toggle('desc-collapsed');
+  btn.textContent=collapsed?t('btn_more'):t('btn_less');
+}
+
 // Bezpieczne wstawianie tekstu użytkownika do onclick="...('${jsesc(x)}')" - zapobiega "wyrwaniu się" z apostrofu
 // Powiadomienia: dozwolone tylko <b>...</b>, reszta zescapowana
 function safeNotifHtml(m){

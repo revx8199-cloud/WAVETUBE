@@ -344,7 +344,7 @@ async function openP(id){
   }
   layoutActsForShorts(isShort);
   document.getElementById('vt').textContent=v.title;
-  document.getElementById('vm').innerHTML=`${viewsLabel(v,' wyświetleń')} · ${relativeDate(v.created_at)}${v.category?' · <span style="background:var(--border-soft);padding:2px 8px;border-radius:10px;font-size:11px">'+esc(v.category)+'</span>':''}${v.age_restricted?' · <span style="background:#3a1414;color:#ff6b6b;padding:2px 8px;border-radius:10px;font-size:11px;font-weight:600">18+</span>':''}${v.made_for_kids?' · <span style="background:#142a3a;color:#3ea6ff;padding:2px 8px;border-radius:10px;font-size:11px;font-weight:600">👶 Dla dzieci</span>':''}${v.description?'<div style="margin-top:8px;color:var(--text-secondary);font-size:13px;line-height:1.5">'+esc(v.description)+'</div>':''}`;
+  document.getElementById('vm').innerHTML=`${viewsLabel(v,' wyświetleń')} · ${relativeDate(v.created_at)}${v.category?' · <span style="background:var(--border-soft);padding:2px 8px;border-radius:10px;font-size:11px">'+esc(v.category)+'</span>':''}${v.age_restricted?' · <span style="background:#3a1414;color:#ff6b6b;padding:2px 8px;border-radius:10px;font-size:11px;font-weight:600">18+</span>':''}${v.made_for_kids?' · <span style="background:#142a3a;color:#3ea6ff;padding:2px 8px;border-radius:10px;font-size:11px;font-weight:600">👶 Dla dzieci</span>':''}${v.description?'<div style="margin-top:8px">'+collapsibleDesc(esc(v.description),3)+'</div>':''}`;
   // handle comments enabled
   const commSec=document.getElementById('comments-section');
   if(commSec)commSec.style.display=v.comments_enabled===false?'none':'block';
