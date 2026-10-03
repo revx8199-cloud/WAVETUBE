@@ -521,7 +521,7 @@ document.addEventListener('keydown',e=>{
   const isBot=await checkBotGuard();
   if(isBot)return;
   const{data:{session}}=await sb.auth.getSession();
-  if(session)currentUser=session.user;
+  if(session){currentUser=session.user;rememberCurrentAccount(session);}
   updateAuthUI();
   applyTranslations();
   checkNewAnnouncements();
@@ -550,6 +550,7 @@ document.addEventListener('keydown',e=>{
   await loadVideos();
   sb.auth.onAuthStateChange(async(_,session)=>{
     currentUser=session?.user||null;
+    if(session)rememberCurrentAccount(session);
     updateAuthUI();
     if(currentUser){
       const banned=await checkIfBanned();

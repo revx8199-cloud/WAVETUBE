@@ -217,16 +217,74 @@ function emptyStateHtml(iconKey,title,subtitle){
 async function loginWithGoogle(){
   await sb.auth.signInWithOAuth({
     provider:'google',
-    options:{redirectTo:SITE_URL}
+    options:{redirectTo:SITE_URL,queryParams:{prompt:'select_account'}}
   });
 }
 
 async function logout(){
+  if(currentUser)removeStoredAccount(currentUser.id);
   await sb.auth.signOut();
   currentUser=null;
   updateAuthUI();
   toggleDropdown(true);
   toast('Wylogowano!');
+}
+
+// ── PRZEŁĄCZANIE KONT (jak w YouTube — bez pełnego wylogowania) ───────────────
+const ACCOUNTS_KEY='wt_accounts';
+function getStoredAccounts(){
+  try{return JSON.parse(localStorage.getItem(ACCOUNTS_KEY)||'[]');}catch{return[];}
+}
+function persistAccounts(list){
+  localStorage.setItem(ACCOUNTS_KEY,JSON.stringify(list));
+}
+function rememberCurrentAccount(session){
+  if(!session?.user)return;
+  const u=session.user;
+  const list=getStoredAccounts().filter(a=>a.id!==u.id);
+  list.unshift({
+    id:u.id,
+    email:u.email||'',
+    name:u.user_metadata?.full_name||u.user_metadata?.name||u.email||'',
+    avatar:u.user_metadata?.avatar_url||'',
+    access_token:session.access_token,
+    refresh_token:session.refresh_token
+  });
+  persistAccounts(list.slice(0,6));
+  renderAccountSwitcher();
+}
+function removeStoredAccount(id){
+  persistAccounts(getStoredAccounts().filter(a=>a.id!==id));
+  renderAccountSwitcher();
+}
+async function switchToAccount(id){
+  const acc=getStoredAccounts().find(a=>a.id===id);
+  if(!acc)return;
+  if(currentUser&&currentUser.id===acc.id){toggleDropdown(true);return;}
+  toggleDropdown(true);
+  const{error}=await sb.auth.setSession({access_token:acc.access_token,refresh_token:acc.refresh_token});
+  if(error){
+    toast('Ta sesja wygasła, zaloguj się ponownie');
+    removeStoredAccount(id);
+    return loginWithGoogle();
+  }
+  toast(`Przełączono na ${acc.name} ✓`);
+  location.reload();
+}
+async function addAnotherAccount(){
+  toggleDropdown(true);
+  await loginWithGoogle();
+}
+function renderAccountSwitcher(){
+  const box=document.getElementById('account-switcher-list');
+  if(!box)return;
+  const accs=getStoredAccounts();
+  if(accs.length<2){box.innerHTML='';return;}
+  box.innerHTML=accs.map(a=>`
+    <div class="dropdown-item" onclick="switchToAccount('${jsesc(a.id)}')" style="${currentUser&&currentUser.id===a.id?'opacity:.5;pointer-events:none':''}">
+      ${a.avatar?`<img src="${esc(a.avatar)}" style="width:20px;height:20px;border-radius:50%;object-fit:cover">`:`<div style="width:20px;height:20px;border-radius:50%;background:#3ea6ff;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:#0f0f0f">${esc((a.name||'?')[0].toUpperCase())}</div>`}
+      <span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(a.name)}${currentUser&&currentUser.id===a.id?' ✓':''}</span>
+    </div>`).join('');
 }
 
 function toggleDropdown(forceClose=false){
@@ -268,6 +326,7 @@ function updateAuthUI(){
     }
     if(headerName)headerName.textContent=dispName;
     if(headerEmail)headerEmail.textContent=currentUser.email||'';
+    renderAccountSwitcher();
     // update comment avatar
     const comAv=document.getElementById('com-av');
     if(meta&&meta.avatar_url){
