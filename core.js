@@ -879,7 +879,7 @@ function appendVideoCards(list,g){
       ${th?`<img src="${esc(th)}" alt="${esc(v.title)}" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"><div class="no-thumb" style="display:none">🎬</div>`:'<div class="no-thumb">🎬</div>'}
       <div class="play-ov"><div class="pb">▶</div></div>
       ${v.dur?`<div class="dur">${v.dur}</div>`:''}
-      <button class="del" onclick="event.stopPropagation();askDelete(${v.id})">🗑</button>
+      ${currentUser&&(currentUser.id===v.user_id||isAdmin())?`<button class="del" onclick="event.stopPropagation();askDelete(${v.id})">🗑</button>`:''}
       ${currentUser&&(currentUser.id===v.user_id||isAdmin())?`<button class="del" style="top:6px;right:40px;background:rgba(30,100,255,.75)" onclick="event.stopPropagation();openEditModal(${v.id})">✏️</button>`:''}
       <button class="del" style="display:flex;top:6px;left:6px;right:auto" onclick="event.stopPropagation();toggleCardMenu('${jsesc(v.id)}',this)">⋮</button>
     </div>
