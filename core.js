@@ -158,7 +158,7 @@ function collapsibleDesc(text,lines,fontSize){
   const id='cdesc-'+(++collapsibleDescSeq);
   const showBtn=(text.replace(/<[^>]*>/g,'').length>120)||text.split('\n').length>lines;
   return`<div>
-    <div id="${id}" class="desc-collapsed" style="color:var(--text-secondary);font-size:${fontSize}px;line-height:1.5;-webkit-line-clamp:${lines}">${text}</div>
+    <div id="${id}" class="desc-text desc-collapsed" style="color:var(--text-secondary);font-size:${fontSize}px;line-height:1.5;-webkit-line-clamp:${lines}">${text}</div>
     ${showBtn?`<button onclick="toggleCollapsibleDesc('${id}',this)" style="background:none;border:none;color:var(--text-primary);font-weight:600;cursor:pointer;font-size:${fontSize}px;padding:4px 0">${t('btn_more')}</button>`:''}
   </div>`;
 }
