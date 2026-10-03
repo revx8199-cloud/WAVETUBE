@@ -107,6 +107,7 @@ const TRANSLATIONS={
     hint_mp4_detecting:'✅ <b style="color:#188038">MP4</b> — wykrywam długość...',hint_unknown_format:'⚠️ Nierozpoznany format',hint_mp4_detected:'✅ <b style="color:#188038">MP4</b> — długość wykryta automatycznie',
     settings_allow_msg:'✉️ Zezwalaj innym na pisanie do mnie',settings_allow_msg_desc:'Gdy wyłączone, nikt nie założy z Tobą nowej rozmowy w Wiadomościach.',toast_msg_disabled:'Ten użytkownik wyłączył możliwość pisania do niego',
     settings_allow_calls:'📞 Zezwalaj innym na dzwonienie do mnie',settings_allow_calls_desc:'Gdy wyłączone, nikt nie zadzwoni do Ciebie w Wiadomościach.',call_disabled_toast:'Ten użytkownik wyłączył możliwość dzwonienia do niego',
+    settings_data:'📦 Twoje dane',settings_data_desc:'Pobierz kopię swoich danych z WaveTube (profil, filmy, posty, wiadomości, subskrypcje i inne) w formacie JSON.',settings_data_btn:'⬇️ Pobierz moje dane',settings_data_loading:'Przygotowywanie...',settings_data_done:'Pobrano Twoje dane 📦',
     announce_load_error:'Nie udało się wczytać ogłoszeń',announce_empty:'Brak ogłoszeń',announce_empty_sub:'Tutaj pojawią się wiadomości od twórcy WaveTube'
   },
   en:{
@@ -214,6 +215,7 @@ const TRANSLATIONS={
     hint_mp4_detecting:'✅ <b style="color:#188038">MP4</b> — detecting duration...',hint_unknown_format:'⚠️ Unrecognized format',hint_mp4_detected:'✅ <b style="color:#188038">MP4</b> — duration detected automatically',
     settings_allow_msg:'✉️ Allow others to message me',settings_allow_msg_desc:'When off, no one can start a new conversation with you in Messages.',toast_msg_disabled:'This user has disabled messages',
     settings_allow_calls:'📞 Allow others to call me',settings_allow_calls_desc:'When off, no one can call you in Messages.',call_disabled_toast:'This user has disabled calls',
+    settings_data:'📦 Your data',settings_data_desc:'Download a copy of your WaveTube data (profile, videos, posts, messages, subscriptions and more) as JSON.',settings_data_btn:'⬇️ Download my data',settings_data_loading:'Preparing...',settings_data_done:'Your data has been downloaded 📦',
     announce_load_error:'Failed to load announcements',announce_empty:'No announcements',announce_empty_sub:'Messages from the WaveTube creator will appear here'
   },
   ru:{
@@ -321,6 +323,7 @@ const TRANSLATIONS={
     hint_mp4_detecting:'✅ <b style="color:#188038">MP4</b> — определяю длительность...',hint_unknown_format:'⚠️ Формат не распознан',hint_mp4_detected:'✅ <b style="color:#188038">MP4</b> — длительность определена автоматически',
     settings_allow_msg:'✉️ Разрешить другим писать мне',settings_allow_msg_desc:'Если выключено, никто не сможет начать с вами новый разговор в Сообщениях.',toast_msg_disabled:'Этот пользователь отключил возможность писать ему',
     settings_allow_calls:'📞 Разрешить другим звонить мне',settings_allow_calls_desc:'Если выключено, никто не сможет позвонить вам в Сообщениях.',call_disabled_toast:'Этот пользователь отключил звонки',
+    settings_data:'📦 Ваши данные',settings_data_desc:'Скачайте копию своих данных WaveTube (профиль, видео, посты, сообщения, подписки и др.) в формате JSON.',settings_data_btn:'⬇️ Скачать мои данные',settings_data_loading:'Подготовка...',settings_data_done:'Ваши данные скачаны 📦',
     announce_load_error:'Не удалось загрузить объявления',announce_empty:'Нет объявлений',announce_empty_sub:'Здесь появятся сообщения от автора WaveTube'
   }
 };
@@ -491,5 +494,55 @@ async function saveMySettingsNick(){
   profileCache[currentUser.id]={...(profileCache[currentUser.id]||{id:currentUser.id,avatar:currentUser.user_metadata?.avatar_url||'',email:currentUser.email||''}),name:newNick};
   toast('Nick zmieniony! ✏️');
   updateAuthUI();
+}
+
+async function downloadMyData(){
+  if(!currentUser)return;
+  const btn=document.getElementById('download-data-btn');
+  const origLabel=btn.textContent;
+  btn.disabled=true;btn.textContent='⏳ '+t('settings_data_loading');
+  try{
+    const uid=currentUser.id;
+    const{data:profile}=await sb.from('profiles').select('name,description,country,created_at,avatar,banner_url,name_color,name_font,text_color,avatar_frame,avatar_particles,avatar_particle_type,banner_frame,is_vip,vip_since,allow_messages,allow_calls,terms_accepted').eq('id',uid).single();
+    const[videos,posts,msgsSent,msgsRecv,subs,subscribers,notifs,saved,watchLater,watchHistory]=await Promise.all([
+      sb.from('videos').select('id,title,description,category,views,likes,dislikes,date,created_at,tags,is_short,visibility,language').eq('user_id',uid),
+      sb.from('posts').select('id,text,likes,created_at').eq('user_id',uid),
+      sb.from('messages').select('conv_id,receiver_id,receiver_name,text,created_at').eq('sender_id',uid),
+      sb.from('messages').select('conv_id,sender_id,sender_name,text,created_at').eq('receiver_id',uid),
+      sb.from('subscriptions').select('channel_id,channel_name,created_at').eq('subscriber_id',uid),
+      sb.from('subscriptions').select('subscriber_id,created_at').eq('channel_id',uid),
+      sb.from('notifications').select('message,sender_name,created_at').eq('user_id',uid),
+      sb.from('saved_videos').select('video_id,created_at').eq('user_id',uid),
+      sb.from('watch_later').select('video_id,created_at').eq('user_id',uid),
+      sb.from('watch_history').select('video_id,watched_at').eq('user_id',uid)
+    ]);
+    const exportObj={
+      exported_at:new Date().toISOString(),
+      account_email:currentUser.email,
+      profile:profile||null,
+      videos:videos.data||[],
+      posts:posts.data||[],
+      messages_sent:msgsSent.data||[],
+      messages_received:msgsRecv.data||[],
+      subscriptions:subs.data||[],
+      subscribers:subscribers.data||[],
+      notifications:notifs.data||[],
+      saved_videos:saved.data||[],
+      watch_later:watchLater.data||[],
+      watch_history:watchHistory.data||[],
+      note:'Ten eksport nie zawiera samych plików wideo/miniatur/obrazów (zbyt duże pliki) ani treści komentarzy dodanych pod cudzymi filmami/postami.'
+    };
+    const blob=new Blob([JSON.stringify(exportObj,null,2)],{type:'application/json'});
+    const url=URL.createObjectURL(blob);
+    const a=document.createElement('a');
+    a.href=url;a.download='wavetube_dane_'+uid.slice(0,8)+'.json';
+    document.body.appendChild(a);a.click();a.remove();
+    URL.revokeObjectURL(url);
+    toast(t('settings_data_done'));
+  }catch(e){
+    toast('Błąd: '+e.message);
+  }finally{
+    btn.disabled=false;btn.textContent=origLabel;
+  }
 }
 
