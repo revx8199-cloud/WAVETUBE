@@ -290,6 +290,19 @@ function renderVipPanel(){
     </div>
 
     <div style="margin-bottom:24px;padding-bottom:20px;border-bottom:1px solid var(--border)">
+      <div style="font-size:13px;font-weight:700;color:var(--text-primary);margin-bottom:4px">✏️ Kolor tekstu komentarzy</div>
+      <p style="color:var(--text-secondary);font-size:12px;margin-bottom:14px">Kolor treści Twoich komentarzy pod filmami, postami i ogłoszeniami.</p>
+      <div style="display:flex;align-items:center;gap:16px;margin-bottom:16px">
+        <input type="color" id="vip-textcolor-inp" value="${myTextColor||'#ffffff'}" style="width:56px;height:56px;border:none;border-radius:10px;cursor:pointer;background:none;padding:0">
+        <div style="font-size:14px;color:${esc(myTextColor||'var(--text-primary)')}">Tak będzie wyglądać treść komentarza.</div>
+      </div>
+      <div style="display:flex;gap:10px">
+        <button onclick="saveVipTextColor()" style="background:#ffd700;border:none;color:#000;padding:10px 20px;border-radius:20px;cursor:pointer;font-size:13px;font-weight:700">Zapisz kolor</button>
+        <button onclick="resetVipTextColor()" style="background:var(--border-soft);border:none;color:var(--text-primary);padding:10px 20px;border-radius:20px;cursor:pointer;font-size:13px">Resetuj</button>
+      </div>
+    </div>
+
+    <div style="margin-bottom:24px;padding-bottom:20px;border-bottom:1px solid var(--border)">
       <div style="font-size:13px;font-weight:700;color:var(--text-primary);margin-bottom:4px">🖼️ Ramka avatara</div>
       <p style="color:var(--text-secondary);font-size:12px;margin-bottom:14px">Kolorowa obwódka wokół Twojego zdjęcia profilowego, widoczna na Twoim kanale.</p>
       <div style="display:flex;align-items:center;gap:16px;margin-bottom:14px">
@@ -435,6 +448,7 @@ function countryName(code){
 function isAdmin(){return!!(currentUser&&currentUser.email===ADMIN_EMAIL);}
 
 let myNameColor='';
+let myTextColor='';
 let myAvatarFrame='';
 let myBannerFrame='';
 let myAvatarParticles=false;
@@ -511,15 +525,33 @@ function fontCssFor(fontId){
 }
 
 async function loadMyNameColor(){
-  if(!currentUser){myNameColor='';myNameFont='';myDisplayNick='';myAvatarFrame='';myAvatarParticles=false;myAvatarParticleType='✨';myBannerFrame='';return;}
-  const{data}=await sb.from('profiles').select('name_color,name_font,name,avatar_frame,avatar_particles,avatar_particle_type,banner_frame').eq('id',currentUser.id).single();
+  if(!currentUser){myNameColor='';myTextColor='';myNameFont='';myDisplayNick='';myAvatarFrame='';myAvatarParticles=false;myAvatarParticleType='✨';myBannerFrame='';return;}
+  const{data}=await sb.from('profiles').select('name_color,text_color,name_font,name,avatar_frame,avatar_particles,avatar_particle_type,banner_frame').eq('id',currentUser.id).single();
   myNameColor=data?.name_color||'';
+  myTextColor=data?.text_color||'';
   myNameFont=data?.name_font||'';
   myDisplayNick=data?.name||'';
   myAvatarFrame=data?.avatar_frame||'';
   myAvatarParticles=!!data?.avatar_particles;
   myAvatarParticleType=data?.avatar_particle_type||'✨';
   myBannerFrame=data?.banner_frame||'';
+}
+
+async function saveVipTextColor(){
+  if(!isVIP()&&!isAdmin())return;
+  const hex=document.getElementById('vip-textcolor-inp').value;
+  const{error}=await sb.from('profiles').upsert([{id:currentUser.id,text_color:hex}],{onConflict:'id'});
+  if(error){toast('Błąd: '+error.message);return;}
+  myTextColor=hex;
+  toast('Zapisano kolor tekstu');
+  renderVipPanel();
+}
+async function resetVipTextColor(){
+  if(!isVIP()&&!isAdmin())return;
+  await sb.from('profiles').upsert([{id:currentUser.id,text_color:''}],{onConflict:'id'});
+  myTextColor='';
+  toast('Zresetowano kolor tekstu');
+  renderVipPanel();
 }
 
 async function saveBannerFrame(color){
