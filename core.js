@@ -40,7 +40,8 @@ function showConfirm(title,subtitle,okLabel){
     document.getElementById('confirm-subtitle').textContent=subtitle||'';
     const okBtn=document.getElementById('confirm-ok-btn');
     const cancelBtn=document.getElementById('confirm-cancel-btn');
-    okBtn.textContent=okLabel||'Usuń';
+    okBtn.textContent=okLabel||t('confirm_delete_default');
+    cancelBtn.textContent=t('confirm_cancel');
     const modal=document.getElementById('confirm-modal');
     modal.classList.add('open');
     const cleanup=(result)=>{
@@ -1859,7 +1860,7 @@ function updateNotifBadge(){
 async function clearAllNotifications(){
   if(!currentUser)return;
   if(!notificationsList.length){toast(t('notif_clear_empty_toast'));return;}
-  if(!await showConfirm('Wyczyścić powiadomienia?','Wszystkie powiadomienia zostaną usunięte.','Wyczyść'))return;
+  if(!await showConfirm(t('confirm_clear_notifications'),t('confirm_clear_notifications_sub'),t('btn_clear')))return;
   await sb.from('notifications').delete().eq('user_id',currentUser.id);
   notificationsList=[];
   updateNotifBadge();
