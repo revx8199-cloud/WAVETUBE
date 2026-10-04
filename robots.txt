@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://revx8199-cloud.github.io/WAVETUBE/sitemap.xml
