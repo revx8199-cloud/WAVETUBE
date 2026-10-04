@@ -110,6 +110,9 @@ const TRANSLATIONS={
     settings_allow_msg:'✉️ Zezwalaj innym na pisanie do mnie',settings_allow_msg_desc:'Gdy wyłączone, nikt nie założy z Tobą nowej rozmowy w Wiadomościach.',toast_msg_disabled:'Ten użytkownik wyłączył możliwość pisania do niego',
     settings_allow_calls:'📞 Zezwalaj innym na dzwonienie do mnie',settings_allow_calls_desc:'Gdy wyłączone, nikt nie zadzwoni do Ciebie w Wiadomościach.',call_disabled_toast:'Ten użytkownik wyłączył możliwość dzwonienia do niego',
     settings_data:'📦 Twoje dane',settings_data_desc:'Pobierz kopię swoich danych z WaveTube (profil, filmy, posty, wiadomości, subskrypcje i inne) w formacie JSON.',settings_data_btn:'⬇️ Pobierz moje dane',settings_data_loading:'Przygotowywanie...',settings_data_done:'Pobrano Twoje dane 📦',
+    settings_danger:'⚠️ Strefa zagrożenia',settings_delete_desc:'Usunięcie konta jest trwałe i nieodwracalne — stracisz profil, filmy, posty, wiadomości, subskrypcje i cały dostęp. Rozważ najpierw pobranie swoich danych (poniżej).',settings_delete_btn:'🗑️ Usuń konto na stałe',settings_delete_loading:'Usuwanie konta...',settings_delete_done:'Konto zostało usunięte. Żegnamy! 👋',
+    confirm_delete_account:'Usunąć konto na stałe?',confirm_delete_account_sub:'Stracisz profil, filmy, posty, komentarze, wiadomości i subskrypcje. Tej operacji nie da się cofnąć.',
+    confirm_delete_account_2:'Na pewno? To ostatnia szansa.',confirm_delete_account_2_sub:'Po kliknięciu Twoje konto zostanie usunięte natychmiast i trwale.',confirm_delete_account_final_btn:'Tak, usuń na zawsze',
     announce_load_error:'Nie udało się wczytać ogłoszeń',announce_empty:'Brak ogłoszeń',announce_empty_sub:'Tutaj pojawią się wiadomości od twórcy WaveTube'
   },
   en:{
@@ -220,6 +223,9 @@ const TRANSLATIONS={
     settings_allow_msg:'✉️ Allow others to message me',settings_allow_msg_desc:'When off, no one can start a new conversation with you in Messages.',toast_msg_disabled:'This user has disabled messages',
     settings_allow_calls:'📞 Allow others to call me',settings_allow_calls_desc:'When off, no one can call you in Messages.',call_disabled_toast:'This user has disabled calls',
     settings_data:'📦 Your data',settings_data_desc:'Download a copy of your WaveTube data (profile, videos, posts, messages, subscriptions and more) as JSON.',settings_data_btn:'⬇️ Download my data',settings_data_loading:'Preparing...',settings_data_done:'Your data has been downloaded 📦',
+    settings_danger:'⚠️ Danger zone',settings_delete_desc:'Deleting your account is permanent and irreversible — you\'ll lose your profile, videos, posts, messages, subscriptions and all access. Consider downloading your data first (below).',settings_delete_btn:'🗑️ Delete account permanently',settings_delete_loading:'Deleting account...',settings_delete_done:'Your account has been deleted. Goodbye! 👋',
+    confirm_delete_account:'Delete your account permanently?',confirm_delete_account_sub:'You\'ll lose your profile, videos, posts, comments, messages and subscriptions. This cannot be undone.',
+    confirm_delete_account_2:'Are you sure? This is your last chance.',confirm_delete_account_2_sub:'Once you click, your account will be deleted immediately and permanently.',confirm_delete_account_final_btn:'Yes, delete forever',
     announce_load_error:'Failed to load announcements',announce_empty:'No announcements',announce_empty_sub:'Messages from the WaveTube creator will appear here'
   },
   ru:{
@@ -330,6 +336,9 @@ const TRANSLATIONS={
     settings_allow_msg:'✉️ Разрешить другим писать мне',settings_allow_msg_desc:'Если выключено, никто не сможет начать с вами новый разговор в Сообщениях.',toast_msg_disabled:'Этот пользователь отключил возможность писать ему',
     settings_allow_calls:'📞 Разрешить другим звонить мне',settings_allow_calls_desc:'Если выключено, никто не сможет позвонить вам в Сообщениях.',call_disabled_toast:'Этот пользователь отключил звонки',
     settings_data:'📦 Ваши данные',settings_data_desc:'Скачайте копию своих данных WaveTube (профиль, видео, посты, сообщения, подписки и др.) в формате JSON.',settings_data_btn:'⬇️ Скачать мои данные',settings_data_loading:'Подготовка...',settings_data_done:'Ваши данные скачаны 📦',
+    settings_danger:'⚠️ Опасная зона',settings_delete_desc:'Удаление аккаунта необратимо — вы потеряете профиль, видео, посты, сообщения, подписки и весь доступ. Сначала стоит скачать свои данные (ниже).',settings_delete_btn:'🗑️ Удалить аккаунт навсегда',settings_delete_loading:'Удаление аккаунта...',settings_delete_done:'Ваш аккаунт удалён. Прощайте! 👋',
+    confirm_delete_account:'Удалить аккаунт навсегда?',confirm_delete_account_sub:'Вы потеряете профиль, видео, посты, комментарии, сообщения и подписки. Это необратимо.',
+    confirm_delete_account_2:'Вы уверены? Это последний шанс передумать.',confirm_delete_account_2_sub:'После клика аккаунт будет удалён немедленно и навсегда.',confirm_delete_account_final_btn:'Да, удалить навсегда',
     announce_load_error:'Не удалось загрузить объявления',announce_empty:'Нет объявлений',announce_empty_sub:'Здесь появятся сообщения от автора WaveTube'
   }
 };

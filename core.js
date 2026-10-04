@@ -241,6 +241,34 @@ async function logout(){
   toast('Wylogowano!');
 }
 
+async function deleteMyAccount(){
+  if(!currentUser)return;
+  const ok1=await showConfirm(t('confirm_delete_account'),t('confirm_delete_account_sub'),t('settings_delete_btn'));
+  if(!ok1)return;
+  const ok2=await showConfirm(t('confirm_delete_account_2'),t('confirm_delete_account_2_sub'),t('confirm_delete_account_final_btn'));
+  if(!ok2)return;
+  const btn=document.getElementById('delete-account-btn');
+  btn.disabled=true;btn.textContent=t('settings_delete_loading');
+  try{
+    const{data:{session}}=await sb.auth.getSession();
+    const{data,error}=await sb.functions.invoke('delete-account',{
+      headers:{Authorization:`Bearer ${session.access_token}`}
+    });
+    if(error||!data?.success){
+      toast('Błąd: '+(error?.message||data?.error||'nie udało się usunąć konta'));
+      btn.disabled=false;btn.textContent=t('settings_delete_btn');
+      return;
+    }
+    removeStoredAccount(currentUser.id);
+    await sb.auth.signOut();
+    toast(t('settings_delete_done'));
+    setTimeout(()=>location.reload(),1500);
+  }catch(e){
+    toast('Błąd: '+e.message);
+    btn.disabled=false;btn.textContent=t('settings_delete_btn');
+  }
+}
+
 // ── PRZEŁĄCZANIE KONT (jak w YouTube — bez pełnego wylogowania) ───────────────
 const ACCOUNTS_KEY='wt_accounts';
 function getStoredAccounts(){
@@ -1977,7 +2005,7 @@ function renderNotifications(){
   if(!notificationsList.length){list.innerHTML=`<div class="notif-empty">${t('notif_empty')}</div>`;return;}
   list.innerHTML=notificationsList.map(n=>`
     <div class="notif-item${n.read?'':' unread'}" onclick="handleNotifClick('${jsesc(n.id)}','${jsesc(n.sender_id||'')}','${jsesc(n.sender_name||'')}','${jsesc(n.sender_avatar||'')}','${jsesc(n.sender_email||'')}')">
-      ${n.avatar?`<img class="notif-av" src="${esc(n.avatar)}">`:`<div class="notif-av-ph" style="background:#cc0000">🔔</div>`}
+      ${(n.sender_avatar||n.avatar)?`<img class="notif-av" src="${esc(n.sender_avatar||n.avatar)}">`:`<div class="notif-av-ph" style="background:#cc0000">🔔</div>`}
       <div>
         <div class="notif-text">${safeNotifHtml(n.message)}</div>
         <div class="notif-time">${new Date(n.created_at).toLocaleString('pl-PL',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'})}</div>
