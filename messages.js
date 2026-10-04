@@ -377,15 +377,24 @@ async function loadMessages(){
     return;
   }
   const wasAtBottom=list.scrollHeight-list.scrollTop-list.clientHeight<60;
-  list.innerHTML=data.map(m=>{
+  const otherAvatar=profileCache[currentOtherUser?.id]?.avatar||currentOtherUser?.avatar||'';
+  const otherInitial=((profileCache[currentOtherUser?.id]?.name||currentOtherUser?.name||'?')[0]||'?').toUpperCase();
+  list.innerHTML=data.map((m,idx)=>{
     const isSent=m.sender_id===currentUser.id;
     const time=new Date(m.created_at).toLocaleString('pl-PL',{hour:'2-digit',minute:'2-digit'});
     const imgHtml=m.image_url?`<img class="msg-bubble-img" src="${esc(m.image_url)}" onclick="openImgLightbox('${jsesc(m.image_url)}')">`:'';
     const audioHtml=m.audio_url?`<audio class="msg-bubble-audio" controls src="${esc(m.audio_url)}" style="max-width:240px;display:block"></audio>`:'';
     const txtHtml=m.text?`<div class="msg-bubble ${isSent?'sent':'received'}">${esc(m.text)}</div>`:'';
+    // Avatar nadawcy pokazujemy tylko przy ostatniej wiadomości w serii od tej osoby (jak w Messengerze)
+    const nextIsSameSender=data[idx+1]&&data[idx+1].sender_id===m.sender_id;
+    const avHtml=!isSent?(nextIsSameSender?'<div class="msg-bubble-av-spacer"></div>':
+      (otherAvatar?`<img class="msg-bubble-av" src="${esc(otherAvatar)}">`:`<div class="msg-bubble-av-ph">${esc(otherInitial)}</div>`)):'';
     return`<div class="msg-bubble-wrap ${isSent?'sent':'received'}">
-      ${imgHtml}${audioHtml}${txtHtml}
-      <div class="msg-bubble-time">${time}</div>
+      ${avHtml}
+      <div class="msg-bubble-col">
+        ${imgHtml}${audioHtml}${txtHtml}
+        <div class="msg-bubble-time">${time}</div>
+      </div>
     </div>`;
   }).join('');
   if(wasAtBottom||data[data.length-1]?.sender_id===currentUser.id){
