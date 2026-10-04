@@ -47,8 +47,6 @@ function toggleCardMenu(videoId,btnEl){
     <div onclick="event.stopPropagation();closeCardMenu();downloadVideo('${jsesc(videoId)}')" style="padding:12px 16px;cursor:pointer;font-size:13px;display:flex;align-items:center;gap:10px" onmouseover="this.style.background='var(--border)'" onmouseout="this.style.background='none'">⬇️ Pobierz</div>
     <div onclick="event.stopPropagation();closeCardMenu();shareVideoCard('${jsesc(videoId)}')" style="padding:12px 16px;cursor:pointer;font-size:13px;display:flex;align-items:center;gap:10px" onmouseover="this.style.background='var(--border)'" onmouseout="this.style.background='none'">🔗 Udostępnij</div>
     <div style="border-top:1px solid var(--border)"></div>
-    <div onclick="event.stopPropagation();closeCardMenu();openPremiumModal()" style="padding:12px 16px;cursor:pointer;font-size:13px;display:flex;align-items:center;gap:10px;color:#7fd3ff" onmouseover="this.style.background='var(--border)'" onmouseout="this.style.background='none'">💙 Wesprzyj autora</div>
-    <div style="border-top:1px solid var(--border)"></div>
     <div onclick="event.stopPropagation();closeCardMenu();openReportModal('${jsesc(videoId)}')" style="padding:12px 16px;cursor:pointer;font-size:13px;display:flex;align-items:center;gap:10px;color:#ff6b6b" onmouseover="this.style.background='var(--border)'" onmouseout="this.style.background='none'">🚩 Zgłoś</div>
   `;
   document.body.appendChild(menu);
