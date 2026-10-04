@@ -668,13 +668,14 @@
 <div class="fmbg" id="premium-modal">
   <div class="fbox" style="max-width:420px;text-align:center">
     <div style="font-size:40px;margin-bottom:6px">💙</div>
-    <h3 style="font-size:19px">Wesprzyj autora WaveTube</h3>
-    <p class="sub" style="margin-bottom:18px">Podoba Ci się aplikacja? Możesz postawić autorowi coś fajnego przez wymianę na Steam.</p>
-    <div style="text-align:left;background:var(--bg-sunken);border:1px solid var(--border);border-radius:10px;padding:16px;margin-bottom:20px;font-size:13px;color:var(--text-secondary);line-height:1.7">
+    <h3 style="font-size:19px" data-i18n="support_title">Wesprzyj autora WaveTube</h3>
+    <p class="sub" style="margin-bottom:18px" data-i18n="support_desc">Podoba Ci się aplikacja? Możesz postawić autorowi coś fajnego.</p>
+    <div style="text-align:left;background:var(--bg-sunken);border:1px solid var(--border);border-radius:10px;padding:16px;margin-bottom:20px;font-size:13px;color:var(--text-secondary);line-height:1.7" data-i18n="support_steam_desc">
       🎮 Wyślij ofertę wymiany (trade) na Steam — każde wsparcie motywuje do dalszej rozbudowy WaveTube!
     </div>
-    <button onclick="goToSupportAuthor()" style="width:100%;background:linear-gradient(90deg,#171a21,#2a475e);border:none;color:var(--text-primary);padding:13px;border-radius:24px;cursor:pointer;font-size:14px;font-weight:700;margin-bottom:10px;display:flex;align-items:center;justify-content:center;gap:8px">🎮 Wyślij trade na Steam</button>
-    <button onclick="closePremiumModal()" style="width:100%;background:none;border:none;color:var(--text-tertiary);padding:8px;cursor:pointer;font-size:13px">Zamknij</button>
+    <button onclick="goToSupportAuthor()" style="width:100%;background:linear-gradient(90deg,#171a21,#2a475e);border:none;color:var(--text-primary);padding:13px;border-radius:24px;cursor:pointer;font-size:14px;font-weight:700;margin-bottom:10px;display:flex;align-items:center;justify-content:center;gap:8px"><span data-i18n="support_steam_btn">🎮 Wyślij trade na Steam</span></button>
+    <a href="https://www.buymeacoffee.com/rev01" target="_blank" rel="noopener" style="width:100%;box-sizing:border-box;background:#ffdd00;border:none;color:#000;padding:13px;border-radius:24px;cursor:pointer;font-size:14px;font-weight:700;margin-bottom:10px;display:flex;align-items:center;justify-content:center;gap:8px;text-decoration:none"><span data-i18n="btn_buy_vip_coffee">☕ Przejdź do Buy Me a Coffee</span></a>
+    <button onclick="closePremiumModal()" style="width:100%;background:none;border:none;color:var(--text-tertiary);padding:8px;cursor:pointer;font-size:13px" data-i18n="btn_close">Zamknij</button>
   </div>
 </div>
 
