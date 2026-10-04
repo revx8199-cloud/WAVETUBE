@@ -213,6 +213,17 @@ function emptyStateHtml(iconKey,title,subtitle){
 }
 
 
+// ── MODERACJA OBRAZKÓW (NSFW) ───────────────────────────────────────────────
+async function checkImageModeration(image){
+  try{
+    const{data,error}=await sb.functions.invoke('moderate-image',{body:{image}});
+    if(error)return{flagged:false};
+    return data||{flagged:false};
+  }catch{
+    return{flagged:false};
+  }
+}
+
 // ── AUTH ──────────────────────────────────────────────────────────────────────
 async function loginWithGoogle(){
   await sb.auth.signInWithOAuth({

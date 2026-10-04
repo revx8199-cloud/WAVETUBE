@@ -534,6 +534,17 @@ async function submitForm(){
   });
   thumb=await getThumb();
 
+  if(thumb){
+    btn.textContent=t('form_moderating_btn')||'Sprawdzanie...';
+    const nsfw=await checkImageModeration(thumb);
+    if(nsfw.flagged){
+      btn.textContent=t('form_submit_btn');btn.disabled=false;
+      toast(t('toast_nsfw_blocked')||'⚠️ Miniaturka wygląda na nieodpowiednią (18+/nagość) i nie może zostać opublikowana.');
+      return;
+    }
+    btn.textContent=t('form_publishing_btn');
+  }
+
   // Jeśli pole "czas trwania" puste i to bezpośredni plik mp4 - wykryj automatycznie
   let dur=document.getElementById('fdur').value.trim();
   if(!dur&&getPlayer(url).type==='mp4'){
@@ -628,6 +639,15 @@ async function submitEdit(){
   };
   const btn=document.querySelector('#edit-modal .fsubmit');
   btn.textContent='Zapisywanie...';btn.disabled=true;
+  if(updates.thumb){
+    btn.textContent=t('form_moderating_btn')||'Sprawdzanie...';
+    const nsfw=await checkImageModeration(updates.thumb);
+    if(nsfw.flagged){
+      btn.textContent='Zapisz zmiany';btn.disabled=false;
+      toast(t('toast_nsfw_blocked')||'⚠️ Miniaturka wygląda na nieodpowiednią (18+/nagość) i nie może zostać opublikowana.');
+      return;
+    }
+  }
   await updateVideo(id,updates);
   const v=videos.find(x=>x.id===id);
   if(v)Object.assign(v,updates);
