@@ -79,7 +79,9 @@ async function downloadVideo(videoId){
     a.click();
     a.remove();
   }catch(e){
-    window.open(v.url,'_blank');
+    const safeSrc=safeUrl(v.url);
+    if(safeSrc)window.open(safeSrc,'_blank');
+    else toast('Nie udało się pobrać pliku');
   }
 }
 
@@ -280,7 +282,8 @@ async function resolveAndPlayCloud(v,src){
     pw.innerHTML=`<video src="${esc(direct)}" controls autoplay preload="metadata" poster="${esc(v.thumb||'')}"></video>`;
     setupNativePlayer(v);
   }else{
-    pw.innerHTML=`<div style="display:flex;align-items:center;justify-content:center;height:100%;flex-direction:column;gap:12px;color:#555;padding:20px;text-align:center"><div style="font-size:48px">⚠️</div><p>Nie udało się połączyć z chmurą — sprawdź, czy link jest publicznie udostępniony</p><a href="${esc(src)}" target="_blank" style="color:#3ea6ff;font-size:13px">Otwórz zewnętrznie ↗</a></div>`;
+    const safeSrc=safeUrl(src);
+    pw.innerHTML=`<div style="display:flex;align-items:center;justify-content:center;height:100%;flex-direction:column;gap:12px;color:#555;padding:20px;text-align:center"><div style="font-size:48px">⚠️</div><p>Nie udało się połączyć z chmurą — sprawdź, czy link jest publicznie udostępniony</p>${safeSrc?`<a href="${esc(safeSrc)}" target="_blank" style="color:#3ea6ff;font-size:13px">Otwórz zewnętrznie ↗</a>`:''}</div>`;
   }
 }
 
@@ -330,7 +333,7 @@ async function openP(id){
     else if(type==='tt')html=`<iframe src="${esc(src)}" allow="encrypted-media" allowfullscreen style="border:none;width:100%;height:100%"></iframe>`;
     else if(type==='mp4')html=`<video src="${esc(src)}" controls autoplay preload="metadata" poster="${esc(v.thumb||'')}"></video>`;
     else if(type==='resolve')html=`<div style="display:flex;align-items:center;justify-content:center;height:100%;flex-direction:column;gap:12px;color:#aaa;background:#000"><div style="font-size:40px">⏳</div><p style="font-size:13px">Łączenie z chmurą...</p></div>`;
-    else html=`<div style="display:flex;align-items:center;justify-content:center;height:100%;flex-direction:column;gap:12px;color:#555;padding:20px;text-align:center"><div style="font-size:48px">⚠️</div><p>Nie można odtworzyć</p><a href="${esc(src)}" target="_blank" style="color:#3ea6ff;font-size:13px">Otwórz zewnętrznie ↗</a></div>`;
+    else{const safeSrc=safeUrl(src);html=`<div style="display:flex;align-items:center;justify-content:center;height:100%;flex-direction:column;gap:12px;color:#555;padding:20px;text-align:center"><div style="font-size:48px">⚠️</div><p>Nie można odtworzyć</p>${safeSrc?`<a href="${esc(safeSrc)}" target="_blank" style="color:#3ea6ff;font-size:13px">Otwórz zewnętrznie ↗</a>`:''}</div>`;}
   }
   document.getElementById('pw').innerHTML=html;
   cancelAutoplayCountdown();
@@ -405,7 +408,7 @@ function setupNativePlayer(v){
       <div style="font-size:48px">⚠️</div>
       <p style="font-size:15px;font-weight:600">Nie udało się załadować filmu</p>
       <p style="font-size:12px;color:var(--text-tertiary)">Link może być uszkodzony albo plik został usunięty</p>
-      <a href="${esc(v.url)}" target="_blank" style="color:#3ea6ff;font-size:13px">Spróbuj otworzyć bezpośrednio ↗</a>
+      ${safeUrl(v.url)?`<a href="${esc(safeUrl(v.url))}" target="_blank" style="color:#3ea6ff;font-size:13px">Spróbuj otworzyć bezpośrednio ↗</a>`:''}
     </div>`;
   });
 }
