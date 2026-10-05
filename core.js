@@ -1708,10 +1708,12 @@ async function postReply(index){
   const c=sortedList[index];
   if(!c)return;
   const origIdx=(cur.comments||[]).findIndex(x=>x.user===c.user&&x.text===c.text&&x.time===c.time);
-  if(!cur.comments[origIdx].replies)cur.comments[origIdx].replies=[];
-  cur.comments[origIdx].replies.push({user:getMyDisplayName(),text:txt,time:now,ts:Date.now(),avatar:meta?.avatar_url||'',user_email:currentUser.email,user_id:currentUser.id,name_color:myNameColor||'',name_font:myNameFont||'',avatar_frame:myAvatarFrame||'',text_color:myTextColor||''});
+  const newR={user:getMyDisplayName(),text:txt,time:now,ts:Date.now(),avatar:meta?.avatar_url||'',user_email:currentUser.email,user_id:currentUser.id,name_color:myNameColor||'',name_font:myNameFont||'',avatar_frame:myAvatarFrame||'',text_color:myTextColor||''};
   inp.value='';
-  await updateVideo(cur.id,{comments:cur.comments});
+  const{error}=await sb.rpc('add_video_comment_reply',{p_id:cur.id,c_index:origIdx,r:newR});
+  if(error){toast('Błąd: '+error.message);return;}
+  if(!cur.comments[origIdx].replies)cur.comments[origIdx].replies=[];
+  cur.comments[origIdx].replies.push(newR);
   const v=videos.find(x=>x.id===cur.id);if(v)v.comments=cur.comments;
   renderC();
   // Auto-show replies
@@ -1727,9 +1729,10 @@ async function togglePinComment(index){
   if(!comment)return;
   const origIndex=list.findIndex(c=>c.user===comment.user&&c.text===comment.text&&c.time===comment.time);
   if(origIndex===-1)return;
+  const{error}=await sb.rpc('toggle_video_comment_pin',{p_id:cur.id,c_index:origIndex});
+  if(error){toast('Błąd: '+error.message);return;}
   list[origIndex].pinned=!list[origIndex].pinned;
   cur.comments=list;
-  await updateVideo(cur.id,{comments:list});
   const v=videos.find(x=>x.id===cur.id);
   if(v)v.comments=list;
   renderC();
@@ -1745,9 +1748,12 @@ async function deleteComment(index){
   const isAuthor=currentUser.id===comment.user_id;
   if(!isOwner&&!isAuthor&&!isAdmin()){toast('Nie możesz usunąć tego komentarza');return;}
   if(!await showConfirm('Usunąć komentarz?','Ta czynność jest nieodwracalna.'))return;
-  const list=(cur.comments||[]).filter(c=>!(c.user===comment.user&&c.text===comment.text&&c.time===comment.time));
+  const origIdx=(cur.comments||[]).findIndex(c=>c.user===comment.user&&c.text===comment.text&&c.time===comment.time);
+  if(origIdx===-1)return;
+  const{error}=await sb.rpc('delete_video_comment',{p_id:cur.id,c_index:origIdx});
+  if(error){toast('Błąd: '+error.message);return;}
+  const list=cur.comments.filter((_,i)=>i!==origIdx);
   cur.comments=list;
-  await updateVideo(cur.id,{comments:list});
   const v=videos.find(x=>x.id===cur.id);
   if(v)v.comments=list;
   renderC();
@@ -1767,8 +1773,9 @@ async function deleteReply(commentIndex,replyIndex){
   if(!await showConfirm('Usunąć odpowiedź?','Ta czynność jest nieodwracalna.'))return;
   const origIdx=(cur.comments||[]).findIndex(c=>c.user===comment.user&&c.text===comment.text&&c.time===comment.time);
   if(origIdx===-1)return;
+  const{error}=await sb.rpc('delete_video_comment_reply',{p_id:cur.id,c_index:origIdx,r_index:replyIndex});
+  if(error){toast('Błąd: '+error.message);return;}
   cur.comments[origIdx].replies=cur.comments[origIdx].replies.filter((r,idx)=>idx!==replyIndex);
-  await updateVideo(cur.id,{comments:cur.comments});
   const v=videos.find(x=>x.id===cur.id);
   if(v)v.comments=cur.comments;
   renderC();
@@ -1796,9 +1803,10 @@ async function saveEditComment(index){
   if(!newText)return;
   const origIdx=(cur.comments||[]).findIndex(x=>x.user===comment.user&&x.text===comment.text&&x.time===comment.time);
   if(origIdx===-1)return;
+  const{error}=await sb.rpc('edit_video_comment',{p_id:cur.id,c_index:origIdx,new_text:newText});
+  if(error){toast('Błąd: '+error.message);return;}
   cur.comments[origIdx].text=newText;
   cur.comments[origIdx].edited=true;
-  await updateVideo(cur.id,{comments:cur.comments});
   const v=videos.find(x=>x.id===cur.id);if(v)v.comments=cur.comments;
   renderC();
   toast('Komentarz zaktualizowany');
@@ -1822,12 +1830,12 @@ async function postC(){
   const meta=currentUser.user_metadata;
   const now=new Date().toLocaleString('pl-PL',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'});
   const newC={user:getMyDisplayName(),text:t,time:now,ts:Date.now(),col:'#cc0000',avatar:meta?.avatar_url||'',user_id:currentUser.id||'',user_email:currentUser.email||'',name_color:myNameColor||'',name_font:myNameFont||'',avatar_frame:myAvatarFrame||'',text_color:myTextColor||''};
-  const list=[newC,...(cur.comments||[])];
-  cur.comments=list;
   document.getElementById('cinp').value='';
-  renderC();
-  await updateVideo(cur.id,{comments:list});
-  const v=videos.find(x=>x.id===cur.id);if(v)v.comments=list;render();
+  const{error}=await sb.rpc('add_video_comment',{p_id:cur.id,c:newC});
+  if(error){toast('Błąd: '+error.message);return;}
+  cur.comments=[newC,...(cur.comments||[])];
+  const v=videos.find(x=>x.id===cur.id);if(v)v.comments=cur.comments;
+  renderC();render();
 }
 
 
