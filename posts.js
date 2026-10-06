@@ -1,8 +1,11 @@
 // ============ posts.js — posty, ankiety, lightbox zdjęć ============
 
 // ── POSTY ─────────────────────────────────────────────────────────────────────
-async function getPosts(userId,email){
-  const{data}=await sb.from('posts').select('*').or(`user_id.eq.${userId||'null'},user_email.eq.${email||'null'}`).is('deleted_at',null).order('created_at',{ascending:false});
+const POSTS_PAGE_SIZE=5;
+async function getPosts(userId,email,offset,limit){
+  let q=sb.from('posts').select('*').or(`user_id.eq.${userId||'null'},user_email.eq.${email||'null'}`).is('deleted_at',null).order('created_at',{ascending:false});
+  if(offset!=null&&limit!=null)q=q.range(offset,offset+limit-1);
+  const{data}=await q;
   return data||[];
 }
 
@@ -87,6 +90,8 @@ function renderChannelShorts(){
 }
 
 let currentPostsCache=[];
+let postsPageState={offset:0,hasMore:true,loading:false,isOwner:false};
+let postsObserver=null;
 async function renderPosts(){
   closeEmojiPicker();
   const{userId,email,name}=currentChannelUser;
@@ -94,20 +99,67 @@ async function renderPosts(){
   const pc=document.getElementById('posts-container');
   if(!pc)return;
   pc.innerHTML=`<div style="padding:20px;color:#555;font-size:14px">${t('posts_loading')}</div>`;
-  const posts=await getPosts(userId,email);
+  const posts=await getPosts(userId,email,0,POSTS_PAGE_SIZE);
   currentPostsCache=posts;
-  let html='<div class="posts-grid">';
+  postsPageState={offset:posts.length,hasMore:posts.length===POSTS_PAGE_SIZE,loading:false,isOwner};
+  let html='<div class="posts-grid" id="posts-grid">';
   if(isOwner){
     html+=`<button class="add-post-btn" onclick="openAddPost()">${t('posts_add_btn')}</button>`;
   }
   if(!posts.length){
     html+=`<div style="color:#555;font-size:14px;padding:20px 0">${t('posts_none')}</div>`;
   } else {
-    posts.forEach((p,i)=>{
-      const likedPosts=new Set(JSON.parse(localStorage.getItem('liked_posts')||'[]'));
+    const likedPosts=new Set(JSON.parse(localStorage.getItem('liked_posts')||'[]'));
+    html+=posts.map(p=>postCardHtml(p,isOwner,likedPosts)).join('');
+  }
+  html+='</div>';
+  pc.innerHTML=html;
+  setupPostsSentinel();
+}
+
+async function loadMorePosts(){
+  if(!postsPageState.hasMore||postsPageState.loading)return;
+  postsPageState.loading=true;
+  const{userId,email}=currentChannelUser;
+  const more=await getPosts(userId,email,postsPageState.offset,POSTS_PAGE_SIZE);
+  currentPostsCache=currentPostsCache.concat(more);
+  postsPageState.offset+=more.length;
+  postsPageState.hasMore=more.length===POSTS_PAGE_SIZE;
+  postsPageState.loading=false;
+  const grid=document.getElementById('posts-grid');
+  if(grid&&more.length){
+    const likedPosts=new Set(JSON.parse(localStorage.getItem('liked_posts')||'[]'));
+    const sentinel=document.getElementById('posts-sentinel');
+    const htmlChunk=more.map(p=>postCardHtml(p,postsPageState.isOwner,likedPosts)).join('');
+    if(sentinel)sentinel.insertAdjacentHTML('beforebegin',htmlChunk);
+    else grid.insertAdjacentHTML('beforeend',htmlChunk);
+  }
+  setupPostsSentinel();
+}
+
+function setupPostsSentinel(){
+  const grid=document.getElementById('posts-grid');
+  const old=document.getElementById('posts-sentinel');
+  if(old)old.remove();
+  if(!grid||!postsPageState.hasMore)return;
+  const sentinel=document.createElement('div');
+  sentinel.id='posts-sentinel';
+  sentinel.style.cssText='height:1px';
+  grid.appendChild(sentinel);
+  if(postsObserver)postsObserver.disconnect();
+  postsObserver=new IntersectionObserver(entries=>{
+    if(entries[0].isIntersecting){
+      postsObserver.disconnect();
+      loadMorePosts();
+    }
+  },{rootMargin:'800px'});
+  postsObserver.observe(sentinel);
+}
+
+function postCardHtml(p,isOwner,likedPosts){
       const isLiked=likedPosts.has(String(p.id));
       const uname=p.user_name||p.user||t('anonim');const avHtml=p.user_avatar?`<img class="post-av" src="${esc(p.user_avatar)}" style="${p.user_avatar_frame?`border:2px solid ${esc(p.user_avatar_frame)};box-sizing:border-box`:''}">`:`<div class="post-av-ph" style="background:${getUserColor(p.user_email)}">${uname[0]}</div>`;
-      html+=`<div class="post-card" id="post-${p.id}">
+      return`<div class="post-card" id="post-${p.id}">
         <div class="post-header">
           ${avHtml}
           <div>
@@ -166,10 +218,6 @@ async function renderPosts(){
           </div>`:`<div style="font-size:12px;color:#555">${t('post_login_comment')}</div>`}
         </div>
       </div>`;
-    });
-  }
-  html+='</div>';
-  pc.innerHTML=html;
 }
 
 function renderPostImages(p){
