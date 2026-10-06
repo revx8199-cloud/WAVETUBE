@@ -152,7 +152,7 @@ function setupPostsSentinel(){
       postsObserver.disconnect();
       loadMorePosts();
     }
-  },{rootMargin:'800px'});
+  },{rootMargin:'150px'});
   postsObserver.observe(sentinel);
 }
 
