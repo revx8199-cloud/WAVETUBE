@@ -440,7 +440,7 @@ async function acceptTerms(){
   document.getElementById('terms-gate').classList.remove('open');
 }
 function openTermsModal(){
-  const lang='en'; // regulamin zawsze po angielsku, niezależnie od języka apki
+  const lang=getLang();
   const content=TERMS_CONTENT[lang]||TERMS_CONTENT.pl;
   const title=(TRANSLATIONS[lang]&&TRANSLATIONS[lang].terms_modal_title)||'📜 Zasady WaveTube';
   const html=`<!DOCTYPE html><html lang="${lang}"><head><meta charset="UTF-8">
