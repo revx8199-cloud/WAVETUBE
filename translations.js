@@ -349,7 +349,7 @@ const TERMS_CONTENT={
 <h4>2. Konto</h4>
 <p>Logujesz się przez konto Google. Odpowiadasz za wszystko, co dzieje się na Twoim koncie i za jego bezpieczeństwo.</p>
 <h4>3. Treści i zachowanie</h4>
-<p>Zakazane jest publikowanie treści: niezgodnych z prawem, nawołujących do nienawiści lub przemocy, o charakterze pornograficznym lub seksualizującym osoby niepełnoletnie, naruszających prawa autorskie, będących spamem, oraz podszywania się pod inne osoby. Dotyczy to filmów, postów, komentarzy, wiadomości oraz treści przesyłanych podczas rozmów (w tym udostępniania ekranu).</p>
+<p>Zakazane jest publikowanie treści: niezgodnych z prawem, nawołujących do nienawiści lub przemocy, o charakterze pornograficznym lub seksualizującym osoby niepełnoletnie, naruszających prawa autorskie, będących spamem, oraz podszywania się pod inne osoby. Dotyczy to filmów, postów, komentarzy, wiadomości oraz treści przesyłanych podczas rozmów (w tym udostępniania ekranu). W filmach zabronione jest reklamowanie kasyn, zakładów bukmacherskich, hazardu online oraz innych treści z nimi związanych (w tym linków afiliacyjnych/kodów promocyjnych do takich serwisów).</p>
 <h4>4. Reklama i promocja</h4>
 <p>Na platformie zabronione jest wyświetlanie reklam przerywających odtwarzanie filmu (np. automatycznie wyskakujących reklam, tak jak na YouTube) — WaveTube nie wspiera takiego mechanizmu reklamowego. Dozwolone jest natomiast umieszczenie promocji lub reklamy jako część treści samego filmu przez jego twórcę (np. wzmianka sponsora w filmie) — to leży w gestii twórcy. Zabronione jest też reklamowanie produktów, usług lub innych stron i kanałów w postach, komentarzach oraz wiadomościach bez zgody administratora.</p>
 <h4>5. Szacunek do twórcy i administracji</h4>
@@ -374,7 +374,7 @@ const TERMS_CONTENT={
 <h4>2. Account</h4>
 <p>You sign in with a Google account. You are responsible for everything that happens on your account and for keeping it secure.</p>
 <h4>3. Content and behavior</h4>
-<p>It is forbidden to publish content that is: illegal, inciting hatred or violence, pornographic or sexualizing minors, infringing copyright, spam, or impersonating another person. This applies to videos, posts, comments, messages, and content shared during calls (including screen sharing).</p>
+<p>It is forbidden to publish content that is: illegal, inciting hatred or violence, pornographic or sexualizing minors, infringing copyright, spam, or impersonating another person. This applies to videos, posts, comments, messages, and content shared during calls (including screen sharing). Advertising casinos, sports betting, online gambling, or other related content (including affiliate links/promo codes for such services) is forbidden in videos.</p>
 <h4>4. Advertising and promotion</h4>
 <p>Ads that interrupt video playback (such as ads that automatically pop up during a video, like on YouTube) are forbidden on the platform — WaveTube does not support this kind of ad mechanism. However, promotion or advertising included as part of the video itself by its creator (e.g. a sponsor mention within the video) is allowed — that is up to the video creator. Advertising products, services, or other sites/channels in posts, comments, or messages without the administrator’s consent is also forbidden.</p>
 <h4>5. Respect for the creator and administration</h4>
@@ -399,7 +399,7 @@ const TERMS_CONTENT={
 <h4>2. Аккаунт</h4>
 <p>Вход осуществляется через аккаунт Google. Вы несёте ответственность за всё, что происходит на вашем аккаунте, и за его безопасность.</p>
 <h4>3. Контент и поведение</h4>
-<p>Запрещено публиковать контент: незаконный, разжигающий ненависть или насилие, порнографический или сексуализирующий несовершеннолетних, нарушающий авторские права, являющийся спамом, а также выдавать себя за другого человека. Это касается видео, постов, комментариев, сообщений и контента во время звонков (включая демонстрацию экрана).</p>
+<p>Запрещено публиковать контент: незаконный, разжигающий ненависть или насилие, порнографический или сексуализирующий несовершеннолетних, нарушающий авторские права, являющийся спамом, а также выдавать себя за другого человека. Это касается видео, постов, комментариев, сообщений и контента во время звонков (включая демонстрацию экрана). В видео запрещена реклама казино, букмекерских контор, онлайн-азартных игр и другого связанного с ними контента (включая партнёрские ссылки/промокоды таких сервисов).</p>
 <h4>4. Реклама и продвижение</h4>
 <p>На платформе запрещена реклама, прерывающая просмотр видео (например, реклама, которая автоматически всплывает во время просмотра, как на YouTube) — WaveTube не поддерживает такой механизм рекламы. При этом размещение рекламы или продвижения как части самого видео его автором (например, упоминание спонсора в видео) разрешено — это на усмотрение автора видео. Также запрещена реклама товаров, услуг или других сайтов и каналов в постах, комментариях и сообщениях без согласия администратора.</p>
 <h4>5. Уважение к автору и администрации</h4>

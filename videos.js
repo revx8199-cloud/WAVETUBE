@@ -193,14 +193,30 @@ async function getProfile(userId){
   return null;
 }
 
+const VIDEOS_FIRST_PAGE=30;
 async function loadVideos(){
-  const{data,error}=await sb.from('videos').select('*').is('deleted_at',null).order('created_at',{ascending:false});
+  const{data,error}=await sb.from('videos').select('*').is('deleted_at',null).order('created_at',{ascending:false}).range(0,VIDEOS_FIRST_PAGE-1);
   if(error){document.getElementById('grid').innerHTML='<div class="loading" style="color:#cc0000">Błąd połączenia :(</div>';return;}
   videos=data||[];
-  // Preload profiles for all video authors
+  // Preload profiles for pierwszej partii autorów
   const authorIds=[...new Set((data||[]).map(v=>v.user_id).filter(Boolean))];
   await Promise.all(authorIds.map(id=>getProfile(id)));
   render();
+  // Reszta filmów (starsze) dociąga się w tle, żeby wyszukiwarka/kanały/shorts
+  // też miały pełne dane — ale bez blokowania pierwszego renderu.
+  loadRemainingVideosInBackground(data?.length||0);
+}
+
+async function loadRemainingVideosInBackground(offset){
+  while(true){
+    const{data,error}=await sb.from('videos').select('*').is('deleted_at',null).order('created_at',{ascending:false}).range(offset,offset+VIDEOS_FIRST_PAGE-1);
+    if(error||!data||!data.length)break;
+    videos=videos.concat(data);
+    const authorIds=[...new Set(data.map(v=>v.user_id).filter(Boolean))];
+    await Promise.all(authorIds.map(id=>getProfile(id)));
+    offset+=data.length;
+    if(data.length<VIDEOS_FIRST_PAGE)break;
+  }
 }
 
 async function addVideo(v){
