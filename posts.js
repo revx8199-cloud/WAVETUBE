@@ -2,10 +2,8 @@
 
 // ── POSTY ─────────────────────────────────────────────────────────────────────
 const POSTS_PAGE_SIZE=5;
-async function getPosts(userId,email,offset,limit){
-  let q=sb.from('posts').select('*').or(`user_id.eq.${userId||'null'},user_email.eq.${email||'null'}`).is('deleted_at',null).order('created_at',{ascending:false});
-  if(offset!=null&&limit!=null)q=q.range(offset,offset+limit-1);
-  const{data}=await q;
+async function getPosts(userId,email){
+  const{data}=await sb.from('posts').select('*').or(`user_id.eq.${userId||'null'},user_email.eq.${email||'null'}`).is('deleted_at',null).order('created_at',{ascending:false});
   return data||[];
 }
 
@@ -90,7 +88,7 @@ function renderChannelShorts(){
 }
 
 let currentPostsCache=[];
-let postsPageState={offset:0,hasMore:true,loading:false,isOwner:false};
+let postsPageState={list:[],shown:0,isOwner:false};
 let postsObserver=null;
 async function renderPosts(){
   closeEmojiPicker();
@@ -99,40 +97,31 @@ async function renderPosts(){
   const pc=document.getElementById('posts-container');
   if(!pc)return;
   pc.innerHTML=`<div style="padding:20px;color:#555;font-size:14px">${t('posts_loading')}</div>`;
-  const posts=await getPosts(userId,email,0,POSTS_PAGE_SIZE);
+  const posts=await getPosts(userId,email); // jedno zapytanie - dane postów są małe, nie ma co dzielić na strony sieciowo
   currentPostsCache=posts;
-  postsPageState={offset:posts.length,hasMore:posts.length===POSTS_PAGE_SIZE,loading:false,isOwner};
+  postsPageState={list:posts,shown:0,isOwner};
   let html='<div class="posts-grid" id="posts-grid">';
   if(isOwner){
     html+=`<button class="add-post-btn" onclick="openAddPost()">${t('posts_add_btn')}</button>`;
   }
   if(!posts.length){
     html+=`<div style="color:#555;font-size:14px;padding:20px 0">${t('posts_none')}</div>`;
-  } else {
-    const likedPosts=new Set(JSON.parse(localStorage.getItem('liked_posts')||'[]'));
-    html+=posts.map(p=>postCardHtml(p,isOwner,likedPosts)).join('');
   }
   html+='</div>';
   pc.innerHTML=html;
-  setupPostsSentinel();
+  if(posts.length)loadNextPostsPage();
 }
 
-async function loadMorePosts(){
-  if(!postsPageState.hasMore||postsPageState.loading)return;
-  postsPageState.loading=true;
-  const{userId,email}=currentChannelUser;
-  const more=await getPosts(userId,email,postsPageState.offset,POSTS_PAGE_SIZE);
-  currentPostsCache=currentPostsCache.concat(more);
-  postsPageState.offset+=more.length;
-  postsPageState.hasMore=more.length===POSTS_PAGE_SIZE;
-  postsPageState.loading=false;
+function loadNextPostsPage(){
   const grid=document.getElementById('posts-grid');
-  if(grid&&more.length){
+  if(!grid)return;
+  const{list,shown}=postsPageState;
+  const next=list.slice(shown,shown+POSTS_PAGE_SIZE);
+  if(next.length){
     const likedPosts=new Set(JSON.parse(localStorage.getItem('liked_posts')||'[]'));
-    const sentinel=document.getElementById('posts-sentinel');
-    const htmlChunk=more.map(p=>postCardHtml(p,postsPageState.isOwner,likedPosts)).join('');
-    if(sentinel)sentinel.insertAdjacentHTML('beforebegin',htmlChunk);
-    else grid.insertAdjacentHTML('beforeend',htmlChunk);
+    const htmlChunk=next.map(p=>postCardHtml(p,postsPageState.isOwner,likedPosts)).join('');
+    grid.insertAdjacentHTML('beforeend',htmlChunk);
+    postsPageState.shown+=next.length;
   }
   setupPostsSentinel();
 }
@@ -141,7 +130,7 @@ function setupPostsSentinel(){
   const grid=document.getElementById('posts-grid');
   const old=document.getElementById('posts-sentinel');
   if(old)old.remove();
-  if(!grid||!postsPageState.hasMore)return;
+  if(!grid||postsPageState.shown>=postsPageState.list.length)return;
   const sentinel=document.createElement('div');
   sentinel.id='posts-sentinel';
   sentinel.style.cssText='height:1px';
@@ -150,9 +139,9 @@ function setupPostsSentinel(){
   postsObserver=new IntersectionObserver(entries=>{
     if(entries[0].isIntersecting){
       postsObserver.disconnect();
-      loadMorePosts();
+      loadNextPostsPage();
     }
-  },{rootMargin:'150px'});
+  },{rootMargin:'100px'});
   postsObserver.observe(sentinel);
 }
 
