@@ -370,7 +370,7 @@ const TERMS_CONTENT={
 <h4>11. Wiek</h4>
 <p>Z aplikacji mogą korzystać osoby, które ukończyły 13 lat. Jeśli nie spełniasz tego wymogu, nie zakładaj konta.</p>
 <h4>12. Kontakt</h4>
-<p>W sprawach regulaminu, zgłoszeń lub odwołań od bana skontaktuj się z administratorem przez wiadomości w aplikacji.</p>
+<p>W sprawach regulaminu, zgłoszeń lub odwołań od bana skontaktuj się z administratorem przez wiadomości w aplikacji lub e-mailowo: wavetubebuisness@gmail.com. Administrator nie ma wglądu w treść prywatnych wiadomości między użytkownikami — jeśli zgłaszasz problem związany z wiadomościami, opisz go administratorowi samodzielnie.</p>
 `,
   en:`<h4>1. General provisions</h4>
 <p>By using WaveTube you accept these rules. If you do not agree, you may not use the app. The administrator reserves the right to change the rules — we will inform you in the app about significant changes.</p>
@@ -395,7 +395,7 @@ const TERMS_CONTENT={
 <h4>11. Age</h4>
 <p>The app may be used by people aged 13 and older. If you do not meet this requirement, do not create an account.</p>
 <h4>12. Contact</h4>
-<p>For questions about these rules, reports, or ban appeals, contact the administrator via messages in the app.</p>
+<p>For questions about these rules, reports, or ban appeals, contact the administrator via messages in the app or by email: wavetubebuisness@gmail.com. The administrator cannot view the content of private messages between users — if you're reporting a problem involving a message, please describe it yourself to the administrator.</p>
 `,
   ru:`<h4>1. Общие положения</h4>
 <p>Используя WaveTube, вы принимаете настоящие правила. Если вы не согласны, вы не можете пользоваться приложением. Администратор оставляет за собой право изменять правила — о существенных изменениях мы сообщим в приложении.</p>
@@ -420,7 +420,7 @@ const TERMS_CONTENT={
 <h4>11. Возраст</h4>
 <p>Приложением могут пользоваться лица старше 13 лет. Если вы не соответствуете этому требованию, не создавайте аккаунт.</p>
 <h4>12. Контакты</h4>
-<p>По вопросам правил, жалоб или обжалования бана обращайтесь к администратору через сообщения в приложении.</p>
+<p>По вопросам правил, жалоб или обжалования бана обращайтесь к администратору через сообщения в приложении или по e-mail: wavetubebuisness@gmail.com. Администратор не имеет доступа к содержимому личных сообщений между пользователями — если жалоба связана с сообщением, опишите её администратору самостоятельно.</p>
 `
 };
 
