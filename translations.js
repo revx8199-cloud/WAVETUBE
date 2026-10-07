@@ -410,7 +410,7 @@ const TERMS_CONTENT={
 <h4>7. Zgłoszenia</h4>
 <p>Możesz zgłaszać posty i inne treści naruszające regulamin przy użyciu funkcji zgłoszeń w aplikacji. Nadużywanie funkcji zgłoszeń (fałszywe zgłoszenia) samo w sobie może skutkować sankcjami.</p>
 <h4>8. Panel VIP</h4>
-<p>Funkcje VIP są dodatkiem do standardowego konta i nie zwalniają z przestrzegania niniejszego regulaminu.</p>
+<p>Funkcje VIP są dodatkiem do standardowego konta i nie zwalniają z przestrzegania niniejszego regulaminu. Panel VIP można otrzymać poprzez jednorazowe wsparcie WaveTube w wysokości 18 zł — po dokonaniu wpłaty status VIP jest przyznawany na stałe. Warunkiem przyznania VIP jest podanie w polu wiadomości/notatki przy wpłacie adresu e-mail, na który jesteś zalogowany/a w WaveTube — bez tego administrator nie będzie wiedział, komu przyznać VIP.</p>
 <h4>9. Prywatność i dane osobowe</h4>
 <p>Twój adres e-mail oraz inne dane osobowe (w tym adres IP) są widoczne wyłącznie dla administratora — pozostali użytkownicy ich nie widzą. Przetwarzamy dane niezbędne do działania aplikacji (profil, treści, które publikujesz, adres IP dla celów bezpieczeństwa).</p>
 <h4>10. Odpowiedzialność</h4>
@@ -435,7 +435,7 @@ const TERMS_CONTENT={
 <h4>7. Reports</h4>
 <p>You can report posts and other content that violates these rules using the report feature in the app. Abusing the report feature (false reports) may itself result in sanctions.</p>
 <h4>8. VIP panel</h4>
-<p>VIP features are an addition to a standard account and do not exempt you from following these rules.</p>
+<p>VIP features are an addition to a standard account and do not exempt you from following these rules. The VIP panel can be obtained through a one-time donation to WaveTube of 18 PLN — once the payment is made, VIP status is granted permanently. VIP activation requires writing the email you use to log in to WaveTube in the payment's message/note field — without it, the administrator won't know who to grant VIP to.</p>
 <h4>9. Privacy and personal data</h4>
 <p>Your email address and other personal data (including your IP address) are visible only to the administrator — other users cannot see them. We process data necessary for the app to work (profile, content you publish, IP address for security purposes).</p>
 <h4>10. Liability</h4>
@@ -460,7 +460,7 @@ const TERMS_CONTENT={
 <h4>7. Жалобы</h4>
 <p>Вы можете жаловаться на посты и другой контент, нарушающий правила, с помощью функции жалоб в приложении. Злоупотребление функцией жалоб (ложные жалобы) само по себе может привести к санкциям.</p>
 <h4>8. VIP-панель</h4>
-<p>Функции VIP являются дополнением к обычному аккаунту и не освобождают от соблюдения настоящих правил.</p>
+<p>Функции VIP являются дополнением к обычному аккаунту и не освобождают от соблюдения настоящих правил. VIP-панель можно получить через единоразовую поддержку WaveTube в размере 18 злотых — после оплаты статус VIP предоставляется навсегда. Условием активации VIP является указание в поле сообщения/заметки при оплате email, на который ты зарегистрирован(а) в WaveTube — без этого администратор не будет знать, кому выдать VIP.</p>
 <h4>9. Конфиденциальность и личные данные</h4>
 <p>Ваш адрес электронной почты и другие личные данные (включая IP-адрес) видны только администратору — остальные пользователи их не видят. Мы обрабатываем данные, необходимые для работы приложения (профиль, публикуемый контент, IP-адрес в целях безопасности).</p>
 <h4>10. Ответственность</h4>
