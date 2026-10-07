@@ -265,8 +265,8 @@ function renderVipPanel(){
   const current=myNameColor||'#ffd700';
   body.innerHTML=`
     <div style="margin-bottom:24px;padding-bottom:20px;border-bottom:1px solid var(--border)">
-      <div style="font-size:13px;font-weight:700;color:var(--text-primary);margin-bottom:4px">🏅 Kolor plakietki VIP</div>
-      <p style="color:var(--text-secondary);font-size:12px;margin-bottom:12px">Wybierz kolor swojej plakietki widocznej obok nicku (niebieski zarezerwowany dla administratora).</p>
+      <div style="font-size:13px;font-weight:700;color:var(--text-primary);margin-bottom:4px">${t('vip_badge_title')}</div>
+      <p style="color:var(--text-secondary);font-size:12px;margin-bottom:12px">${t('vip_badge_desc')}</p>
       <div style="display:flex;flex-wrap:wrap;gap:10px;margin-bottom:10px">
         ${VIP_BADGE_COLORS.map(c=>`<div onclick="saveVipBadgeColor('${jsesc(c)}')" style="width:34px;height:34px;border-radius:50%;background:${c};cursor:pointer;border:3px solid ${vipBadgeColor===c?'#fff':'transparent'};display:flex;align-items:center;justify-content:center">${vipBadgeColor===c?'<svg viewBox="0 0 24 24" width="14" height="14" fill="#000"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/></svg>':''}</div>`).join('')}
       </div>
@@ -277,34 +277,34 @@ function renderVipPanel(){
     </div>
 
     <div style="margin-bottom:24px;padding-bottom:20px;border-bottom:1px solid var(--border)">
-      <div style="font-size:13px;font-weight:700;color:var(--text-primary);margin-bottom:4px">🎨 Kolor nicku</div>
-      <p style="color:var(--text-secondary);font-size:12px;margin-bottom:14px">Kolor Twojej nazwy w komentarzach, na filmach i postach.</p>
+      <div style="font-size:13px;font-weight:700;color:var(--text-primary);margin-bottom:4px">${t('vip_nick_color_title')}</div>
+      <p style="color:var(--text-secondary);font-size:12px;margin-bottom:14px">${t('vip_nick_color_desc')}</p>
       <div style="display:flex;align-items:center;gap:16px;margin-bottom:16px">
         <input type="color" id="vip-color-inp" value="${current}" style="width:56px;height:56px;border:none;border-radius:10px;cursor:pointer;background:none;padding:0">
         <div id="vip-color-preview" style="font-size:16px;font-weight:700;color:${esc(myNameColor||'#fff')};font-family:${fontCssFor(myNameFont)}">${myDisplayName}</div>
       </div>
       <div style="display:flex;gap:10px">
-        <button onclick="saveVipColor()" style="background:#ffd700;border:none;color:#000;padding:10px 20px;border-radius:20px;cursor:pointer;font-size:13px;font-weight:700">Zapisz kolor</button>
-        <button onclick="resetVipColor()" style="background:var(--border-soft);border:none;color:var(--text-primary);padding:10px 20px;border-radius:20px;cursor:pointer;font-size:13px">Resetuj</button>
+        <button onclick="saveVipColor()" style="background:#ffd700;border:none;color:#000;padding:10px 20px;border-radius:20px;cursor:pointer;font-size:13px;font-weight:700">${t('vip_save_color_btn')}</button>
+        <button onclick="resetVipColor()" style="background:var(--border-soft);border:none;color:var(--text-primary);padding:10px 20px;border-radius:20px;cursor:pointer;font-size:13px">${t('vip_reset_btn')}</button>
       </div>
     </div>
 
     <div style="margin-bottom:24px;padding-bottom:20px;border-bottom:1px solid var(--border)">
-      <div style="font-size:13px;font-weight:700;color:var(--text-primary);margin-bottom:4px">✏️ Kolor tekstu komentarzy</div>
-      <p style="color:var(--text-secondary);font-size:12px;margin-bottom:14px">Kolor treści Twoich komentarzy pod filmami, postami i ogłoszeniami.</p>
+      <div style="font-size:13px;font-weight:700;color:var(--text-primary);margin-bottom:4px">${t('vip_text_color_title')}</div>
+      <p style="color:var(--text-secondary);font-size:12px;margin-bottom:14px">${t('vip_text_color_desc')}</p>
       <div style="display:flex;align-items:center;gap:16px;margin-bottom:16px">
         <input type="color" id="vip-textcolor-inp" value="${myTextColor||'#ffffff'}" style="width:56px;height:56px;border:none;border-radius:10px;cursor:pointer;background:none;padding:0">
-        <div style="font-size:14px;color:${esc(myTextColor||'var(--text-primary)')}">Tak będzie wyglądać treść komentarza.</div>
+        <div style="font-size:14px;color:${esc(myTextColor||'var(--text-primary)')}">${t('vip_text_color_preview')}</div>
       </div>
       <div style="display:flex;gap:10px">
-        <button onclick="saveVipTextColor()" style="background:#ffd700;border:none;color:#000;padding:10px 20px;border-radius:20px;cursor:pointer;font-size:13px;font-weight:700">Zapisz kolor</button>
-        <button onclick="resetVipTextColor()" style="background:var(--border-soft);border:none;color:var(--text-primary);padding:10px 20px;border-radius:20px;cursor:pointer;font-size:13px">Resetuj</button>
+        <button onclick="saveVipTextColor()" style="background:#ffd700;border:none;color:#000;padding:10px 20px;border-radius:20px;cursor:pointer;font-size:13px;font-weight:700">${t('vip_save_color_btn')}</button>
+        <button onclick="resetVipTextColor()" style="background:var(--border-soft);border:none;color:var(--text-primary);padding:10px 20px;border-radius:20px;cursor:pointer;font-size:13px">${t('vip_reset_btn')}</button>
       </div>
     </div>
 
     <div style="margin-bottom:24px;padding-bottom:20px;border-bottom:1px solid var(--border)">
-      <div style="font-size:13px;font-weight:700;color:var(--text-primary);margin-bottom:4px">🖼️ Ramka avatara</div>
-      <p style="color:var(--text-secondary);font-size:12px;margin-bottom:14px">Kolorowa obwódka wokół Twojego zdjęcia profilowego, widoczna na Twoim kanale.</p>
+      <div style="font-size:13px;font-weight:700;color:var(--text-primary);margin-bottom:4px">${t('vip_avatar_frame_title')}</div>
+      <p style="color:var(--text-secondary);font-size:12px;margin-bottom:14px">${t('vip_avatar_frame_desc')}</p>
       <div style="display:flex;align-items:center;gap:16px;margin-bottom:14px">
         <div class="${myAvatarParticles?'avatar-particle-wrap':''}" style="${myAvatarParticles?'margin-top:0':''}">
           <div style="width:64px;height:64px;border-radius:50%;padding:3px;${myAvatarFrame?`background:${esc(myAvatarFrame)}`:'background:transparent'}">
@@ -314,14 +314,14 @@ function renderVipPanel(){
           </div>
           ${myAvatarParticles?`<span class="av-particle p1">${myAvatarParticleType}</span><span class="av-particle p2">${myAvatarParticleType}</span><span class="av-particle p3">${myAvatarParticleType}</span><span class="av-particle p4">${myAvatarParticleType}</span><span class="av-particle p5">${myAvatarParticleType}</span><span class="av-particle p6">${myAvatarParticleType}</span>`:''}
         </div>
-        <div style="font-size:12px;color:var(--text-tertiary)">Podgląd</div>
+        <div style="font-size:12px;color:var(--text-tertiary)">${t('vip_preview_label')}</div>
       </div>
       <div style="display:flex;flex-wrap:wrap;gap:10px;margin-bottom:16px">
-        <div onclick="resetAvatarFrame()" style="width:34px;height:34px;border-radius:50%;background:var(--bg-sunken);border:2px dashed var(--border);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:14px" title="Brak ramki">${!myAvatarFrame?'✓':'✕'}</div>
+        <div onclick="resetAvatarFrame()" style="width:34px;height:34px;border-radius:50%;background:var(--bg-sunken);border:2px dashed var(--border);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:14px" title="${t('vip_no_frame')}">${!myAvatarFrame?'✓':'✕'}</div>
         ${AVATAR_FRAME_COLORS.map(c=>`<div onclick="saveAvatarFrame('${jsesc(c)}')" style="width:34px;height:34px;border-radius:50%;background:${c};cursor:pointer;border:3px solid ${myAvatarFrame===c?'#fff':'transparent'};display:flex;align-items:center;justify-content:center">${myAvatarFrame===c?'<svg viewBox="0 0 24 24" width="14" height="14"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z" fill="#fff" stroke="#000" stroke-width="1"/></svg>':''}</div>`).join('')}
       </div>
       <div onclick="toggleAvatarParticles()" style="display:flex;align-items:center;justify-content:space-between;cursor:pointer;background:var(--bg-sunken);border-radius:10px;padding:12px 14px">
-        <div><div style="font-size:13px;font-weight:600">${myAvatarParticleType} Efekt cząsteczek</div><div style="font-size:11px;color:var(--text-tertiary)">Subtelne iskierki wokół avatara na Twoim kanale</div></div>
+        <div><div style="font-size:13px;font-weight:600">${myAvatarParticleType} ${t('vip_particles_label')}</div><div style="font-size:11px;color:var(--text-tertiary)">${t('vip_particles_desc')}</div></div>
         <div style="width:40px;height:22px;border-radius:12px;background:${myAvatarParticles?'#3ea6ff':'var(--border)'};position:relative;flex-shrink:0;transition:background .2s">
           <div style="width:18px;height:18px;border-radius:50%;background:#fff;position:absolute;top:2px;left:${myAvatarParticles?'20px':'2px'};transition:left .2s"></div>
         </div>
@@ -332,30 +332,30 @@ function renderVipPanel(){
     </div>
 
     <div>
-      <div style="font-size:13px;font-weight:700;color:var(--text-primary);margin-bottom:4px">🖼️ Ramka banera</div>
-      <div style="font-size:11px;color:var(--text-tertiary);margin-bottom:10px">Kolorowa obwódka wokół banera kanału</div>
+      <div style="font-size:13px;font-weight:700;color:var(--text-primary);margin-bottom:4px">${t('vip_banner_frame_title')}</div>
+      <div style="font-size:11px;color:var(--text-tertiary);margin-bottom:10px">${t('vip_banner_frame_desc')}</div>
       <div style="height:60px;border-radius:8px;background:linear-gradient(135deg,#1a1a2e,#16213e);margin-bottom:12px;${myBannerFrame?`border:4px solid ${esc(myBannerFrame)};box-sizing:border-box`:''}"></div>
       <div style="display:flex;flex-wrap:wrap;gap:10px">
-        <div onclick="resetBannerFrame()" style="width:34px;height:34px;border-radius:8px;background:var(--bg-sunken);border:2px dashed var(--border);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:14px" title="Brak ramki">${!myBannerFrame?'✓':'✕'}</div>
+        <div onclick="resetBannerFrame()" style="width:34px;height:34px;border-radius:8px;background:var(--bg-sunken);border:2px dashed var(--border);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:14px" title="${t('vip_no_frame')}">${!myBannerFrame?'✓':'✕'}</div>
         ${AVATAR_FRAME_COLORS.map(c=>`<div onclick="saveBannerFrame('${jsesc(c)}')" style="width:34px;height:34px;border-radius:8px;background:${c};cursor:pointer;border:3px solid ${myBannerFrame===c?'#fff':'transparent'};display:flex;align-items:center;justify-content:center">${myBannerFrame===c?'<svg viewBox="0 0 24 24" width="14" height="14"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z" fill="#fff" stroke="#000" stroke-width="1"/></svg>':''}</div>`).join('')}
       </div>
     </div>
 
     <div style="margin-bottom:24px;padding-bottom:20px;border-bottom:1px solid var(--border)">
-      <div style="font-size:13px;font-weight:700;color:var(--text-primary);margin-bottom:4px">🔡 Czcionka treści komentarzy</div>
-      <p style="color:var(--text-secondary);font-size:12px;margin-bottom:14px">Styl czcionki samej treści Twoich komentarzy (nie nicku).</p>
+      <div style="font-size:13px;font-weight:700;color:var(--text-primary);margin-bottom:4px">${t('vip_text_font_title')}</div>
+      <p style="color:var(--text-secondary);font-size:12px;margin-bottom:14px">${t('vip_text_font_desc')}</p>
       <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:8px">
         ${FONT_OPTIONS.map(f=>`
           <div onclick="saveVipTextFont('${jsesc(f.id)}')" style="display:flex;flex-direction:column;align-items:flex-start;gap:4px;padding:12px 14px;border-radius:10px;cursor:pointer;background:${myTextFont===f.id?'rgba(255,215,0,.12)':'var(--bg-sunken)'};border:1px solid ${myTextFont===f.id?'#ffd700':'var(--border)'};overflow:hidden">
-            <span style="font-family:${f.css};font-size:14px;color:${esc(myTextColor||'var(--text-primary)')};white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%">Tak wygląda treść komentarza</span>
+            <span style="font-family:${f.css};font-size:14px;color:${esc(myTextColor||'var(--text-primary)')};white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%">${t('vip_text_font_preview')}</span>
             <span style="font-size:11px;color:var(--text-tertiary)">${f.label}${myTextFont===f.id?' ✓':''}</span>
           </div>`).join('')}
       </div>
     </div>
 
     <div>
-      <div style="font-size:13px;font-weight:700;color:var(--text-primary);margin-bottom:4px">🔤 Czcionka nicku</div>
-      <p style="color:var(--text-secondary);font-size:12px;margin-bottom:14px">Wybierz styl czcionki dla swojego nicku.</p>
+      <div style="font-size:13px;font-weight:700;color:var(--text-primary);margin-bottom:4px">${t('vip_nick_font_title')}</div>
+      <p style="color:var(--text-secondary);font-size:12px;margin-bottom:14px">${t('vip_nick_font_desc')}</p>
       <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:8px">
         ${FONT_OPTIONS.map(f=>`
           <div onclick="saveVipFont('${jsesc(f.id)}')" style="display:flex;flex-direction:column;align-items:flex-start;gap:4px;padding:12px 14px;border-radius:10px;cursor:pointer;background:${myNameFont===f.id?'rgba(255,215,0,.12)':'var(--bg-sunken)'};border:1px solid ${myNameFont===f.id?'#ffd700':'var(--border)'};overflow:hidden">
@@ -364,7 +364,7 @@ function renderVipPanel(){
           </div>`).join('')}
       </div>
     </div>
-    <p style="color:var(--text-tertiary);font-size:11px;margin-top:20px">Zmiany obejmą nowe komentarze, filmy i posty — starsze wpisy zachowają dotychczasowy wygląd.</p>
+    <p style="color:var(--text-tertiary);font-size:11px;margin-top:20px">${t('vip_footer_note')}</p>
   `;
 }
 
@@ -375,7 +375,7 @@ async function saveVipBadgeColor(color){
   vipBadgeColor=color;
   vipEmailsMap.set(currentUser.email,color);
   renderVipPanel();
-  toast('Kolor plakietki zapisany! 🏅');
+  toast(t('vip_toast_badge_saved'));
 }
 
 async function saveVipColor(){
@@ -385,7 +385,7 @@ async function saveVipColor(){
   if(error){toast('Błąd: '+error.message);return;}
   myNameColor=hex;
   renderVipPanel();
-  toast('Kolor nicku zapisany! 🎨');
+  toast(t('vip_toast_nick_color_saved'));
 }
 
 async function resetVipColor(){
@@ -393,7 +393,7 @@ async function resetVipColor(){
   await sb.from('profiles').upsert([{id:currentUser.id,name_color:''}],{onConflict:'id'});
   myNameColor='';
   renderVipPanel();
-  toast('Kolor zresetowany');
+  toast(t('vip_toast_color_reset'));
 }
 
 async function saveAvatarFrame(color){
@@ -403,7 +403,7 @@ async function saveAvatarFrame(color){
   myAvatarFrame=color;
   renderVipPanel();
   updateAuthUI();
-  toast('Ramka avatara zapisana! 🖼️');
+  toast(t('vip_toast_frame_saved'));
 }
 
 async function resetAvatarFrame(){
@@ -412,7 +412,7 @@ async function resetAvatarFrame(){
   myAvatarFrame='';
   renderVipPanel();
   updateAuthUI();
-  toast('Ramka usunięta');
+  toast(t('vip_toast_frame_removed'));
 }
 
 async function saveVipTextFont(fontId){
@@ -421,7 +421,7 @@ async function saveVipTextFont(fontId){
   if(error){toast('Błąd: '+error.message);return;}
   myTextFont=fontId;
   renderVipPanel();
-  toast('Czcionka komentarzy zapisana! 🔡');
+  toast(t('vip_toast_text_font_saved'));
 }
 
 async function saveVipFont(fontId){
@@ -430,7 +430,7 @@ async function saveVipFont(fontId){
   if(error){toast('Błąd: '+error.message);return;}
   myNameFont=fontId;
   renderVipPanel();
-  toast('Czcionka zapisana! 🔤');
+  toast(t('vip_toast_font_saved'));
 }
 
 
@@ -566,14 +566,14 @@ async function saveVipTextColor(){
   const{error}=await sb.from('profiles').upsert([{id:currentUser.id,text_color:hex}],{onConflict:'id'});
   if(error){toast('Błąd: '+error.message);return;}
   myTextColor=hex;
-  toast('Zapisano kolor tekstu');
+  toast(t('vip_toast_text_color_saved'));
   renderVipPanel();
 }
 async function resetVipTextColor(){
   if(!isVIP()&&!isAdmin())return;
   await sb.from('profiles').upsert([{id:currentUser.id,text_color:''}],{onConflict:'id'});
   myTextColor='';
-  toast('Zresetowano kolor tekstu');
+  toast(t('vip_toast_text_color_reset'));
   renderVipPanel();
 }
 
@@ -584,7 +584,7 @@ async function saveBannerFrame(color){
   myBannerFrame=color;
   renderVipPanel();
   updateAuthUI();
-  toast('Ramka banera zapisana! 🖼️');
+  toast(t('vip_toast_banner_frame_saved'));
 }
 
 async function resetBannerFrame(){
@@ -593,7 +593,7 @@ async function resetBannerFrame(){
   myBannerFrame='';
   renderVipPanel();
   updateAuthUI();
-  toast('Ramka banera usunięta');
+  toast(t('vip_toast_banner_frame_removed'));
 }
 
 async function saveAvatarParticleType(emoji){
@@ -612,7 +612,7 @@ async function toggleAvatarParticles(){
   if(error){toast('Błąd: '+error.message);myAvatarParticles=!myAvatarParticles;return;}
   renderVipPanel();
   updateAuthUI();
-  toast(myAvatarParticles?'Cząsteczki włączone ✨':'Cząsteczki wyłączone');
+  toast(myAvatarParticles?t('vip_toast_particles_on'):t('vip_toast_particles_off'));
 }
 
 async function saveMyNickname(){
@@ -635,7 +635,7 @@ async function saveMyFont(fontId){
   if(error){toast('Błąd zapisu czcionki: '+error.message);return;}
   myNameFont=fontId;
   renderAdminPanel();
-  toast('Czcionka zapisana! 🔤');
+  toast(t('vip_toast_font_saved'));
 }
 
 async function saveMyNameColor(){
@@ -644,7 +644,7 @@ async function saveMyNameColor(){
   const{error}=await sb.from('profiles').upsert([{id:currentUser.id,name_color:hex}],{onConflict:'id'});
   if(error){toast('Błąd zapisu koloru: '+error.message);return;}
   myNameColor=hex;
-  toast('Kolor nicku zapisany! 🎨');
+  toast(t('vip_toast_nick_color_saved'));
   document.getElementById('admin-color-preview').style.color=hex;
 }
 
@@ -654,7 +654,7 @@ async function resetMyNameColor(){
   await sb.from('profiles').upsert([{id:currentUser.id,name_color:''}],{onConflict:'id'});
   document.getElementById('admin-color-inp').value='#3ea6ff';
   document.getElementById('admin-color-preview').style.color='#fff';
-  toast('Kolor zresetowany');
+  toast(t('vip_toast_color_reset'));
 }
 
 async function checkIfBanned(){
