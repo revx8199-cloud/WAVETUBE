@@ -180,7 +180,7 @@ function postCardHtml(p,isOwner,likedPosts){
               ${c.avatar?`<img src="${esc(c.avatar)}" style="width:28px;height:28px;border-radius:50%;object-fit:cover;flex-shrink:0${c.avatar_frame?`;border:2px solid ${esc(c.avatar_frame)};box-sizing:border-box`:''}">`:`<div style="width:28px;height:28px;border-radius:50%;background:${esc(c.col||'#cc0000')};display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0">${(c.user||'?')[0]}</div>`}
               <div style="flex:1">
                 <div style="font-size:12px;font-weight:600;display:flex;align-items:center">${esc(c.user)}${verifiedBadge(c.email||'')} <span style="color:var(--text-tertiary);font-weight:400;margin-left:6px">${c.time||''}</span></div>
-                <div style="font-size:13px${c.text_color?`;color:${esc(c.text_color)}`:';color:var(--text-secondary)'}">${esc(c.text)}</div>
+                <div style="font-size:13px${c.text_color?`;color:${esc(c.text_color)}`:';color:var(--text-secondary)'}${c.text_font?`;font-family:${fontCssFor(c.text_font)}`:''}">${esc(c.text)}</div>
                 ${currentUser?`<button onclick="togglePostReplyForm('${jsesc(p.id)}',${ci})" style="background:none;border:none;color:var(--text-secondary);cursor:pointer;font-size:11px;font-weight:600;padding:3px 0;margin-top:2px">${t('reply_btn')||'Odpowiedz'}</button>`:''}
                 <div id="preply-form-${p.id}-${ci}" style="display:none;margin-top:6px;gap:6px;align-items:center">
                   <input id="preply-inp-${p.id}-${ci}" placeholder="${t('post_comment_ph')}" style="width:100%;background:transparent;border:none;border-bottom:1px solid #444;color:var(--text-primary);padding:5px 0;font-size:12px;outline:none">
@@ -333,7 +333,7 @@ async function addPostComment(postId){
   if(!commentCooldownOk())return;
   const meta=currentUser.user_metadata;
   const now=new Date().toLocaleString('pl-PL',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'});
-  const c={user:getMyDisplayName(),text:inp.value.trim(),time:now,ts:Date.now(),col:'#cc0000',avatar:meta?.avatar_url||'',email:currentUser.email||'',user_id:currentUser.id,name_color:myNameColor||'',name_font:myNameFont||'',avatar_frame:myAvatarFrame||'',text_color:myTextColor||''};
+  const c={user:getMyDisplayName(),text:inp.value.trim(),time:now,ts:Date.now(),col:'#cc0000',avatar:meta?.avatar_url||'',email:currentUser.email||'',user_id:currentUser.id,name_color:myNameColor||'',name_font:myNameFont||'',avatar_frame:myAvatarFrame||'',text_color:myTextColor||'',text_font:myTextFont||''};
   await sb.rpc('add_post_comment',{p_id:postId,c});
   renderPosts();
 }

@@ -72,7 +72,7 @@ const TRANSLATIONS={
     toast_history_cleared:'Historia wyczyszczona!',
     subs_empty:'Nie subskrybujesz jeszcze nikogo!',subs_empty_sub:'Wejdź na czyjś kanał i kliknij Subskrybuj',
     subs_no_videos:'Brak filmów od subskrybowanych kanałów',
-    msg_conversations:'Konwersacje',msg_new_btn:'+ Nowa',msg_pick_conv:'Wybierz konwersację lub zacznij nową',msg_retention_note:'🕒 Czat czyści się co 30 dni',
+    msg_conversations:'Konwersacje',msg_new_btn:'+ Nowa',msg_pick_conv:'Wybierz konwersację lub zacznij nową',msg_retention_note:'🕒 Czat czyści się co 30 dni',msg_retention_note_vip:'🕒 Czat czyści się co 60 dni (VIP)',
     call_status_calling:'Dzwonię...',call_status_incoming:'Dzwoni...',call_accept:'Odbierz',call_reject:'Odrzuć',call_hangup:'Rozłącz',call_mute:'Wycisz mikrofon',call_boost:'Głośniej (wzmocnienie)',call_screenshare:'Udostępnij ekran',call_screenshare_stop:'Zatrzymaj udostępnianie',call_quality_good:'Dobre połączenie',call_quality_medium:'Średnie połączenie',call_quality_bad:'Słabe połączenie',call_quality_checking:'Sprawdzanie połączenia...',
     call_rejected_toast:'Połączenie odrzucone',call_busy_toast:'Użytkownik jest zajęty',call_ended_toast:'Połączenie zakończone',call_mic_denied_toast:'Brak dostępu do mikrofonu',call_busy_self_toast:'Masz już aktywne połączenie',
     msg_no_convs:'Brak konwersacji.',msg_no_convs_sub:'Wejdź na czyjś kanał i kliknij ✉️ Wiadomość',
@@ -186,7 +186,7 @@ const TRANSLATIONS={
     toast_history_cleared:'History cleared!',
     subs_empty:'You\'re not subscribed to anyone yet!',subs_empty_sub:'Visit a channel and click Subscribe',
     subs_no_videos:'No videos from your subscribed channels',
-    msg_conversations:'Conversations',msg_new_btn:'+ New',msg_pick_conv:'Select a conversation or start a new one',msg_retention_note:'🕒 Chat clears every 30 days',
+    msg_conversations:'Conversations',msg_new_btn:'+ New',msg_pick_conv:'Select a conversation or start a new one',msg_retention_note:'🕒 Chat clears every 30 days',msg_retention_note_vip:'🕒 Chat clears every 60 days (VIP)',
     call_status_calling:'Calling...',call_status_incoming:'Incoming call...',call_accept:'Accept',call_reject:'Decline',call_hangup:'Hang up',call_mute:'Mute mic',call_boost:'Louder (boost)',call_screenshare:'Share screen',call_screenshare_stop:'Stop sharing',call_quality_good:'Good connection',call_quality_medium:'Medium connection',call_quality_bad:'Poor connection',call_quality_checking:'Checking connection...',
     call_rejected_toast:'Call declined',call_busy_toast:'User is busy',call_ended_toast:'Call ended',call_mic_denied_toast:'No microphone access',call_busy_self_toast:'You already have an active call',
     msg_no_convs:'No conversations.',msg_no_convs_sub:'Visit someone\'s channel and click ✉️ Message',
@@ -300,7 +300,7 @@ const TRANSLATIONS={
     toast_history_cleared:'История очищена!',
     subs_empty:'Вы пока ни на кого не подписаны!',subs_empty_sub:'Зайдите на чей-нибудь канал и нажмите Подписаться',
     subs_no_videos:'Нет видео от каналов, на которые вы подписаны',
-    msg_conversations:'Беседы',msg_new_btn:'+ Новая',msg_pick_conv:'Выберите беседу или начните новую',msg_retention_note:'🕒 Чат очищается каждые 30 дней',
+    msg_conversations:'Беседы',msg_new_btn:'+ Новая',msg_pick_conv:'Выберите беседу или начните новую',msg_retention_note:'🕒 Чат очищается каждые 30 дней',msg_retention_note_vip:'🕒 Чат очищается каждые 60 дней (VIP)',
     call_status_calling:'Звоним...',call_status_incoming:'Входящий звонок...',call_accept:'Принять',call_reject:'Отклонить',call_hangup:'Завершить',call_mute:'Выключить микрофон',call_boost:'Громче (усиление)',call_screenshare:'Демонстрация экрана',call_screenshare_stop:'Остановить показ',call_quality_good:'Хорошее соединение',call_quality_medium:'Среднее соединение',call_quality_bad:'Плохое соединение',call_quality_checking:'Проверка соединения...',
     call_rejected_toast:'Звонок отклонён',call_busy_toast:'Пользователь занят',call_ended_toast:'Звонок завершён',call_mic_denied_toast:'Нет доступа к микрофону',call_busy_self_toast:'У вас уже есть активный звонок',
     msg_no_convs:'Нет бесед.',msg_no_convs_sub:'Зайдите на чей-нибудь канал и нажмите ✉️ Сообщение',
@@ -521,7 +521,7 @@ async function downloadMyData(){
   btn.disabled=true;btn.textContent='⏳ '+t('settings_data_loading');
   try{
     const uid=currentUser.id;
-    const{data:profile}=await sb.from('profiles').select('name,description,country,created_at,avatar,banner_url,name_color,name_font,text_color,avatar_frame,avatar_particles,avatar_particle_type,banner_frame,is_vip,vip_since,allow_messages,allow_calls,terms_accepted').eq('id',uid).single();
+    const{data:profile}=await sb.from('profiles').select('name,description,country,created_at,avatar,banner_url,name_color,name_font,text_color,text_font,avatar_frame,avatar_particles,avatar_particle_type,banner_frame,is_vip,vip_since,allow_messages,allow_calls,terms_accepted').eq('id',uid).single();
     const[videos,posts,msgsSent,msgsRecv,subs,subscribers,notifs,saved,watchLater,watchHistory]=await Promise.all([
       sb.from('videos').select('id,title,description,category,views,likes,dislikes,date,created_at,tags,is_short,visibility,language').eq('user_id',uid),
       sb.from('posts').select('id,text,likes,created_at').eq('user_id',uid),

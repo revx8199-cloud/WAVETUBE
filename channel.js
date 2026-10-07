@@ -341,6 +341,18 @@ function renderVipPanel(){
       </div>
     </div>
 
+    <div style="margin-bottom:24px;padding-bottom:20px;border-bottom:1px solid var(--border)">
+      <div style="font-size:13px;font-weight:700;color:var(--text-primary);margin-bottom:4px">🔡 Czcionka treści komentarzy</div>
+      <p style="color:var(--text-secondary);font-size:12px;margin-bottom:14px">Styl czcionki samej treści Twoich komentarzy (nie nicku).</p>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:8px">
+        ${FONT_OPTIONS.map(f=>`
+          <div onclick="saveVipTextFont('${jsesc(f.id)}')" style="display:flex;flex-direction:column;align-items:flex-start;gap:4px;padding:12px 14px;border-radius:10px;cursor:pointer;background:${myTextFont===f.id?'rgba(255,215,0,.12)':'var(--bg-sunken)'};border:1px solid ${myTextFont===f.id?'#ffd700':'var(--border)'};overflow:hidden">
+            <span style="font-family:${f.css};font-size:14px;color:${esc(myTextColor||'var(--text-primary)')};white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%">Tak wygląda treść komentarza</span>
+            <span style="font-size:11px;color:var(--text-tertiary)">${f.label}${myTextFont===f.id?' ✓':''}</span>
+          </div>`).join('')}
+      </div>
+    </div>
+
     <div>
       <div style="font-size:13px;font-weight:700;color:var(--text-primary);margin-bottom:4px">🔤 Czcionka nicku</div>
       <p style="color:var(--text-secondary);font-size:12px;margin-bottom:14px">Wybierz styl czcionki dla swojego nicku.</p>
@@ -403,6 +415,15 @@ async function resetAvatarFrame(){
   toast('Ramka usunięta');
 }
 
+async function saveVipTextFont(fontId){
+  if(!isVIP())return;
+  const{error}=await sb.from('profiles').upsert([{id:currentUser.id,text_font:fontId}],{onConflict:'id'});
+  if(error){toast('Błąd: '+error.message);return;}
+  myTextFont=fontId;
+  renderVipPanel();
+  toast('Czcionka komentarzy zapisana! 🔡');
+}
+
 async function saveVipFont(fontId){
   if(!isVIP())return;
   const{error}=await sb.from('profiles').upsert([{id:currentUser.id,name_font:fontId}],{onConflict:'id'});
@@ -449,6 +470,7 @@ function isAdmin(){return!!(currentUser&&currentUser.email===ADMIN_EMAIL);}
 
 let myNameColor='';
 let myTextColor='';
+let myTextFont='';
 let myAvatarFrame='';
 let myBannerFrame='';
 let myAvatarParticles=false;
@@ -525,10 +547,11 @@ function fontCssFor(fontId){
 }
 
 async function loadMyNameColor(){
-  if(!currentUser){myNameColor='';myTextColor='';myNameFont='';myDisplayNick='';myAvatarFrame='';myAvatarParticles=false;myAvatarParticleType='✨';myBannerFrame='';return;}
-  const{data}=await sb.from('profiles').select('name_color,text_color,name_font,name,avatar_frame,avatar_particles,avatar_particle_type,banner_frame').eq('id',currentUser.id).single();
+  if(!currentUser){myNameColor='';myTextColor='';myTextFont='';myNameFont='';myDisplayNick='';myAvatarFrame='';myAvatarParticles=false;myAvatarParticleType='✨';myBannerFrame='';return;}
+  const{data}=await sb.from('profiles').select('name_color,text_color,text_font,name_font,name,avatar_frame,avatar_particles,avatar_particle_type,banner_frame').eq('id',currentUser.id).single();
   myNameColor=data?.name_color||'';
   myTextColor=data?.text_color||'';
+  myTextFont=data?.text_font||'';
   myNameFont=data?.name_font||'';
   myDisplayNick=data?.name||'';
   myAvatarFrame=data?.avatar_frame||'';

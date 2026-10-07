@@ -1253,7 +1253,7 @@ function renderAnnouncementCard(a){
           ${c.avatar?`<img src="${esc(c.avatar)}" style="width:28px;height:28px;border-radius:50%;object-fit:cover;flex-shrink:0;cursor:pointer${c.avatar_frame?`;border:2px solid ${esc(c.avatar_frame)};box-sizing:border-box`:''}" onclick="showChannel('${jsesc(c.user_id||'')}','${jsesc(c.user)}','${jsesc(c.avatar||'')}','')">`:`<div style="width:28px;height:28px;border-radius:50%;background:#cc0000;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0;cursor:pointer" onclick="showChannel('${jsesc(c.user_id||'')}','${jsesc(c.user)}','','')">${(c.user||'?')[0].toUpperCase()}</div>`}
           <div>
             <div style="font-size:12px;font-weight:600;cursor:pointer${c.name_color?`;color:${esc(c.name_color)}`:''}${c.name_font?`;font-family:${fontCssFor(c.name_font)}`:''}" onclick="showChannel('${jsesc(c.user_id||'')}','${jsesc(c.user)}','${jsesc(c.avatar||'')}','')">${esc(c.user)}</div>
-            <div style="font-size:13px${c.text_color?`;color:${esc(c.text_color)}`:';color:var(--text-secondary)'}">${esc(c.text)}</div>
+            <div style="font-size:13px${c.text_color?`;color:${esc(c.text_color)}`:';color:var(--text-secondary)'}${c.text_font?`;font-family:${fontCssFor(c.text_font)}`:''}">${esc(c.text)}</div>
           </div>
         </div>`).join('')||'<p style="color:var(--text-tertiary);font-size:12px">Brak komentarzy — bądź pierwszy!</p>'}
       </div>
@@ -1344,7 +1344,7 @@ async function addAnnouncementComment(id){
   const comment={
     user:getMyDisplayName(),
     text,ts:Date.now(),avatar:meta?.avatar_url||'',
-    user_id:currentUser.id,name_color:myNameColor||'',name_font:myNameFont||'',avatar_frame:myAvatarFrame||'',text_color:myTextColor||''
+    user_id:currentUser.id,name_color:myNameColor||'',name_font:myNameFont||'',avatar_frame:myAvatarFrame||'',text_color:myTextColor||'',text_font:myTextFont||''
   };
   const{error}=await sb.rpc('add_announcement_comment',{p_id:id,p_comment:comment});
   if(error){toast('Błąd: '+error.message);return;}
@@ -1583,7 +1583,7 @@ function renderC(){
             </div>`:''}
           </div>
         </div>
-        <div class="ctext" id="ctext-${i}" style="margin-bottom:8px;font-size:15px;line-height:1.5${c.text_color?`;color:${esc(c.text_color)}`:''}">${esc(c.text)}</div>
+        <div class="ctext" id="ctext-${i}" style="margin-bottom:8px;font-size:15px;line-height:1.5${c.text_color?`;color:${esc(c.text_color)}`:''}${c.text_font?`;font-family:${fontCssFor(c.text_font)}`:''}">${esc(c.text)}</div>
         <div id="cedit-${i}" style="display:none;margin-bottom:8px">
           <input id="cedit-inp-${i}" value="${(c.text||'').replace(/"/g,'&quot;')}" style="width:100%;background:transparent;border:none;border-bottom:1px solid #444;color:var(--text-primary);padding:6px 0;font-size:14px;outline:none">
           <div style="display:flex;justify-content:flex-end;gap:8px;margin-top:6px">
@@ -1633,7 +1633,7 @@ function renderC(){
                     ${replyCanDelete?`<button onclick="deleteReply(${i},${ri})" title="Usuń" class="cmt-icon-btn" style="width:26px;height:26px;font-size:12px">🗑</button>`:''}
                   </span>
                 </div>
-                <div style="font-size:13px;margin-top:2px${r.text_color?`;color:${esc(r.text_color)}`:';color:var(--text-secondary)'}">${esc(r.text)}</div>
+                <div style="font-size:13px;margin-top:2px${r.text_color?`;color:${esc(r.text_color)}`:';color:var(--text-secondary)'}${r.text_font?`;font-family:${fontCssFor(r.text_font)}`:''}">${esc(r.text)}</div>
               </div>
             </div>`;
             }).join('')}
@@ -1708,7 +1708,7 @@ async function postReply(index){
   const c=sortedList[index];
   if(!c)return;
   const origIdx=(cur.comments||[]).findIndex(x=>x.user===c.user&&x.text===c.text&&x.time===c.time);
-  const newR={user:getMyDisplayName(),text:txt,time:now,ts:Date.now(),avatar:meta?.avatar_url||'',user_email:currentUser.email,user_id:currentUser.id,name_color:myNameColor||'',name_font:myNameFont||'',avatar_frame:myAvatarFrame||'',text_color:myTextColor||''};
+  const newR={user:getMyDisplayName(),text:txt,time:now,ts:Date.now(),avatar:meta?.avatar_url||'',user_email:currentUser.email,user_id:currentUser.id,name_color:myNameColor||'',name_font:myNameFont||'',avatar_frame:myAvatarFrame||'',text_color:myTextColor||'',text_font:myTextFont||''};
   inp.value='';
   const{error}=await sb.rpc('add_video_comment_reply',{p_id:cur.id,c_index:origIdx,r:newR});
   if(error){toast('Błąd: '+error.message);return;}
@@ -1829,7 +1829,7 @@ async function postC(){
   if(!commentCooldownOk())return;
   const meta=currentUser.user_metadata;
   const now=new Date().toLocaleString('pl-PL',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'});
-  const newC={user:getMyDisplayName(),text:t,time:now,ts:Date.now(),col:'#cc0000',avatar:meta?.avatar_url||'',user_id:currentUser.id||'',user_email:currentUser.email||'',name_color:myNameColor||'',name_font:myNameFont||'',avatar_frame:myAvatarFrame||'',text_color:myTextColor||''};
+  const newC={user:getMyDisplayName(),text:t,time:now,ts:Date.now(),col:'#cc0000',avatar:meta?.avatar_url||'',user_id:currentUser.id||'',user_email:currentUser.email||'',name_color:myNameColor||'',name_font:myNameFont||'',avatar_frame:myAvatarFrame||'',text_color:myTextColor||'',text_font:myTextFont||''};
   document.getElementById('cinp').value='';
   const{error}=await sb.rpc('add_video_comment',{p_id:cur.id,c:newC});
   if(error){toast('Błąd: '+error.message);return;}
