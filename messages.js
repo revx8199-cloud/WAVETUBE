@@ -183,6 +183,18 @@ function showMessages(){
   document.getElementById('messages-page').classList.add('open');
   document.body.style.overflow='hidden';
   loadBlockedUsers().then(loadConvList);
+  updateRetentionNote();
+}
+
+async function updateRetentionNote(otherId){
+  const el=document.getElementById('msg-retention-note');
+  if(!el)return;
+  // Pytamy bazę wprost (nie przez getProfile/cache) - cache mojego profilu bywa
+  // nadpisany okrojonym obiektem bez is_vip przez saveProfile() przy logowaniu.
+  const ids=[currentUser.id,otherId].filter(Boolean);
+  const{data}=await sb.from('profiles').select('id,is_vip').in('id',ids);
+  const anyVip=(data||[]).some(p=>p.is_vip);
+  el.textContent=anyVip?t('msg_retention_note_vip'):t('msg_retention_note');
 }
 
 let blockedUsers={};
@@ -267,6 +279,7 @@ async function loadConvList(){
 async function openConv(convId,otherId,otherName,otherAvatar,otherEmail){
   currentConvId=convId;
   currentOtherUser={id:otherId,name:otherName,avatar:otherAvatar,email:otherEmail};
+  updateRetentionNote(otherId);
   // Mark as read
   await sb.from('messages').update({read:true}).eq('conv_id',convId).eq('receiver_id',currentUser.id);
   renderChatHeader();
