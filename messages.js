@@ -404,15 +404,23 @@ async function loadMessages(){
       (otherAvatar?`<img class="msg-bubble-av" src="${esc(otherAvatar)}">`:`<div class="msg-bubble-av-ph">${esc(otherInitial)}</div>`)):'';
     return`<div class="msg-bubble-wrap ${isSent?'sent':'received'}">
       ${avHtml}
-      <div class="msg-bubble-col">
+      <div class="msg-bubble-col" style="position:relative">
         ${imgHtml}${audioHtml}${txtHtml}
         <div class="msg-bubble-time">${time}</div>
+        ${isSent?`<button onclick="deleteChatMsg('${jsesc(m.id)}')" aria-label="${t('msg_delete_one')}" style="position:absolute;top:-6px;left:-26px;background:none;border:none;color:var(--text-tertiary);cursor:pointer;font-size:13px;padding:4px;opacity:.6" onmouseover="this.style.opacity=1" onmouseout="this.style.opacity=.6">🗑</button>`:''}
       </div>
     </div>`;
   }).join('');
   if(wasAtBottom||data[data.length-1]?.sender_id===currentUser.id){
     setTimeout(()=>{list.scrollTop=list.scrollHeight;},50);
   }
+}
+
+async function deleteChatMsg(msgId){
+  if(!currentUser)return;
+  if(!await showConfirm(t('confirm_delete_msg'),t('confirm_delete_msg_sub'),t('confirm_delete_default')))return;
+  await sb.from('messages').delete().eq('id',msgId).eq('sender_id',currentUser.id);
+  loadMessages();
 }
 
 async function sendChatMsg(){
