@@ -407,7 +407,7 @@ async function loadMessages(){
       <div class="msg-bubble-col" style="position:relative">
         ${imgHtml}${audioHtml}${txtHtml}
         <div class="msg-bubble-time">${time}</div>
-        ${isSent?`<button onclick="deleteChatMsg('${jsesc(m.id)}')" aria-label="${t('msg_delete_one')}" style="position:absolute;top:-6px;left:-26px;background:none;border:none;color:var(--text-tertiary);cursor:pointer;font-size:13px;padding:4px;opacity:.6" onmouseover="this.style.opacity=1" onmouseout="this.style.opacity=.6">🗑</button>`:''}
+        ${isSent?`<button onclick="deleteChatMsg('${jsesc(m.id)}')" aria-label="${t('msg_delete_one')}" style="position:absolute;top:50%;left:-38px;transform:translateY(-50%);width:28px;height:28px;border-radius:50%;background:var(--bg-sunken);border:1px solid var(--border);color:var(--text-primary);cursor:pointer;font-size:14px;display:flex;align-items:center;justify-content:center">🗑</button>`:''}
       </div>
     </div>`;
   }).join('');
