@@ -396,7 +396,16 @@ async function loadMessages(){
     const isSent=m.sender_id===currentUser.id;
     const time=new Date(m.created_at).toLocaleString('pl-PL',{hour:'2-digit',minute:'2-digit'});
     const imgHtml=m.image_url?`<img class="msg-bubble-img" src="${esc(m.image_url)}" onclick="openImgLightbox('${jsesc(m.image_url)}')">`:'';
-    const audioHtml=m.audio_url?`<audio class="msg-bubble-audio" controls src="${esc(m.audio_url)}" style="max-width:240px;display:block"></audio>`:'';
+    const audioHtml=m.audio_url?`
+      <div class="voice-msg" id="voice-${jsesc(m.id)}">
+        <audio preload="metadata" src="${esc(m.audio_url)}" style="display:none" ontimeupdate="updateVoiceProgress('${jsesc(m.id)}')" onended="resetVoicePlay('${jsesc(m.id)}')" onloadedmetadata="updateVoiceDuration('${jsesc(m.id)}')"></audio>
+        <button class="voice-play-btn" onclick="toggleVoicePlay('${jsesc(m.id)}')" aria-label="${t('voice_play')}">
+          <svg class="voice-play-icon" viewBox="0 0 24 24" width="14" height="14"><path d="M8 5v14l11-7z" fill="currentColor"/></svg>
+          <svg class="voice-pause-icon" viewBox="0 0 24 24" width="14" height="14" style="display:none"><path d="M6 5h4v14H6zM14 5h4v14h-4z" fill="currentColor"/></svg>
+        </button>
+        <div class="voice-progress-wrap" onclick="seekVoice(event,'${jsesc(m.id)}')"><div class="voice-progress-fill"></div></div>
+        <span class="voice-time">0:00</span>
+      </div>`:'';
     const txtHtml=m.text?`<div class="msg-bubble ${isSent?'sent':'received'}">${esc(m.text)}</div>`:'';
     // Avatar nadawcy pokazujemy tylko przy ostatniej wiadomości w serii od tej osoby (jak w Messengerze)
     const nextIsSameSender=data[idx+1]&&data[idx+1].sender_id===m.sender_id;
@@ -414,6 +423,58 @@ async function loadMessages(){
   if(wasAtBottom||data[data.length-1]?.sender_id===currentUser.id){
     setTimeout(()=>{list.scrollTop=list.scrollHeight;},50);
   }
+}
+
+function fmtVoiceTime(s){
+  if(!isFinite(s)||s<0)return'0:00';
+  const m=Math.floor(s/60),sec=Math.floor(s%60);
+  return`${m}:${String(sec).padStart(2,'0')}`;
+}
+function toggleVoicePlay(id){
+  const wrap=document.getElementById('voice-'+id);
+  if(!wrap)return;
+  const audio=wrap.querySelector('audio');
+  if(audio.paused){
+    document.querySelectorAll('.voice-msg audio').forEach(a=>{if(a!==audio&&!a.paused)a.pause();});
+    audio.play();
+    wrap.querySelector('.voice-play-icon').style.display='none';
+    wrap.querySelector('.voice-pause-icon').style.display='block';
+  } else {
+    audio.pause();
+    wrap.querySelector('.voice-play-icon').style.display='block';
+    wrap.querySelector('.voice-pause-icon').style.display='none';
+  }
+}
+function updateVoiceProgress(id){
+  const wrap=document.getElementById('voice-'+id);
+  if(!wrap)return;
+  const audio=wrap.querySelector('audio');
+  if(audio.duration)wrap.querySelector('.voice-progress-fill').style.width=(audio.currentTime/audio.duration*100)+'%';
+  wrap.querySelector('.voice-time').textContent=fmtVoiceTime(audio.duration-audio.currentTime);
+}
+function updateVoiceDuration(id){
+  const wrap=document.getElementById('voice-'+id);
+  if(!wrap)return;
+  const audio=wrap.querySelector('audio');
+  wrap.querySelector('.voice-time').textContent=fmtVoiceTime(audio.duration);
+}
+function resetVoicePlay(id){
+  const wrap=document.getElementById('voice-'+id);
+  if(!wrap)return;
+  const audio=wrap.querySelector('audio');
+  wrap.querySelector('.voice-play-icon').style.display='block';
+  wrap.querySelector('.voice-pause-icon').style.display='none';
+  wrap.querySelector('.voice-progress-fill').style.width='0%';
+  audio.currentTime=0;
+  updateVoiceDuration(id);
+}
+function seekVoice(e,id){
+  const wrap=document.getElementById('voice-'+id);
+  if(!wrap)return;
+  const audio=wrap.querySelector('audio');
+  const rect=e.currentTarget.getBoundingClientRect();
+  const ratio=Math.min(1,Math.max(0,(e.clientX-rect.left)/rect.width));
+  if(audio.duration)audio.currentTime=ratio*audio.duration;
 }
 
 async function deleteChatMsg(msgId){

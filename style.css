@@ -394,6 +394,15 @@ body.blur-mode #main-content,body.blur-mode header,body.blur-mode .sidebar-left{
 .msg-bubble-img:hover{filter:brightness(.9)}
 .msg-bubble-wrap.sent .msg-bubble-img{border-bottom-right-radius:4px}
 .msg-bubble-wrap.received .msg-bubble-img{border-bottom-left-radius:4px}
+.voice-msg{display:flex;align-items:center;gap:10px;padding:8px 12px;border-radius:18px;min-width:190px}
+.msg-bubble-wrap.sent .voice-msg{background:#cc0000;color:#fff;border-bottom-right-radius:4px}
+.msg-bubble-wrap.received .voice-msg{background:var(--bg-card);color:var(--text-primary);border-bottom-left-radius:4px}
+.voice-play-btn{width:32px;height:32px;border-radius:50%;border:none;cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:center;background:rgba(255,255,255,.22);color:inherit;padding:0}
+.msg-bubble-wrap.received .voice-play-btn{background:var(--bg-sunken)}
+.voice-progress-wrap{flex:1;height:4px;border-radius:2px;background:rgba(255,255,255,.3);cursor:pointer;position:relative}
+.msg-bubble-wrap.received .voice-progress-wrap{background:var(--border)}
+.voice-progress-fill{height:100%;border-radius:2px;background:currentColor;width:0%}
+.voice-time{font-size:11px;opacity:.85;flex-shrink:0;min-width:34px;text-align:right}
 .msg-no-conv{flex:1;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:16px;color:#555}
 
 /* TOAST */
