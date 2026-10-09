@@ -87,7 +87,7 @@
           </div>
           <div class="dropdown-item" id="vip-dropdown-item" onclick="openVipPanel()" style="display:none">
             <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
-            <span>Panel VIP</span>
+            <span data-i18n="menu_vip_panel">Panel VIP</span>
           </div>
           <div class="dropdown-item" id="buy-vip-dropdown-item" onclick="openBuyVipModal()" style="display:none">
             <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
@@ -892,8 +892,8 @@
 <!-- PANEL VIP -->
 <div class="fmbg" id="vip-panel-modal">
   <div class="fbox" style="max-width:860px;width:92%;max-height:85vh;overflow-y:auto">
-    <h3>⭐ Panel VIP</h3>
-    <p class="sub" style="margin-bottom:20px">Twój specjalny status — dostosuj swój wygląd w aplikacji.</p>
+    <h3 data-i18n="vip_panel_title">⭐ Panel VIP</h3>
+    <p class="sub" style="margin-bottom:20px" data-i18n="vip_panel_sub">Twój specjalny status — dostosuj swój wygląd w aplikacji.</p>
     <div id="vip-panel-body"></div>
     <div class="fbbtns">
       <button class="fcancel" onclick="closeVipPanel()">Zamknij</button>
