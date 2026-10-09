@@ -125,6 +125,7 @@ const TRANSLATIONS={
     hint_mp4_detecting:'✅ <b style="color:#188038">MP4</b> — wykrywam długość...',hint_unknown_format:'⚠️ Nierozpoznany format',hint_mp4_detected:'✅ <b style="color:#188038">MP4</b> — długość wykryta automatycznie',
     settings_allow_msg:'✉️ Zezwalaj innym na pisanie do mnie',settings_allow_msg_desc:'Gdy wyłączone, nikt nie założy z Tobą nowej rozmowy w Wiadomościach.',toast_msg_disabled:'Ten użytkownik wyłączył możliwość pisania do niego',
     settings_allow_calls:'📞 Zezwalaj innym na dzwonienie do mnie',settings_allow_calls_desc:'Gdy wyłączone, nikt nie zadzwoni do Ciebie w Wiadomościach.',call_disabled_toast:'Ten użytkownik wyłączył możliwość dzwonienia do niego',
+    settings_allow_notif:'🔔 Powiadomienia',settings_allow_notif_desc:'Gdy wyłączone, nie będziesz dostawać nowych powiadomień (polubienia, komentarze, subskrypcje itd.).',
     settings_data:'📦 Twoje dane',settings_data_desc:'Pobierz kopię swoich danych z WaveTube (profil, filmy, posty, wiadomości, subskrypcje i inne) w formacie JSON.',settings_data_btn:'⬇️ Pobierz moje dane',settings_data_loading:'Przygotowywanie...',settings_data_done:'Pobrano Twoje dane 📦',
     settings_rules:'📜 Zasady WaveTube',settings_rules_desc:'Regulamin, który zaakceptowałeś/aś przy pierwszym logowaniu.',settings_rules_btn:'📜 Przeczytaj zasady',
     settings_danger:'⚠️ Strefa zagrożenia',settings_delete_desc:'Usunięcie konta jest trwałe i nieodwracalne — stracisz profil, filmy, posty, wiadomości, subskrypcje i cały dostęp. Rozważ najpierw pobranie swoich danych (poniżej).',settings_delete_btn:'🗑️ Usuń konto na stałe',settings_delete_loading:'Usuwanie konta...',settings_delete_done:'Konto zostało usunięte. Żegnamy! 👋',
@@ -255,6 +256,7 @@ const TRANSLATIONS={
     hint_mp4_detecting:'✅ <b style="color:#188038">MP4</b> — detecting duration...',hint_unknown_format:'⚠️ Unrecognized format',hint_mp4_detected:'✅ <b style="color:#188038">MP4</b> — duration detected automatically',
     settings_allow_msg:'✉️ Allow others to message me',settings_allow_msg_desc:'When off, no one can start a new conversation with you in Messages.',toast_msg_disabled:'This user has disabled messages',
     settings_allow_calls:'📞 Allow others to call me',settings_allow_calls_desc:'When off, no one can call you in Messages.',call_disabled_toast:'This user has disabled calls',
+    settings_allow_notif:'🔔 Notifications',settings_allow_notif_desc:'When off, you won\'t get new notifications (likes, comments, subscriptions, etc.).',
     settings_data:'📦 Your data',settings_data_desc:'Download a copy of your WaveTube data (profile, videos, posts, messages, subscriptions and more) as JSON.',settings_data_btn:'⬇️ Download my data',settings_data_loading:'Preparing...',settings_data_done:'Your data has been downloaded 📦',
     settings_rules:'📜 WaveTube rules',settings_rules_desc:'The rules you accepted when you first signed in.',settings_rules_btn:'📜 Read the rules',
     settings_danger:'⚠️ Danger zone',settings_delete_desc:'Deleting your account is permanent and irreversible — you\'ll lose your profile, videos, posts, messages, subscriptions and all access. Consider downloading your data first (below).',settings_delete_btn:'🗑️ Delete account permanently',settings_delete_loading:'Deleting account...',settings_delete_done:'Your account has been deleted. Goodbye! 👋',
@@ -385,6 +387,7 @@ const TRANSLATIONS={
     hint_mp4_detecting:'✅ <b style="color:#188038">MP4</b> — определяю длительность...',hint_unknown_format:'⚠️ Формат не распознан',hint_mp4_detected:'✅ <b style="color:#188038">MP4</b> — длительность определена автоматически',
     settings_allow_msg:'✉️ Разрешить другим писать мне',settings_allow_msg_desc:'Если выключено, никто не сможет начать с вами новый разговор в Сообщениях.',toast_msg_disabled:'Этот пользователь отключил возможность писать ему',
     settings_allow_calls:'📞 Разрешить другим звонить мне',settings_allow_calls_desc:'Если выключено, никто не сможет позвонить вам в Сообщениях.',call_disabled_toast:'Этот пользователь отключил звонки',
+    settings_allow_notif:'🔔 Уведомления',settings_allow_notif_desc:'Если выключено, вы не будете получать новые уведомления (лайки, комментарии, подписки и т.д.).',
     settings_data:'📦 Ваши данные',settings_data_desc:'Скачайте копию своих данных WaveTube (профиль, видео, посты, сообщения, подписки и др.) в формате JSON.',settings_data_btn:'⬇️ Скачать мои данные',settings_data_loading:'Подготовка...',settings_data_done:'Ваши данные скачаны 📦',
     settings_rules:'📜 Правила WaveTube',settings_rules_desc:'Правила, которые вы приняли при первом входе.',settings_rules_btn:'📜 Прочитать правила',
     settings_danger:'⚠️ Опасная зона',settings_delete_desc:'Удаление аккаунта необратимо — вы потеряете профиль, видео, посты, сообщения, подписки и весь доступ. Сначала стоит скачать свои данные (ниже).',settings_delete_btn:'🗑️ Удалить аккаунт навсегда',settings_delete_loading:'Удаление аккаунта...',settings_delete_done:'Ваш аккаунт удалён. Прощайте! 👋',
@@ -514,6 +517,7 @@ function openSettingsModal(){
   syncAutoplayToggleUI();
   loadAllowMsgIntoSettings();
   loadAllowCallsIntoSettings();
+  loadAllowNotifIntoSettings();
 }
 
 async function loadMyCountryIntoSettings(){

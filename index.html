@@ -850,6 +850,13 @@
       <p style="color:var(--text-tertiary);font-size:11px;margin-top:8px" data-i18n="settings_allow_calls_desc">Gdy wyłączone, nikt nie zadzwoni do Ciebie w Wiadomościach.</p>
     </div>
     <div class="field" style="margin-top:24px;padding-top:20px;border-top:1px solid var(--border)">
+      <label style="display:flex;align-items:center;justify-content:space-between;cursor:pointer" onclick="event.preventDefault()">
+        <span data-i18n="settings_allow_notif">🔔 Powiadomienia</span>
+        <span class="toggle-switch" id="allownotif-toggle" onclick="toggleAllowNotifications()"><span class="toggle-knob"></span></span>
+      </label>
+      <p style="color:var(--text-tertiary);font-size:11px;margin-top:8px" data-i18n="settings_allow_notif_desc">Gdy wyłączone, nie będziesz dostawać nowych powiadomień (polubienia, komentarze, subskrypcje itd.).</p>
+    </div>
+    <div class="field" style="margin-top:24px;padding-top:20px;border-top:1px solid var(--border)">
       <label data-i18n="settings_rules">📜 Zasady WaveTube</label>
       <p style="color:var(--text-tertiary);font-size:11px;margin:8px 0 12px" data-i18n="settings_rules_desc">Regulamin, który zaakceptowałeś/aś przy pierwszym logowaniu.</p>
       <button onclick="openTermsModal()" data-i18n="settings_rules_btn" style="background:var(--bg-sunken);border:1px solid var(--border);color:var(--text-primary);padding:10px 16px;border-radius:8px;cursor:pointer;font-size:13px;font-weight:600">📜 Przeczytaj zasady</button>

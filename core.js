@@ -1972,6 +1972,22 @@ async function saveBannerCrop(){
 
 
 // ── POWIADOMIENIA ─────────────────────────────────────────────────────────────
+// ── ZEZWALAJ NA POWIADOMIENIA ───────────────────────────────────────────────
+async function loadAllowNotifIntoSettings(){
+  const el=document.getElementById('allownotif-toggle');
+  if(!el||!currentUser)return;
+  const{data}=await sb.from('profiles').select('allow_notifications').eq('id',currentUser.id).single();
+  el.classList.toggle('on',data?.allow_notifications!==false);
+}
+async function toggleAllowNotifications(){
+  if(!currentUser)return;
+  const el=document.getElementById('allownotif-toggle');
+  const{data}=await sb.from('profiles').select('allow_notifications').eq('id',currentUser.id).single();
+  const newVal=!(data?.allow_notifications!==false);
+  await sb.from('profiles').upsert([{id:currentUser.id,allow_notifications:newVal}],{onConflict:'id'});
+  if(el)el.classList.toggle('on',newVal);
+}
+
 let notificationsList=[];
 
 async function loadNotifications(){
