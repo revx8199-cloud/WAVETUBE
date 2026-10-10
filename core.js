@@ -577,6 +577,8 @@ async function muteUser(userId,hours){
   const menu=document.getElementById('admin-mute-menu');
   if(menu)menu.remove();
   toast('Użytkownik wyciszony 🔇');
+  const modalOpen=document.getElementById('admin-panel-modal')?.classList.contains('open');
+  if(modalOpen&&(adminTab==='users'||adminTab==='moderation'))renderAdminPanel();
 }
 
 async function unmuteUser(userId){
@@ -586,6 +588,8 @@ async function unmuteUser(userId){
   const menu=document.getElementById('admin-mute-menu');
   if(menu)menu.remove();
   toast('Wyciszenie cofnięte 🔊');
+  const modalOpen=document.getElementById('admin-panel-modal')?.classList.contains('open');
+  if(modalOpen&&(adminTab==='users'||adminTab==='moderation'))renderAdminPanel();
 }
 
 
@@ -2033,13 +2037,22 @@ function renderNotifications(){
   const list=document.getElementById('notif-list');
   if(!notificationsList.length){list.innerHTML=`<div class="notif-empty">${t('notif_empty')}</div>`;return;}
   list.innerHTML=notificationsList.map(n=>`
-    <div class="notif-item${n.read?'':' unread'}" onclick="handleNotifClick('${jsesc(n.id)}','${jsesc(n.sender_id||'')}','${jsesc(n.sender_name||'')}','${jsesc(n.sender_avatar||'')}','${jsesc(n.sender_email||'')}')">
+    <div class="notif-item${n.read?'':' unread'}" style="position:relative" onclick="handleNotifClick('${jsesc(n.id)}','${jsesc(n.sender_id||'')}','${jsesc(n.sender_name||'')}','${jsesc(n.sender_avatar||'')}','${jsesc(n.sender_email||'')}')">
       ${(n.sender_avatar||n.avatar)?`<img class="notif-av" src="${esc(n.sender_avatar||n.avatar)}">`:`<div class="notif-av-ph" style="background:#cc0000">🔔</div>`}
       <div>
         <div class="notif-text">${safeNotifHtml(n.message)}</div>
         <div class="notif-time">${new Date(n.created_at).toLocaleString('pl-PL',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'})}</div>
       </div>
+      <button onclick="event.stopPropagation();deleteNotification('${jsesc(n.id)}')" aria-label="${t('notif_delete_one')}" style="position:absolute;top:8px;right:8px;background:none;border:none;color:var(--text-tertiary);cursor:pointer;font-size:16px;line-height:1;padding:4px">✕</button>
     </div>`).join('');
+}
+
+async function deleteNotification(notifId){
+  if(!currentUser)return;
+  await sb.from('notifications').delete().eq('id',notifId).eq('user_id',currentUser.id);
+  notificationsList=notificationsList.filter(n=>n.id!==notifId);
+  updateNotifBadge();
+  renderNotifications();
 }
 
 function handleNotifClick(notifId,senderId,senderName,senderAvatar,senderEmail){

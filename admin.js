@@ -4,6 +4,7 @@
 let adminTab='videos';
 let adminUsersCache=[];
 let adminUsersBanMap={};
+let adminUsersMuteMap={};
 
 function toggleRenameUser(userId,btnEl){
   const existing=document.getElementById('admin-rename-popup');
@@ -237,8 +238,9 @@ async function adminBanUserIp(userId){
   toast(`Zbanowano IP: ${u.last_ip} 🌐🚫`);
 }
 
-function renderAdminUsersList(banMap){
+function renderAdminUsersList(banMap,muteMap){
   if(banMap)adminUsersBanMap=banMap;
+  if(muteMap)adminUsersMuteMap=muteMap;
   const body=document.getElementById('admin-panel-body');
   const q=(document.getElementById('admin-user-search')?.value||'').trim().toLowerCase();
   const filtered=q?adminUsersCache.filter(u=>(u.name||'').toLowerCase().includes(q)||(u.email||'').toLowerCase().includes(q)):adminUsersCache;
@@ -246,10 +248,11 @@ function renderAdminUsersList(banMap){
     ?`<p style="color:var(--text-tertiary);padding:20px;text-align:center">${q?'Brak wyników dla "'+q+'"':'Brak użytkowników'}</p>`
     :filtered.map(u=>{
       const ban=adminUsersBanMap[u.id];
-      return`<div style="display:flex;align-items:center;gap:12px;padding:10px 14px;border-bottom:1px solid var(--border-soft)">
+      const mute=adminUsersMuteMap[u.id];
+      return`<div style="display:flex;align-items:center;gap:12px;padding:10px 14px;border-bottom:1px solid var(--border-soft);flex-wrap:wrap">
         ${u.avatar?`<img src="${esc(u.avatar)}" style="width:34px;height:34px;border-radius:50%;object-fit:cover;flex-shrink:0;cursor:pointer" onclick="closeAdminPanel();showChannel('${jsesc(u.id)}','${jsesc(u.name)}','${jsesc(u.avatar)}','${jsesc(u.email||'')}')">`:`<div style="width:34px;height:34px;border-radius:50%;background:#cc0000;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;flex-shrink:0;cursor:pointer" onclick="closeAdminPanel();showChannel('${jsesc(u.id)}','${jsesc(u.name)}','','${jsesc(u.email||'')}')">${esc((u.name||'?')[0].toUpperCase())}</div>`}
         <div style="flex:1;min-width:0;cursor:pointer" onclick="closeAdminPanel();showChannel('${jsesc(u.id)}','${jsesc(u.name)}','${jsesc(u.avatar||'')}','${jsesc(u.email||'')}')">
-          <div style="font-size:13px;font-weight:600" id="uname-${u.id}">${esc(u.name)}${ban?' <span style="color:#ff6b6b;font-size:11px">🚫 zablokowany</span>':''}</div>
+          <div style="font-size:13px;font-weight:600" id="uname-${u.id}">${esc(u.name)}${ban?' <span style="color:#ff6b6b;font-size:11px">🚫 zablokowany</span>':''}${mute?' <span style="color:#f5c242;font-size:11px">🔇 wyciszony</span>':''}</div>
           <div style="font-size:11px;color:var(--text-tertiary)">${esc(u.email)}${u.last_ip?` · IP: ${esc(u.last_ip)}`:''}</div>
         </div>
         <button onclick="event.stopPropagation();toggleRenameUser('${jsesc(u.id)}',this)" title="Zmień nick" style="background:var(--border-soft);border:none;color:var(--text-primary);padding:6px 10px;border-radius:8px;cursor:pointer;font-size:12px;flex-shrink:0">✏️</button>
@@ -257,6 +260,9 @@ function renderAdminUsersList(banMap){
         ${u.is_vip?
           `<button onclick="event.stopPropagation();adminSetVip('${jsesc(u.id)}','${jsesc(u.email||'')}',false)" style="background:#332a0a;border:1px solid #5c4a0f;color:#ffd700;padding:6px 12px;border-radius:8px;cursor:pointer;font-size:12px;flex-shrink:0">⭐ Odbierz VIP</button>`
           :`<button onclick="event.stopPropagation();adminSetVip('${jsesc(u.id)}','${jsesc(u.email||'')}',true)" style="background:var(--border-soft);border:1px solid #3a3a3a;color:var(--text-secondary);padding:6px 12px;border-radius:8px;cursor:pointer;font-size:12px;flex-shrink:0">⭐ Nadaj VIP</button>`}
+        ${mute?
+          `<button onclick="event.stopPropagation();unmuteUser('${jsesc(u.id)}')" style="background:#14301a;border:1px solid #1f5c2a;color:#7fe08a;padding:6px 12px;border-radius:8px;cursor:pointer;font-size:12px;flex-shrink:0">🔊 Odcisz</button>`
+          :`<button onclick="event.stopPropagation();toggleMuteMenu('${jsesc(u.id)}',this)" title="Wycisz użytkownika" style="background:#3a2a0a;border:1px solid #5c4a0f;color:#f5c242;padding:6px 12px;border-radius:8px;cursor:pointer;font-size:12px;flex-shrink:0">🔇 Wycisz</button>`}
         ${ban?
           `<button onclick="event.stopPropagation();adminUnbanUser('${jsesc(u.id)}')" style="background:#14301a;border:1px solid #1f5c2a;color:#7fe08a;padding:6px 12px;border-radius:8px;cursor:pointer;font-size:12px;flex-shrink:0">Odblokuj</button>`
           :`<div style="position:relative;flex-shrink:0">
@@ -1483,7 +1489,7 @@ async function logAdminAction(action,details){
 
 async function renderAdminPanel(){
   const body=document.getElementById('admin-panel-body');
-  ['videos','users','vip','online','activity','trash','bots','reports','color','announce','logs'].forEach(tab=>{
+  ['videos','users','vip','online','activity','trash','bots','moderation','reports','color','announce','logs'].forEach(tab=>{
     const el=document.getElementById('admin-tab-'+tab);
     if(el)el.classList.toggle('active',adminTab===tab);
   });
@@ -1508,6 +1514,10 @@ async function renderAdminPanel(){
     renderBotsList();
   }
 
+  if(adminTab==='moderation'){
+    renderModerationList();
+  }
+
 if(adminTab==='users'){
   body.innerHTML='<p style="color:var(--text-tertiary);padding:20px;text-align:center">Ładowanie użytkowników...</p>';
     const usersMap={};
@@ -1521,8 +1531,11 @@ if(adminTab==='users'){
     const{data:bans}=await sb.from('banned_users').select('*');
     const banMap={};
     if(bans)bans.forEach(b=>{if(!b.expires_at||new Date(b.expires_at)>new Date())banMap[b.user_id]=b;});
+    const{data:mutes}=await sb.from('muted_users').select('*');
+    const muteMap={};
+    if(mutes)mutes.forEach(m=>{if(!m.expires_at||new Date(m.expires_at)>new Date())muteMap[m.user_id]=m;});
     adminUsersCache=Object.values(usersMap).filter(u=>u.email!==ADMIN_EMAIL);
-    renderAdminUsersList(banMap);
+    renderAdminUsersList(banMap,muteMap);
   }
 
   if(adminTab==='vip'){
@@ -1908,6 +1921,45 @@ async function adminUnbanUser(userId){
   logAdminAction('unban',`Odbanowano ${targetEmail}`);
   renderAdminPanel();
   toast('Użytkownik odblokowany ✅');
+}
+
+// ── MODERACJA: lista zbanowanych i wyciszonych ───────────────────────────
+async function renderModerationList(){
+  const body=document.getElementById('admin-panel-body');
+  body.innerHTML='<p style="color:var(--text-tertiary);padding:20px;text-align:center">Ładowanie...</p>';
+  const[{data:bans},{data:mutes},{data:profs},{data:emRows}]=await Promise.all([
+    sb.from('banned_users').select('*').order('created_at',{ascending:false}),
+    sb.from('muted_users').select('*').order('created_at',{ascending:false}),
+    sb.from('profiles').select('id,name,avatar'),
+    sb.rpc('admin_list_profile_emails')
+  ]);
+  const profMap={};(profs||[]).forEach(p=>{profMap[p.id]=p;});
+  const emMap={};(emRows||[]).forEach(r=>{emMap[r.id]=r.email;});
+  const activeBans=(bans||[]).filter(b=>!b.expires_at||new Date(b.expires_at)>new Date());
+  const activeMutes=(mutes||[]).filter(m=>!m.expires_at||new Date(m.expires_at)>new Date());
+  const fmtExp=exp=>exp?`do ${new Date(exp).toLocaleString('pl-PL',{day:'numeric',month:'long',year:'numeric',hour:'2-digit',minute:'2-digit'})}`:'na zawsze';
+  const rowHtml=(entry,type)=>{
+    const p=profMap[entry.user_id]||{};
+    const name=p.name||'Użytkownik';
+    const email=emMap[entry.user_id]||'';
+    const avatarHtml=p.avatar?`<img src="${esc(p.avatar)}" style="width:30px;height:30px;border-radius:50%;object-fit:cover;flex-shrink:0">`:`<div style="width:30px;height:30px;border-radius:50%;background:#cc0000;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;flex-shrink:0">${esc((name||'?')[0].toUpperCase())}</div>`;
+    const action=type==='ban'?`adminUnbanUser('${jsesc(entry.user_id)}')`:`unmuteUser('${jsesc(entry.user_id)}')`;
+    const btnLabel=type==='ban'?'Odblokuj':'🔊 Odcisz';
+    return`<div class="admin-row" style="display:flex;align-items:center;gap:10px;padding:10px 20px">
+      ${avatarHtml}
+      <div style="flex:1;min-width:0">
+        <div style="font-size:13px;font-weight:600">${esc(name)}</div>
+        <div style="font-size:11px;color:var(--text-tertiary)">${esc(email)} · ${fmtExp(entry.expires_at)}</div>
+      </div>
+      <button onclick="${action}" style="background:#14301a;border:1px solid #1f5c2a;color:#7fe08a;padding:6px 12px;border-radius:8px;cursor:pointer;font-size:12px;flex-shrink:0">${btnLabel}</button>
+    </div>`;
+  };
+  body.innerHTML=`
+    <div style="padding:10px 20px 4px;font-size:11px;font-weight:700;color:var(--text-tertiary);text-transform:uppercase">Zbanowani (${activeBans.length})</div>
+    ${activeBans.length?activeBans.map(b=>rowHtml(b,'ban')).join(''):'<p style="color:var(--text-tertiary);padding:10px 20px">Brak zbanowanych.</p>'}
+    <div style="padding:16px 20px 4px;font-size:11px;font-weight:700;color:var(--text-tertiary);text-transform:uppercase">Wyciszeni (${activeMutes.length})</div>
+    ${activeMutes.length?activeMutes.map(m=>rowHtml(m,'mute')).join(''):'<p style="color:var(--text-tertiary);padding:10px 20px">Brak wyciszonych.</p>'}
+  `;
 }
 
 
