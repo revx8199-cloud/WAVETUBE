@@ -685,6 +685,22 @@
     <div style="font-size:40px;margin-bottom:6px">💎</div>
     <h3 style="font-size:19px" data-i18n="buy_vip_title">Kup panel VIP</h3>
     <p class="sub" style="margin-bottom:14px" data-i18n="buy_vip_desc">Panel VIP odblokowuje kolor nicku, ramkę avatara, cząsteczki wokół avatara, plakietkę VIP i inne ozdobniki na Twoim kanale.</p>
+    <div style="display:flex;align-items:center;justify-content:center;gap:12px;background:var(--bg-sunken);border:1px solid var(--border);border-radius:10px;padding:14px;margin-bottom:14px">
+      <div style="position:relative;width:52px;height:52px;flex-shrink:0">
+        <div style="position:absolute;inset:-3px;border-radius:50%;border:3px solid #f5c242"></div>
+        <div style="width:52px;height:52px;border-radius:50%;background:linear-gradient(135deg,#ff6a3d,#ffb347);display:flex;align-items:center;justify-content:center;font-size:22px">👤</div>
+        <span style="position:absolute;top:-8px;left:-8px;font-size:13px">✨</span>
+        <span style="position:absolute;bottom:-6px;right:-8px;font-size:13px">✨</span>
+      </div>
+      <div style="text-align:left">
+        <div style="display:flex;align-items:center;gap:5px;font-weight:700;font-size:14px">
+          <span style="color:#ff5a5a">Nick</span>
+          <span style="font-size:12px">🥉</span>
+        </div>
+        <div style="font-size:12px;color:#e14fe8;font-weight:600;margin-top:2px" data-i18n="buy_vip_preview_text">Tak wygląda tekst komentarza</div>
+        <div style="font-size:10px;color:var(--text-tertiary);margin-top:3px" data-i18n="buy_vip_preview_label">Podgląd wyglądu VIP</div>
+      </div>
+    </div>
     <div style="text-align:left;background:var(--bg-sunken);border:1px solid var(--border);border-radius:10px;padding:16px;margin-bottom:16px;font-size:13px;color:var(--text-secondary);line-height:1.7" data-i18n="buy_vip_instructions">
       ☕ Wesprzyj przez Buy Me a Coffee, a w polu wiadomości/notatki przy wpłacie koniecznie wpisz e-mail, na który jesteś zalogowany/a w WaveTube — inaczej nie będziemy wiedzieć, komu przyznać VIP.
     </div>
@@ -693,7 +709,8 @@
       <span id="buy-vip-email" style="font-size:13px;font-weight:600;word-break:break-all;flex:1;text-align:left"></span>
       <button onclick="copyBuyVipEmail()" style="background:none;border:none;color:#3ea6ff;cursor:pointer;font-size:12px;flex-shrink:0" data-i18n="btn_copy">Kopiuj</button>
     </div>
-    <div style="font-size:22px;font-weight:800;margin-bottom:16px">18 zł</div>
+    <div style="font-size:22px;font-weight:800;margin-bottom:6px">18 zł</div>
+    <div style="font-size:11px;color:var(--text-tertiary);margin-bottom:16px" data-i18n="buy_vip_no_refund">Wpłata jest bezzwrotna, a VIP przyznawany na stałe.</div>
     <a href="https://www.buymeacoffee.com/rev01" target="_blank" rel="noopener" style="width:100%;box-sizing:border-box;background:#ffdd00;border:none;color:#000;padding:13px;border-radius:24px;cursor:pointer;font-size:14px;font-weight:700;margin-bottom:10px;display:flex;align-items:center;justify-content:center;gap:8px;text-decoration:none"><span data-i18n="btn_buy_vip_coffee">☕ Przejdź do Buy Me a Coffee</span></a>
     <button onclick="closeBuyVipModal()" style="width:100%;background:none;border:none;color:var(--text-tertiary);padding:8px;cursor:pointer;font-size:13px" data-i18n="btn_close">Zamknij</button>
   </div>
