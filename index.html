@@ -21,6 +21,9 @@
 <body>
 
 <header>
+  <button id="sidebar-toggle-btn" onclick="toggleSidebar()" aria-label="Menu" style="background:none;border:none;color:var(--text-primary);cursor:pointer;width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-right:4px">
+    <svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor"><path d="M3 6h18v2H3V6zm0 5h18v2H3v-2zm0 5h18v2H3v-2z"/></svg>
+  </button>
   <div class="logo" onclick="showHome()" style="display:flex;align-items:center;gap:9px">
   <svg width="45" height="32" viewBox="0 0 45 32" fill="none" xmlns="http://www.w3.org/2000/svg">
     <rect width="45" height="32" rx="9" fill="#3ea6ff"/>
@@ -109,6 +112,7 @@
 </header>
 
 <div style="display:flex;min-height:calc(100vh - 56px)" id="main-wrapper">
+<div id="sidebar-overlay" onclick="closeSidebarMobile()"></div>
 <div class="sidebar-left" id="sidebar-left">
   <div class="sb-section">
     <div class="sb-item active" id="sb-home" onclick="setSbActive('sb-home');showHome()">

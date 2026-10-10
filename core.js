@@ -860,11 +860,43 @@ function detectVideoDuration(url){
 }
 
 
+// ── SIDEBAR (hamburger, jak w YouTube) ─────────────────────────────────────
+function isMobileLayout(){return window.innerWidth<=860;}
+
+function toggleSidebar(){
+  const sb=document.getElementById('sidebar-left');
+  const overlay=document.getElementById('sidebar-overlay');
+  if(!sb)return;
+  if(isMobileLayout()){
+    sb.classList.toggle('mobile-open');
+    if(overlay)overlay.classList.toggle('open',sb.classList.contains('mobile-open'));
+  } else {
+    const collapsed=sb.classList.toggle('collapsed');
+    localStorage.setItem('wt_sidebar_collapsed',collapsed?'1':'0');
+  }
+}
+
+function closeSidebarMobile(){
+  const sb=document.getElementById('sidebar-left');
+  const overlay=document.getElementById('sidebar-overlay');
+  if(sb)sb.classList.remove('mobile-open');
+  if(overlay)overlay.classList.remove('open');
+}
+
+function initSidebarState(){
+  const sb=document.getElementById('sidebar-left');
+  if(!sb)return;
+  if(!isMobileLayout()&&localStorage.getItem('wt_sidebar_collapsed')==='1'){
+    sb.classList.add('collapsed');
+  }
+}
+
 // ── RENDER ────────────────────────────────────────────────────────────────────
 function setSbActive(id){
   document.querySelectorAll('.sb-item').forEach(el=>el.classList.remove('active'));
   const el=document.getElementById(id);
   if(el)el.classList.add('active');
+  if(isMobileLayout())closeSidebarMobile();
 }
 
 function showShortsPage(){

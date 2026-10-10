@@ -1450,6 +1450,8 @@ let consoleHistoryIdx=consoleHistory.length;
 
 document.addEventListener('DOMContentLoaded',()=>{
   scheduleNewYear2027Auto();
+  initSidebarState();
+  window.addEventListener('resize',()=>{if(!isMobileLayout())closeSidebarMobile();});
   const inp=document.getElementById('console-input');
   if(inp)inp.addEventListener('keydown',e=>{
     if(e.key==='Enter'){
