@@ -394,6 +394,19 @@ async function unblockUser(){
   toast('Użytkownik odblokowany ✅');
 }
 
+function msgDayLabel(d){
+  const now=new Date();
+  const lang=getLang();
+  const locale=lang==='en'?'en-GB':lang==='ru'?'ru-RU':'pl-PL';
+  const sameDay=d.getFullYear()===now.getFullYear()&&d.getMonth()===now.getMonth()&&d.getDate()===now.getDate();
+  if(sameDay)return t('time_today');
+  const yesterday=new Date(now);yesterday.setDate(now.getDate()-1);
+  const wasYesterday=d.getFullYear()===yesterday.getFullYear()&&d.getMonth()===yesterday.getMonth()&&d.getDate()===yesterday.getDate();
+  if(wasYesterday)return t('time_yesterday');
+  const sameYear=d.getFullYear()===now.getFullYear();
+  return d.toLocaleString(locale,sameYear?{day:'numeric',month:'long'}:{day:'numeric',month:'long',year:'numeric'});
+}
+
 async function loadMessages(){
   if(!currentConvId)return;
   const{data}=await sb.from('messages').select('*').eq('conv_id',currentConvId).order('created_at',{ascending:true});
@@ -409,6 +422,10 @@ async function loadMessages(){
   list.innerHTML=data.map((m,idx)=>{
     const isSent=m.sender_id===currentUser.id;
     const time=new Date(m.created_at).toLocaleString('pl-PL',{hour:'2-digit',minute:'2-digit'});
+    const prevDate=idx>0?new Date(data[idx-1].created_at):null;
+    const curDate=new Date(m.created_at);
+    const isNewDay=!prevDate||prevDate.getFullYear()!==curDate.getFullYear()||prevDate.getMonth()!==curDate.getMonth()||prevDate.getDate()!==curDate.getDate();
+    const dayLabel=isNewDay?`<div style="text-align:center;color:var(--text-tertiary);font-size:11px;font-weight:600;margin:14px 0 8px">${msgDayLabel(curDate)}</div>`:'';
     const imgHtml=m.image_url?`<img class="msg-bubble-img" src="${esc(m.image_url)}" onclick="openImgLightbox('${jsesc(m.image_url)}')">`:'';
     const audioHtml=m.audio_url?`
       <div class="voice-msg" id="voice-${jsesc(m.id)}">
@@ -425,7 +442,7 @@ async function loadMessages(){
     const nextIsSameSender=data[idx+1]&&data[idx+1].sender_id===m.sender_id;
     const avHtml=!isSent?(nextIsSameSender?'<div class="msg-bubble-av-spacer"></div>':
       (otherAvatar?`<img class="msg-bubble-av" src="${esc(otherAvatar)}">`:`<div class="msg-bubble-av-ph">${esc(otherInitial)}</div>`)):'';
-    return`<div class="msg-bubble-wrap ${isSent?'sent':'received'}">
+    return`${dayLabel}<div class="msg-bubble-wrap ${isSent?'sent':'received'}">
       ${avHtml}
       <div class="msg-bubble-col" style="position:relative">
         ${imgHtml}${audioHtml}${txtHtml}
