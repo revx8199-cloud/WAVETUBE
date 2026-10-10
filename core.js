@@ -2129,11 +2129,11 @@ function toggleEmojiPicker(targetId,btnEl){
   const picker=document.createElement('div');
   picker.id='emoji-picker';
   picker.dataset.target=targetId;
-  picker.innerHTML=EMOJI_LIST.map(e=>`<span onclick="insertEmoji('${jsesc(targetId)}','${jsesc(e)}')" style="cursor:pointer;font-size:20px;padding:5px;border-radius:6px;text-align:center" onmouseover="this.style.background='var(--border)'" onmouseout="this.style.background='none'">${e}</span>`).join('');
+  picker.innerHTML=EMOJI_LIST.map(e=>`<span onclick="insertEmoji('${jsesc(targetId)}','${jsesc(e)}')" style="cursor:pointer;font-size:22px;padding:6px 2px;border-radius:6px;text-align:center;display:flex;align-items:center;justify-content:center" onmouseover="this.style.background='var(--border)'" onmouseout="this.style.background='none'">${e}</span>`).join('');
 
   const rect=btnEl.getBoundingClientRect();
   const maxPickerHeight=Math.min(320,window.innerHeight-32); // nie więcej niż ekran minus margines
-  const pickerWidth=280;
+  const pickerWidth=Math.min(360,window.innerWidth-16);
   const spaceAbove=rect.top;
   const spaceBelow=window.innerHeight-rect.bottom;
   const openUpward=spaceAbove>maxPickerHeight||spaceAbove>spaceBelow;
@@ -2142,7 +2142,7 @@ function toggleEmojiPicker(targetId,btnEl){
   const top=openUpward?Math.max(8,rect.top-pickerHeight-8):Math.min(rect.bottom+8,window.innerHeight-pickerHeight-8);
   const left=Math.min(Math.max(8,rect.left-pickerWidth+28),window.innerWidth-pickerWidth-8);
 
-  picker.style.cssText=`position:fixed;top:${top}px;left:${left}px;background:var(--bg-panel);border:1px solid var(--border);border-radius:12px;padding:10px;display:grid;grid-template-columns:repeat(8,1fr);gap:2px;z-index:2000;max-width:${pickerWidth}px;max-height:${pickerHeight}px;overflow-y:auto;box-shadow:0 4px 20px rgba(0,0,0,.6)`;
+  picker.style.cssText=`position:fixed;top:${top}px;left:${left}px;width:${pickerWidth}px;background:var(--bg-panel);border:1px solid var(--border);border-radius:12px;padding:10px;display:grid;grid-template-columns:repeat(8,minmax(0,1fr));gap:2px;z-index:2000;max-height:${pickerHeight}px;overflow-y:auto;overflow-x:hidden;box-shadow:0 4px 20px rgba(0,0,0,.6)`;
   document.body.appendChild(picker);
   setTimeout(()=>{
     emojiOutsideListener=function(e){
