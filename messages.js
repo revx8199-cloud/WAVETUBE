@@ -226,6 +226,20 @@ function closeMessages(){
   showHome();
 }
 
+function convListTimeLabel(dateStr){
+  const d=new Date(dateStr);
+  const now=new Date();
+  const lang=getLang();
+  const locale=lang==='en'?'en-GB':lang==='ru'?'ru-RU':'pl-PL';
+  const sameDay=d.getFullYear()===now.getFullYear()&&d.getMonth()===now.getMonth()&&d.getDate()===now.getDate();
+  if(sameDay)return d.toLocaleString(locale,{hour:'2-digit',minute:'2-digit'});
+  const yesterday=new Date(now);yesterday.setDate(now.getDate()-1);
+  const wasYesterday=d.getFullYear()===yesterday.getFullYear()&&d.getMonth()===yesterday.getMonth()&&d.getDate()===yesterday.getDate();
+  if(wasYesterday)return t('time_yesterday');
+  const sameYear=d.getFullYear()===now.getFullYear();
+  return d.toLocaleString(locale,sameYear?{day:'numeric',month:'short'}:{day:'numeric',month:'short',year:'numeric'});
+}
+
 async function loadConvList(){
   const list=document.getElementById('conv-list');
   list.innerHTML='<div style="padding:20px;text-align:center;color:#555;font-size:13px">⏳ Ładowanie...</div>';
@@ -259,7 +273,7 @@ async function loadConvList(){
     const name=theirProfile?.name||theirVideo?.user_name||theirVideo?.user_email?.split('@')[0]||nameFromMsg||'Użytkownik';
     const avatar=theirProfile?.avatar||theirVideo?.user_avatar||avatarFromMsg||'';
     const email=theirProfile?.email||theirVideo?.user_email||'';
-    const time=new Date(m.created_at).toLocaleString('pl-PL',{hour:'2-digit',minute:'2-digit'});
+    const time=convListTimeLabel(m.created_at);
     const isBlocked=!!blockedUsers[otherId];
     return`<div class="msg-conv-item${currentConvId===m.conv_id?' active':''}" onclick="openConv('${jsesc(m.conv_id)}','${jsesc(otherId)}','${jsesc(name)}','${jsesc(avatar)}','${jsesc(email)}')" style="${isBlocked?'opacity:.5':''}">
       ${avatar?`<img class="msg-conv-av" src="${esc(avatar)}" style="cursor:pointer" onclick="event.stopPropagation();closeMessages();showChannel('${jsesc(otherId)}','${jsesc(name)}','${jsesc(avatar)}','${jsesc(email)}')" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">`:''}
@@ -636,7 +650,7 @@ async function onVoiceRecordingStop(){
 }
 
 function showNewMsgForm(){
-  toast('Wejdź na czyjś kanał i kliknij ✉️ Wiadomość żeby zacząć rozmowę!');
+  toast(t('msg_new_hint'));
 }
 
 async function openMsg(name,email,userId){
