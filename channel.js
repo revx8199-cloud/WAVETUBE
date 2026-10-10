@@ -90,6 +90,15 @@ function closeBuyVipModal(){
   document.getElementById('buy-vip-modal').classList.remove('open');
 }
 
+function openVipShotLightbox(src){
+  document.getElementById('vip-shot-lightbox-img').src=src;
+  document.getElementById('vip-shot-lightbox').style.display='flex';
+}
+
+function closeVipShotLightbox(){
+  document.getElementById('vip-shot-lightbox').style.display='none';
+}
+
 function copyBuyVipEmail(){
   if(!currentUser)return;
   navigator.clipboard.writeText(currentUser.email).then(()=>toast('Skopiowano e-mail')).catch(()=>{});
