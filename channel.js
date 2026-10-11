@@ -404,7 +404,7 @@ async function saveVipEmojiStyle(style){
 
 function applyEmojiStyleToEl(el){
   if(el&&window.twemoji)twemoji.parse(el,{
-    callback:icon=>`https://cdn.jsdelivr.net/gh/googlefonts/noto-emoji@main/svg/emoji_u${icon.replace(/-/g,'_')}.svg`
+    callback:icon=>`https://cdn.jsdelivr.net/npm/@svgmoji/noto@0.2.0/svg/${icon.toUpperCase()}.svg`
   });
 }
 
