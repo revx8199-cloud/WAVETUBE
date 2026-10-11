@@ -157,7 +157,7 @@
       <span data-i18n="nav_saved">Zapisane filmy</span>
     </div>
     <div class="sb-item" id="sb-watchlater" onclick="setSbActive('sb-watchlater');showWatchLaterPage()">
-      <svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm.5 5H11v6l5.25 3.15.75-1.23-4.5-2.67V7z"/></svg>
+      <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15.5 14"/></svg>
       <span data-i18n="nav_watchlater">Obejrzę później</span>
     </div>
     <div class="sb-item" id="sb-playlists" onclick="setSbActive('sb-playlists');showPlaylistsPage()">
@@ -359,13 +359,18 @@
           <select id="fcat" style="width:100%;background:var(--bg-sunken);border:1px solid var(--border);border-radius:8px;color:var(--text-primary);padding:10px 14px;font-size:14px;outline:none">
             <option value="" data-i18n="cat_none">Brak kategorii</option>
             <option value="Gaming" data-i18n="cat_gaming">🎮 Gaming</option>
-            <option value="Muzyka" data-i18n="cat_music">🎵 Muzyka</option>
+            <option value="Music" data-i18n="cat_music">🎵 Muzyka</option>
             <option value="Sport" data-i18n="cat_sport">⚽ Sport</option>
             <option value="Vlog" data-i18n="cat_vlog">📹 Vlog</option>
             <option value="Tutorial" data-i18n="cat_tutorial">📚 Tutorial</option>
-            <option value="Humor" data-i18n="cat_humor">😂 Humor</option>
-            <option value="Podróże" data-i18n="cat_travel">✈️ Podróże</option>
-            <option value="Inne" data-i18n="cat_other">📌 Inne</option>
+            <option value="Comedy" data-i18n="cat_humor">😂 Humor</option>
+            <option value="Travel" data-i18n="cat_travel">✈️ Podróże</option>
+            <option value="Education" data-i18n="cat_education">🎓 Edukacja</option>
+            <option value="News" data-i18n="cat_news">📰 Wiadomości</option>
+            <option value="Technology" data-i18n="cat_tech">💻 Technologia</option>
+            <option value="Lifestyle" data-i18n="cat_lifestyle">🌿 Lifestyle</option>
+            <option value="Food" data-i18n="cat_food">🍔 Jedzenie</option>
+            <option value="Other" data-i18n="cat_other">📌 Inne</option>
           </select>
         </div>
       </div>
@@ -593,15 +598,20 @@
     <div class="field">
       <label>Kategoria</label>
       <select id="edit-cat" style="width:100%;background:var(--bg-sunken);border:1px solid var(--border);border-radius:8px;color:var(--text-primary);padding:10px 14px;font-size:14px;outline:none">
-        <option value="">Brak kategorii</option>
-        <option value="Gaming">🎮 Gaming</option>
-        <option value="Muzyka">🎵 Muzyka</option>
-        <option value="Sport">⚽ Sport</option>
-        <option value="Vlog">📹 Vlog</option>
-        <option value="Tutorial">📚 Tutorial</option>
-        <option value="Humor">😂 Humor</option>
-        <option value="Podróże">✈️ Podróże</option>
-        <option value="Inne">📌 Inne</option>
+        <option value="" data-i18n="cat_none">Brak kategorii</option>
+        <option value="Gaming" data-i18n="cat_gaming">🎮 Gaming</option>
+        <option value="Music" data-i18n="cat_music">🎵 Muzyka</option>
+        <option value="Sport" data-i18n="cat_sport">⚽ Sport</option>
+        <option value="Vlog" data-i18n="cat_vlog">📹 Vlog</option>
+        <option value="Tutorial" data-i18n="cat_tutorial">📚 Tutorial</option>
+        <option value="Comedy" data-i18n="cat_humor">😂 Humor</option>
+        <option value="Travel" data-i18n="cat_travel">✈️ Podróże</option>
+        <option value="Education" data-i18n="cat_education">🎓 Edukacja</option>
+        <option value="News" data-i18n="cat_news">📰 Wiadomości</option>
+        <option value="Technology" data-i18n="cat_tech">💻 Technologia</option>
+        <option value="Lifestyle" data-i18n="cat_lifestyle">🌿 Lifestyle</option>
+        <option value="Food" data-i18n="cat_food">🍔 Jedzenie</option>
+        <option value="Other" data-i18n="cat_other">📌 Inne</option>
       </select>
     </div>
     <div class="field">

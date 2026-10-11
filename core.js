@@ -950,8 +950,9 @@ function showHome(){
 }
 
 function durationToSeconds(dur){
-  if(!dur)return null;
-  const parts=String(dur).split(':').map(n=>parseInt(n,10));
+  if(dur===null||dur===undefined||dur==='')return null;
+  if(typeof dur==='number'&&isFinite(dur))return Math.round(dur);
+  const parts=String(dur).trim().split(':').map(n=>parseInt(n.trim(),10));
   if(parts.some(isNaN))return null;
   if(parts.length===3)return parts[0]*3600+parts[1]*60+parts[2];
   if(parts.length===2)return parts[0]*60+parts[1];
@@ -959,15 +960,23 @@ function durationToSeconds(dur){
   return null;
 }
 
+const CATEGORY_LABEL_KEYS={Gaming:'cat_gaming',Music:'cat_music',Sport:'cat_sport',Vlog:'cat_vlog',Tutorial:'cat_tutorial',Comedy:'cat_humor',Travel:'cat_travel',Education:'cat_education',News:'cat_news',Technology:'cat_tech',Lifestyle:'cat_lifestyle',Food:'cat_food',Other:'cat_other',
+  // starsze polskie wartości zapisane w bazie zanim ujednoliciliśmy nazwy na angielskie slugi
+  Muzyka:'cat_music',Humor:'cat_humor',Podróże:'cat_travel',Inne:'cat_other'};
+function categoryLabel(c){
+  const key=CATEGORY_LABEL_KEYS[c];
+  return key?t(key):c;
+}
+
 function populateFeedCategoryOptions(){
   const sel=document.getElementById('feed-cat-filter');
   if(!sel)return;
-  const cats=[...new Set(videos.map(v=>v.category).filter(Boolean))].sort((a,b)=>a.localeCompare(b,'pl'));
-  const key=cats.join('|');
+  const cats=[...new Set(videos.map(v=>v.category).filter(Boolean))].sort((a,b)=>categoryLabel(a).localeCompare(categoryLabel(b),'pl'));
+  const key=cats.join('|')+'::'+getLang();
   if(sel.dataset.catsKey===key)return;
   sel.dataset.catsKey=key;
   const current=sel.value;
-  sel.innerHTML=`<option value="">${t('filter_all_categories')}</option>`+cats.map(c=>`<option value="${esc(c)}">${esc(c)}</option>`).join('');
+  sel.innerHTML=`<option value="">${t('filter_all_categories')}</option>`+cats.map(c=>`<option value="${esc(c)}">${esc(categoryLabel(c))}</option>`).join('');
   if(cats.includes(current))sel.value=current;
 }
 
