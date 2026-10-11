@@ -40,14 +40,25 @@ function toggleCardMenu(videoId,btnEl){
   menu.id='card-menu-popup';
   const top=rect.bottom+6+180>window.innerHeight?rect.top-186:rect.bottom+6;
   menu.style.cssText=`position:fixed;top:${top}px;left:${Math.min(rect.left,window.innerWidth-210)}px;background:var(--bg-panel);border:1px solid var(--border);border-radius:10px;min-width:190px;z-index:1000;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,.6)`;
+  const isSaved=savedVideoIds.has(String(videoId));
+  const isWl=watchLaterIds.has(String(videoId));
+  const icoAdd='<svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M14 10H2v2h12v-2zm0-4H2v2h12V6zm4 8v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zM2 16h8v-2H2v2z"/></svg>';
+  const icoSaveOff='<svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M17 3H7c-1.1 0-2 .9-2 2v16l7-3 7 3V5c0-1.1-.9-2-2-2zm0 15l-5-2.18L7 18V5h10v13z"/></svg>';
+  const icoSaveOn='<svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M17 3H7c-1.1 0-2 .9-2 2v16l7-3 7 3V5c0-1.1-.9-2-2-2z"/></svg>';
+  const icoClock='<svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M12 8v5h4v-1.5h-2.5V8H12zM12.5 2C6.81 2 2 6.81 2 12.5S6.81 23 12.5 23 23 18.19 23 12.5 18.19 2 12.5 2zm0 19.5c-4.97 0-9-4.03-9-9s4.03-9 9-9 9 4.03 9 9-4.03 9-9 9z"/></svg>';
+  const icoCheck='<svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>';
+  const icoDownload='<svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>';
+  const icoShare='<svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L7.05 9.81C6.5 9.31 5.8 9 5 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.8 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92s2.92-1.31 2.92-2.92-1.31-2.92-2.92-2.92z"/></svg>';
+  const icoFlag='<svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M14.4 6L14 4H5v17h2v-7h5.6l.4 2h7V6z"/></svg>';
+  const itemStyle='padding:11px 16px;cursor:pointer;font-size:14px;display:flex;align-items:center;gap:16px;color:var(--text-primary)';
   menu.innerHTML=`
-    <div onclick="event.stopPropagation();closeCardMenu();openPlaylistPicker('${jsesc(videoId)}')" style="padding:12px 16px;cursor:pointer;font-size:13px;display:flex;align-items:center;gap:10px" onmouseover="this.style.background='var(--border)'" onmouseout="this.style.background='none'"><span>➕ ${t('playlist_add_label')}</span></div>
-    <div onclick="event.stopPropagation();closeCardMenu();toggleSaveVideo('${jsesc(videoId)}')" style="padding:12px 16px;cursor:pointer;font-size:13px;display:flex;align-items:center;gap:10px" onmouseover="this.style.background='var(--border)'" onmouseout="this.style.background='none'"><span id="save-menu-label-${videoId}">${savedVideoIds.has(String(videoId))?'✅ '+t('save_added_label'):'💾 '+t('save_label')}</span></div>
-    <div onclick="event.stopPropagation();closeCardMenu();toggleWatchLater('${jsesc(videoId)}')" style="padding:12px 16px;cursor:pointer;font-size:13px;display:flex;align-items:center;gap:10px" onmouseover="this.style.background='var(--border)'" onmouseout="this.style.background='none'"><span id="wl-menu-label-${videoId}">${watchLaterIds.has(String(videoId))?'✅ '+t('wl_added_label'):'⏰ '+t('wl_label')}</span></div>
-    <div onclick="event.stopPropagation();closeCardMenu();downloadVideo('${jsesc(videoId)}')" style="padding:12px 16px;cursor:pointer;font-size:13px;display:flex;align-items:center;gap:10px" onmouseover="this.style.background='var(--border)'" onmouseout="this.style.background='none'">⬇️ Pobierz</div>
-    <div onclick="event.stopPropagation();closeCardMenu();shareVideoCard('${jsesc(videoId)}')" style="padding:12px 16px;cursor:pointer;font-size:13px;display:flex;align-items:center;gap:10px" onmouseover="this.style.background='var(--border)'" onmouseout="this.style.background='none'">🔗 Udostępnij</div>
-    <div style="border-top:1px solid var(--border)"></div>
-    <div onclick="event.stopPropagation();closeCardMenu();openReportModal('${jsesc(videoId)}')" style="padding:12px 16px;cursor:pointer;font-size:13px;display:flex;align-items:center;gap:10px;color:#ff6b6b" onmouseover="this.style.background='var(--border)'" onmouseout="this.style.background='none'">🚩 Zgłoś</div>
+    <div onclick="event.stopPropagation();closeCardMenu();openPlaylistPicker('${jsesc(videoId)}')" style="${itemStyle}" onmouseover="this.style.background='var(--border)'" onmouseout="this.style.background='none'">${icoAdd}<span>${t('playlist_add_label')}</span></div>
+    <div onclick="event.stopPropagation();closeCardMenu();toggleSaveVideo('${jsesc(videoId)}')" style="${itemStyle}" onmouseover="this.style.background='var(--border)'" onmouseout="this.style.background='none'"><span id="save-menu-icon-${videoId}" style="display:flex">${isSaved?icoSaveOn:icoSaveOff}</span><span id="save-menu-label-${videoId}">${isSaved?t('save_added_label'):t('save_label')}</span></div>
+    <div onclick="event.stopPropagation();closeCardMenu();toggleWatchLater('${jsesc(videoId)}')" style="${itemStyle}" onmouseover="this.style.background='var(--border)'" onmouseout="this.style.background='none'"><span id="wl-menu-icon-${videoId}" style="display:flex">${isWl?icoCheck:icoClock}</span><span id="wl-menu-label-${videoId}">${isWl?t('wl_added_label'):t('wl_label')}</span></div>
+    <div onclick="event.stopPropagation();closeCardMenu();downloadVideo('${jsesc(videoId)}')" style="${itemStyle}" onmouseover="this.style.background='var(--border)'" onmouseout="this.style.background='none'">${icoDownload}<span>${t('btn_download')}</span></div>
+    <div onclick="event.stopPropagation();closeCardMenu();shareVideoCard('${jsesc(videoId)}')" style="${itemStyle}" onmouseover="this.style.background='var(--border)'" onmouseout="this.style.background='none'">${icoShare}<span>${t('btn_share')}</span></div>
+    <div style="border-top:1px solid var(--border);margin:4px 0"></div>
+    <div onclick="event.stopPropagation();closeCardMenu();openReportModal('${jsesc(videoId)}')" style="${itemStyle};color:#ff6b6b" onmouseover="this.style.background='var(--border)'" onmouseout="this.style.background='none'">${icoFlag}<span>${t('btn_report')}</span></div>
   `;
   document.body.appendChild(menu);
   setTimeout(()=>{
