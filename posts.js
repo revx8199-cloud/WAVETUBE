@@ -112,7 +112,7 @@ async function renderPosts(){
   if(posts.length)loadNextPostsPage();
 }
 
-function loadNextPostsPage(){
+async function loadNextPostsPage(){
   const grid=document.getElementById('posts-grid');
   if(!grid)return;
   const{list,shown}=postsPageState;
@@ -122,11 +122,16 @@ function loadNextPostsPage(){
     const htmlChunk=next.map(p=>postCardHtml(p,postsPageState.isOwner,likedPosts)).join('');
     grid.insertAdjacentHTML('beforeend',htmlChunk);
     postsPageState.shown+=next.length;
+    const uidsForEmoji=[];
+    next.forEach(p=>{
+      (p.comments||[]).forEach(c=>{if(c.user_id)uidsForEmoji.push(c.user_id);(c.replies||[]).forEach(r=>{if(r.user_id)uidsForEmoji.push(r.user_id);});});
+    });
+    await loadEmojiStylesFor(uidsForEmoji);
     next.forEach(p=>{
       (p.comments||[]).forEach((c,ci)=>{
-        if(c.emoji_style==='flat')applyEmojiStyleToEl(document.getElementById(`ptext-${p.id}-${ci}`));
+        if(emojiStyleCache[c.user_id]==='flat')applyEmojiStyleToEl(document.getElementById(`ptext-${p.id}-${ci}`));
         (c.replies||[]).forEach((r,ri)=>{
-          if(r.emoji_style==='flat')applyEmojiStyleToEl(document.getElementById(`prtext-${p.id}-${ci}-${ri}`));
+          if(emojiStyleCache[r.user_id]==='flat')applyEmojiStyleToEl(document.getElementById(`prtext-${p.id}-${ci}-${ri}`));
         });
       });
     });

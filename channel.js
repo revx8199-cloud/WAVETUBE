@@ -397,6 +397,7 @@ async function saveVipEmojiStyle(style){
   const{error}=await sb.from('profiles').upsert([{id:currentUser.id,emoji_style:style}],{onConflict:'id'});
   if(error){toast('Błąd: '+error.message);return;}
   myEmojiStyle=style;
+  emojiStyleCache[currentUser.id]=style;
   renderVipPanel();
   toast(t('vip_toast_emoji_style_saved'));
 }
@@ -513,6 +514,14 @@ let myBannerFrame='';
 let myAvatarParticles=false;
 let myAvatarParticleType='✨';
 let myEmojiStyle='';
+const emojiStyleCache={};
+async function loadEmojiStylesFor(userIds){
+  const need=[...new Set(userIds.filter(id=>id&&!(id in emojiStyleCache)))];
+  if(!need.length)return;
+  const{data}=await sb.from('profiles').select('id,emoji_style').in('id',need);
+  need.forEach(id=>{emojiStyleCache[id]='';});
+  (data||[]).forEach(p=>{emojiStyleCache[p.id]=p.emoji_style||'';});
+}
 let myDisplayNick='';
 let vipBadgeColor='';
 let adminBadgeColor='';

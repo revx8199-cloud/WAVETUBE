@@ -1560,7 +1560,7 @@ function getSortedComments(){
   });
 }
 
-function renderC(){
+async function renderC(){
   closeEmojiPicker();
   closeCmtMenu();
   if(!cur)return;
@@ -1570,6 +1570,9 @@ function renderC(){
   const likedComments=new Set(JSON.parse(localStorage.getItem('liked_comments')||'[]'));
   const dislikedComments=new Set(JSON.parse(localStorage.getItem('disliked_comments')||'[]'));
   const sortedList=getSortedComments();
+  const uidsForEmoji=[];
+  sortedList.forEach(c=>{if(c.user_id)uidsForEmoji.push(c.user_id);(c.replies||[]).forEach(r=>{if(r.user_id)uidsForEmoji.push(r.user_id);});});
+  await loadEmojiStylesFor(uidsForEmoji);
   document.getElementById('clist').innerHTML=sortedList.map((c,i)=>{
     const av=c.avatar?`<img src="${esc(c.avatar)}">`:`${(c.user||'?')[0].toUpperCase()}`;
     const uid=c.user_id||'';
@@ -1679,9 +1682,9 @@ function renderC(){
     </div>`;
   }).join('');
   sortedList.forEach((c,i)=>{
-    if(c.emoji_style==='flat')applyEmojiStyleToEl(document.getElementById(`ctext-${i}`));
+    if(emojiStyleCache[c.user_id]==='flat')applyEmojiStyleToEl(document.getElementById(`ctext-${i}`));
     (c.replies||[]).forEach((r,ri)=>{
-      if(r.emoji_style==='flat')applyEmojiStyleToEl(document.getElementById(`rtext-${i}-${ri}`));
+      if(emojiStyleCache[r.user_id]==='flat')applyEmojiStyleToEl(document.getElementById(`rtext-${i}-${ri}`));
     });
   });
 }
