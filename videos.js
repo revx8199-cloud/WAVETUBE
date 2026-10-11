@@ -573,10 +573,11 @@ async function submitForm(){
     btn.textContent=t('form_publishing_btn');
   }
 
-  // Jeśli pole "czas trwania" puste i to bezpośredni plik mp4 - wykryj automatycznie
+  // Jeśli pole "czas trwania" puste i to bezpośredni plik (mp4 lub chmura dająca bezpośredni link) - wykryj automatycznie
   let dur=document.getElementById('fdur').value.trim();
-  if(!dur&&getPlayer(url).type==='mp4'){
-    dur=await detectMp4Duration(url).catch(()=>'');
+  const playerType=getPlayer(url).type;
+  if(!dur&&['mp4','od','resolve'].includes(playerType)){
+    dur=await detectMp4Duration(getPlayer(url).src).catch(()=>'');
   }
 
   const ok=await addVideo({
