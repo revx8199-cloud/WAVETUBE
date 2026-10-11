@@ -403,7 +403,9 @@ async function saveVipEmojiStyle(style){
 }
 
 function applyEmojiStyleToEl(el){
-  if(el&&window.twemoji)twemoji.parse(el,{folder:'svg',ext:'.svg',base:'https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/'});
+  if(el&&window.twemoji)twemoji.parse(el,{
+    callback:icon=>`https://cdn.jsdelivr.net/gh/googlefonts/noto-emoji@main/svg/emoji_u${icon.replace(/-/g,'_')}.svg`
+  });
 }
 
 async function saveVipBadgeColor(color){
