@@ -991,8 +991,9 @@ function applyFeedFiltersToList(list){
     out=out.filter(v=>{
       const sec=durationToSeconds(v.dur);
       if(sec===null)return false;
-      if(durFilter==='short')return sec<=240;
-      if(durFilter==='medium')return sec>240&&sec<=1200;
+      if(durFilter==='tiny')return sec<60;
+      if(durFilter==='short')return sec>=60&&sec<=180;
+      if(durFilter==='medium')return sec>180&&sec<=1200;
       if(durFilter==='long')return sec>1200;
       return true;
     });
@@ -1202,7 +1203,7 @@ function updateWatchLaterButtonUI(videoId){
   if(playerBtn&&cur&&String(cur.id)===idStr){
     playerBtn.innerHTML=isSaved
       ?`<svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/></svg> ${t('wl_added_label')}`
-      :`<svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm.5 5H11v6l5.25 3.15.75-1.23-4.5-2.67V7z"/></svg> ${t('wl_label')}`;
+      :`<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15.5 14"/></svg> ${t('wl_label')}`;
   }
 }
 
