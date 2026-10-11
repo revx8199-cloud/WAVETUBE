@@ -122,6 +122,14 @@ function loadNextPostsPage(){
     const htmlChunk=next.map(p=>postCardHtml(p,postsPageState.isOwner,likedPosts)).join('');
     grid.insertAdjacentHTML('beforeend',htmlChunk);
     postsPageState.shown+=next.length;
+    next.forEach(p=>{
+      (p.comments||[]).forEach((c,ci)=>{
+        if(c.emoji_style==='flat')applyEmojiStyleToEl(document.getElementById(`ptext-${p.id}-${ci}`));
+        (c.replies||[]).forEach((r,ri)=>{
+          if(r.emoji_style==='flat')applyEmojiStyleToEl(document.getElementById(`prtext-${p.id}-${ci}-${ri}`));
+        });
+      });
+    });
   }
   setupPostsSentinel();
 }
@@ -180,7 +188,7 @@ function postCardHtml(p,isOwner,likedPosts){
               ${c.avatar?`<img src="${esc(c.avatar)}" style="width:28px;height:28px;border-radius:50%;object-fit:cover;flex-shrink:0${c.avatar_frame?`;border:2px solid ${esc(c.avatar_frame)};box-sizing:border-box`:''}">`:`<div style="width:28px;height:28px;border-radius:50%;background:${esc(c.col||'#cc0000')};display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0">${(c.user||'?')[0]}</div>`}
               <div style="flex:1">
                 <div style="font-size:12px;font-weight:600;display:flex;align-items:center">${esc(c.user)}${verifiedBadge(c.email||'')} <span style="color:var(--text-tertiary);font-weight:400;margin-left:6px">${c.time||''}</span></div>
-                <div style="font-size:13px${c.text_color?`;color:${esc(c.text_color)}`:';color:var(--text-secondary)'}${c.text_font?`;font-family:${fontCssFor(c.text_font)}`:''}">${esc(c.text)}</div>
+                <div id="ptext-${p.id}-${ci}" style="font-size:13px${c.text_color?`;color:${esc(c.text_color)}`:';color:var(--text-secondary)'}${c.text_font?`;font-family:${fontCssFor(c.text_font)}`:''}">${esc(c.text)}</div>
                 ${currentUser?`<button onclick="togglePostReplyForm('${jsesc(p.id)}',${ci})" style="background:none;border:none;color:var(--text-secondary);cursor:pointer;font-size:11px;font-weight:600;padding:3px 0;margin-top:2px">${t('reply_btn')||'Odpowiedz'}</button>`:''}
                 <div id="preply-form-${p.id}-${ci}" style="display:none;margin-top:6px;gap:6px;align-items:center">
                   <input id="preply-inp-${p.id}-${ci}" placeholder="${t('post_comment_ph')}" style="width:100%;background:transparent;border:none;border-bottom:1px solid #444;color:var(--text-primary);padding:5px 0;font-size:12px;outline:none">
@@ -193,7 +201,7 @@ function postCardHtml(p,isOwner,likedPosts){
                 <div id="preplies-${p.id}-${ci}" style="display:none;margin-top:6px;padding-left:8px;border-left:2px solid var(--border-soft)">
                   ${replies.map((r,ri)=>`<div style="display:flex;gap:6px;margin-bottom:8px">
                     ${r.avatar?`<img src="${esc(r.avatar)}" style="width:22px;height:22px;border-radius:50%;object-fit:cover;flex-shrink:0">`:`<div style="width:22px;height:22px;border-radius:50%;background:#cc0000;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;flex-shrink:0">${(r.user||'?')[0]}</div>`}
-                    <div><div style="font-size:11px;font-weight:600">${esc(r.user)}${verifiedBadge(r.email||'')}</div><div style="font-size:12px;color:var(--text-secondary)">${esc(r.text)}</div></div>
+                    <div><div style="font-size:11px;font-weight:600">${esc(r.user)}${verifiedBadge(r.email||'')}</div><div id="prtext-${p.id}-${ci}-${ri}" style="font-size:12px;color:var(--text-secondary)">${esc(r.text)}</div></div>
                   </div>`).join('')}
                 </div>`:''}
               </div>
@@ -308,7 +316,7 @@ async function postPostReply(postId,ci){
   if(!inp||!inp.value.trim())return;
   const meta=currentUser.user_metadata;
   const now=new Date().toLocaleString('pl-PL',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'});
-  const r={user:getMyDisplayName(),text:inp.value.trim(),time:now,ts:Date.now(),avatar:meta?.avatar_url||'',email:currentUser.email||'',user_id:currentUser.id};
+  const r={user:getMyDisplayName(),text:inp.value.trim(),time:now,ts:Date.now(),avatar:meta?.avatar_url||'',email:currentUser.email||'',user_id:currentUser.id,emoji_style:myEmojiStyle||''};
   inp.value='';
   await sb.rpc('add_post_comment_reply',{p_id:postId,c_index:ci,r});
   await renderPosts();
@@ -333,7 +341,7 @@ async function addPostComment(postId){
   if(!commentCooldownOk())return;
   const meta=currentUser.user_metadata;
   const now=new Date().toLocaleString('pl-PL',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'});
-  const c={user:getMyDisplayName(),text:inp.value.trim(),time:now,ts:Date.now(),col:'#cc0000',avatar:meta?.avatar_url||'',email:currentUser.email||'',user_id:currentUser.id,name_color:myNameColor||'',name_font:myNameFont||'',avatar_frame:myAvatarFrame||'',text_color:myTextColor||'',text_font:myTextFont||''};
+  const c={user:getMyDisplayName(),text:inp.value.trim(),time:now,ts:Date.now(),col:'#cc0000',avatar:meta?.avatar_url||'',email:currentUser.email||'',user_id:currentUser.id,name_color:myNameColor||'',name_font:myNameFont||'',avatar_frame:myAvatarFrame||'',text_color:myTextColor||'',text_font:myTextFont||'',emoji_style:myEmojiStyle||''};
   await sb.rpc('add_post_comment',{p_id:postId,c});
   renderPosts();
 }

@@ -1380,7 +1380,7 @@ async function addAnnouncementComment(id){
   const comment={
     user:getMyDisplayName(),
     text,ts:Date.now(),avatar:meta?.avatar_url||'',
-    user_id:currentUser.id,name_color:myNameColor||'',name_font:myNameFont||'',avatar_frame:myAvatarFrame||'',text_color:myTextColor||'',text_font:myTextFont||''
+    user_id:currentUser.id,name_color:myNameColor||'',name_font:myNameFont||'',avatar_frame:myAvatarFrame||'',text_color:myTextColor||'',text_font:myTextFont||'',emoji_style:myEmojiStyle||''
   };
   const{error}=await sb.rpc('add_announcement_comment',{p_id:id,p_comment:comment});
   if(error){toast('Błąd: '+error.message);return;}
@@ -1669,7 +1669,7 @@ function renderC(){
                     ${replyCanDelete?`<button onclick="deleteReply(${i},${ri})" title="Usuń" class="cmt-icon-btn" style="width:26px;height:26px;font-size:12px">🗑</button>`:''}
                   </span>
                 </div>
-                <div style="font-size:13px;margin-top:2px${r.text_color?`;color:${esc(r.text_color)}`:';color:var(--text-secondary)'}${r.text_font?`;font-family:${fontCssFor(r.text_font)}`:''}">${esc(r.text)}</div>
+                <div id="rtext-${i}-${ri}" style="font-size:13px;margin-top:2px${r.text_color?`;color:${esc(r.text_color)}`:';color:var(--text-secondary)'}${r.text_font?`;font-family:${fontCssFor(r.text_font)}`:''}">${esc(r.text)}</div>
               </div>
             </div>`;
             }).join('')}
@@ -1678,6 +1678,12 @@ function renderC(){
       </div>
     </div>`;
   }).join('');
+  sortedList.forEach((c,i)=>{
+    if(c.emoji_style==='flat')applyEmojiStyleToEl(document.getElementById(`ctext-${i}`));
+    (c.replies||[]).forEach((r,ri)=>{
+      if(r.emoji_style==='flat')applyEmojiStyleToEl(document.getElementById(`rtext-${i}-${ri}`));
+    });
+  });
 }
 
 function toggleReplyForm(i){
@@ -1744,7 +1750,7 @@ async function postReply(index){
   const c=sortedList[index];
   if(!c)return;
   const origIdx=(cur.comments||[]).findIndex(x=>x.user===c.user&&x.text===c.text&&x.time===c.time);
-  const newR={user:getMyDisplayName(),text:txt,time:now,ts:Date.now(),avatar:meta?.avatar_url||'',user_email:currentUser.email,user_id:currentUser.id,name_color:myNameColor||'',name_font:myNameFont||'',avatar_frame:myAvatarFrame||'',text_color:myTextColor||'',text_font:myTextFont||''};
+  const newR={user:getMyDisplayName(),text:txt,time:now,ts:Date.now(),avatar:meta?.avatar_url||'',user_email:currentUser.email,user_id:currentUser.id,name_color:myNameColor||'',name_font:myNameFont||'',avatar_frame:myAvatarFrame||'',text_color:myTextColor||'',text_font:myTextFont||'',emoji_style:myEmojiStyle||''};
   inp.value='';
   const{error}=await sb.rpc('add_video_comment_reply',{p_id:cur.id,c_index:origIdx,r:newR});
   if(error){toast('Błąd: '+error.message);return;}
@@ -1865,7 +1871,7 @@ async function postC(){
   if(!commentCooldownOk())return;
   const meta=currentUser.user_metadata;
   const now=new Date().toLocaleString('pl-PL',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'});
-  const newC={user:getMyDisplayName(),text:t,time:now,ts:Date.now(),col:'#cc0000',avatar:meta?.avatar_url||'',user_id:currentUser.id||'',user_email:currentUser.email||'',name_color:myNameColor||'',name_font:myNameFont||'',avatar_frame:myAvatarFrame||'',text_color:myTextColor||'',text_font:myTextFont||''};
+  const newC={user:getMyDisplayName(),text:t,time:now,ts:Date.now(),col:'#cc0000',avatar:meta?.avatar_url||'',user_id:currentUser.id||'',user_email:currentUser.email||'',name_color:myNameColor||'',name_font:myNameFont||'',avatar_frame:myAvatarFrame||'',text_color:myTextColor||'',text_font:myTextFont||'',emoji_style:myEmojiStyle||''};
   document.getElementById('cinp').value='';
   const{error}=await sb.rpc('add_video_comment',{p_id:cur.id,c:newC});
   if(error){toast('Błąd: '+error.message);return;}

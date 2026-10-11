@@ -373,8 +373,36 @@ function renderVipPanel(){
           </div>`).join('')}
       </div>
     </div>
+    <div style="margin-top:20px;padding-top:20px;border-top:1px solid var(--border)">
+      <div style="font-size:13px;font-weight:700;color:var(--text-primary);margin-bottom:4px">${t('vip_emoji_style_title')}</div>
+      <p style="color:var(--text-secondary);font-size:12px;margin-bottom:14px">${t('vip_emoji_style_desc')}</p>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:8px">
+        <div onclick="saveVipEmojiStyle('')" class="vip-emoji-style-opt" style="display:flex;flex-direction:column;align-items:flex-start;gap:6px;padding:12px 14px;border-radius:10px;cursor:pointer;background:${!myEmojiStyle?'rgba(255,215,0,.12)':'var(--bg-sunken)'};border:1px solid ${!myEmojiStyle?'#ffd700':'var(--border)'}">
+          <span style="font-size:22px">😀🔥👍</span>
+          <span style="font-size:11px;color:var(--text-tertiary)">${t('vip_emoji_style_native')}${!myEmojiStyle?' ✓':''}</span>
+        </div>
+        <div onclick="saveVipEmojiStyle('flat')" class="vip-emoji-style-opt" style="display:flex;flex-direction:column;align-items:flex-start;gap:6px;padding:12px 14px;border-radius:10px;cursor:pointer;background:${myEmojiStyle==='flat'?'rgba(255,215,0,.12)':'var(--bg-sunken)'};border:1px solid ${myEmojiStyle==='flat'?'#ffd700':'var(--border)'}">
+          <span class="vip-emoji-flat-preview" style="font-size:22px">😀🔥👍</span>
+          <span style="font-size:11px;color:var(--text-tertiary)">${t('vip_emoji_style_flat')}${myEmojiStyle==='flat'?' ✓':''}</span>
+        </div>
+      </div>
+    </div>
     <p style="color:var(--text-tertiary);font-size:11px;margin-top:20px">${t('vip_footer_note')}</p>
   `;
+  document.querySelectorAll('.vip-emoji-flat-preview').forEach(applyEmojiStyleToEl);
+}
+
+async function saveVipEmojiStyle(style){
+  if(!isVIP())return;
+  const{error}=await sb.from('profiles').upsert([{id:currentUser.id,emoji_style:style}],{onConflict:'id'});
+  if(error){toast('Błąd: '+error.message);return;}
+  myEmojiStyle=style;
+  renderVipPanel();
+  toast(t('vip_toast_emoji_style_saved'));
+}
+
+function applyEmojiStyleToEl(el){
+  if(el&&window.twemoji)twemoji.parse(el,{folder:'svg',ext:'.svg',base:'https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/'});
 }
 
 async function saveVipBadgeColor(color){
@@ -484,6 +512,7 @@ let myAvatarFrame='';
 let myBannerFrame='';
 let myAvatarParticles=false;
 let myAvatarParticleType='✨';
+let myEmojiStyle='';
 let myDisplayNick='';
 let vipBadgeColor='';
 let adminBadgeColor='';
@@ -556,8 +585,8 @@ function fontCssFor(fontId){
 }
 
 async function loadMyNameColor(){
-  if(!currentUser){myNameColor='';myTextColor='';myTextFont='';myNameFont='';myDisplayNick='';myAvatarFrame='';myAvatarParticles=false;myAvatarParticleType='✨';myBannerFrame='';return;}
-  const{data}=await sb.from('profiles').select('name_color,text_color,text_font,name_font,name,avatar_frame,avatar_particles,avatar_particle_type,banner_frame').eq('id',currentUser.id).single();
+  if(!currentUser){myNameColor='';myTextColor='';myTextFont='';myNameFont='';myDisplayNick='';myAvatarFrame='';myAvatarParticles=false;myAvatarParticleType='✨';myBannerFrame='';myEmojiStyle='';return;}
+  const{data}=await sb.from('profiles').select('name_color,text_color,text_font,name_font,name,avatar_frame,avatar_particles,avatar_particle_type,banner_frame,emoji_style').eq('id',currentUser.id).single();
   myNameColor=data?.name_color||'';
   myTextColor=data?.text_color||'';
   myTextFont=data?.text_font||'';
@@ -567,6 +596,7 @@ async function loadMyNameColor(){
   myAvatarParticles=!!data?.avatar_particles;
   myAvatarParticleType=data?.avatar_particle_type||'✨';
   myBannerFrame=data?.banner_frame||'';
+  myEmojiStyle=data?.emoji_style||'';
 }
 
 async function saveVipTextColor(){
