@@ -538,6 +538,52 @@ function detectMp4Duration(url){
   });
 }
 
+let ytApiReadyPromise=null;
+function loadYtApi(){
+  if(ytApiReadyPromise)return ytApiReadyPromise;
+  ytApiReadyPromise=new Promise(res=>{
+    if(window.YT&&window.YT.Player){res();return;}
+    window.onYouTubeIframeAPIReady=res;
+    const s=document.createElement('script');
+    s.src='https://www.youtube.com/iframe_api';
+    document.head.appendChild(s);
+  });
+  return ytApiReadyPromise;
+}
+
+function detectYoutubeDuration(videoId){
+  return new Promise(async(res,rej)=>{
+    await loadYtApi().catch(rej);
+    let box=document.getElementById('yt-duration-probe');
+    if(!box){
+      box=document.createElement('div');
+      box.id='yt-duration-probe';
+      box.style.cssText='position:fixed;width:1px;height:1px;opacity:0;pointer-events:none;top:-9999px;left:-9999px';
+      document.body.appendChild(box);
+    }
+    const mount=document.createElement('div');
+    box.appendChild(mount);
+    const timeout=setTimeout(()=>{player?.destroy?.();mount.remove();rej();},7000);
+    let player;
+    try{
+      player=new YT.Player(mount,{
+        videoId,
+        events:{
+          onReady:e=>{
+            const s=Math.round(e.target.getDuration());
+            clearTimeout(timeout);
+            player.destroy();mount.remove();
+            if(!isFinite(s)||s<=0){rej();return;}
+            const mm=Math.floor(s/60),ss=s%60;
+            res(`${mm}:${String(ss).padStart(2,'0')}`);
+          },
+          onError:()=>{clearTimeout(timeout);mount.remove();rej();}
+        }
+      });
+    }catch(e){clearTimeout(timeout);mount.remove();rej();}
+  });
+}
+
 function openForm(){
   if(!currentUser){toast('Zaloguj się żeby dodawać filmy!');return;}
   selectVisibility(document.getElementById('fvis')?.value||'public');
@@ -573,11 +619,19 @@ async function submitForm(){
     btn.textContent=t('form_publishing_btn');
   }
 
-  // Jeśli pole "czas trwania" puste i to bezpośredni plik (mp4 lub chmura dająca bezpośredni link) - wykryj automatycznie
+  // Jeśli pole "czas trwania" puste - spróbuj wykryć automatycznie, metoda zależna od źródła
   let dur=document.getElementById('fdur').value.trim();
   const playerType=getPlayer(url).type;
   if(!dur&&['mp4','od','resolve'].includes(playerType)){
     dur=await detectMp4Duration(getPlayer(url).src).catch(()=>'');
+  }
+  if(!dur&&playerType==='yt'){
+    const ytid=ytId(url);
+    if(ytid)dur=await detectYoutubeDuration(ytid).catch(()=>'');
+  }
+  if(!dur&&playerType==='gd'){
+    const gid=gdId(url);
+    if(gid)dur=await detectMp4Duration(`https://drive.google.com/uc?export=download&id=${gid}`).catch(()=>'');
   }
 
   const ok=await addVideo({
@@ -651,6 +705,28 @@ function openEditModal(id){
 }
 
 function closeEditModal(){document.getElementById('edit-modal').classList.remove('open');}
+
+async function detectEditDuration(){
+  const id=parseInt(document.getElementById('edit-id').value);
+  const v=videos.find(x=>x.id===id);if(!v)return;
+  const btn=event?.target;
+  const oldLabel=btn?btn.textContent:'';
+  if(btn){btn.textContent='⏳...';btn.disabled=true;}
+  const playerType=getPlayer(v.url).type;
+  let dur='';
+  if(['mp4','od','resolve'].includes(playerType)){
+    dur=await detectMp4Duration(getPlayer(v.url).src).catch(()=>'');
+  } else if(playerType==='yt'){
+    const ytid=ytId(v.url);
+    if(ytid)dur=await detectYoutubeDuration(ytid).catch(()=>'');
+  } else if(playerType==='gd'){
+    const gid=gdId(v.url);
+    if(gid)dur=await detectMp4Duration(`https://drive.google.com/uc?export=download&id=${gid}`).catch(()=>'');
+  }
+  if(btn){btn.textContent=oldLabel;btn.disabled=false;}
+  if(dur){document.getElementById('edit-dur').value=dur;toast(t('toast_dur_detected'));}
+  else toast(t('toast_dur_not_detected'));
+}
 
 async function submitEdit(){
   const id=parseInt(document.getElementById('edit-id').value);

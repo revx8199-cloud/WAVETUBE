@@ -593,8 +593,11 @@
       <input type="url" id="edit-thumb" placeholder="https://...">
     </div>
     <div class="field">
-      <label>Czas trwania</label>
-      <input type="text" id="edit-dur" placeholder="np. 5:42">
+      <label data-i18n="edit_dur_label">Czas trwania</label>
+      <div style="display:flex;gap:8px">
+        <input type="text" id="edit-dur" placeholder="np. 5:42" style="flex:1">
+        <button type="button" onclick="detectEditDuration()" style="white-space:nowrap;background:var(--border-soft);border:1px solid var(--border);color:var(--text-primary);padding:0 14px;border-radius:8px;cursor:pointer;font-size:13px" data-i18n="btn_detect_dur">🔍 Wykryj</button>
+      </div>
     </div>
     <div class="field">
       <label>Kategoria</label>
