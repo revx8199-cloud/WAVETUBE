@@ -371,7 +371,7 @@ function togglePostMenu(postId,btnEl){
   menu.id='post-menu-popup';
   const top=rect.bottom+6+50>window.innerHeight?rect.top-56:rect.bottom+6;
   menu.style.cssText=`position:fixed;top:${top}px;left:${Math.min(rect.left,window.innerWidth-190)}px;background:var(--bg-panel);border:1px solid var(--border);border-radius:10px;min-width:170px;z-index:1000;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,.6)`;
-  menu.innerHTML=`<div onclick="event.stopPropagation();closePostMenu();openPostReportModal(${postId})" style="padding:12px 16px;cursor:pointer;font-size:13px;display:flex;align-items:center;gap:10px;color:#ff6b6b" onmouseover="this.style.background='var(--border)'" onmouseout="this.style.background='none'">🚩 Zgłoś post</div>`;
+  menu.innerHTML=`<div onclick="event.stopPropagation();closePostMenu();openPostReportModal(${postId})" style="padding:12px 16px;cursor:pointer;font-size:13px;display:flex;align-items:center;gap:10px;color:#ff6b6b" onmouseover="this.style.background='var(--border)'" onmouseout="this.style.background='none'">🚩 ${t('report_title_post_menu')}</div>`;
   document.body.appendChild(menu);
   setTimeout(()=>{
     postMenuOutsideListener=function(e){

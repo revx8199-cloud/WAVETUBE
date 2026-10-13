@@ -589,8 +589,18 @@
       <textarea id="edit-desc" maxlength="5000" style="width:100%;background:var(--bg-sunken);border:1px solid var(--border);border-radius:8px;color:var(--text-primary);padding:10px 14px;font-size:14px;outline:none;resize:none;height:80px" placeholder="Opis..."></textarea>
     </div>
     <div class="field">
-      <label>Miniaturka (URL)</label>
-      <input type="url" id="edit-thumb" placeholder="https://...">
+      <label data-i18n="form_thumb_label">Miniaturka</label>
+      <div style="display:flex;gap:8px;margin-bottom:8px">
+        <button type="button" onclick="setEditThumbMode('url')" id="edit-thumb-tab-url" style="flex:1;padding:7px;border-radius:8px;border:1px solid #cc0000;background:#cc0000;color:var(--text-primary);cursor:pointer;font-size:12px;font-weight:600" data-i18n="form_thumb_url_tab">🔗 Link URL</button>
+        <button type="button" onclick="setEditThumbMode('file')" id="edit-thumb-tab-file" style="flex:1;padding:7px;border-radius:8px;border:1px solid var(--border);background:transparent;color:var(--text-secondary);cursor:pointer;font-size:12px" data-i18n="form_thumb_file_tab">📁 Z dysku</button>
+      </div>
+      <div id="edit-thumb-url-panel">
+        <input type="url" id="edit-thumb" placeholder="https://...">
+      </div>
+      <div id="edit-thumb-file-panel" style="display:none">
+        <input type="file" id="edit-thumb-file" accept="image/*" style="color:var(--text-secondary)">
+        <div id="edit-thumb-preview" style="margin-top:8px;display:none"><img id="edit-thumb-img-preview" style="width:100%;border-radius:8px;max-height:150px;object-fit:cover"></div>
+      </div>
     </div>
     <div class="field">
       <label data-i18n="edit_dur_label">Czas trwania</label>
@@ -1020,26 +1030,26 @@
 <!-- ZGŁOŚ FILM -->
 <div class="fmbg" id="report-modal">
   <div class="fbox">
-    <h3>🚩 Zgłoś film</h3>
-    <p class="sub">Zgłoszenie trafi do moderacji WaveTube</p>
+    <h3 data-i18n="report_title">🚩 Zgłoś film</h3>
+    <p class="sub" data-i18n="report_sub">Zgłoszenie trafi do moderacji WaveTube</p>
     <div class="field">
-      <label>Powód</label>
+      <label data-i18n="report_reason_label">Powód</label>
       <div style="display:flex;flex-direction:column;gap:8px;margin-top:6px;font-size:13px;color:#ddd">
-        <label style="display:flex;align-items:center;gap:8px;cursor:pointer;text-transform:none"><input type="radio" name="report-reason" value="Spam lub wprowadzanie w błąd" style="width:auto"> Spam lub wprowadzanie w błąd</label>
-        <label style="display:flex;align-items:center;gap:8px;cursor:pointer;text-transform:none"><input type="radio" name="report-reason" value="Treści dla dorosłych" style="width:auto"> Treści dla dorosłych</label>
-        <label style="display:flex;align-items:center;gap:8px;cursor:pointer;text-transform:none"><input type="radio" name="report-reason" value="Przemoc lub drastyczne treści" style="width:auto"> Przemoc lub drastyczne treści</label>
-        <label style="display:flex;align-items:center;gap:8px;cursor:pointer;text-transform:none"><input type="radio" name="report-reason" value="Mowa nienawiści lub nękanie" style="width:auto"> Mowa nienawiści lub nękanie</label>
-        <label style="display:flex;align-items:center;gap:8px;cursor:pointer;text-transform:none"><input type="radio" name="report-reason" value="Naruszenie praw autorskich" style="width:auto"> Naruszenie praw autorskich</label>
-        <label style="display:flex;align-items:center;gap:8px;cursor:pointer;text-transform:none"><input type="radio" name="report-reason" value="Inne" style="width:auto"> Inne</label>
+        <label style="display:flex;align-items:center;gap:8px;cursor:pointer;text-transform:none"><input type="radio" name="report-reason" value="Spam lub wprowadzanie w błąd" style="width:auto"> <span data-i18n="report_reason_spam">Spam lub wprowadzanie w błąd</span></label>
+        <label style="display:flex;align-items:center;gap:8px;cursor:pointer;text-transform:none"><input type="radio" name="report-reason" value="Treści dla dorosłych" style="width:auto"> <span data-i18n="report_reason_adult">Treści dla dorosłych</span></label>
+        <label style="display:flex;align-items:center;gap:8px;cursor:pointer;text-transform:none"><input type="radio" name="report-reason" value="Przemoc lub drastyczne treści" style="width:auto"> <span data-i18n="report_reason_violence">Przemoc lub drastyczne treści</span></label>
+        <label style="display:flex;align-items:center;gap:8px;cursor:pointer;text-transform:none"><input type="radio" name="report-reason" value="Mowa nienawiści lub nękanie" style="width:auto"> <span data-i18n="report_reason_hate">Mowa nienawiści lub nękanie</span></label>
+        <label style="display:flex;align-items:center;gap:8px;cursor:pointer;text-transform:none"><input type="radio" name="report-reason" value="Naruszenie praw autorskich" style="width:auto"> <span data-i18n="report_reason_copyright">Naruszenie praw autorskich</span></label>
+        <label style="display:flex;align-items:center;gap:8px;cursor:pointer;text-transform:none"><input type="radio" name="report-reason" value="Inne" style="width:auto"> <span data-i18n="report_reason_other">Inne</span></label>
       </div>
     </div>
     <div class="field">
-      <label>Szczegóły (opcjonalnie)</label>
-      <input id="report-details" placeholder="Opisz problem...">
+      <label data-i18n="report_details_label">Szczegóły (opcjonalnie)</label>
+      <input id="report-details" placeholder="Opisz problem..." data-i18n-placeholder="report_details_ph">
     </div>
     <div class="fbbtns">
-      <button class="fcancel" onclick="closeReportModal()">Anuluj</button>
-      <button class="fsubmit" onclick="submitReport()">Wyślij zgłoszenie</button>
+      <button class="fcancel" onclick="closeReportModal()" data-i18n="btn_cancel">Anuluj</button>
+      <button class="fsubmit" onclick="submitReport()" data-i18n="btn_send_report">Wyślij zgłoszenie</button>
     </div>
   </div>
 </div>

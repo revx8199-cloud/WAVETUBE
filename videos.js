@@ -105,7 +105,7 @@ let reportingPostId=null;
 function openReportModal(videoId){
   reportingVideoId=videoId;
   reportingPostId=null;
-  const h=document.querySelector('#report-modal h3');if(h)h.textContent='🚩 Zgłoś film';
+  const h=document.querySelector('#report-modal h3');if(h)h.textContent=t('report_title');
   const el=document.getElementById('report-modal');
   if(el)el.classList.add('open');
 }
@@ -113,7 +113,7 @@ function openReportModal(videoId){
 function openPostReportModal(postId){
   reportingPostId=postId;
   reportingVideoId=null;
-  const h=document.querySelector('#report-modal h3');if(h)h.textContent='🚩 Zgłoś post';
+  const h=document.querySelector('#report-modal h3');if(h)h.textContent=t('report_title_post');
   const el=document.getElementById('report-modal');
   if(el)el.classList.add('open');
 }
@@ -563,7 +563,7 @@ function detectYoutubeDuration(videoId){
     }
     const mount=document.createElement('div');
     box.appendChild(mount);
-    const timeout=setTimeout(()=>{player?.destroy?.();mount.remove();rej();},7000);
+    const timeout=setTimeout(()=>{player?.destroy?.();mount.remove();rej(new Error('timeout (7s) — iframe YouTube się nie załadował, może blokuje go adblock/rozszerzenie'));},7000);
     let player;
     try{
       player=new YT.Player(mount,{
@@ -573,14 +573,14 @@ function detectYoutubeDuration(videoId){
             const s=Math.round(e.target.getDuration());
             clearTimeout(timeout);
             player.destroy();mount.remove();
-            if(!isFinite(s)||s<=0){rej();return;}
+            if(!isFinite(s)||s<=0){rej(new Error('getDuration() zwróciło '+s));return;}
             const mm=Math.floor(s/60),ss=s%60;
             res(`${mm}:${String(ss).padStart(2,'0')}`);
           },
-          onError:()=>{clearTimeout(timeout);mount.remove();rej();}
+          onError:e=>{clearTimeout(timeout);mount.remove();rej(new Error('YT player onError, code='+e?.data));}
         }
       });
-    }catch(e){clearTimeout(timeout);mount.remove();rej();}
+    }catch(e){clearTimeout(timeout);mount.remove();rej(e);}
   });
 }
 
@@ -696,6 +696,9 @@ function openEditModal(id){
   document.getElementById('edit-title').value=v.title||'';
   document.getElementById('edit-desc').value=v.description||'';
   document.getElementById('edit-thumb').value=v.thumb||'';
+  const editThumbFileEl=document.getElementById('edit-thumb-file');if(editThumbFileEl)editThumbFileEl.value='';
+  document.getElementById('edit-thumb-preview').style.display='none';
+  setEditThumbMode('url');
   document.getElementById('edit-dur').value=v.dur||'';
   document.getElementById('edit-cat').value=v.category||'';
   document.getElementById('edit-tags').value=(v.tags||[]).join(', ');
@@ -706,6 +709,25 @@ function openEditModal(id){
 
 function closeEditModal(){document.getElementById('edit-modal').classList.remove('open');}
 
+function setEditThumbMode(mode){
+  ['url','file'].forEach(m=>{
+    const panel=document.getElementById('edit-thumb-'+m+'-panel');
+    const tab=document.getElementById('edit-thumb-tab-'+m);
+    if(panel)panel.style.display=m===mode?'block':'none';
+    if(tab){tab.style.background=m===mode?'#cc0000':'transparent';tab.style.borderColor=m===mode?'#cc0000':'var(--border)';tab.style.color=m===mode?'#fff':'#aaa';}
+  });
+}
+
+document.getElementById('edit-thumb-file')?.addEventListener('change',function(){
+  const file=this.files[0];if(!file)return;
+  const reader=new FileReader();
+  reader.onload=e=>{
+    document.getElementById('edit-thumb-img-preview').src=e.target.result;
+    document.getElementById('edit-thumb-preview').style.display='block';
+  };
+  reader.readAsDataURL(file);
+});
+
 async function detectEditDuration(){
   const id=parseInt(document.getElementById('edit-id').value);
   const v=videos.find(x=>x.id===id);if(!v)return;
@@ -714,17 +736,23 @@ async function detectEditDuration(){
   if(btn){btn.textContent='⏳...';btn.disabled=true;}
   const playerType=getPlayer(v.url).type;
   let dur='';
+  let failReason='';
   if(['mp4','od','resolve'].includes(playerType)){
-    dur=await detectMp4Duration(getPlayer(v.url).src).catch(()=>'');
+    dur=await detectMp4Duration(getPlayer(v.url).src).catch(e=>{console.error('[WaveTube] detectMp4Duration failed:',e,v.url);failReason='mp4';return'';});
   } else if(playerType==='yt'){
     const ytid=ytId(v.url);
-    if(ytid)dur=await detectYoutubeDuration(ytid).catch(()=>'');
+    if(ytid)dur=await detectYoutubeDuration(ytid).catch(e=>{console.error('[WaveTube] detectYoutubeDuration failed:',e,v.url);failReason='yt';return'';});
   } else if(playerType==='gd'){
     const gid=gdId(v.url);
-    if(gid)dur=await detectMp4Duration(`https://drive.google.com/uc?export=download&id=${gid}`).catch(()=>'');
+    if(gid)dur=await detectMp4Duration(`https://drive.google.com/uc?export=download&id=${gid}`).catch(e=>{console.error('[WaveTube] detectMp4Duration (Drive) failed:',e,v.url);failReason='gd';return'';});
+  } else {
+    failReason='unsupported';
   }
   if(btn){btn.textContent=oldLabel;btn.disabled=false;}
-  if(dur){document.getElementById('edit-dur').value=dur;toast(t('toast_dur_detected'));}
+  if(dur){document.getElementById('edit-dur').value=dur;toast(t('toast_dur_detected'));return;}
+  if(failReason==='unsupported')toast(t('toast_dur_not_detected'));
+  else if(failReason==='gd')toast(t('toast_dur_fail_gd'));
+  else if(failReason==='yt')toast(t('toast_dur_fail_yt'));
   else toast(t('toast_dur_not_detected'));
 }
 
@@ -732,10 +760,12 @@ async function submitEdit(){
   const id=parseInt(document.getElementById('edit-id').value);
   const title=document.getElementById('edit-title').value.trim();
   if(!title){alert('Podaj tytuł!');return;}
+  const editThumbFile=document.getElementById('edit-thumb-file')?.files[0];
+  const editThumb=editThumbFile?await new Promise(res=>{const r=new FileReader();r.onload=e=>res(e.target.result);r.readAsDataURL(editThumbFile);}):document.getElementById('edit-thumb').value.trim();
   const updates={
     title,
     description:document.getElementById('edit-desc').value.trim(),
-    thumb:document.getElementById('edit-thumb').value.trim(),
+    thumb:editThumb,
     dur:document.getElementById('edit-dur').value.trim(),
     category:document.getElementById('edit-cat').value,
     tags:document.getElementById('edit-tags').value.trim().split(',').map(t=>t.trim().slice(0,25)).filter(Boolean).slice(0,15),
