@@ -922,6 +922,7 @@ async function toggleSub(key,name){
     const profByEmail=await profileIdByEmail(key);
     if(profByEmail?.id)key=profByEmail.id;
   }
+  if(key===currentUser.id||key===currentUser.email)return;
   const isSub=subscribedSet.has(key);
   if(isSub){
     subscribedSet.delete(key);

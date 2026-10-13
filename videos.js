@@ -237,8 +237,9 @@ async function addVideo(v){
   if(currentUser){
     const meta=currentUser.user_metadata;
     const{data:subs}=await sb.from('subscriptions').select('subscriber_id').eq('channel_id',currentUser.id);
-    if(subs&&subs.length){
-      const notifs=subs.map(s=>({user_id:s.subscriber_id,message:`<b>${esc(getMyDisplayName())}</b> dodał nowy film 🎬`,avatar:meta?.avatar_url||'',sender_id:currentUser.id}));
+    const realSubs=(subs||[]).filter(s=>s.subscriber_id!==currentUser.id);
+    if(realSubs.length){
+      const notifs=realSubs.map(s=>({user_id:s.subscriber_id,message:`<b>${esc(getMyDisplayName())}</b> dodał nowy film 🎬`,avatar:meta?.avatar_url||'',sender_id:currentUser.id}));
       await sb.from('notifications').insert(notifs);
     }
   }
@@ -384,13 +385,14 @@ async function openP(id){
   const uname=getUserName(v);
   const ucol=getUserColor(v.user_email);
   const isSub=subscribedSet.has(v.user_id||v.user_email);
+  const isOwnVideo=currentUser&&(currentUser.id===v.user_id||currentUser.email===v.user_email);
   const avHtml=v.user_avatar?`<img src="${esc(v.user_avatar)}" style="width:40px;height:40px;border-radius:50%;object-fit:cover">`:`<div class="ch-av" style="background:${ucol}">${uname[0].toUpperCase()}</div>`;
   document.getElementById('channel-row').innerHTML=`
     ${avHtml}
     <div class="ch-info">
       <div class="ch-name" onclick="closeP();showChannel('${jsesc(v.user_id||'')}','${jsesc(uname)}','${jsesc(v.user_avatar||'')}','${jsesc(v.user_email||'')}')">${esc(uname)}</div>
     </div>
-    <button class="btn-sub${isSub?' subscribed':''}" id="sub-btn" onclick="toggleSubInPlayer('${jsesc(v.user_id||v.user_email||'')}','${jsesc(uname)}')">${isSub?'✓ '+t('btn_subscribed'):t('btn_subscribe')}</button>`;
+    ${isOwnVideo?'':`<button class="btn-sub${isSub?' subscribed':''}" id="sub-btn" onclick="toggleSubInPlayer('${jsesc(v.user_id||v.user_email||'')}','${jsesc(uname)}')">${isSub?'✓ '+t('btn_subscribed'):t('btn_subscribe')}</button>`}`;
 
   renderC();
   document.getElementById('pm').classList.add('open');
@@ -446,6 +448,7 @@ async function toggleSubInPlayer(key,name){
     const profByEmail=await profileIdByEmail(key);
     if(profByEmail?.id)key=profByEmail.id;
   }
+  if(key===currentUser.id||key===currentUser.email)return;
   const isSub=subscribedSet.has(key);
   if(isSub){
     subscribedSet.delete(key);

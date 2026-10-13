@@ -512,8 +512,9 @@ async function submitPost(){
     }
     // notify subscribers
     const{data:subs}=await sb.from('subscriptions').select('subscriber_id').eq('channel_id',currentUser.id);
-    if(subs&&subs.length){
-      const notifs=subs.map(s=>({user_id:s.subscriber_id,message:`<b>${esc(getMyDisplayName())}</b> ${t('post_new_notification')}`,avatar:meta?.avatar_url||'',sender_id:currentUser.id}));
+    const realSubs=(subs||[]).filter(s=>s.subscriber_id!==currentUser.id);
+    if(realSubs.length){
+      const notifs=realSubs.map(s=>({user_id:s.subscriber_id,message:`<b>${esc(getMyDisplayName())}</b> ${t('post_new_notification')}`,avatar:meta?.avatar_url||'',sender_id:currentUser.id}));
       await sb.from('notifications').insert(notifs);
     }
     document.getElementById('post-text-inp').value='';
