@@ -1045,7 +1045,8 @@
     </div>
     <div class="field">
       <label data-i18n="report_details_label">Szczegóły (opcjonalnie)</label>
-      <input id="report-details" placeholder="Opisz problem..." data-i18n-placeholder="report_details_ph">
+      <textarea id="report-details" maxlength="500" placeholder="Opisz problem..." data-i18n-placeholder="report_details_ph" oninput="document.getElementById('report-details-count').textContent=this.value.length" style="width:100%;min-height:200px;background:var(--bg-sunken);border:1px solid var(--border);border-radius:8px;color:var(--text-primary);padding:10px 14px;font-size:14px;outline:none;resize:vertical;font-family:inherit"></textarea>
+      <div style="text-align:right;font-size:11px;color:var(--text-tertiary);margin-top:4px"><span id="report-details-count">0</span>/500</div>
     </div>
     <div class="fbbtns">
       <button class="fcancel" onclick="closeReportModal()" data-i18n="btn_cancel">Anuluj</button>

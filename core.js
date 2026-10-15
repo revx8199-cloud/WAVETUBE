@@ -2092,16 +2092,17 @@ function renderNotifications(){
       ${(n.sender_avatar||n.avatar)?`<img class="notif-av" src="${esc(n.sender_avatar||n.avatar)}">`:`<div class="notif-av-ph" style="background:#cc0000">🔔</div>`}
       <div>
         <div class="notif-text">${safeNotifHtml(n.message)}</div>
-        <div class="notif-time">${new Date(n.created_at).toLocaleString('pl-PL',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'})}</div>
+        <div class="notif-time">${new Date(n.created_at).toLocaleString(getLang()==='en'?'en-GB':getLang()==='ru'?'ru-RU':'pl-PL',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'})}</div>
       </div>
-      <button onclick="event.stopPropagation();deleteNotification('${jsesc(n.id)}')" aria-label="${t('notif_delete_one')}" style="position:absolute;top:8px;right:8px;background:none;border:none;color:var(--text-tertiary);cursor:pointer;font-size:16px;line-height:1;padding:4px">✕</button>
+      <button type="button" onclick="event.stopPropagation();event.preventDefault();deleteNotification('${jsesc(n.id)}')" aria-label="${t('notif_delete_one')}" style="position:absolute;top:8px;right:8px;background:none;border:none;color:var(--text-tertiary);cursor:pointer;font-size:16px;line-height:1;padding:6px;z-index:5">✕</button>
     </div>`).join('');
 }
 
 async function deleteNotification(notifId){
   if(!currentUser)return;
-  await sb.from('notifications').delete().eq('id',notifId).eq('user_id',currentUser.id);
-  notificationsList=notificationsList.filter(n=>n.id!==notifId);
+  const{error}=await sb.from('notifications').delete().eq('id',notifId).eq('user_id',currentUser.id);
+  if(error){console.error('[WaveTube] deleteNotification failed:',error);toast('Błąd: '+error.message);return;}
+  notificationsList=notificationsList.filter(n=>String(n.id)!==String(notifId));
   updateNotifBadge();
   renderNotifications();
 }
