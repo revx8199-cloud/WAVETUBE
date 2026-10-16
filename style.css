@@ -64,7 +64,10 @@ header{background:var(--bg-page);border-bottom:1px solid var(--border-soft);padd
 .dropdown-divider{border-top:1px solid var(--border)}
 img.emoji{height:1.15em;width:1.15em;margin:0 .05em 0 .1em;vertical-align:-0.2em;display:inline-block}
 #sidebar-overlay{display:none}
-.sidebar-left{width:240px;flex-shrink:0;padding:8px 0;border-right:1px solid var(--bg-card);position:sticky;top:56px;height:calc(100vh - 56px);overflow-y:auto;background:var(--bg-page);transition:width .15s}
+.sidebar-left{width:240px;flex-shrink:0;padding:8px 0;border-right:1px solid var(--bg-card);position:sticky;top:56px;height:calc(100vh - 56px);overflow-y:auto;background:var(--bg-page);transition:width .15s;scrollbar-width:thin;scrollbar-color:var(--border) transparent}
+.sidebar-left::-webkit-scrollbar{width:6px}
+.sidebar-left::-webkit-scrollbar-track{background:transparent}
+.sidebar-left::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
 .sidebar-left.collapsed{width:72px}
 .sidebar-left.collapsed .sb-title,.sidebar-left.collapsed .sb-item span{display:none}
 .sidebar-left.collapsed .sb-item{justify-content:center;gap:0;margin:0 6px}
