@@ -32,6 +32,10 @@ html.light-mode .search-bar button{background:#f8f8f8;border-color:#ccc}
 html.light-mode .card:hover .thumb{box-shadow:0 1px 8px rgba(0,0,0,.15)}
 html.light-mode ::-webkit-scrollbar-thumb{background:#c7c7c7}
 *{box-sizing:border-box;margin:0;padding:0}
+html{scrollbar-width:thin;scrollbar-color:var(--border) transparent}
+::-webkit-scrollbar{width:6px;height:6px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
 body{font-family:Arial,sans-serif;background:var(--bg-page);color:var(--text-primary);min-height:100vh}
 header{background:var(--bg-page);border-bottom:1px solid var(--border-soft);padding:12px 20px;display:flex;align-items:center;gap:16px;position:sticky;top:0;z-index:100}
 .logo{color:#ff0000;font-size:22px;font-weight:700;white-space:nowrap;cursor:pointer}
