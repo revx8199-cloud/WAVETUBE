@@ -174,7 +174,10 @@
     </div>
   </div>
   <div class="sb-section" id="sb-subs-section" style="display:none">
-    <div class="sb-title" data-i18n="nav_subscriptions">Subskrypcje</div>
+    <div class="sb-title" id="sb-subs-title" onclick="toggleSubsExpanded()" style="cursor:pointer;display:flex;align-items:center;justify-content:space-between">
+      <span data-i18n="nav_subscriptions">Subskrypcje</span>
+      <svg id="sb-subs-arrow" viewBox="0 0 24 24" width="16" height="16" fill="currentColor" style="transition:transform .2s;flex-shrink:0"><path d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6z"/></svg>
+    </div>
     <div id="sb-subs-list"></div>
   </div>
 </div>

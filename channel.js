@@ -968,12 +968,24 @@ async function loadSubscriptions(){
   renderSidebarSubs(data||[]);
 }
 
+let _sidebarSubsData=[];
+let subsExpanded=false;
+function toggleSubsExpanded(){
+  subsExpanded=!subsExpanded;
+  const arrow=document.getElementById('sb-subs-arrow');
+  if(arrow)arrow.style.transform=subsExpanded?'rotate(90deg)':'rotate(0deg)';
+  renderSidebarSubs(_sidebarSubsData);
+}
 function renderSidebarSubs(subs){
+  _sidebarSubsData=subs;
   const section=document.getElementById('sb-subs-section');
   const list=document.getElementById('sb-subs-list');
+  const arrow=document.getElementById('sb-subs-arrow');
   if(!subs.length){section.style.display='none';return;}
   section.style.display='block';
-  list.innerHTML=subs.map(s=>{
+  if(arrow)arrow.style.display=subs.length>5?'':'none';
+  const shown=subsExpanded?subs:subs.slice(0,5);
+  list.innerHTML=shown.map(s=>{
     const vid=videos.find(v=>v.user_id===s.channel_id);
     // Prefer data from videos, fallback to saved subscription data
     // Clean up name - don't show UUID
