@@ -47,9 +47,9 @@ html{scrollbar-width:thin;scrollbar-color:var(--border) transparent}
 ::-webkit-scrollbar-track{background:transparent}
 ::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
 body{font-family:Arial,sans-serif;background:var(--bg-page);color:var(--text-primary);min-height:100vh}
-header{background:var(--bg-page);border-bottom:1px solid var(--border-soft);padding:12px 20px;display:flex;align-items:center;gap:16px;position:sticky;top:0;z-index:100}
+header{background:var(--bg-page);border-bottom:1px solid var(--border-soft);padding:12px 20px;display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:16px;position:sticky;top:0;z-index:100}
 .logo{color:#ff0000;font-size:22px;font-weight:700;white-space:nowrap;cursor:pointer}
-.search-bar{flex:1;max-width:500px;display:flex}
+.search-bar{width:100%;max-width:720px;justify-self:center;display:flex}
 .search-bar input{flex:1;padding:9px 16px;background:var(--bg-sunken);border:1px solid var(--border);border-right:none;border-radius:24px 0 0 24px;color:var(--text-primary);font-size:14px;outline:none}
 .search-bar button{padding:0;width:64px;background:var(--bg-sunken);border:1px solid var(--border);border-radius:0 24px 24px 0;color:var(--text-primary);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .15s}
 .search-bar button:hover{background:var(--border)}

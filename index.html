@@ -22,6 +22,7 @@
 <body>
 
 <header>
+  <div style="display:flex;align-items:center;flex-shrink:0">
   <button id="sidebar-toggle-btn" onclick="toggleSidebar()" aria-label="Menu" style="background:none;border:none;color:var(--text-primary);cursor:pointer;width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-right:4px">
     <svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor"><path d="M3 6h18v2H3V6zm0 5h18v2H3v-2zm0 5h18v2H3v-2z"/></svg>
   </button>
@@ -32,6 +33,7 @@
   </svg>
   <span style="font-size:19px;font-weight:800;letter-spacing:-0.6px;color:var(--text-primary)">WaveTube</span>
 </div>
+  </div>
   <div class="search-bar">
     <input type="text" id="search" placeholder="Szukaj filmów..." data-i18n-placeholder="search_placeholder" oninput="render()">
     <button aria-label="Szukaj"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></button>
