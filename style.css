@@ -399,8 +399,8 @@ body.blur-mode #main-content,body.blur-mode header,body.blur-mode .sidebar-left{
 .msg-conv-time{font-size:11px;color:#555;flex-shrink:0}
 .msg-unread{width:8px;height:8px;border-radius:50%;background:#cc0000;flex-shrink:0}
 .msg-chat{flex:1;display:flex;flex-direction:column;overflow:hidden}
-.msg-chat-header{padding:14px 20px;border-bottom:1px solid var(--border-soft);display:flex;align-items:center;gap:12px;background:#111}
-.msg-chat-name{font-size:15px;font-weight:600}
+.msg-chat-header{padding:14px 20px;border-bottom:1px solid var(--border-soft);display:flex;align-items:center;gap:12px;background:#111;color:#fff}
+.msg-chat-name{font-size:15px;font-weight:600;color:#fff}
 .msg-chat-messages{flex:1;overflow-y:auto;padding:20px;display:flex;flex-direction:column;gap:12px}
 .msg-empty{flex:1;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:12px;color:#555}
 .msg-empty svg{opacity:.3}
