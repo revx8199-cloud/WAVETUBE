@@ -321,7 +321,7 @@ function renderChatHeader(){
       <div class="msg-chat-name" style="flex:1;cursor:pointer" onclick="closeMessages();showChannel('${jsesc(o.id)}','${jsesc(name)}','${jsesc(avatar)}','${jsesc(email)}')">${esc(name)}${verifiedBadge(email)}</div>
       <button onclick="startCall('${jsesc(o.id)}','${jsesc(name)}','${jsesc(avatar)}')" title="Zadzwoń" style="background:none;border:none;color:#ccc;cursor:pointer;font-size:19px;padding:6px 10px;border-radius:50%" onmouseover="this.style.background='rgba(255,255,255,.1)'" onmouseout="this.style.background='none'">📞</button>
       <button onclick="toggleChatMenu()" style="background:none;border:none;color:#fff;cursor:pointer;font-size:20px;padding:4px 10px;border-radius:50%" onmouseover="this.style.background='rgba(255,255,255,.1)'" onmouseout="this.style.background='none'">⋮</button>
-      <div id="chat-menu" style="display:none;position:absolute;top:44px;right:0;background:var(--bg-panel);border:1px solid var(--border);border-radius:10px;min-width:210px;z-index:80;overflow:hidden">
+      <div id="chat-menu" style="display:none;position:absolute;top:44px;right:0;background:var(--bg-panel);border:1px solid var(--border);border-radius:10px;min-width:210px;z-index:80;overflow:hidden;color:var(--text-primary)">
         <div onclick="deleteConversation()" style="padding:12px 16px;cursor:pointer;font-size:13px;display:flex;align-items:center;gap:10px;color:#ff6b6b" onmouseover="this.style.background='var(--border)'" onmouseout="this.style.background='none'">🗑 Usuń czat</div>
         <div class="dropdown-divider"></div>
         ${isBlocked?
