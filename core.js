@@ -209,6 +209,15 @@ const EMPTY_ICONS={
   phone:'<svg viewBox="0 0 24 24" width="32" height="32" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="7" y="2" width="10" height="20" rx="2"/><path d="M11 18h2"/></svg>',
   film:'<svg viewBox="0 0 24 24" width="32" height="32" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M7 4v16M17 4v16M3 9h4M17 9h4M3 15h4M17 15h4"/></svg>'
 };
+const SLABEL_ICONS={
+  bookmark:'<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 3h12v18l-6-4-6 4V3z"/></svg>',
+  clock:'<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3.5 2"/></svg>',
+  megaphone:'<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 10v4h3l6 4V6l-6 4H3z"/><path d="M16 9a4 4 0 010 6"/><path d="M19 6a8 8 0 010 12"/></svg>',
+  flame:'<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2c1 4-4 5-4 9a4 4 0 008 0c1.5 1 2 2.5 2 4a6 6 0 01-12 0c0-5 3-6 4-9 .5 2 1.5 2 2-4z"/></svg>'
+};
+function setSlabel(iconKey,label){
+  document.getElementById('slabel').innerHTML=`<span style="display:flex;align-items:center;gap:8px">${SLABEL_ICONS[iconKey]||''}<span>${esc(label)}</span></span>`;
+}
 function emptyStateHtml(iconKey,title,subtitle){
   return `<div class="empty" style="display:flex;flex-direction:column;align-items:center;padding:70px 20px">
     <div style="width:72px;height:72px;border-radius:50%;background:var(--bg-card);display:flex;align-items:center;justify-content:center;margin-bottom:18px;color:var(--text-tertiary)">${EMPTY_ICONS[iconKey]||''}</div>
@@ -1176,7 +1185,7 @@ async function showSavedPage(){
   if(ff)ff.style.display='none';
   const shortsSection=document.getElementById('shorts-section');
   if(shortsSection)shortsSection.style.display='none';
-  document.getElementById('slabel').textContent=t('page_saved');
+  setSlabel('bookmark',t('page_saved'));
   const g=document.getElementById('grid');
   if(!currentUser){
     g.innerHTML=emptyStateHtml('bookmark',t('saved_login'));
@@ -1235,7 +1244,7 @@ async function showWatchLaterPage(){
   if(ff)ff.style.display='none';
   const shortsSection=document.getElementById('shorts-section');
   if(shortsSection)shortsSection.style.display='none';
-  document.getElementById('slabel').textContent=t('page_watchlater');
+  setSlabel('clock',t('page_watchlater'));
   const g=document.getElementById('grid');
   if(!currentUser){
     g.innerHTML=emptyStateHtml('clock',t('wl_login'));
@@ -1256,7 +1265,7 @@ async function showAnnouncementsPage(){
   if(ff)ff.style.display='none';
   const shortsSection=document.getElementById('shorts-section');
   if(shortsSection)shortsSection.style.display='none';
-  document.getElementById('slabel').textContent=t('page_announcements');
+  setSlabel('megaphone',t('page_announcements'));
   const g=document.getElementById('grid');
   g.style.display='block';
   g.innerHTML='<p style="color:var(--text-tertiary);padding:20px;text-align:center">Ładowanie...</p>';
@@ -1500,7 +1509,7 @@ function showTrending(){
   if(ff)ff.style.display='none';
   const shortsSection2=document.getElementById('shorts-section');
   if(shortsSection2)shortsSection2.style.display='none';
-  document.getElementById('slabel').textContent=t('page_trending');
+  setSlabel('flame',t('page_trending'));
   const sorted=[...videos].filter(isDiscoverable).sort((a,b)=>(b.views||0)-(a.views||0));
   const g=document.getElementById('grid');
   g.innerHTML='';
