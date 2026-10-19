@@ -968,22 +968,44 @@ function categoryLabel(c){
   return key?t(key):c;
 }
 
+const feedFilters={cat:'',dur:'',sort:'newest'};
+
+function toggleFeedFilterMenu(name){
+  const wrap=document.getElementById(name+'-filter-wrap');
+  const isOpen=wrap.classList.contains('open');
+  document.querySelectorAll('.yt-filter.open').forEach(w=>w.classList.remove('open'));
+  if(!isOpen)wrap.classList.add('open');
+}
+document.addEventListener('click',e=>{
+  if(!e.target.closest('.yt-filter'))document.querySelectorAll('.yt-filter.open').forEach(w=>w.classList.remove('open'));
+});
+
+function selectFeedFilter(name,value,labelKey,labelText,el){
+  feedFilters[name]=value;
+  document.getElementById(name+'-filter-label').textContent=labelText||t(labelKey);
+  const menu=document.getElementById(name+'-filter-menu');
+  menu.querySelectorAll('.yt-filter-item').forEach(it=>it.classList.toggle('active',it===el));
+  document.getElementById(name+'-filter-wrap').classList.remove('open');
+  applyFeedFilters();
+}
+
 function populateFeedCategoryOptions(){
-  const sel=document.getElementById('feed-cat-filter');
-  if(!sel)return;
+  const menu=document.getElementById('cat-filter-menu');
+  if(!menu)return;
   const cats=[...new Set(videos.map(v=>v.category).filter(Boolean))].sort((a,b)=>categoryLabel(a).localeCompare(categoryLabel(b),'pl'));
   const key=cats.join('|')+'::'+getLang();
-  if(sel.dataset.catsKey===key)return;
-  sel.dataset.catsKey=key;
-  const current=sel.value;
-  sel.innerHTML=`<option value="">${t('filter_all_categories')}</option>`+cats.map(c=>`<option value="${esc(c)}">${esc(categoryLabel(c))}</option>`).join('');
-  if(cats.includes(current))sel.value=current;
+  if(menu.dataset.catsKey===key)return;
+  menu.dataset.catsKey=key;
+  const current=feedFilters.cat;
+  menu.innerHTML=`<div class="yt-filter-item${current?'':' active'}" data-i18n="filter_all_categories" onclick="selectFeedFilter('cat','','filter_all_categories',null,this)">${esc(t('filter_all_categories'))}</div>`
+    +cats.map(c=>`<div class="yt-filter-item${current===c?' active':''}" onclick="selectFeedFilter('cat','${jsesc(c)}',null,'${jsesc(categoryLabel(c))}',this)">${esc(categoryLabel(c))}</div>`).join('');
+  if(!cats.includes(current))feedFilters.cat='';
 }
 
 function applyFeedFiltersToList(list){
-  const cat=document.getElementById('feed-cat-filter')?.value||'';
-  const durFilter=document.getElementById('feed-dur-filter')?.value||'';
-  const sortMode=document.getElementById('feed-sort-filter')?.value||'newest';
+  const cat=feedFilters.cat;
+  const durFilter=feedFilters.dur;
+  const sortMode=feedFilters.sort;
 
   let out=list;
   if(cat)out=out.filter(v=>v.category===cat);

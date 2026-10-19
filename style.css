@@ -32,6 +32,16 @@ html.light-mode .search-bar button{background:#f8f8f8;border-color:#ccc}
 html.light-mode .card:hover .thumb{box-shadow:0 1px 8px rgba(0,0,0,.15)}
 html.light-mode ::-webkit-scrollbar-thumb{background:#c7c7c7}
 *{box-sizing:border-box;margin:0;padding:0}
+.yt-filter{position:relative}
+.yt-filter-btn{display:flex;align-items:center;gap:6px;background:var(--bg-sunken);border:1px solid var(--border);border-radius:16px;color:var(--text-primary);padding:6px 12px;font-size:12px;outline:none;cursor:pointer;font-family:inherit}
+.yt-filter-btn:hover{background:var(--bg-card)}
+.yt-filter-chevron{flex-shrink:0;opacity:.7;transition:transform .15s}
+.yt-filter.open .yt-filter-chevron{transform:rotate(180deg)}
+.yt-filter-menu{display:none;position:absolute;top:calc(100% + 6px);left:0;min-width:200px;background:var(--bg-card);border:1px solid var(--border);border-radius:10px;box-shadow:0 4px 16px rgba(0,0,0,.25);z-index:50;overflow:hidden;max-height:280px;overflow-y:auto}
+.yt-filter.open .yt-filter-menu{display:block}
+.yt-filter-item{padding:9px 14px;font-size:13px;cursor:pointer;color:var(--text-primary);white-space:nowrap}
+.yt-filter-item:hover{background:var(--bg-sunken)}
+.yt-filter-item.active{font-weight:700;color:#3ea6ff}
 html{scrollbar-width:thin;scrollbar-color:var(--border) transparent}
 ::-webkit-scrollbar{width:6px;height:6px}
 ::-webkit-scrollbar-track{background:transparent}
