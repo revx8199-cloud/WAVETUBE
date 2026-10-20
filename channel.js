@@ -326,7 +326,7 @@ function renderVipPanel(){
           <div style="width:18px;height:18px;border-radius:50%;background:#fff;position:absolute;top:2px;left:${myAvatarParticles?'20px':'2px'};transition:left .2s"></div>
         </div>
       </div>
-      ${myAvatarParticles?`<div style="display:flex;flex-wrap:wrap;gap:10px;margin-top:12px">
+      ${myAvatarParticles?`<div id="particle-type-grid" style="display:flex;flex-wrap:wrap;gap:10px;margin-top:12px">
         ${AVATAR_PARTICLE_TYPES.map(e=>`<div onclick="saveAvatarParticleType('${jsesc(e)}')" style="width:34px;height:34px;border-radius:8px;background:var(--bg-sunken);cursor:pointer;border:2px solid ${myAvatarParticleType===e?'#3ea6ff':'transparent'};display:flex;align-items:center;justify-content:center;font-size:16px">${e}</div>`).join('')}
       </div>`:''}
     </div>
@@ -381,6 +381,8 @@ function renderVipPanel(){
     <p style="color:var(--text-tertiary);font-size:11px;margin-top:20px">${t('vip_footer_note')}</p>
   `;
   document.querySelectorAll('.vip-emoji-flat-preview').forEach(applyEmojiStyleToEl);
+  const grid=document.getElementById('particle-type-grid');
+  if(grid)applyEmojiStyleToEl(grid);
 }
 
 async function saveVipEmojiStyle(style){
