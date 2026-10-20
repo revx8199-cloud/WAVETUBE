@@ -397,7 +397,9 @@ async function saveVipEmojiStyle(style){
 
 function applyEmojiStyleToEl(el){
   if(el&&window.twemoji)twemoji.parse(el,{
-    callback:icon=>`https://cdn.jsdelivr.net/npm/@svgmoji/noto@0.2.0/svg/${icon.toUpperCase()}.svg`
+    base:'https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/',
+    folder:'svg',
+    ext:'.svg'
   });
 }
 
