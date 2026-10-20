@@ -358,9 +358,9 @@
       <div class="field">
         <label data-i18n="form_thumb_label">Miniaturka</label>
         <div style="display:flex;gap:8px;margin-bottom:8px">
-          <button onclick="setThumbMode('url')" id="thumb-tab-url" style="flex:1;padding:7px;border-radius:8px;border:1px solid #cc0000;background:#cc0000;color:var(--text-primary);cursor:pointer;font-size:12px;font-weight:600" data-i18n="form_thumb_url_tab">🔗 Link URL</button>
-          <button onclick="setThumbMode('file')" id="thumb-tab-file" style="flex:1;padding:7px;border-radius:8px;border:1px solid var(--border);background:transparent;color:var(--text-secondary);cursor:pointer;font-size:12px" data-i18n="form_thumb_file_tab">📁 Z dysku</button>
-          <button onclick="setThumbMode('auto')" id="thumb-tab-auto" style="flex:1;padding:7px;border-radius:8px;border:1px solid var(--border);background:transparent;color:var(--text-secondary);cursor:pointer;font-size:12px" data-i18n="form_thumb_auto_tab">✨ Auto</button>
+          <button onclick="setThumbMode('url')" id="thumb-tab-url" style="flex:1;padding:7px;border-radius:8px;border:1px solid #cc0000;background:#cc0000;color:var(--text-primary);cursor:pointer;font-size:12px;font-weight:600"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="vertical-align:-2px;margin-right:4px"><path d="M10 13a5 5 0 007 0l3-3a5 5 0 00-7-7l-1 1"/><path d="M14 11a5 5 0 00-7 0l-3 3a5 5 0 007 7l1-1"/></svg><span data-i18n="form_thumb_url_tab">Link URL</span></button>
+          <button onclick="setThumbMode('file')" id="thumb-tab-file" style="flex:1;padding:7px;border-radius:8px;border:1px solid var(--border);background:transparent;color:var(--text-secondary);cursor:pointer;font-size:12px"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;margin-right:4px"><path d="M3 7a2 2 0 012-2h4l2 2h8a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2V7z"/></svg><span data-i18n="form_thumb_file_tab">Z dysku</span></button>
+          <button onclick="setThumbMode('auto')" id="thumb-tab-auto" style="flex:1;padding:7px;border-radius:8px;border:1px solid var(--border);background:transparent;color:var(--text-secondary);cursor:pointer;font-size:12px"><svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor" style="vertical-align:-2px;margin-right:4px"><path d="M12 2l1.8 5.2L19 9l-5.2 1.8L12 16l-1.8-5.2L5 9l5.2-1.8z"/><path d="M19 13l.9 2.1L22 16l-2.1.9L19 19l-.9-2.1L16 16l2.1-.9z"/></svg><span data-i18n="form_thumb_auto_tab">Auto</span></button>
         </div>
         <div id="thumb-url-panel">
           <input type="url" id="fthumb" placeholder="https://... link do zdjęcia" data-i18n-placeholder="form_thumb_url_ph">
@@ -458,21 +458,21 @@
 
       <div class="field" style="display:flex;flex-direction:column;gap:8px">
         <label class="vis-opt" data-val="public" onclick="selectVisibility('public')" style="display:flex;gap:12px;align-items:flex-start;padding:12px 14px;border:1.5px solid #cc0000;border-radius:10px;cursor:pointer;background:rgba(204,0,0,.08)">
-          <span style="font-size:20px;line-height:1">🌍</span>
+          <span style="line-height:1;color:#3ea6ff"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 010 18 14 14 0 010-18z"/></svg></span>
           <div>
             <div style="font-weight:600;font-size:13px" data-i18n="vis_public_title">Publiczny</div>
             <div style="font-size:11px;color:var(--text-tertiary);margin-top:2px" data-i18n="vis_public_desc">Widoczny dla wszystkich — na stronie głównej, w wyszukiwarce i popularnych</div>
           </div>
         </label>
         <label class="vis-opt" data-val="unlisted" onclick="selectVisibility('unlisted')" style="display:flex;gap:12px;align-items:flex-start;padding:12px 14px;border:1.5px solid var(--border);border-radius:10px;cursor:pointer">
-          <span style="font-size:20px;line-height:1">🔗</span>
+          <span style="line-height:1;color:var(--text-secondary)"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M10 13a5 5 0 007 0l3-3a5 5 0 00-7-7l-1 1"/><path d="M14 11a5 5 0 00-7 0l-3 3a5 5 0 007 7l1-1"/></svg></span>
           <div>
             <div style="font-weight:600;font-size:13px" data-i18n="vis_unlisted_title">Niepubliczny (unlisted)</div>
             <div style="font-size:11px;color:var(--text-tertiary);margin-top:2px" data-i18n="vis_unlisted_desc">Nie pojawia się w żadnych listach — obejrzy go tylko ten, kto ma bezpośredni link</div>
           </div>
         </label>
         <label class="vis-opt" data-val="private" onclick="selectVisibility('private')" style="display:flex;gap:12px;align-items:flex-start;padding:12px 14px;border:1.5px solid var(--border);border-radius:10px;cursor:pointer">
-          <span style="font-size:20px;line-height:1">🔒</span>
+          <span style="line-height:1;color:var(--text-secondary)"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 018 0v3"/></svg></span>
           <div>
             <div style="font-weight:600;font-size:13px" data-i18n="vis_private_title">Prywatny</div>
             <div style="font-size:11px;color:var(--text-tertiary);margin-top:2px" data-i18n="vis_private_desc">Widzisz go tylko Ty (i administrator) — nawet z linkiem nikt inny go nie otworzy</div>
@@ -615,8 +615,8 @@
     <div class="field">
       <label data-i18n="form_thumb_label">Miniaturka</label>
       <div style="display:flex;gap:8px;margin-bottom:8px">
-        <button type="button" onclick="setEditThumbMode('url')" id="edit-thumb-tab-url" style="flex:1;padding:7px;border-radius:8px;border:1px solid #cc0000;background:#cc0000;color:var(--text-primary);cursor:pointer;font-size:12px;font-weight:600" data-i18n="form_thumb_url_tab">🔗 Link URL</button>
-        <button type="button" onclick="setEditThumbMode('file')" id="edit-thumb-tab-file" style="flex:1;padding:7px;border-radius:8px;border:1px solid var(--border);background:transparent;color:var(--text-secondary);cursor:pointer;font-size:12px" data-i18n="form_thumb_file_tab">📁 Z dysku</button>
+        <button type="button" onclick="setEditThumbMode('url')" id="edit-thumb-tab-url" style="flex:1;padding:7px;border-radius:8px;border:1px solid #cc0000;background:#cc0000;color:var(--text-primary);cursor:pointer;font-size:12px;font-weight:600"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="vertical-align:-2px;margin-right:4px"><path d="M10 13a5 5 0 007 0l3-3a5 5 0 00-7-7l-1 1"/><path d="M14 11a5 5 0 00-7 0l-3 3a5 5 0 007 7l1-1"/></svg><span data-i18n="form_thumb_url_tab">Link URL</span></button>
+        <button type="button" onclick="setEditThumbMode('file')" id="edit-thumb-tab-file" style="flex:1;padding:7px;border-radius:8px;border:1px solid var(--border);background:transparent;color:var(--text-secondary);cursor:pointer;font-size:12px"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;margin-right:4px"><path d="M3 7a2 2 0 012-2h4l2 2h8a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2V7z"/></svg><span data-i18n="form_thumb_file_tab">Z dysku</span></button>
       </div>
       <div id="edit-thumb-url-panel">
         <input type="url" id="edit-thumb" placeholder="https://...">
