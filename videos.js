@@ -105,7 +105,7 @@ let reportingPostId=null;
 function openReportModal(videoId){
   reportingVideoId=videoId;
   reportingPostId=null;
-  const h=document.querySelector('#report-modal h3');if(h)h.textContent=t('report_title');
+  const h=document.getElementById('report-modal-title');if(h)h.textContent=t('report_title');
   const el=document.getElementById('report-modal');
   if(el)el.classList.add('open');
 }
@@ -113,7 +113,7 @@ function openReportModal(videoId){
 function openPostReportModal(postId){
   reportingPostId=postId;
   reportingVideoId=null;
-  const h=document.querySelector('#report-modal h3');if(h)h.textContent=t('report_title_post');
+  const h=document.getElementById('report-modal-title');if(h)h.textContent=t('report_title_post');
   const el=document.getElementById('report-modal');
   if(el)el.classList.add('open');
 }
@@ -126,6 +126,7 @@ function closeReportModal(){
   const r=document.querySelector('input[name="report-reason"]:checked');
   if(r)r.checked=false;
   document.getElementById('report-details').value='';
+  const cnt=document.getElementById('report-details-count');if(cnt)cnt.textContent='0';
 }
 
 async function submitReport(){
