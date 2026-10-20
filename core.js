@@ -262,7 +262,8 @@ async function deleteMyAccount(){
   const ok2=await showConfirm(t('confirm_delete_account_2'),t('confirm_delete_account_2_sub'),t('confirm_delete_account_final_btn'));
   if(!ok2)return;
   const btn=document.getElementById('delete-account-btn');
-  btn.disabled=true;btn.textContent=t('settings_delete_loading');
+  const lbl=document.getElementById('delete-account-label');
+  btn.disabled=true;if(lbl)lbl.textContent=t('settings_delete_loading');
   try{
     const{data:{session}}=await sb.auth.getSession();
     const{data,error}=await sb.functions.invoke('delete-account',{
@@ -270,7 +271,7 @@ async function deleteMyAccount(){
     });
     if(error||!data?.success){
       toast('Błąd: '+(error?.message||data?.error||'nie udało się usunąć konta'));
-      btn.disabled=false;btn.textContent=t('settings_delete_btn');
+      btn.disabled=false;if(lbl)lbl.textContent=t('settings_delete_btn');
       return;
     }
     removeStoredAccount(currentUser.id);

@@ -14,7 +14,7 @@ const TRANSLATIONS={
     dd_mychannel:'Mój kanał',dd_settings:'Ustawienia',dd_add_account:'Dodaj inne konto',terms_welcome_title:'👋 Witaj w WaveTube',terms_welcome_sub:'Zanim zaczniesz korzystać z aplikacji, zapoznaj się z zasadami i je zaakceptuj.',terms_agree_prefix:'Zgadzam się z',terms_agree_link:'zasadami WaveTube',terms_continue:'Kontynuuj',terms_modal_title:'📜 Zasady WaveTube',dd_shortcuts:'Skróty klawiszowe',shortcuts_title:'⌨️ Skróty klawiszowe',sc_player:'Odtwarzacz wideo',sc_playpause:'Odtwórz / pauza',sc_seek:'Przewiń o 5 sekund',sc_volume:'Głośność +/- 5%',sc_mute:'Wycisz / włącz dźwięk',sc_fullscreen:'Pełny ekran',sc_general:'Ogólne',sc_close:'Zamknij okno / odtwarzacz',sc_lightbox:'Poprzednie / następne zdjęcie w podglądzie',sc_shortcuts:'Pokaż skróty klawiszowe',sc_messages:'Wiadomości',sc_send:'Wyślij wiadomość',sc_newline:'Nowa linia',dd_logout:'Wyloguj',
     btn_subscribe:'Subskrybuj',btn_subscribed:'Subskrybujesz',btn_share:'Udostępnij',
     btn_download:'Pobierz',btn_support:'Wesprzyj autora',btn_report:'Zgłoś',
-    report_title:'🚩 Zgłoś film',report_sub:'Zgłoszenie trafi do moderacji WaveTube',report_reason_label:'Powód',report_reason_spam:'Spam lub wprowadzanie w błąd',report_reason_adult:'Treści dla dorosłych',report_reason_violence:'Przemoc lub drastyczne treści',report_reason_hate:'Mowa nienawiści lub nękanie',report_reason_copyright:'Naruszenie praw autorskich',report_reason_other:'Inne',report_details_label:'Szczegóły (opcjonalnie)',report_details_ph:'Opisz problem...',btn_send_report:'Wyślij zgłoszenie',report_title_post:'🚩 Zgłoś post',report_title_post_menu:'Zgłoś post',
+    report_title:'Zgłoś film',report_sub:'Zgłoszenie trafi do moderacji WaveTube',report_reason_label:'Powód',report_reason_spam:'Spam lub wprowadzanie w błąd',report_reason_adult:'Treści dla dorosłych',report_reason_violence:'Przemoc lub drastyczne treści',report_reason_hate:'Mowa nienawiści lub nękanie',report_reason_copyright:'Naruszenie praw autorskich',report_reason_other:'Inne',report_details_label:'Szczegóły (opcjonalnie)',report_details_ph:'Opisz problem...',btn_send_report:'Wyślij zgłoszenie',report_title_post:'Zgłoś post',report_title_post_menu:'Zgłoś post',
     comments_label:'Komentarze',comment_placeholder:'Napisz komentarz...',comments_label_zero:'Komentarze (0)',
     btn_send:'Wyślij',btn_cancel:'Anuluj',btn_reply:'Odpowiedz',
     sort_top:'Najtrafniejsze',sort_newest:'Najnowsze',
@@ -133,9 +133,9 @@ const TRANSLATIONS={
     settings_allow_msg:'Zezwalaj innym na pisanie do mnie',settings_allow_msg_desc:'Gdy wyłączone, nikt nie założy z Tobą nowej rozmowy w Wiadomościach.',toast_msg_disabled:'Ten użytkownik wyłączył możliwość pisania do niego',
     settings_allow_calls:'Zezwalaj innym na dzwonienie do mnie',settings_allow_calls_desc:'Gdy wyłączone, nikt nie zadzwoni do Ciebie w Wiadomościach.',call_disabled_toast:'Ten użytkownik wyłączył możliwość dzwonienia do niego',
     settings_allow_notif:'Powiadomienia',settings_allow_notif_desc:'Gdy wyłączone, nie będziesz dostawać nowych powiadomień (polubienia, komentarze, subskrypcje itd.).',
-    settings_data:'Twoje dane',settings_data_desc:'Pobierz kopię swoich danych z WaveTube (profil, filmy, posty, wiadomości, subskrypcje i inne) w formacie JSON.',settings_data_btn:'⬇️ Pobierz moje dane',settings_data_loading:'Przygotowywanie...',settings_data_done:'Pobrano Twoje dane 📦',
-    settings_rules:'📜 Zasady WaveTube',settings_rules_desc:'Regulamin, który zaakceptowałeś/aś przy pierwszym logowaniu.',settings_rules_btn:'📜 Przeczytaj zasady',
-    settings_danger:'Strefa zagrożenia',settings_delete_desc:'Usunięcie konta jest trwałe i nieodwracalne — stracisz profil, filmy, posty, wiadomości, subskrypcje i cały dostęp. Rozważ najpierw pobranie swoich danych (poniżej).',settings_delete_btn:'🗑️ Usuń konto na stałe',settings_delete_loading:'Usuwanie konta...',settings_delete_done:'Konto zostało usunięte. Żegnamy! 👋',
+    settings_data:'Twoje dane',settings_data_desc:'Pobierz kopię swoich danych z WaveTube (profil, filmy, posty, wiadomości, subskrypcje i inne) w formacie JSON.',settings_data_btn:'Pobierz moje dane',settings_data_loading:'Przygotowywanie...',settings_data_done:'Pobrano Twoje dane 📦',
+    settings_rules:'Zasady WaveTube',settings_rules_desc:'Regulamin, który zaakceptowałeś/aś przy pierwszym logowaniu.',settings_rules_btn:'Przeczytaj zasady',
+    settings_danger:'Strefa zagrożenia',settings_delete_desc:'Usunięcie konta jest trwałe i nieodwracalne — stracisz profil, filmy, posty, wiadomości, subskrypcje i cały dostęp. Rozważ najpierw pobranie swoich danych (poniżej).',settings_delete_btn:'Usuń konto na stałe',settings_delete_loading:'Usuwanie konta...',settings_delete_done:'Konto zostało usunięte. Żegnamy! 👋',
     confirm_delete_account:'Usunąć konto na stałe?',confirm_delete_account_sub:'Stracisz profil, filmy, posty, komentarze, wiadomości i subskrypcje. Tej operacji nie da się cofnąć.',
     confirm_delete_account_2:'Na pewno? To ostatnia szansa.',confirm_delete_account_2_sub:'Po kliknięciu Twoje konto zostanie usunięte natychmiast i trwale.',confirm_delete_account_final_btn:'Tak, usuń na zawsze',
     announce_load_error:'Nie udało się wczytać ogłoszeń',announce_empty:'Brak ogłoszeń',announce_empty_sub:'Tutaj pojawią się wiadomości od twórcy WaveTube'
@@ -152,7 +152,7 @@ const TRANSLATIONS={
     dd_mychannel:'My channel',dd_settings:'Settings',dd_add_account:'Add another account',terms_welcome_title:'👋 Welcome to WaveTube',terms_welcome_sub:'Before you start using the app, please read and accept the rules.',terms_agree_prefix:'I agree to the',terms_agree_link:'WaveTube rules',terms_continue:'Continue',terms_modal_title:'📜 WaveTube rules',dd_shortcuts:'Keyboard shortcuts',shortcuts_title:'⌨️ Keyboard shortcuts',sc_player:'Video player',sc_playpause:'Play / pause',sc_seek:'Seek 5 seconds',sc_volume:'Volume +/- 5%',sc_mute:'Mute / unmute',sc_fullscreen:'Full screen',sc_general:'General',sc_close:'Close window / player',sc_lightbox:'Previous / next photo in viewer',sc_shortcuts:'Show keyboard shortcuts',sc_messages:'Messages',sc_send:'Send message',sc_newline:'New line',dd_logout:'Sign out',
     btn_subscribe:'Subscribe',btn_subscribed:'Subscribed',btn_share:'Share',
     btn_download:'Download',btn_support:'Support creator',btn_report:'Report',
-    report_title:'🚩 Report video',report_sub:'The report will go to WaveTube moderation',report_reason_label:'Reason',report_reason_spam:'Spam or misleading',report_reason_adult:'Adult content',report_reason_violence:'Violence or graphic content',report_reason_hate:'Hate speech or harassment',report_reason_copyright:'Copyright infringement',report_reason_other:'Other',report_details_label:'Details (optional)',report_details_ph:'Describe the issue...',btn_send_report:'Send report',report_title_post:'🚩 Report post',report_title_post_menu:'Report post',
+    report_title:'Report video',report_sub:'The report will go to WaveTube moderation',report_reason_label:'Reason',report_reason_spam:'Spam or misleading',report_reason_adult:'Adult content',report_reason_violence:'Violence or graphic content',report_reason_hate:'Hate speech or harassment',report_reason_copyright:'Copyright infringement',report_reason_other:'Other',report_details_label:'Details (optional)',report_details_ph:'Describe the issue...',btn_send_report:'Send report',report_title_post:'Report post',report_title_post_menu:'Report post',
     comments_label:'Comments',comment_placeholder:'Add a comment...',comments_label_zero:'Comments (0)',
     btn_send:'Send',btn_cancel:'Cancel',btn_reply:'Reply',
     sort_top:'Top comments',sort_newest:'Newest first',
@@ -271,9 +271,9 @@ const TRANSLATIONS={
     settings_allow_msg:'Allow others to message me',settings_allow_msg_desc:'When off, no one can start a new conversation with you in Messages.',toast_msg_disabled:'This user has disabled messages',
     settings_allow_calls:'Allow others to call me',settings_allow_calls_desc:'When off, no one can call you in Messages.',call_disabled_toast:'This user has disabled calls',
     settings_allow_notif:'Notifications',settings_allow_notif_desc:'When off, you won\'t get new notifications (likes, comments, subscriptions, etc.).',
-    settings_data:'Your data',settings_data_desc:'Download a copy of your WaveTube data (profile, videos, posts, messages, subscriptions and more) as JSON.',settings_data_btn:'⬇️ Download my data',settings_data_loading:'Preparing...',settings_data_done:'Your data has been downloaded 📦',
-    settings_rules:'📜 WaveTube rules',settings_rules_desc:'The rules you accepted when you first signed in.',settings_rules_btn:'📜 Read the rules',
-    settings_danger:'Danger zone',settings_delete_desc:'Deleting your account is permanent and irreversible — you\'ll lose your profile, videos, posts, messages, subscriptions and all access. Consider downloading your data first (below).',settings_delete_btn:'🗑️ Delete account permanently',settings_delete_loading:'Deleting account...',settings_delete_done:'Your account has been deleted. Goodbye! 👋',
+    settings_data:'Your data',settings_data_desc:'Download a copy of your WaveTube data (profile, videos, posts, messages, subscriptions and more) as JSON.',settings_data_btn:'Download my data',settings_data_loading:'Preparing...',settings_data_done:'Your data has been downloaded 📦',
+    settings_rules:'WaveTube rules',settings_rules_desc:'The rules you accepted when you first signed in.',settings_rules_btn:'Read the rules',
+    settings_danger:'Danger zone',settings_delete_desc:'Deleting your account is permanent and irreversible — you\'ll lose your profile, videos, posts, messages, subscriptions and all access. Consider downloading your data first (below).',settings_delete_btn:'Delete account permanently',settings_delete_loading:'Deleting account...',settings_delete_done:'Your account has been deleted. Goodbye! 👋',
     confirm_delete_account:'Delete your account permanently?',confirm_delete_account_sub:'You\'ll lose your profile, videos, posts, comments, messages and subscriptions. This cannot be undone.',
     confirm_delete_account_2:'Are you sure? This is your last chance.',confirm_delete_account_2_sub:'Once you click, your account will be deleted immediately and permanently.',confirm_delete_account_final_btn:'Yes, delete forever',
     announce_load_error:'Failed to load announcements',announce_empty:'No announcements',announce_empty_sub:'Messages from the WaveTube creator will appear here'
@@ -290,7 +290,7 @@ const TRANSLATIONS={
     dd_mychannel:'Мой канал',dd_settings:'Настройки',dd_add_account:'Добавить аккаунт',terms_welcome_title:'👋 Добро пожаловать в WaveTube',terms_welcome_sub:'Перед тем как начать пользоваться приложением, ознакомьтесь с правилами и примите их.',terms_agree_prefix:'Я согласен с',terms_agree_link:'правилами WaveTube',terms_continue:'Продолжить',terms_modal_title:'📜 Правила WaveTube',dd_shortcuts:'Быстрые клавиши',shortcuts_title:'⌨️ Быстрые клавиши',sc_player:'Видеоплеер',sc_playpause:'Воспроизведение / пауза',sc_seek:'Перемотка на 5 секунд',sc_volume:'Громкость +/- 5%',sc_mute:'Выключить / включить звук',sc_fullscreen:'Полный экран',sc_general:'Общие',sc_close:'Закрыть окно / плеер',sc_lightbox:'Предыдущее / следующее фото',sc_shortcuts:'Показать быстрые клавиши',sc_messages:'Сообщения',sc_send:'Отправить сообщение',sc_newline:'Новая строка',dd_logout:'Выйти',
     btn_subscribe:'Подписаться',btn_subscribed:'Вы подписаны',btn_share:'Поделиться',
     btn_download:'Скачать',btn_support:'Поддержать автора',btn_report:'Пожаловаться',
-    report_title:'🚩 Пожаловаться на видео',report_sub:'Жалоба попадёт к модерации WaveTube',report_reason_label:'Причина',report_reason_spam:'Спам или вводит в заблуждение',report_reason_adult:'Контент для взрослых',report_reason_violence:'Насилие или шокирующий контент',report_reason_hate:'Разжигание ненависти или травля',report_reason_copyright:'Нарушение авторских прав',report_reason_other:'Другое',report_details_label:'Подробности (необязательно)',report_details_ph:'Опиши проблему...',btn_send_report:'Отправить жалобу',report_title_post:'🚩 Пожаловаться на пост',report_title_post_menu:'Пожаловаться на пост',
+    report_title:'Пожаловаться на видео',report_sub:'Жалоба попадёт к модерации WaveTube',report_reason_label:'Причина',report_reason_spam:'Спам или вводит в заблуждение',report_reason_adult:'Контент для взрослых',report_reason_violence:'Насилие или шокирующий контент',report_reason_hate:'Разжигание ненависти или травля',report_reason_copyright:'Нарушение авторских прав',report_reason_other:'Другое',report_details_label:'Подробности (необязательно)',report_details_ph:'Опиши проблему...',btn_send_report:'Отправить жалобу',report_title_post:'Пожаловаться на пост',report_title_post_menu:'Пожаловаться на пост',
     comments_label:'Комментарии',comment_placeholder:'Напишите комментарий...',comments_label_zero:'Комментарии (0)',
     btn_send:'Отправить',btn_cancel:'Отмена',btn_reply:'Ответить',
     sort_top:'По значимости',sort_newest:'Сначала новые',
@@ -409,9 +409,9 @@ const TRANSLATIONS={
     settings_allow_msg:'Разрешить другим писать мне',settings_allow_msg_desc:'Если выключено, никто не сможет начать с вами новый разговор в Сообщениях.',toast_msg_disabled:'Этот пользователь отключил возможность писать ему',
     settings_allow_calls:'Разрешить другим звонить мне',settings_allow_calls_desc:'Если выключено, никто не сможет позвонить вам в Сообщениях.',call_disabled_toast:'Этот пользователь отключил звонки',
     settings_allow_notif:'Уведомления',settings_allow_notif_desc:'Если выключено, вы не будете получать новые уведомления (лайки, комментарии, подписки и т.д.).',
-    settings_data:'Ваши данные',settings_data_desc:'Скачайте копию своих данных WaveTube (профиль, видео, посты, сообщения, подписки и др.) в формате JSON.',settings_data_btn:'⬇️ Скачать мои данные',settings_data_loading:'Подготовка...',settings_data_done:'Ваши данные скачаны 📦',
-    settings_rules:'📜 Правила WaveTube',settings_rules_desc:'Правила, которые вы приняли при первом входе.',settings_rules_btn:'📜 Прочитать правила',
-    settings_danger:'Опасная зона',settings_delete_desc:'Удаление аккаунта необратимо — вы потеряете профиль, видео, посты, сообщения, подписки и весь доступ. Сначала стоит скачать свои данные (ниже).',settings_delete_btn:'🗑️ Удалить аккаунт навсегда',settings_delete_loading:'Удаление аккаунта...',settings_delete_done:'Ваш аккаунт удалён. Прощайте! 👋',
+    settings_data:'Ваши данные',settings_data_desc:'Скачайте копию своих данных WaveTube (профиль, видео, посты, сообщения, подписки и др.) в формате JSON.',settings_data_btn:'Скачать мои данные',settings_data_loading:'Подготовка...',settings_data_done:'Ваши данные скачаны 📦',
+    settings_rules:'Правила WaveTube',settings_rules_desc:'Правила, которые вы приняли при первом входе.',settings_rules_btn:'Прочитать правила',
+    settings_danger:'Опасная зона',settings_delete_desc:'Удаление аккаунта необратимо — вы потеряете профиль, видео, посты, сообщения, подписки и весь доступ. Сначала стоит скачать свои данные (ниже).',settings_delete_btn:'Удалить аккаунт навсегда',settings_delete_loading:'Удаление аккаунта...',settings_delete_done:'Ваш аккаунт удалён. Прощайте! 👋',
     confirm_delete_account:'Удалить аккаунт навсегда?',confirm_delete_account_sub:'Вы потеряете профиль, видео, посты, комментарии, сообщения и подписки. Это необратимо.',
     confirm_delete_account_2:'Вы уверены? Это последний шанс передумать.',confirm_delete_account_2_sub:'После клика аккаунт будет удалён немедленно и навсегда.',confirm_delete_account_final_btn:'Да, удалить навсегда',
     announce_load_error:'Не удалось загрузить объявления',announce_empty:'Нет объявлений',announce_empty_sub:'Здесь появятся сообщения от автора WaveTube'
@@ -590,8 +590,8 @@ async function saveMySettingsNick(){
 async function downloadMyData(){
   if(!currentUser)return;
   const btn=document.getElementById('download-data-btn');
-  const origLabel=btn.textContent;
-  btn.disabled=true;btn.textContent='⏳ '+t('settings_data_loading');
+  const origLabel=btn.innerHTML;
+  btn.disabled=true;btn.textContent=t('settings_data_loading');
   try{
     const uid=currentUser.id;
     const{data:profile}=await sb.from('profiles').select('name,description,country,created_at,avatar,banner_url,name_color,name_font,text_color,text_font,avatar_frame,avatar_particles,avatar_particle_type,banner_frame,is_vip,vip_since,allow_messages,allow_calls,terms_accepted').eq('id',uid).single();
@@ -633,7 +633,7 @@ async function downloadMyData(){
   }catch(e){
     toast('Błąd: '+e.message);
   }finally{
-    btn.disabled=false;btn.textContent=origLabel;
+    btn.disabled=false;btn.innerHTML=origLabel;
   }
 }
 
