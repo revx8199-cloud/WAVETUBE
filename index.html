@@ -888,13 +888,13 @@
     <div class="field" style="margin-top:24px;padding-top:20px;border-top:1px solid var(--border)">
       <label>Motyw</label>
       <div style="display:flex;gap:8px;margin-top:8px">
-        <button onclick="setTheme('dark')" id="theme-btn-dark" style="flex:1;display:flex;align-items:center;justify-content:center;gap:8px;padding:12px 14px;border-radius:10px;cursor:pointer;font-size:14px;background:var(--bg-sunken);border:1px solid var(--border);color:var(--text-primary)">🌙 Ciemny</button>
-        <button onclick="setTheme('light')" id="theme-btn-light" style="flex:1;display:flex;align-items:center;justify-content:center;gap:8px;padding:12px 14px;border-radius:10px;cursor:pointer;font-size:14px;background:var(--bg-sunken);border:1px solid var(--border);color:var(--text-primary)">☀️ Jasny</button>
+        <button onclick="setTheme('dark')" id="theme-btn-dark" style="flex:1;display:flex;align-items:center;justify-content:center;gap:8px;padding:12px 14px;border-radius:10px;cursor:pointer;font-size:14px;background:var(--bg-sunken);border:1px solid var(--border);color:var(--text-primary)"><svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg>Ciemny</button>
+        <button onclick="setTheme('light')" id="theme-btn-light" style="flex:1;display:flex;align-items:center;justify-content:center;gap:8px;padding:12px 14px;border-radius:10px;cursor:pointer;font-size:14px;background:var(--bg-sunken);border:1px solid var(--border);color:var(--text-primary)"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.2 4.2l1.4 1.4M18.4 18.4l1.4 1.4M1 12h2M21 12h2M4.2 19.8l1.4-1.4M18.4 5.6l1.4-1.4"/></svg>Jasny</button>
       </div>
     </div>
     <div class="field" style="margin-top:24px;padding-top:20px;border-top:1px solid var(--border)">
       <label style="display:flex;align-items:center;justify-content:space-between;cursor:pointer" onclick="event.preventDefault()">
-        <span data-i18n="settings_autoplay">▶️ Autoodtwarzanie następnego filmu</span>
+        <span style="display:flex;align-items:center;gap:8px"><svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M8 5v14l11-7z"/></svg><span data-i18n="settings_autoplay">Autoodtwarzanie następnego filmu</span></span>
         <span class="toggle-switch" id="autoplay-toggle" onclick="toggleAutoplayNext()"><span class="toggle-knob"></span></span>
       </label>
       <p style="color:var(--text-tertiary);font-size:11px;margin-top:8px" data-i18n="settings_autoplay_desc">Po skończeniu filmu automatycznie odtworzy się kolejny.</p>
@@ -908,14 +908,14 @@
     </div>
     <div class="field" style="margin-top:24px;padding-top:20px;border-top:1px solid var(--border)">
       <label style="display:flex;align-items:center;justify-content:space-between;cursor:pointer" onclick="event.preventDefault()">
-        <span data-i18n="settings_allow_calls">📞 Zezwalaj innym na dzwonienie do mnie</span>
+        <span style="display:flex;align-items:center;gap:8px"><svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M6.6 10.8c1.4 2.8 3.8 5.1 6.6 6.6l2.2-2.2c.3-.3.7-.4 1-.2 1.1.4 2.4.6 3.6.6.6 0 1 .4 1 1V20c0 .6-.4 1-1 1-9.4 0-17-7.6-17-17 0-.6.4-1 1-1h3.5c.6 0 1 .4 1 1 0 1.2.2 2.5.6 3.6.1.4 0 .8-.2 1l-2.3 2.2z"/></svg><span data-i18n="settings_allow_calls">Zezwalaj innym na dzwonienie do mnie</span></span>
         <span class="toggle-switch" id="allowcalls-toggle" onclick="toggleAllowCalls()"><span class="toggle-knob"></span></span>
       </label>
       <p style="color:var(--text-tertiary);font-size:11px;margin-top:8px" data-i18n="settings_allow_calls_desc">Gdy wyłączone, nikt nie zadzwoni do Ciebie w Wiadomościach.</p>
     </div>
     <div class="field" style="margin-top:24px;padding-top:20px;border-top:1px solid var(--border)">
       <label style="display:flex;align-items:center;justify-content:space-between;cursor:pointer" onclick="event.preventDefault()">
-        <span data-i18n="settings_allow_notif">🔔 Powiadomienia</span>
+        <span style="display:flex;align-items:center;gap:8px"><svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.89 2 2 2zm6-6v-5c0-3.07-1.64-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.63 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z"/></svg><span data-i18n="settings_allow_notif">Powiadomienia</span></span>
         <span class="toggle-switch" id="allownotif-toggle" onclick="toggleAllowNotifications()"><span class="toggle-knob"></span></span>
       </label>
       <p style="color:var(--text-tertiary);font-size:11px;margin-top:8px" data-i18n="settings_allow_notif_desc">Gdy wyłączone, nie będziesz dostawać nowych powiadomień (polubienia, komentarze, subskrypcje itd.).</p>
@@ -926,12 +926,12 @@
       <button onclick="openTermsModal()" data-i18n="settings_rules_btn" style="background:var(--bg-sunken);border:1px solid var(--border);color:var(--text-primary);padding:10px 16px;border-radius:8px;cursor:pointer;font-size:13px;font-weight:600">📜 Przeczytaj zasady</button>
     </div>
     <div class="field" style="margin-top:24px;padding-top:20px;border-top:1px solid #3a1414">
-      <label data-i18n="settings_danger" style="color:#ff6b6b">⚠️ Strefa zagrożenia</label>
+      <label data-i18n="settings_danger" style="color:#ff6b6b">Strefa zagrożenia</label>
       <p style="color:var(--text-tertiary);font-size:11px;margin:8px 0 12px" data-i18n="settings_delete_desc">Usunięcie konta jest trwałe i nieodwracalne — stracisz profil, filmy, posty, wiadomości, subskrypcje i cały dostęp. Rozważ najpierw pobranie swoich danych (poniżej).</p>
       <button onclick="deleteMyAccount()" id="delete-account-btn" data-i18n="settings_delete_btn" style="background:#3a1414;border:1px solid #5a1f1f;color:#ff6b6b;padding:10px 16px;border-radius:8px;cursor:pointer;font-size:13px;font-weight:600">🗑️ Usuń konto na stałe</button>
     </div>
     <div class="field" style="margin-top:24px;padding-top:20px;border-top:1px solid var(--border)">
-      <label data-i18n="settings_data">📦 Twoje dane</label>
+      <label data-i18n="settings_data">Twoje dane</label>
       <p style="color:var(--text-tertiary);font-size:11px;margin:8px 0 12px" data-i18n="settings_data_desc">Pobierz kopię swoich danych z WaveTube (profil, filmy, posty, wiadomości, subskrypcje i inne) w formacie JSON.</p>
       <button onclick="downloadMyData()" id="download-data-btn" data-i18n="settings_data_btn" style="background:var(--bg-sunken);border:1px solid var(--border);color:var(--text-primary);padding:10px 16px;border-radius:8px;cursor:pointer;font-size:13px;font-weight:600">⬇️ Pobierz moje dane</button>
     </div>
