@@ -126,6 +126,44 @@ function dislikeIcon(size){
   size=size||13;
   return `<svg viewBox="0 0 24 24" width="${size}" height="${size}" fill="currentColor" style="vertical-align:-2px;opacity:.75"><path d="M15 3H6c-.83 0-1.54.5-1.84 1.22l-3.02 7.05c-.09.23-.14.47-.14.73v2c0 1.1.9 2 2 2h6.31l-.95 4.57-.03.32c0 .41.17.79.44 1.06L9.83 23l6.59-6.59c.36-.36.58-.86.58-1.41V5c0-1.1-.9-2-2-2zm4 0v12h4V3h-4z"/></svg>`;
 }
+const APP_EMOJI_SVG_PATHS={
+  '👍':'M1 21h4V9H1v12zm22-11c0-1.1-.9-2-2-2h-6.31l.95-4.57.03-.32c0-.41-.17-.79-.44-1.06L14.17 1 7.59 7.59C7.22 7.95 7 8.45 7 9v10c0 1.1.9 2 2 2h9c.83 0 1.54-.5 1.84-1.22l3.02-7.05c.09-.23.14-.47.14-.73v-2z',
+  '👎':'M15 3H6c-.83 0-1.54.5-1.84 1.22l-3.02 7.05c-.09.23-.14.47-.14.73v2c0 1.1.9 2 2 2h6.31l-.95 4.57-.03.32c0 .41.17.79.44 1.06L9.83 23l6.59-6.59c.36-.36.58-.86.58-1.41V5c0-1.1-.9-2-2-2zm4 0v12h4V3h-4z',
+  '🔥':'M13.5.67s.74 2.65.74 4.8c0 2.06-1.35 3.73-3.41 3.73-2.07 0-3.63-1.67-3.63-3.73l.03-.36C5.21 7.51 4 10.62 4 14c0 4.42 3.58 8 8 8s8-3.58 8-8C20 8.61 17.41 3.8 13.5.67zM11.71 19c-1.78 0-3.22-1.4-3.22-3.14 0-1.62 1.05-2.76 2.81-3.12 1.77-.36 3.6-1.21 4.62-2.58.39 1.29.59 2.65.59 4.04 0 2.65-2.15 4.8-4.8 4.8z',
+  '❤️':'M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z',
+  '💬':'M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H6l-2 2V4h16v12z',
+  '⭐':'M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z',
+  '✅':'M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z',
+  '❌':'M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z',
+  '✨':'M12 1c1 6 5 10 11 11-6 1-10 5-11 11-1-6-5-10-11-11C7 11 11 7 12 1z',
+  '⚡':'M11 21h-1l1-7H7.5c-.58 0-.57-.32-.38-.66L13 3h1l-1 7h3.5c.49 0 .56.33.47.51l-.07.15C12.56 17.06 11 21 11 21z'
+};
+function applyAppEmojiStyleToEl(el){
+  if(!el)return;
+  const keys=Object.keys(APP_EMOJI_SVG_PATHS);
+  const re=new RegExp('('+keys.map(k=>k.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')).join('|')+')','gu');
+  const walker=document.createTreeWalker(el,NodeFilter.SHOW_TEXT,null);
+  const nodes=[];let n;
+  while(n=walker.nextNode())nodes.push(n);
+  nodes.forEach(node=>{
+    const text=node.nodeValue;
+    re.lastIndex=0;
+    if(!re.test(text))return;
+    re.lastIndex=0;
+    const frag=document.createDocumentFragment();
+    let last=0,m;
+    while(m=re.exec(text)){
+      if(m.index>last)frag.appendChild(document.createTextNode(text.slice(last,m.index)));
+      const span=document.createElement('span');
+      span.style.cssText='display:inline-flex;vertical-align:-3px';
+      span.innerHTML=`<svg viewBox="0 0 24 24" width="1em" height="1em" fill="currentColor"><path d="${APP_EMOJI_SVG_PATHS[m[0]]}"/></svg>`;
+      frag.appendChild(span);
+      last=re.lastIndex;
+    }
+    if(last<text.length)frag.appendChild(document.createTextNode(text.slice(last)));
+    node.parentNode.replaceChild(frag,node);
+  });
+}
 function statIconSvg(path,size){
   size=size||20;
   return `<svg viewBox="0 0 24 24" width="${size}" height="${size}" fill="currentColor" style="opacity:.85"><path d="${path}"/></svg>`;
@@ -1724,9 +1762,13 @@ async function renderC(){
     </div>`;
   }).join('');
   sortedList.forEach((c,i)=>{
-    if(emojiStyleCache[c.user_id]==='flat')applyEmojiStyleToEl(document.getElementById(`ctext-${i}`));
+    const ces=emojiStyleCache[c.user_id];
+    if(ces==='flat')applyEmojiStyleToEl(document.getElementById(`ctext-${i}`));
+    else if(ces==='app')applyAppEmojiStyleToEl(document.getElementById(`ctext-${i}`));
     (c.replies||[]).forEach((r,ri)=>{
-      if(emojiStyleCache[r.user_id]==='flat')applyEmojiStyleToEl(document.getElementById(`rtext-${i}-${ri}`));
+      const res=emojiStyleCache[r.user_id];
+      if(res==='flat')applyEmojiStyleToEl(document.getElementById(`rtext-${i}-${ri}`));
+      else if(res==='app')applyAppEmojiStyleToEl(document.getElementById(`rtext-${i}-${ri}`));
     });
   });
 }
@@ -2183,6 +2225,7 @@ function toggleEmojiPicker(targetId,btnEl){
   picker.dataset.target=targetId;
   picker.innerHTML=EMOJI_LIST.map(e=>`<span onclick="insertEmoji('${jsesc(targetId)}','${jsesc(e)}')" style="cursor:pointer;font-size:22px;padding:6px 2px;border-radius:6px;text-align:center;display:flex;align-items:center;justify-content:center" onmouseover="this.style.background='var(--border)'" onmouseout="this.style.background='none'">${e}</span>`).join('');
   if(myEmojiStyle==='flat'&&window.applyEmojiStyleToEl)applyEmojiStyleToEl(picker);
+  else if(myEmojiStyle==='app')applyAppEmojiStyleToEl(picker);
 
   const rect=btnEl.getBoundingClientRect();
   const maxPickerHeight=Math.min(320,window.innerHeight-32); // nie więcej niż ekran minus margines

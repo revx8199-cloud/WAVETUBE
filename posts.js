@@ -129,9 +129,13 @@ async function loadNextPostsPage(){
     await loadEmojiStylesFor(uidsForEmoji);
     next.forEach(p=>{
       (p.comments||[]).forEach((c,ci)=>{
-        if(emojiStyleCache[c.user_id]==='flat')applyEmojiStyleToEl(document.getElementById(`ptext-${p.id}-${ci}`));
+        const ces=emojiStyleCache[c.user_id];
+        if(ces==='flat')applyEmojiStyleToEl(document.getElementById(`ptext-${p.id}-${ci}`));
+        else if(ces==='app')applyAppEmojiStyleToEl(document.getElementById(`ptext-${p.id}-${ci}`));
         (c.replies||[]).forEach((r,ri)=>{
-          if(emojiStyleCache[r.user_id]==='flat')applyEmojiStyleToEl(document.getElementById(`prtext-${p.id}-${ci}-${ri}`));
+          const res=emojiStyleCache[r.user_id];
+          if(res==='flat')applyEmojiStyleToEl(document.getElementById(`prtext-${p.id}-${ci}-${ri}`));
+          else if(res==='app')applyAppEmojiStyleToEl(document.getElementById(`prtext-${p.id}-${ci}-${ri}`));
         });
       });
     });

@@ -376,11 +376,16 @@ function renderVipPanel(){
           <span class="vip-emoji-flat-preview" style="font-size:22px">😀🔥👍</span>
           <span style="font-size:11px;color:var(--text-tertiary)">${t('vip_emoji_style_flat')}${myEmojiStyle==='flat'?' ✓':''}</span>
         </div>
+        <div onclick="saveVipEmojiStyle('app')" class="vip-emoji-style-opt" style="display:flex;flex-direction:column;align-items:flex-start;gap:6px;padding:12px 14px;border-radius:10px;cursor:pointer;background:${myEmojiStyle==='app'?'rgba(255,215,0,.12)':'var(--bg-sunken)'};border:1px solid ${myEmojiStyle==='app'?'#ffd700':'var(--border)'}">
+          <span class="vip-emoji-app-preview" style="font-size:22px">🔥👍❤️</span>
+          <span style="font-size:11px;color:var(--text-tertiary)">${t('vip_emoji_style_app')}${myEmojiStyle==='app'?' ✓':''}</span>
+        </div>
       </div>
     </div>
     <p style="color:var(--text-tertiary);font-size:11px;margin-top:20px">${t('vip_footer_note')}</p>
   `;
   document.querySelectorAll('.vip-emoji-flat-preview').forEach(applyEmojiStyleToEl);
+  document.querySelectorAll('.vip-emoji-app-preview').forEach(applyAppEmojiStyleToEl);
   const grid=document.getElementById('particle-type-grid');
   if(grid)applyEmojiStyleToEl(grid);
 }
