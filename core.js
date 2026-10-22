@@ -213,7 +213,7 @@ const SLABEL_ICONS={
   bookmark:'<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 3h12v18l-6-4-6 4V3z"/></svg>',
   clock:'<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3.5 2"/></svg>',
   megaphone:'<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 10v4h3l6 4V6l-6 4H3z"/><path d="M16 9a4 4 0 010 6"/><path d="M19 6a8 8 0 010 12"/></svg>',
-  flame:'<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2c1 4-4 5-4 9a4 4 0 008 0c1.5 1 2 2.5 2 4a6 6 0 01-12 0c0-5 3-6 4-9 .5 2 1.5 2 2-4z"/></svg>'
+  flame:'<svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M13.5.67s.74 2.65.74 4.8c0 2.06-1.35 3.73-3.41 3.73-2.07 0-3.63-1.67-3.63-3.73l.03-.36C5.21 7.51 4 10.62 4 14c0 4.42 3.58 8 8 8s8-3.58 8-8C20 8.61 17.41 3.8 13.5.67zM11.71 19c-1.78 0-3.22-1.4-3.22-3.14 0-1.62 1.05-2.76 2.81-3.12 1.77-.36 3.6-1.21 4.62-2.58.39 1.29.59 2.65.59 4.04 0 2.65-2.15 4.8-4.8 4.8z"/></svg>'
 };
 function setSlabel(iconKey,label){
   document.getElementById('slabel').innerHTML=`<span style="display:flex;align-items:center;gap:8px">${SLABEL_ICONS[iconKey]||''}<span>${esc(label)}</span></span>`;
@@ -1532,7 +1532,7 @@ function showTrending(){
         ?`<img src="${esc(avatarUrl)}" style="width:36px;height:36px;border-radius:50%;object-fit:cover;flex-shrink:0;cursor:pointer" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'" onclick="event.stopPropagation();showChannel('${jsesc(v.user_id||'')}','${jsesc(uname)}','${jsesc(avatarUrl)}','${jsesc(v.user_email||'')}')"><div class="card-avatar-placeholder" style="background:${ucol};display:none;cursor:pointer" onclick="event.stopPropagation();showChannel('${jsesc(v.user_id||'')}','${jsesc(uname)}','','${jsesc(v.user_email||'')}')">${uname[0].toUpperCase()}</div>`
         :`<div class="card-avatar-placeholder" style="background:${ucol};cursor:pointer" onclick="event.stopPropagation();showChannel('${jsesc(v.user_id||'')}','${jsesc(uname)}','','${jsesc(v.user_email||'')}')">${uname[0].toUpperCase()}</div>`
       }
-      <div class="card-info"><h3>${esc(v.title)}</h3><div class="channel-name">${esc(uname)}</div><p>${viewsLabel(v)}</p></div>
+      <div class="card-info"><h3>${esc(v.title)}</h3><div class="channel-name">${esc(uname)}</div><p>${viewsLabel(v,' wyśw.')} · ${v.likes||0} ${likeIcon()} · ${relativeDate(v.created_at)}</p></div>
     </div>`;
     el.onclick=()=>openP(v.id);
     g.appendChild(el);
