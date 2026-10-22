@@ -145,14 +145,20 @@ const APP_ICON_PATHS={
   rocket:'M12 2c-1.1 2.3-2 5.4-2 8 0 1.5.4 3 1 4.3L9 16v4l3-2 3 2v-4l-2-1.7c.6-1.3 1-2.8 1-4.3 0-2.6-.9-5.7-2-8zm0 7a2 2 0 110-4 2 2 0 010 4z',
   bulb:'M9 21c0 .55.45 1 1 1h4c.55 0 1-.45 1-1v-1H9v1zm3-19C8.14 2 5 5.14 5 9c0 2.38 1.19 4.47 3 5.74V17c0 .55.45 1 1 1h6c.55 0 1-.45 1-1v-2.26c1.81-1.27 3-3.36 3-5.74 0-3.86-3.14-7-7-7z',
   clock:'M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z',
-  restaurant:'M11 9H9V2H7v7H5V2H3v7c0 2.12 1.66 3.84 3.75 3.97V22h2.5v-9.03C11.34 12.84 13 11.12 13 9V2h-2v7zm5-3v8h2.5v8H21V2c-2.76 0-5 2.24-5 4z'
+  cup:'M2 21h18v-2H2v2zM20 8h-2V5H4v10c0 1.1.9 2 2 2h10c1.1 0 2-.9 2-2v-3h2c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm0 4h-2v-2h2v2z',
+  burger:'M4 11h16c0-3.5-3.5-6-8-6s-8 2.5-8 6zm-1 3h18v1a2 2 0 01-2 2H5a2 2 0 01-2-2v-1zm0 5h18v1H3z',
+  fruit:'M12 4c-.5-1-1.5-2-3-2 .3 1.2 1 2 2 2.5A7 7 0 005 12c0 4 3 8 7 8s7-4 7-8a7 7 0 00-6-7.5z',
+  donut:'M12 2a10 10 0 100 20 10 10 0 000-20zm0 14a4 4 0 110-8 4 4 0 010 8z',
+  gem:'M12 2L2 9l10 13L22 9 12 2zm0 2.5L18.5 9H5.5L12 4.5zM5 11h5.2l1.8 7.8L5 11zm8.8 0H19l-6 7.8 1.8-7.8z',
+  cloud:'M19 18H6a4 4 0 01-1-7.87A5.5 5.5 0 0115 7.1 4.5 4.5 0 0119 18z',
+  palette:'M12 2C6.49 2 2 6.49 2 12s4.49 10 10 10c1.1 0 2-.9 2-2 0-.52-.2-.99-.52-1.34-.3-.33-.48-.77-.48-1.26 0-1.1.9-2 2-2h2.35C19.48 15.4 22 13 22 12c0-5.51-4.49-10-10-10zm-5.5 9a1.5 1.5 0 110-3 1.5 1.5 0 010 3zm3-4a1.5 1.5 0 110-3 1.5 1.5 0 010 3zm5 0a1.5 1.5 0 110-3 1.5 1.5 0 010 3zm3 4a1.5 1.5 0 110-3 1.5 1.5 0 010 3z'
 };
 const EMOJI_TO_ICON={
   '😀':'moodHappy','😂':'moodHappy','🥹':'moodSad','😊':'moodHappy','😍':'heart','😘':'heart','😉':'moodHappy','😎':'moodHappy','🤔':'moodNeutral','😴':'moodNeutral',
   '😭':'moodSad','😡':'moodSad','🥳':'moodHappy','😱':'moodSad','🤯':'moodSad','🤗':'moodHappy','😏':'moodNeutral','🙄':'moodNeutral','😅':'moodHappy','😇':'moodHappy',
   '👍':'like','👎':'dislike','👏':'like','🙌':'like','🙏':'like','💪':'like','👌':'like','✌️':'like','🤝':'like','👋':'like',
   '🔥':'fire','💯':'star','✨':'sparkle','⭐':'star','🎉':'sparkle','❤️':'heart','💔':'heart','💕':'heart','😻':'heart','💀':'moodSad',
-  '🎬':'camera','🎮':'camera','⚽':'trophy','🎵':'music','📸':'camera','🍕':'restaurant','☕':'restaurant','🍺':'restaurant','🚀':'rocket','💡':'bulb',
+  '🎬':'camera','🎮':'camera','⚽':'trophy','🎵':'music','📸':'camera','🍕':'burger','☕':'cup','🍺':'cup','🚀':'rocket','💡':'bulb',
   '⏰':'clock','📌':'star','✅':'check','❌':'close','😆':'moodHappy','🥰':'heart','😢':'moodSad','🤤':'moodNeutral','🫡':'like','🙈':'moodNeutral',
   '😜':'moodHappy','🤪':'moodHappy','🤨':'moodNeutral','🧐':'moodNeutral','🥸':'moodNeutral','😬':'moodNeutral','🙃':'moodHappy','😐':'moodNeutral','😶':'moodNeutral','🤐':'moodNeutral',
   '😮':'moodNeutral','😯':'moodNeutral','😲':'moodNeutral','🥶':'moodSad','🥵':'moodSad','🤢':'moodSad','🤮':'moodSad','🤧':'moodSad','😷':'moodNeutral','🤒':'moodSad',
@@ -161,11 +167,11 @@ const EMOJI_TO_ICON={
   '🦴':'moodNeutral','💋':'heart','👅':'moodNeutral','👄':'moodNeutral','🖕':'like','👊':'like','✊':'like','🤙':'like','🖖':'like','🤟':'like',
   '🫶':'heart','👐':'like','🤲':'like','🤜':'like','🤛':'like','💅':'moodNeutral','🦵':'moodNeutral','🦶':'moodNeutral','👣':'moodNeutral','🎯':'star',
   '🏆':'trophy','🥇':'trophy','🥈':'trophy','🥉':'trophy','🎖️':'trophy','🎗️':'trophy','🎫':'sparkle','🎟️':'sparkle','🎪':'sparkle','🎨':'sparkle',
-  '🎭':'sparkle','🎤':'music','🎧':'music','🎸':'music','🥁':'music','🎹':'music','🎺':'music','🎷':'music','🪕':'music','🎲':'sparkle',
-  '🃏':'sparkle','🀄':'sparkle','🧩':'sparkle','🪄':'sparkle','🔮':'sparkle','💎':'trophy','⚡':'bolt','☀️':'star','🌙':'star','🌈':'sparkle',
-  '☁️':'sparkle','⛈️':'bolt','❄️':'sparkle','💥':'bolt','🌊':'bolt','🌪️':'bolt','🍀':'sparkle','🌹':'heart','🌸':'sparkle','🌻':'sparkle',
-  '🍎':'restaurant','🍌':'restaurant','🍇':'restaurant','🍓':'restaurant','🍑':'restaurant','🍒':'restaurant','🥑':'restaurant','🌮':'restaurant','🍔':'restaurant','🍟':'restaurant',
-  '🌭':'restaurant','🍿':'restaurant','🍩':'restaurant','🍪':'restaurant','🎂':'restaurant','🍫':'restaurant','🍬':'restaurant','🧋':'restaurant','💬':'like'
+  '🎭':'palette','🎤':'music','🎧':'music','🎸':'music','🥁':'music','🎹':'music','🎺':'music','🎷':'music','🪕':'music','🎲':'sparkle',
+  '🃏':'sparkle','🀄':'sparkle','🧩':'sparkle','🪄':'sparkle','🔮':'sparkle','💎':'gem','⚡':'bolt','☀️':'star','🌙':'star','🌈':'cloud',
+  '☁️':'cloud','⛈️':'bolt','❄️':'cloud','💥':'bolt','🌊':'bolt','🌪️':'bolt','🍀':'fruit','🌹':'heart','🌸':'sparkle','🌻':'sparkle',
+  '🍎':'fruit','🍌':'fruit','🍇':'fruit','🍓':'fruit','🍑':'fruit','🍒':'fruit','🥑':'fruit','🌮':'burger','🍔':'burger','🍟':'burger',
+  '🌭':'burger','🍿':'burger','🍩':'donut','🍪':'donut','🎂':'donut','🍫':'donut','🍬':'donut','🧋':'cup','💬':'like','👑':'gem','💍':'gem'
 };
 const APP_EMOJI_SVG_PATHS={};
 Object.entries(EMOJI_TO_ICON).forEach(([e,k])=>{APP_EMOJI_SVG_PATHS[e]=APP_ICON_PATHS[k];});
@@ -2256,7 +2262,6 @@ function toggleEmojiPicker(targetId,btnEl){
   picker.dataset.target=targetId;
   picker.innerHTML=EMOJI_LIST.map(e=>`<span onclick="insertEmoji('${jsesc(targetId)}','${jsesc(e)}')" style="cursor:pointer;font-size:22px;padding:6px 2px;border-radius:6px;text-align:center;display:flex;align-items:center;justify-content:center" onmouseover="this.style.background='var(--border)'" onmouseout="this.style.background='none'">${e}</span>`).join('');
   if(myEmojiStyle==='flat'&&window.applyEmojiStyleToEl)applyEmojiStyleToEl(picker);
-  else if(myEmojiStyle==='app')applyAppEmojiStyleToEl(picker);
 
   const rect=btnEl.getBoundingClientRect();
   const maxPickerHeight=Math.min(320,window.innerHeight-32); // nie więcej niż ekran minus margines
