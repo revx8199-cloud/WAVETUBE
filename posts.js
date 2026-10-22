@@ -371,7 +371,7 @@ function togglePostMenu(postId,btnEl){
   menu.id='post-menu-popup';
   const top=rect.bottom+6+50>window.innerHeight?rect.top-56:rect.bottom+6;
   menu.style.cssText=`position:fixed;top:${top}px;left:${Math.min(rect.left,window.innerWidth-190)}px;background:var(--bg-panel);border:1px solid var(--border);border-radius:10px;min-width:170px;z-index:1000;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,.6)`;
-  menu.innerHTML=`<div onclick="event.stopPropagation();closePostMenu();openPostReportModal(${postId})" style="padding:12px 16px;cursor:pointer;font-size:13px;display:flex;align-items:center;gap:10px;color:#ff6b6b" onmouseover="this.style.background='var(--border)'" onmouseout="this.style.background='none'"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" y1="22" x2="4" y2="15"/></svg>${t('report_title_post_menu')}</div>`;
+  menu.innerHTML=`<div onclick="event.stopPropagation();closePostMenu();openPostReportModal(${postId})" style="padding:11px 16px;cursor:pointer;font-size:14px;display:flex;align-items:center;gap:16px;color:#ff6b6b" onmouseover="this.style.background='var(--border)'" onmouseout="this.style.background='none'"><svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M14.4 6L14 4H5v17h2v-7h5.6l.4 2h7V6z"/></svg><span>${t('report_title_post_menu')}</span></div>`;
   document.body.appendChild(menu);
   setTimeout(()=>{
     postMenuOutsideListener=function(e){
