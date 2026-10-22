@@ -2182,8 +2182,7 @@ function toggleEmojiPicker(targetId,btnEl){
   picker.id='emoji-picker';
   picker.dataset.target=targetId;
   picker.innerHTML=EMOJI_LIST.map(e=>`<span onclick="insertEmoji('${jsesc(targetId)}','${jsesc(e)}')" style="cursor:pointer;font-size:22px;padding:6px 2px;border-radius:6px;text-align:center;display:flex;align-items:center;justify-content:center" onmouseover="this.style.background='var(--border)'" onmouseout="this.style.background='none'">${e}</span>`).join('');
-  if(window.applyEmojiStyleToEl)applyEmojiStyleToEl(picker);
-  if(myEmojiStyle==='flat')applyEmojiStyleToEl(picker);
+  if(myEmojiStyle==='flat'&&window.applyEmojiStyleToEl)applyEmojiStyleToEl(picker);
 
   const rect=btnEl.getBoundingClientRect();
   const maxPickerHeight=Math.min(320,window.innerHeight-32); // nie więcej niż ekran minus margines
