@@ -157,42 +157,30 @@ const APP_ICON_PATHS={
   eye:'M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zm0 12.5a5 5 0 110-10 5 5 0 010 10zm0-8a3 3 0 100 6 3 3 0 000-6z'
 };
 const EMOJI_TO_ICON={
-  '👍':'like','👎':'dislike','🔥':'fire','❤️':'heart','⭐':'star','✅':'check','❌':'close','✨':'sparkle','⚡':'bolt',
-  '😀':'moodHappy','😢':'moodSad','😐':'moodNeutral','😂':'laugh','😎':'cool','🤔':'think','😴':'sleepy','👀':'eye',
-  '🎵':'music','📸':'camera','🏆':'trophy','🚀':'rocket','💡':'bulb','⏰':'clock','☕':'cup','🍕':'burger','🍎':'fruit',
-  '🍩':'donut','💎':'gem','☁️':'cloud','🎨':'palette'
+  '😀':'moodHappy','😂':'laugh','🥹':'moodSad','😊':'moodHappy','😍':'heart','😘':'heart','😉':'moodHappy','😎':'cool','🤔':'think','😴':'sleepy',
+  '😭':'moodSad','😡':'bolt','🥳':'sparkle','😱':'moodSad','🤯':'moodSad','🤗':'sparkle','😏':'think','🙄':'sleepy','😅':'moodHappy','😇':'moodHappy',
+  '👍':'like','👎':'dislike','👏':'star','🙌':'star','🙏':'heart','💪':'bolt','👌':'check','✌️':'check','🤝':'like','👋':'like',
+  '🔥':'fire','💯':'star','✨':'sparkle','⭐':'star','🎉':'sparkle','❤️':'heart','💔':'heart','💕':'heart','😻':'heart','💀':'close',
+  '🎬':'camera','🎮':'camera','⚽':'trophy','🎵':'music','📸':'camera','🍕':'burger','☕':'cup','🍺':'cup','🚀':'rocket','💡':'bulb',
+  '⏰':'clock','📌':'star','✅':'check','❌':'close','😆':'laugh','🥰':'heart','😢':'moodSad','🤤':'sleepy','🫡':'like','🙈':'eye',
+  '😜':'cool','🤪':'cool','🤨':'think','🧐':'think','🥸':'think','😬':'sleepy','🙃':'moodHappy','😐':'moodNeutral','😶':'moodNeutral','🤐':'moodNeutral',
+  '😮':'moodNeutral','😯':'moodNeutral','😲':'moodNeutral','🥶':'cloud','🥵':'cloud','🤢':'cloud','🤮':'cloud','🤧':'cloud','😷':'cloud','🤒':'cloud',
+  '🤕':'cloud','🤠':'cool','😈':'close','👿':'close','👹':'close','👻':'close','👽':'close','🤖':'close','🎃':'close','😹':'laugh',
+  '😽':'heart','🙉':'eye','🙊':'eye','💩':'close','🤡':'laugh','👑':'gem','💍':'gem','👀':'eye','🧠':'eye','🫀':'heart',
+  '🦴':'eye','💋':'heart','👅':'eye','👄':'eye','🖕':'close','👊':'bolt','✊':'bolt','🤙':'like','🖖':'like','🤟':'check',
+  '🫶':'heart','👐':'star','🤲':'star','🤜':'bolt','🤛':'bolt','💅':'eye','🦵':'eye','🦶':'eye','👣':'eye','🎯':'star',
+  '🏆':'trophy','🥇':'trophy','🥈':'trophy','🥉':'trophy','🎖️':'trophy','🎗️':'trophy','🎫':'gem','🎟️':'gem','🎪':'gem','🎨':'palette',
+  '🎭':'palette','🎤':'music','🎧':'music','🎸':'music','🥁':'music','🎹':'music','🎺':'music','🎷':'music','🪕':'music','🎲':'gem',
+  '🃏':'gem','🀄':'gem','🧩':'gem','🪄':'sparkle','🔮':'sparkle','💎':'gem','⚡':'bolt','☀️':'star','🌙':'star','🌈':'cloud',
+  '☁️':'cloud','⛈️':'bolt','❄️':'cloud','💥':'bolt','🌊':'bolt','🌪️':'bolt','🍀':'fruit','🌹':'heart','🌸':'palette','🌻':'palette',
+  '🍎':'fruit','🍌':'fruit','🍇':'fruit','🍓':'fruit','🍑':'fruit','🍒':'fruit','🥑':'fruit','🌮':'burger','🍔':'burger','🍟':'burger',
+  '🌭':'burger','🍿':'burger','🍩':'donut','🍪':'donut','🎂':'donut','🍫':'donut','🍬':'donut','🧋':'cup','💬':'like'
 };
 const APP_EMOJI_SVG_PATHS={};
 Object.entries(EMOJI_TO_ICON).forEach(([e,k])=>{APP_EMOJI_SVG_PATHS[e]=APP_ICON_PATHS[k];});
-function hashEmojiChar(s){
-  let h=2166136261>>>0;
-  for(let i=0;i<s.length;i++){h^=s.codePointAt(i);h=Math.imul(h,16777619)>>>0;}
-  h^=h>>>16;h=Math.imul(h,0x85ebca6b)>>>0;h^=h>>>13;h=Math.imul(h,0xc2b2ae35)>>>0;h^=h>>>16;
-  return h>>>0;
-}
-function generatedIconSvg(ch){
-  const h=hashEmojiChar(ch);
-  const cols=5,rows=5,cell=24/cols;
-  const half=Math.ceil(cols/2);
-  let rects='',bit=0,count=0;
-  for(let r=0;r<rows;r++){
-    for(let c=0;c<half;c++){
-      const on=((h>>>bit)&1)===1;
-      bit+=2;
-      if(on){
-        count++;
-        const x=(c*cell).toFixed(2),mx=((cols-1-c)*cell).toFixed(2),y=(r*cell).toFixed(2),cs=cell.toFixed(2);
-        rects+=`<rect x="${x}" y="${y}" width="${cs}" height="${cs}" rx="1"/>`;
-        if(c!==cols-1-c)rects+=`<rect x="${mx}" y="${y}" width="${cs}" height="${cs}" rx="1"/>`;
-      }
-    }
-  }
-  if(count===0)rects=`<rect x="${(cell*2).toFixed(2)}" y="${(cell*2).toFixed(2)}" width="${cell.toFixed(2)}" height="${cell.toFixed(2)}" rx="1"/>`;
-  return `<svg viewBox="0 0 24 24" fill="currentColor">${rects}</svg>`;
-}
 function applyAppEmojiStyleToEl(el){
   if(!el)return;
-  const keys=EMOJI_LIST.slice().sort((a,b)=>b.length-a.length);
+  const keys=Object.keys(APP_EMOJI_SVG_PATHS);
   const re=new RegExp('('+keys.map(k=>k.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')).join('|')+')','gu');
   const walker=document.createTreeWalker(el,NodeFilter.SHOW_TEXT,null);
   const nodes=[];let n;
@@ -208,8 +196,7 @@ function applyAppEmojiStyleToEl(el){
       if(m.index>last)frag.appendChild(document.createTextNode(text.slice(last,m.index)));
       const span=document.createElement('span');
       span.style.cssText='display:inline-flex;vertical-align:-3px';
-      const path=APP_EMOJI_SVG_PATHS[m[0]];
-      span.innerHTML=path?`<svg viewBox="0 0 24 24" width="1em" height="1em" fill="currentColor"><path d="${path}"/></svg>`:generatedIconSvg(m[0]).replace('<svg ','<svg width="1em" height="1em" ');
+      span.innerHTML=`<svg viewBox="0 0 24 24" width="1em" height="1em" fill="currentColor"><path d="${APP_EMOJI_SVG_PATHS[m[0]]}"/></svg>`;
       frag.appendChild(span);
       last=re.lastIndex;
     }
