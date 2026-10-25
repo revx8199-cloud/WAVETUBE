@@ -151,27 +151,16 @@ const APP_ICON_PATHS={
   donut:'M12 2a10 10 0 100 20 10 10 0 000-20zm0 14a4 4 0 110-8 4 4 0 010 8z',
   gem:'M12 2L2 9l10 13L22 9 12 2zm0 2.5L18.5 9H5.5L12 4.5zM5 11h5.2l1.8 7.8L5 11zm8.8 0H19l-6 7.8 1.8-7.8z',
   cloud:'M19 18H6a4 4 0 01-1-7.87A5.5 5.5 0 0115 7.1 4.5 4.5 0 0119 18z',
-  palette:'M12 2C6.49 2 2 6.49 2 12s4.49 10 10 10c1.1 0 2-.9 2-2 0-.52-.2-.99-.52-1.34-.3-.33-.48-.77-.48-1.26 0-1.1.9-2 2-2h2.35C19.48 15.4 22 13 22 12c0-5.51-4.49-10-10-10zm-5.5 9a1.5 1.5 0 110-3 1.5 1.5 0 010 3zm3-4a1.5 1.5 0 110-3 1.5 1.5 0 010 3zm5 0a1.5 1.5 0 110-3 1.5 1.5 0 010 3zm3 4a1.5 1.5 0 110-3 1.5 1.5 0 010 3z'
+  palette:'M12 2C6.49 2 2 6.49 2 12s4.49 10 10 10c1.1 0 2-.9 2-2 0-.52-.2-.99-.52-1.34-.3-.33-.48-.77-.48-1.26 0-1.1.9-2 2-2h2.35C19.48 15.4 22 13 22 12c0-5.51-4.49-10-10-10zm-5.5 9a1.5 1.5 0 110-3 1.5 1.5 0 010 3zm3-4a1.5 1.5 0 110-3 1.5 1.5 0 010 3zm5 0a1.5 1.5 0 110-3 1.5 1.5 0 010 3zm3 4a1.5 1.5 0 110-3 1.5 1.5 0 010 3z',
+  laugh:'M12 2C6.47 2 2 6.47 2 12s4.47 10 10 10 10-4.47 10-10S17.53 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-3.5-9a1.5 1.5 0 110-3 1.5 1.5 0 010 3zm7 0a1.5 1.5 0 110-3 1.5 1.5 0 010 3zm-3.5 2c-1.66 0-3 1.34-3 3h6c0-1.66-1.34-3-3-3z',
+  cool:'M12 2C6.47 2 2 6.47 2 12s4.47 10 10 10 10-4.47 10-10S17.53 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zM6 9h5v2a2 2 0 01-2 2H8a2 2 0 01-2-2V9zm7 0h5v2a2 2 0 01-2 2h-1a2 2 0 01-2-2V9zm-7-1h12v1H6V8zm3.5 9c1 .8 2 .8 3 0',
+  eye:'M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zm0 12.5a5 5 0 110-10 5 5 0 010 10zm0-8a3 3 0 100 6 3 3 0 000-6z'
 };
 const EMOJI_TO_ICON={
-  '😀':'moodHappy','😂':'moodHappy','🥹':'moodSad','😊':'moodHappy','😍':'heart','😘':'heart','😉':'moodHappy','😎':'moodHappy','🤔':'moodNeutral','😴':'moodNeutral',
-  '😭':'moodSad','😡':'moodSad','🥳':'moodHappy','😱':'moodSad','🤯':'moodSad','🤗':'moodHappy','😏':'moodNeutral','🙄':'moodNeutral','😅':'moodHappy','😇':'moodHappy',
-  '👍':'like','👎':'dislike','👏':'like','🙌':'like','🙏':'like','💪':'like','👌':'like','✌️':'like','🤝':'like','👋':'like',
-  '🔥':'fire','💯':'star','✨':'sparkle','⭐':'star','🎉':'sparkle','❤️':'heart','💔':'heart','💕':'heart','😻':'heart','💀':'moodSad',
-  '🎬':'camera','🎮':'camera','⚽':'trophy','🎵':'music','📸':'camera','🍕':'burger','☕':'cup','🍺':'cup','🚀':'rocket','💡':'bulb',
-  '⏰':'clock','📌':'star','✅':'check','❌':'close','😆':'moodHappy','🥰':'heart','😢':'moodSad','🤤':'moodNeutral','🫡':'like','🙈':'moodNeutral',
-  '😜':'moodHappy','🤪':'moodHappy','🤨':'moodNeutral','🧐':'moodNeutral','🥸':'moodNeutral','😬':'moodNeutral','🙃':'moodHappy','😐':'moodNeutral','😶':'moodNeutral','🤐':'moodNeutral',
-  '😮':'moodNeutral','😯':'moodNeutral','😲':'moodNeutral','🥶':'moodSad','🥵':'moodSad','🤢':'moodSad','🤮':'moodSad','🤧':'moodSad','😷':'moodNeutral','🤒':'moodSad',
-  '🤕':'moodSad','🤠':'moodHappy','😈':'moodSad','👿':'moodSad','👹':'moodSad','👻':'moodSad','👽':'moodNeutral','🤖':'moodNeutral','🎃':'moodSad','😹':'moodHappy',
-  '😽':'heart','🙉':'moodNeutral','🙊':'moodNeutral','💩':'moodSad','🤡':'moodHappy','👑':'trophy','💍':'trophy','👀':'moodNeutral','🧠':'moodNeutral','🫀':'heart',
-  '🦴':'moodNeutral','💋':'heart','👅':'moodNeutral','👄':'moodNeutral','🖕':'like','👊':'like','✊':'like','🤙':'like','🖖':'like','🤟':'like',
-  '🫶':'heart','👐':'like','🤲':'like','🤜':'like','🤛':'like','💅':'moodNeutral','🦵':'moodNeutral','🦶':'moodNeutral','👣':'moodNeutral','🎯':'star',
-  '🏆':'trophy','🥇':'trophy','🥈':'trophy','🥉':'trophy','🎖️':'trophy','🎗️':'trophy','🎫':'sparkle','🎟️':'sparkle','🎪':'sparkle','🎨':'sparkle',
-  '🎭':'palette','🎤':'music','🎧':'music','🎸':'music','🥁':'music','🎹':'music','🎺':'music','🎷':'music','🪕':'music','🎲':'sparkle',
-  '🃏':'sparkle','🀄':'sparkle','🧩':'sparkle','🪄':'sparkle','🔮':'sparkle','💎':'gem','⚡':'bolt','☀️':'star','🌙':'star','🌈':'cloud',
-  '☁️':'cloud','⛈️':'bolt','❄️':'cloud','💥':'bolt','🌊':'bolt','🌪️':'bolt','🍀':'fruit','🌹':'heart','🌸':'sparkle','🌻':'sparkle',
-  '🍎':'fruit','🍌':'fruit','🍇':'fruit','🍓':'fruit','🍑':'fruit','🍒':'fruit','🥑':'fruit','🌮':'burger','🍔':'burger','🍟':'burger',
-  '🌭':'burger','🍿':'burger','🍩':'donut','🍪':'donut','🎂':'donut','🍫':'donut','🍬':'donut','🧋':'cup','💬':'like','👑':'gem','💍':'gem'
+  '👍':'like','👎':'dislike','🔥':'fire','❤️':'heart','⭐':'star','✅':'check','❌':'close','✨':'sparkle','⚡':'bolt',
+  '😀':'moodHappy','😢':'moodSad','😐':'moodNeutral','😂':'laugh','😎':'cool','🤔':'think','😴':'sleepy','👀':'eye',
+  '🎵':'music','📸':'camera','🏆':'trophy','🚀':'rocket','💡':'bulb','⏰':'clock','☕':'cup','🍕':'burger','🍎':'fruit',
+  '🍩':'donut','💎':'gem','☁️':'cloud','🎨':'palette'
 };
 const APP_EMOJI_SVG_PATHS={};
 Object.entries(EMOJI_TO_ICON).forEach(([e,k])=>{APP_EMOJI_SVG_PATHS[e]=APP_ICON_PATHS[k];});
@@ -200,6 +189,7 @@ function applyAppEmojiStyleToEl(el){
     if(last<text.length)frag.appendChild(document.createTextNode(text.slice(last)));
     node.parentNode.replaceChild(frag,node);
   });
+  if(window.twemoji)twemoji.parse(el,{base:'https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/',folder:'svg',ext:'.svg'});
 }
 function statIconSvg(path,size){
   size=size||20;
