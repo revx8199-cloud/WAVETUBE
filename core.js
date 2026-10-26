@@ -157,24 +157,12 @@ const APP_ICON_PATHS={
   eye:'M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zm0 12.5a5 5 0 110-10 5 5 0 010 10zm0-8a3 3 0 100 6 3 3 0 000-6z'
 };
 const EMOJI_TO_ICON={
-  '😀':'moodHappy','😂':'laugh','🥹':'moodSad','😊':'moodHappy','😍':'heart','😘':'heart','😉':'moodHappy','😎':'cool','🤔':'think','😴':'sleepy',
-  '😭':'moodSad','😡':'bolt','🥳':'sparkle','😱':'moodSad','🤯':'moodSad','🤗':'sparkle','😏':'think','🙄':'sleepy','😅':'moodHappy','😇':'moodHappy',
-  '👍':'like','👎':'dislike','👏':'star','🙌':'star','🙏':'heart','💪':'bolt','👌':'check','✌️':'check','🤝':'like','👋':'like',
-  '🔥':'fire','💯':'star','✨':'sparkle','⭐':'star','🎉':'sparkle','❤️':'heart','💔':'heart','💕':'heart','😻':'heart','💀':'close',
+  '👍':'like','👎':'dislike','❤️':'heart','💔':'heart','😍':'heart','🙏':'heart','💪':'bolt','🤝':'like','👋':'like',
+  '😀':'moodHappy','😂':'laugh','😊':'moodHappy','😉':'moodHappy','😎':'cool','🤔':'think','😴':'sleepy','😭':'moodSad','😡':'bolt','🥳':'sparkle','😱':'moodSad','🤗':'sparkle','😅':'moodHappy','😇':'moodHappy',
+  '🔥':'fire','💯':'star','✨':'sparkle','⭐':'star','🎉':'sparkle','💀':'close',
   '🎬':'camera','🎮':'camera','⚽':'trophy','🎵':'music','📸':'camera','🍕':'burger','☕':'cup','🍺':'cup','🚀':'rocket','💡':'bulb',
-  '⏰':'clock','📌':'star','✅':'check','❌':'close','😆':'laugh','🥰':'heart','😢':'moodSad','🤤':'sleepy','🫡':'like','🙈':'eye',
-  '😜':'cool','🤪':'cool','🤨':'think','🧐':'think','🥸':'think','😬':'sleepy','🙃':'moodHappy','😐':'moodNeutral','😶':'moodNeutral','🤐':'moodNeutral',
-  '😮':'moodNeutral','😯':'moodNeutral','😲':'moodNeutral','🥶':'cloud','🥵':'cloud','🤢':'cloud','🤮':'cloud','🤧':'cloud','😷':'cloud','🤒':'cloud',
-  '🤕':'cloud','🤠':'cool','😈':'close','👿':'close','👹':'close','👻':'close','👽':'close','🤖':'close','🎃':'close','😹':'laugh',
-  '😽':'heart','🙉':'eye','🙊':'eye','💩':'close','🤡':'laugh','👑':'gem','💍':'gem','👀':'eye','🧠':'eye','🫀':'heart',
-  '🦴':'eye','💋':'heart','👅':'eye','👄':'eye','🖕':'close','👊':'bolt','✊':'bolt','🤙':'like','🖖':'like','🤟':'check',
-  '🫶':'heart','👐':'star','🤲':'star','🤜':'bolt','🤛':'bolt','💅':'eye','🦵':'eye','🦶':'eye','👣':'eye','🎯':'star',
-  '🏆':'trophy','🥇':'trophy','🥈':'trophy','🥉':'trophy','🎖️':'trophy','🎗️':'trophy','🎫':'gem','🎟️':'gem','🎪':'gem','🎨':'palette',
-  '🎭':'palette','🎤':'music','🎧':'music','🎸':'music','🥁':'music','🎹':'music','🎺':'music','🎷':'music','🪕':'music','🎲':'gem',
-  '🃏':'gem','🀄':'gem','🧩':'gem','🪄':'sparkle','🔮':'sparkle','💎':'gem','⚡':'bolt','☀️':'star','🌙':'star','🌈':'cloud',
-  '☁️':'cloud','⛈️':'bolt','❄️':'cloud','💥':'bolt','🌊':'bolt','🌪️':'bolt','🍀':'fruit','🌹':'heart','🌸':'palette','🌻':'palette',
-  '🍎':'fruit','🍌':'fruit','🍇':'fruit','🍓':'fruit','🍑':'fruit','🍒':'fruit','🥑':'fruit','🌮':'burger','🍔':'burger','🍟':'burger',
-  '🌭':'burger','🍿':'burger','🍩':'donut','🍪':'donut','🎂':'donut','🍫':'donut','🍬':'donut','🧋':'cup','💬':'like'
+  '⏰':'clock','✅':'check','❌':'close','🥰':'heart','😢':'moodSad',
+  '👀':'eye','🏆':'trophy','🥇':'trophy','💎':'gem','👑':'gem','🍩':'donut'
 };
 const APP_EMOJI_SVG_PATHS={};
 Object.entries(EMOJI_TO_ICON).forEach(([e,k])=>{APP_EMOJI_SVG_PATHS[e]=APP_ICON_PATHS[k];});
@@ -2234,12 +2222,15 @@ document.addEventListener('click',e=>{
 
 
 // ── EMOTKI ────────────────────────────────────────────────────────────────
-const EMOJI_LIST=['👍','👎','❤️','💔','😍','🙏','💪','🤝','👋',
-'😀','😂','😊','😉','😎','🤔','😴','😭','😡','🥳','😱','🤗','😅','😇',
-'🔥','💯','✨','⭐','🎉','💀',
-'🎬','🎮','⚽','🎵','📸','🍕','☕','🍺','🚀','💡',
-'⏰','✅','❌','🥰','😢',
-'👀','🏆','🥇','💎','👑','🍩'];
+const EMOJI_LIST=['😀','😂','🥹','😊','😍','😘','😉','😎','🤔','😴','😭','😡','🥳','😱','🤯','🤗','😏','🙄','😅','😇',
+'👍','👎','👏','🙌','🙏','💪','👌','✌️','🤝','👋','🔥','💯','✨','⭐','🎉','❤️','💔','💕','😻','💀',
+'🎬','🎮','⚽','🎵','📸','🍕','☕','🍺','🚀','💡','⏰','📌','✅','❌','😆','🥰','😢','🤤','🫡','🙈',
+'😜','🤪','🤨','🧐','🥸','😬','🙃','😐','😶','🤐','😮','😯','😲','🥶','🥵','🤢','🤮','🤧','😷','🤒',
+'🤕','🤠','😈','👿','👹','👻','👽','🤖','🎃','😹','😽','🙉','🙊','💩','🤡','👑','💍','👀','🧠','🫀',
+'🦴','💋','👅','👄','🖕','👊','✊','🤙','🖖','🤟','🫶','👐','🤲','🤜','🤛','💅','🦵','🦶','👣','🎯',
+'🏆','🥇','🥈','🥉','🎖️','🎗️','🎫','🎟️','🎪','🎨','🎭','🎤','🎧','🎸','🥁','🎹','🎺','🎷','🪕','🎲',
+'🃏','🀄','🧩','🪄','🔮','💎','⚡','☀️','🌙','⭐','🌈','☁️','⛈️','❄️','🔥','💥','🌊','🌪️','🍀','🌹',
+'🌸','🌻','🍎','🍌','🍇','🍓','🍑','🍒','🥑','🌮','🍔','🍟','🌭','🍿','🍩','🍪','🎂','🍫','🍬','🧋'];
 
 let emojiOutsideListener=null;
 
