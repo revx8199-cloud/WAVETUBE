@@ -86,7 +86,7 @@ function setTheme(theme){
   localStorage.setItem('wt_theme',theme);
   applyTheme();
   updateThemeButtons();
-  toast(theme==='light'?t('theme_toast_light'):t('theme_toast_dark'));
+  toast(theme==='light'?'Jasny motyw włączony ☀️':'Ciemny motyw włączony 🌙');
 }
 
 function updateThemeButtons(){
@@ -521,26 +521,13 @@ function openTermsModal(){
   const lang=getLang();
   const content=TERMS_CONTENT[lang]||TERMS_CONTENT.pl;
   const title=(TRANSLATIONS[lang]&&TRANSLATIONS[lang].terms_modal_title)||'📜 Zasady WaveTube';
-  const html=`<!DOCTYPE html><html lang="${lang}"><head><meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>${title.replace(/[<>]/g,'')} — WaveTube</title>
-<style>
-  :root{color-scheme:dark}
-  *{box-sizing:border-box}
-  body{margin:0;background:#0f0f0f;color:#aaa;font-family:Roboto,Arial,sans-serif;line-height:1.7}
-  .wrap{max-width:760px;margin:0 auto;padding:40px 24px 80px}
-  h1{color:#fff;font-size:22px;margin:0 0 28px}
-  h4{color:#fff;font-size:16px;margin:26px 0 8px}
-  p{font-size:14px;margin:0 0 4px}
-</style>
-</head><body><div class="wrap"><h1>${title}</h1>${content}</div></body></html>`;
-  const blob=new Blob([html],{type:'text/html'});
-  const url=URL.createObjectURL(blob);
-  const w=window.open(url,'_blank');
-  if(!w){toast('Zablokowano otwieranie nowej karty — zezwól przeglądarce na wyskakujące okna.');}
-  setTimeout(()=>URL.revokeObjectURL(url),30000);
+  document.getElementById('terms-modal-title').textContent=title;
+  document.getElementById('terms-modal-body').innerHTML=content;
+  document.getElementById('terms-modal').style.display='flex';
 }
-function closeTermsModal(){}
+function closeTermsModal(){
+  document.getElementById('terms-modal').style.display='none';
+}
 
 let heartbeatInterval=null;
 function startHeartbeat(){
