@@ -164,6 +164,8 @@ function setupPostsSentinel(){
 
 function postCardHtml(p,isOwner,likedPosts){
       const isLiked=likedPosts.has(String(p.id));
+      const dislikedPosts=new Set(JSON.parse(localStorage.getItem('disliked_posts')||'[]'));
+      const isDisliked=dislikedPosts.has(String(p.id));
       const uname=p.user_name||p.user||t('anonim');const avHtml=p.user_avatar?`<img class="post-av" src="${esc(p.user_avatar)}" style="${p.user_avatar_frame?`border:2px solid ${esc(p.user_avatar_frame)};box-sizing:border-box`:''}">`:`<div class="post-av-ph" style="background:${getUserColor(p.user_email)}">${uname[0]}</div>`;
       return`<div class="post-card" id="post-${p.id}">
         <div class="post-header">
@@ -184,6 +186,10 @@ function postCardHtml(p,isOwner,likedPosts){
           <button class="post-btn${isLiked?' liked':''}" onclick="likePost(${p.id})">
             <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M1 21h4V9H1v12zm22-11c0-1.1-.9-2-2-2h-6.31l.95-4.57.03-.32c0-.41-.17-.79-.44-1.06L14.17 1 7.59 7.59C7.22 7.95 7 8.45 7 9v10c0 1.1.9 2 2 2h9c.83 0 1.54-.5 1.84-1.22l3.02-7.05c.09-.23.14-.47.14-.73v-2z"/></svg>
             ${p.likes||0}
+          </button>
+          <button class="post-btn${isDisliked?' liked':''}" onclick="dislikePost(${p.id})">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M15 3H6c-.83 0-1.54.5-1.84 1.22l-3.02 7.05c-.09.23-.14.47-.14.73v2c0 1.1.9 2 2 2h6.31l-.95 4.57-.03.32c0 .41.17.79.44 1.06L9.83 23l6.59-6.59c.36-.36.58-.86.58-1.41V5c0-1.1-.9-2-2-2zm4 0v12h4V3h-4z"/></svg>
+            ${p.dislikes||0}
           </button>
           <button class="post-btn" onclick="togglePostComments('${jsesc(p.id)}')">
             💬 ${(p.comments||[]).length}
@@ -277,7 +283,7 @@ function renderPoll(p){
   const myVote=currentUser?poll.voters?.[currentUser.id]:undefined;
   const hasVoted=myVote!==undefined;
   return`<div style="margin-top:10px;background:var(--bg-sunken);border:1px solid var(--border-soft);border-radius:10px;padding:14px">
-    <div style="font-size:14px;font-weight:600;margin-bottom:12px">📊 ${esc(poll.question)}</div>
+    <div style="font-size:14px;font-weight:600;margin-bottom:12px">${esc(poll.question)}</div>
     ${poll.options.map((o,oi)=>{
       const pct=totalVotes?Math.round((o.votes||0)/totalVotes*100):0;
       const isMine=hasVoted&&myVote===oi;
@@ -335,10 +341,23 @@ async function postPostReply(postId,ci){
 
 async function likePost(postId){
   const likedPosts=new Set(JSON.parse(localStorage.getItem('liked_posts')||'[]'));
+  const dislikedPosts=new Set(JSON.parse(localStorage.getItem('disliked_posts')||'[]'));
   const delta=likedPosts.has(String(postId))?-1:1;
-  if(delta<0)likedPosts.delete(String(postId));else likedPosts.add(String(postId));
+  if(delta<0)likedPosts.delete(String(postId));else{likedPosts.add(String(postId));dislikedPosts.delete(String(postId));}
   localStorage.setItem('liked_posts',JSON.stringify([...likedPosts]));
+  localStorage.setItem('disliked_posts',JSON.stringify([...dislikedPosts]));
   await sb.rpc('toggle_post_like',{p_id:postId,p_delta:delta});
+  renderPosts();
+}
+
+async function dislikePost(postId){
+  const likedPosts=new Set(JSON.parse(localStorage.getItem('liked_posts')||'[]'));
+  const dislikedPosts=new Set(JSON.parse(localStorage.getItem('disliked_posts')||'[]'));
+  const delta=dislikedPosts.has(String(postId))?-1:1;
+  if(delta<0)dislikedPosts.delete(String(postId));else{dislikedPosts.add(String(postId));likedPosts.delete(String(postId));}
+  localStorage.setItem('liked_posts',JSON.stringify([...likedPosts]));
+  localStorage.setItem('disliked_posts',JSON.stringify([...dislikedPosts]));
+  await sb.rpc('toggle_post_dislike',{p_id:postId,p_delta:delta});
   renderPosts();
 }
 

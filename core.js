@@ -154,7 +154,9 @@ const APP_ICON_PATHS={
   palette:'M12 2C6.49 2 2 6.49 2 12s4.49 10 10 10c1.1 0 2-.9 2-2 0-.52-.2-.99-.52-1.34-.3-.33-.48-.77-.48-1.26 0-1.1.9-2 2-2h2.35C19.48 15.4 22 13 22 12c0-5.51-4.49-10-10-10zm-5.5 9a1.5 1.5 0 110-3 1.5 1.5 0 010 3zm3-4a1.5 1.5 0 110-3 1.5 1.5 0 010 3zm5 0a1.5 1.5 0 110-3 1.5 1.5 0 010 3zm3 4a1.5 1.5 0 110-3 1.5 1.5 0 010 3z',
   laugh:'M12 2C6.47 2 2 6.47 2 12s4.47 10 10 10 10-4.47 10-10S17.53 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-3.5-9a1.5 1.5 0 110-3 1.5 1.5 0 010 3zm7 0a1.5 1.5 0 110-3 1.5 1.5 0 010 3zm-3.5 2c-1.66 0-3 1.34-3 3h6c0-1.66-1.34-3-3-3z',
   cool:'M12 2C6.47 2 2 6.47 2 12s4.47 10 10 10 10-4.47 10-10S17.53 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zM6 9h5v2a2 2 0 01-2 2H8a2 2 0 01-2-2V9zm7 0h5v2a2 2 0 01-2 2h-1a2 2 0 01-2-2V9zm-7-1h12v1H6V8zm3.5 9c1 .8 2 .8 3 0',
-  eye:'M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zm0 12.5a5 5 0 110-10 5 5 0 010 10zm0-8a3 3 0 100 6 3 3 0 000-6z'
+  eye:'M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zm0 12.5a5 5 0 110-10 5 5 0 010 10zm0-8a3 3 0 100 6 3 3 0 000-6z',
+  think:'M11 18h2v-2h-2v2zm1-16C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm0-13c-1.66 0-3 1.34-3 3h2c0-.55.45-1 1-1s1 .45 1 1c0 .55-.45.75-1.17 1.42C11.08 12.17 11 12.81 11 14h2c0-.75.08-1.17.83-1.83C14.5 11.5 15 10.83 15 9.5 15 8.12 13.88 7 12 7z',
+  sleepy:'M12 3a9 9 0 109 9c0-.46-.04-.92-.1-1.36a5.389 5.389 0 01-4.4 2.26 5.403 5.403 0 01-3.14-9.8c-.44-.06-.9-.1-1.36-.1z'
 };
 const EMOJI_TO_ICON={
   '👍':'like','👎':'dislike','❤️':'heart','💔':'heart','😍':'heart','🙏':'heart','💪':'bolt','🤝':'like','👋':'like',
@@ -1417,7 +1419,7 @@ function renderAnnouncementPoll(a){
   const myVote=currentUser?poll.voters?.[currentUser.id]:undefined;
   const hasVoted=myVote!==undefined;
   return`<div style="margin-bottom:12px;background:var(--bg-sunken);border:1px solid var(--border-soft);border-radius:10px;padding:14px">
-    <div style="font-size:14px;font-weight:600;margin-bottom:12px">📊 ${esc(poll.question)}</div>
+    <div style="font-size:14px;font-weight:600;margin-bottom:12px">${esc(poll.question)}</div>
     ${poll.options.map((o,oi)=>{
       const pct=totalVotes?Math.round((o.votes||0)/totalVotes*100):0;
       const isMine=hasVoted&&myVote===oi;
