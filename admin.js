@@ -1670,7 +1670,7 @@ if(adminTab==='users'){
             <button type="button" onclick="addAnnPollOption()" id="ann-poll-add-btn" style="background:none;border:1px dashed #444;color:var(--text-secondary);padding:7px 14px;border-radius:8px;cursor:pointer;font-size:12px;margin-top:4px">+ Dodaj opcję</button>
           </div>
         </div>
-        <button onclick="sendAnnouncement()" id="admin-announce-btn" style="background:#3ea6ff;border:none;color:#0f0f0f;padding:10px 22px;border-radius:20px;cursor:pointer;font-size:13px;font-weight:700">Wyślij do wszystkich</button>
+        <button onclick="sendAnnouncement()" id="admin-announce-btn" style="background:#3ea6ff;border:none;color:#0f0f0f;padding:10px 22px;border-radius:20px;cursor:pointer;font-size:13px;font-weight:700;display:inline-flex;align-items:center;gap:8px"><svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M18 11v2h4v-2h-4zm-2 6.61c.96.71 2.21 1.65 3.2 2.39.4-.53.8-1.07 1.2-1.6-.99-.74-2.24-1.68-3.2-2.4-.4.54-.8 1.08-1.2 1.61zM20.4 5.6c-.4-.53-.8-1.07-1.2-1.6-.99.74-2.24 1.68-3.2 2.4.4.53.8 1.07 1.2 1.6.96-.72 2.21-1.65 3.2-2.4zM4 9c-1.1 0-2 .9-2 2v2c0 1.1.9 2 2 2h1v4h2v-4h1l5 3V6L8 9H4zm9.54.12c.98.78 1.46 2.02 1.46 3.38s-.48 2.6-1.46 3.38l1.23 1.28c1.44-1.14 2.23-2.84 2.23-4.66s-.79-3.52-2.23-4.66l-1.23 1.28z"/></svg><span id="admin-announce-btn-label">Wyślij do wszystkich</span></button>
         <div id="admin-announce-status" style="margin-top:12px;font-size:12px;color:var(--text-tertiary)"></div>
       </div>`;
   }
@@ -1784,7 +1784,7 @@ async function sendAnnouncement(){
   if(!await showConfirm('Wysłać ogłoszenie?','Wiadomość trafi do WSZYSTKICH zarejestrowanych użytkowników.','Wyślij'))return;
   const btn=document.getElementById('admin-announce-btn');
   const status=document.getElementById('admin-announce-status');
-  btn.disabled=true;btn.style.opacity='.6';btn.textContent='Wysyłanie...';
+  btn.disabled=true;btn.style.opacity='.6';document.getElementById('admin-announce-btn-label').textContent='Wysyłanie...';
   status.textContent='Zbieranie listy użytkowników...';
 
   let image='';
@@ -1802,7 +1802,7 @@ async function sendAnnouncement(){
 
   if(!userIds.size){
     status.textContent='Brak użytkowników do wysłania.';
-    btn.disabled=false;btn.style.opacity='1';btn.textContent='Wyślij do wszystkich';
+    btn.disabled=false;btn.style.opacity='1';document.getElementById('admin-announce-btn-label').textContent='Wyślij do wszystkich';
     return;
   }
 
@@ -1822,7 +1822,7 @@ async function sendAnnouncement(){
     resetAnnPollForm();
     toast('Ogłoszenie wysłane!');
   }
-  btn.disabled=false;btn.style.opacity='1';btn.textContent='Wyślij do wszystkich';
+  btn.disabled=false;btn.style.opacity='1';document.getElementById('admin-announce-btn-label').textContent='Wyślij do wszystkich';
 }
 
 async function deleteReport(id){
