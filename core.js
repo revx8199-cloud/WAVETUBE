@@ -86,7 +86,7 @@ function setTheme(theme){
   localStorage.setItem('wt_theme',theme);
   applyTheme();
   updateThemeButtons();
-  toast(theme==='light'?'Jasny motyw włączony ☀️':'Ciemny motyw włączony 🌙');
+  toast(theme==='light'?t('theme_toast_light'):t('theme_toast_dark'));
 }
 
 function updateThemeButtons(){
