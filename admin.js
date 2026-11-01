@@ -1646,10 +1646,10 @@ if(adminTab==='users'){
   if(adminTab==='announce'){
     body.innerHTML=`
       <div style="padding:24px">
-        <p style="color:var(--text-secondary);font-size:13px;margin-bottom:16px">Wyślij powiadomienie do <b>wszystkich zarejestrowanych użytkowników</b>. Pojawi się w ich dzwoneczku 🔔.</p>
+        <p style="color:var(--text-secondary);font-size:13px;margin-bottom:16px">Wyślij powiadomienie do <b>wszystkich zarejestrowanych użytkowników</b>. Pojawi się w ich powiadomieniach.</p>
         <div class="field" style="margin-bottom:14px;position:relative">
           <label style="text-transform:none;font-size:12px;color:var(--text-tertiary);display:block;margin-bottom:6px">Wiadomość</label>
-          <textarea id="admin-announce-text" placeholder="Np. Dodaliśmy nowe funkcje! Sprawdź co nowego 🎉" style="width:100%;background:var(--bg-sunken);border:1px solid var(--border);border-radius:8px;color:var(--text-primary);padding:10px 14px;font-size:13px;outline:none;resize:vertical;height:220px"></textarea>
+          <textarea id="admin-announce-text" placeholder="Np. Dodaliśmy nowe funkcje! Sprawdź co nowego 🎉" style="width:100%;background:var(--bg-sunken);border:1px solid var(--border);border-radius:8px;color:var(--text-primary);padding:10px 14px;font-size:13px;outline:none;resize:none;height:220px"></textarea>
           <button onclick="toggleEmojiPicker('admin-announce-text',this)" style="position:absolute;right:8px;bottom:8px;background:none;border:none;color:var(--text-secondary);cursor:pointer;font-size:18px" title="Emotki">😊</button>
         </div>
         <div class="field" style="margin-bottom:14px">
@@ -1662,7 +1662,7 @@ if(adminTab==='users'){
         </div>
         <div class="field" style="margin-bottom:14px">
           <label style="display:flex;align-items:center;gap:8px;cursor:pointer;text-transform:none;font-size:13px;color:var(--text-secondary)">
-            <input type="checkbox" id="ann-poll-toggle" onchange="toggleAnnPollFields()" style="width:auto"> 📊 Dodaj ankietę
+            <input type="checkbox" id="ann-poll-toggle" onchange="toggleAnnPollFields()" style="width:auto"> <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor" style="vertical-align:-2px"><path d="M4 21h16v-2H4v2zM4 9h4v10H4V9zm6-6h4v16h-4V3zm6 10h4v6h-4v-6z"/></svg> Dodaj ankietę
           </label>
           <div id="ann-poll-fields" style="display:none;margin-top:12px">
             <input id="ann-poll-question" placeholder="Zadaj pytanie..." style="width:100%;background:var(--bg-sunken);border:1px solid var(--border);border-radius:8px;color:var(--text-primary);padding:10px 14px;font-size:13px;outline:none;margin-bottom:10px">
@@ -1670,7 +1670,7 @@ if(adminTab==='users'){
             <button type="button" onclick="addAnnPollOption()" id="ann-poll-add-btn" style="background:none;border:1px dashed #444;color:var(--text-secondary);padding:7px 14px;border-radius:8px;cursor:pointer;font-size:12px;margin-top:4px">+ Dodaj opcję</button>
           </div>
         </div>
-        <button onclick="sendAnnouncement()" id="admin-announce-btn" style="background:#3ea6ff;border:none;color:#0f0f0f;padding:10px 22px;border-radius:20px;cursor:pointer;font-size:13px;font-weight:700">📢 Wyślij do wszystkich</button>
+        <button onclick="sendAnnouncement()" id="admin-announce-btn" style="background:#3ea6ff;border:none;color:#0f0f0f;padding:10px 22px;border-radius:20px;cursor:pointer;font-size:13px;font-weight:700">Wyślij do wszystkich</button>
         <div id="admin-announce-status" style="margin-top:12px;font-size:12px;color:var(--text-tertiary)"></div>
       </div>`;
   }
@@ -1802,13 +1802,13 @@ async function sendAnnouncement(){
 
   if(!userIds.size){
     status.textContent='Brak użytkowników do wysłania.';
-    btn.disabled=false;btn.style.opacity='1';btn.textContent='📢 Wyślij do wszystkich';
+    btn.disabled=false;btn.style.opacity='1';btn.textContent='Wyślij do wszystkich';
     return;
   }
 
   const notifs=[...userIds].map(uid=>({
     user_id:uid,
-    message:`📢 <b>Ogłoszenie:</b> ${esc(text||poll.question)}`,
+    message:`<b>Ogłoszenie:</b> ${esc(text||poll.question)}`,
     avatar:'',
     sender_id:currentUser.id
   }));
@@ -1820,9 +1820,9 @@ async function sendAnnouncement(){
     status.textContent=`✅ Wysłano do ${notifs.length} użytkowników!`;
     document.getElementById('admin-announce-text').value='';
     resetAnnPollForm();
-    toast('Ogłoszenie wysłane! 📢');
+    toast('Ogłoszenie wysłane!');
   }
-  btn.disabled=false;btn.style.opacity='1';btn.textContent='📢 Wyślij do wszystkich';
+  btn.disabled=false;btn.style.opacity='1';btn.textContent='Wyślij do wszystkich';
 }
 
 async function deleteReport(id){

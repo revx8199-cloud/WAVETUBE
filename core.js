@@ -2194,7 +2194,7 @@ function renderNotifications(){
   if(!notificationsList.length){list.innerHTML=`<div class="notif-empty">${t('notif_empty')}</div>`;return;}
   list.innerHTML=notificationsList.map(n=>`
     <div class="notif-item${n.read?'':' unread'}" style="position:relative" onclick="handleNotifClick('${jsesc(n.id)}','${jsesc(n.sender_id||'')}','${jsesc(n.sender_name||'')}','${jsesc(n.sender_avatar||'')}','${jsesc(n.sender_email||'')}')">
-      ${(n.sender_avatar||n.avatar)?`<img class="notif-av" src="${esc(n.sender_avatar||n.avatar)}">`:`<div class="notif-av-ph" style="background:#cc0000">🔔</div>`}
+      ${(n.sender_avatar||n.avatar)?`<img class="notif-av" src="${esc(n.sender_avatar||n.avatar)}">`:`<div class="notif-av-ph" style="background:#cc0000;display:flex;align-items:center;justify-content:center"><svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.89 2 2 2zm6-6v-5c0-3.07-1.64-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.63 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z"/></svg></div>`}
       <div>
         <div class="notif-text">${safeNotifHtml(n.message)}</div>
         <div class="notif-time">${new Date(n.created_at).toLocaleString(getLang()==='en'?'en-GB':getLang()==='ru'?'ru-RU':'pl-PL',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'})}</div>
