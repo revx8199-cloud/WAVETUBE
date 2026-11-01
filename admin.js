@@ -1649,8 +1649,16 @@ if(adminTab==='users'){
         <p style="color:var(--text-secondary);font-size:13px;margin-bottom:16px">Wyślij powiadomienie do <b>wszystkich zarejestrowanych użytkowników</b>. Pojawi się w ich dzwoneczku 🔔.</p>
         <div class="field" style="margin-bottom:14px;position:relative">
           <label style="text-transform:none;font-size:12px;color:var(--text-tertiary);display:block;margin-bottom:6px">Wiadomość</label>
-          <textarea id="admin-announce-text" placeholder="Np. Dodaliśmy nowe funkcje! Sprawdź co nowego 🎉" style="width:100%;background:var(--bg-sunken);border:1px solid var(--border);border-radius:8px;color:var(--text-primary);padding:10px 14px;font-size:13px;outline:none;resize:none;height:90px"></textarea>
+          <textarea id="admin-announce-text" placeholder="Np. Dodaliśmy nowe funkcje! Sprawdź co nowego 🎉" style="width:100%;background:var(--bg-sunken);border:1px solid var(--border);border-radius:8px;color:var(--text-primary);padding:10px 14px;font-size:13px;outline:none;resize:vertical;height:220px"></textarea>
           <button onclick="toggleEmojiPicker('admin-announce-text',this)" style="position:absolute;right:8px;bottom:8px;background:none;border:none;color:var(--text-secondary);cursor:pointer;font-size:18px" title="Emotki">😊</button>
+        </div>
+        <div class="field" style="margin-bottom:14px">
+          <label style="text-transform:none;font-size:12px;color:var(--text-tertiary);display:block;margin-bottom:6px">Zdjęcie (opcjonalnie)</label>
+          <input type="file" id="ann-img-inp" accept="image/*" style="color:var(--text-secondary)" onchange="previewAnnImg(this)">
+          <div id="ann-img-preview" style="display:none;margin-top:10px;position:relative;max-width:260px">
+            <img id="ann-img-preview-img" style="width:100%;border-radius:8px;display:block">
+            <button onclick="removeAnnImg()" style="position:absolute;top:4px;right:4px;background:rgba(0,0,0,.7);border:none;color:var(--text-primary);border-radius:50%;width:22px;height:22px;cursor:pointer;font-size:13px;display:flex;align-items:center;justify-content:center">✕</button>
+          </div>
         </div>
         <div class="field" style="margin-bottom:14px">
           <label style="display:flex;align-items:center;gap:8px;cursor:pointer;text-transform:none;font-size:13px;color:var(--text-secondary)">
@@ -1746,6 +1754,20 @@ function resetAnnPollForm(){
   document.getElementById('ann-poll-add-btn').style.display='block';
 }
 
+let annImgFile=null;
+function previewAnnImg(input){
+  annImgFile=input.files[0]||null;
+  const wrap=document.getElementById('ann-img-preview');
+  if(!annImgFile){wrap.style.display='none';return;}
+  document.getElementById('ann-img-preview-img').src=URL.createObjectURL(annImgFile);
+  wrap.style.display='block';
+}
+function removeAnnImg(){
+  annImgFile=null;
+  document.getElementById('ann-img-inp').value='';
+  document.getElementById('ann-img-preview').style.display='none';
+}
+
 async function sendAnnouncement(){
   if(!isAdmin())return;
   const text=document.getElementById('admin-announce-text').value.trim();
@@ -1758,15 +1780,19 @@ async function sendAnnouncement(){
     if(opts.length<2){toast('Dodaj przynajmniej 2 opcje!');return;}
     poll={question,options:opts.map(t=>({text:t,votes:0})),voters:{}};
   }
-  if(!text&&!poll){toast('Napisz treść ogłoszenia lub dodaj ankietę');return;}
+  if(!text&&!poll&&!annImgFile){toast('Napisz treść ogłoszenia lub dodaj ankietę/zdjęcie');return;}
   if(!await showConfirm('Wysłać ogłoszenie?','Wiadomość trafi do WSZYSTKICH zarejestrowanych użytkowników.','Wyślij'))return;
   const btn=document.getElementById('admin-announce-btn');
   const status=document.getElementById('admin-announce-status');
   btn.disabled=true;btn.style.opacity='.6';btn.textContent='Wysyłanie...';
   status.textContent='Zbieranie listy użytkowników...';
 
+  let image='';
+  if(annImgFile)image=await readFileAsDataUrl(annImgFile);
+
   status.textContent='Publikowanie ogłoszenia...';
-  await sb.from('announcements').insert([{message:text,created_by:currentUser.id,poll}]);
+  await sb.from('announcements').insert([{message:text,created_by:currentUser.id,poll,image}]);
+  removeAnnImg();
 
   const userIds=new Set();
   const{data:profs}=await sb.from('profiles').select('id');

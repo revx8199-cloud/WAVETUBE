@@ -1379,6 +1379,7 @@ function renderAnnouncementCard(a){
       ${isAdmin()?`<button onclick="deleteAnnouncement(${a.id})" title="Usuń ogłoszenie" style="background:none;border:none;color:var(--text-tertiary);cursor:pointer;width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px" onmouseover="this.style.background='#3a1414';this.style.color='#ff6b6b'" onmouseout="this.style.background='none';this.style.color='#666'">🗑</button>`:''}
     </div>
     ${a.message?`<div style="font-size:14px;color:var(--text-primary);line-height:1.6;white-space:pre-wrap;margin-bottom:12px">${esc(a.message)}</div>`:''}
+    ${a.image?`<img src="${esc(a.image)}" style="width:100%;max-height:360px;object-fit:cover;border-radius:10px;margin-bottom:12px;display:block">`:''}
     ${a.poll?renderAnnouncementPoll(a):''}
     <div style="display:flex;align-items:center;gap:14px;margin-top:12px">
       <button onclick="voteAnnouncement(${a.id},'like')" style="display:flex;align-items:center;gap:6px;background:none;border:none;color:${myVote==='like'?'#3ea6ff':'#aaa'};cursor:pointer;font-size:13px">
