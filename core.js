@@ -104,16 +104,18 @@ function updateLangButtons(){
   const plBtn=document.getElementById('lang-btn-pl');
   const ruBtn=document.getElementById('lang-btn-ru');
   const enBtn=document.getElementById('lang-btn-en');
+  const esBtn=document.getElementById('lang-btn-es');
   if(plBtn)plBtn.style.cssText=lang==='pl'?'display:flex;align-items:center;gap:10px;padding:12px 14px;border-radius:10px;cursor:pointer;font-size:14px;text-align:left;background:rgba(62,166,255,.15);border:1px solid #3ea6ff;color:var(--text-primary)':'display:flex;align-items:center;gap:10px;padding:12px 14px;border-radius:10px;cursor:pointer;font-size:14px;text-align:left;background:var(--bg-sunken);border:1px solid var(--border);color:var(--text-primary)';
   if(ruBtn)ruBtn.style.cssText=lang==='ru'?'display:flex;align-items:center;gap:10px;padding:12px 14px;border-radius:10px;cursor:pointer;font-size:14px;text-align:left;background:rgba(62,166,255,.15);border:1px solid #3ea6ff;color:var(--text-primary)':'display:flex;align-items:center;gap:10px;padding:12px 14px;border-radius:10px;cursor:pointer;font-size:14px;text-align:left;background:var(--bg-sunken);border:1px solid var(--border);color:var(--text-primary)';
   if(enBtn)enBtn.style.cssText=lang==='en'?'display:flex;align-items:center;gap:10px;padding:12px 14px;border-radius:10px;cursor:pointer;font-size:14px;text-align:left;background:rgba(62,166,255,.15);border:1px solid #3ea6ff;color:var(--text-primary)':'display:flex;align-items:center;gap:10px;padding:12px 14px;border-radius:10px;cursor:pointer;font-size:14px;text-align:left;background:var(--bg-sunken);border:1px solid var(--border);color:var(--text-primary)';
+  if(esBtn)esBtn.style.cssText=lang==='es'?'display:flex;align-items:center;gap:10px;padding:12px 14px;border-radius:10px;cursor:pointer;font-size:14px;text-align:left;background:rgba(62,166,255,.15);border:1px solid #3ea6ff;color:var(--text-primary)':'display:flex;align-items:center;gap:10px;padding:12px 14px;border-radius:10px;cursor:pointer;font-size:14px;text-align:left;background:var(--bg-sunken);border:1px solid var(--border);color:var(--text-primary)';
 }
 
 function setLanguage(lang){
   localStorage.setItem('wt_lang',lang);
   applyTranslations();
   updateLangButtons();
-  toast(lang==='ru'?'Язык изменён 🌐':lang==='en'?'Language changed 🌐':'Język zmieniony 🌐');
+  toast(lang==='ru'?'Язык изменён 🌐':lang==='en'?'Language changed 🌐':lang==='es'?'Idioma cambiado 🌐':'Język zmieniony 🌐');
 }
 
 
