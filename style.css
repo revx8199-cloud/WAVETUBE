@@ -455,3 +455,28 @@ body.blur-mode #main-content,body.blur-mode header,body.blur-mode .sidebar-left{
 .sc-section{font-size:12px;font-weight:700;color:var(--text-tertiary);text-transform:uppercase;letter-spacing:.5px;margin:18px 0 6px}
 .sc-row{display:flex;justify-content:space-between;align-items:center;gap:16px;padding:9px 0;border-bottom:1px solid var(--border);font-size:14px;color:var(--text-primary)}
 .sc-row kbd{display:inline-block;min-width:26px;text-align:center;background:var(--bg-sunken);border:1px solid var(--border);border-bottom-width:2px;border-radius:6px;padding:3px 8px;font-family:inherit;font-size:12px;font-weight:600;color:var(--text-primary)}
+
+/* ── SHORTS FEED (YouTube/TikTok style) ─────────────────────────────── */
+.shorts-feed{display:none;position:fixed;inset:0;z-index:9000;background:#000}
+.shorts-feed.open{display:block}
+.shorts-feed-scroll{height:100%;width:100%;overflow-y:scroll;scroll-snap-type:y mandatory;scrollbar-width:none}
+.shorts-feed-scroll::-webkit-scrollbar{display:none}
+.short-item{scroll-snap-align:start;scroll-snap-stop:always;height:100%;width:100%;position:relative;display:flex;align-items:center;justify-content:center;background:#000}
+.short-item video{height:100%;width:auto;max-width:100%;object-fit:contain;background:#000}
+.short-item iframe{height:100%;width:min(100%,480px);border:none;margin:0 auto}
+.short-tapzone{position:absolute;inset:0;cursor:pointer}
+.short-mute-ind{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);background:rgba(0,0,0,.5);border-radius:50%;width:64px;height:64px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:26px;opacity:0;pointer-events:none;transition:opacity .2s}
+.short-mute-ind.show{opacity:1}
+.short-info{position:absolute;left:16px;right:88px;bottom:28px;color:#fff;pointer-events:none}
+.short-info .ch-row{display:flex;align-items:center;gap:10px;margin-bottom:8px;pointer-events:auto}
+.short-info .ch-av{width:36px;height:36px;border-radius:50%;object-fit:cover;flex-shrink:0;cursor:pointer}
+.short-info .ch-name{font-weight:700;font-size:14px;cursor:pointer}
+.short-info .short-title{font-size:14px;line-height:1.4;white-space:pre-wrap}
+.short-sidebar{position:absolute;right:10px;bottom:28px;display:flex;flex-direction:column;align-items:center;gap:20px;color:#fff}
+.short-sidebar button{background:none;border:none;color:#fff;display:flex;flex-direction:column;align-items:center;gap:4px;cursor:pointer;font-size:11px;font-weight:600;padding:0}
+.short-sidebar svg{filter:drop-shadow(0 1px 3px rgba(0,0,0,.5))}
+.short-sidebar .liked svg{color:#3ea6ff}
+.shorts-close{position:fixed;top:14px;right:16px;z-index:9001;background:rgba(0,0,0,.5);border:none;color:#fff;width:38px;height:38px;border-radius:50%;cursor:pointer;font-size:18px}
+@media(min-width:720px){
+  .short-item video{max-width:420px}
+}

@@ -316,6 +316,105 @@ async function resolveAndPlayCloud(v,src){
   }
 }
 
+// ── SHORTS FEED (pionowy, pełnoekranowy, jak YouTube) ──────────────────────
+let shortsFeedObserver=null;
+function shortItemHtml(v){
+  const{type,src}=getPlayer(v.url);
+  let media='';
+  if(type==='mp4')media=`<video src="${esc(src)}" loop playsinline preload="metadata" poster="${esc(v.thumb||'')}"></video>`;
+  else if(type==='yt'||type==='tt'||type==='gd'||type==='od'||type==='mega')media=`<iframe src="${esc(src)}" allow="autoplay;encrypted-media;fullscreen" allowfullscreen></iframe>`;
+  else media=`<div style="color:#777;font-size:13px;text-align:center;padding:20px">Nie można odtworzyć</div>`;
+  const uname=getUserName(v);
+  const avHtml=v.user_avatar?`<img class="ch-av" src="${esc(v.user_avatar)}">`:`<div class="ch-av" style="background:${getUserColor(v.user_email)};display:flex;align-items:center;justify-content:center;font-weight:700">${esc(uname[0].toUpperCase())}</div>`;
+  const isLiked=likedSet.has(v.id),isDisliked=dislikedSet.has(v.id);
+  return `<div class="short-item" data-id="${v.id}" data-type="${type}">
+    ${media}
+    ${type==='mp4'?'<div class="short-tapzone" onclick="toggleShortMute(this)"></div><div class="short-mute-ind">🔇</div>':''}
+    <div class="short-info">
+      <div class="ch-row">
+        ${avHtml}
+        <span class="ch-name" onclick="closeShortsFeed();showChannel('${jsesc(v.user_id||'')}','${jsesc(uname)}','${jsesc(v.user_avatar||'')}','${jsesc(v.user_email||'')}')">${esc(uname)}</span>
+      </div>
+      ${v.title?`<div class="short-title">${esc(v.title)}</div>`:''}
+    </div>
+    <div class="short-sidebar">
+      <button class="${isLiked?'liked':''}" onclick="toggleShortLike(${v.id},this)"><svg viewBox="0 0 24 24" width="28" height="28" fill="currentColor"><path d="M1 21h4V9H1v12zm22-11c0-1.1-.9-2-2-2h-6.31l.95-4.57.03-.32c0-.41-.17-.79-.44-1.06L14.17 1 7.59 7.59C7.22 7.95 7 8.45 7 9v10c0 1.1.9 2 2 2h9c.83 0 1.54-.5 1.84-1.22l3.02-7.05c.09-.23.14-.47.14-.73v-2z"/></svg><span class="short-like-count">${v.likes||0}</span></button>
+      <button class="${isDisliked?'liked':''}" onclick="toggleShortDislike(${v.id},this)"><svg viewBox="0 0 24 24" width="26" height="26" fill="currentColor"><path d="M15 3H6c-.83 0-1.54.5-1.84 1.22l-3.02 7.05c-.09.23-.14.47-.14.73v2c0 1.1.9 2 2 2h6.31l-.95 4.57-.03.32c0 .41.17.79.44 1.06L9.83 23l6.59-6.59c.36-.36.58-.86.58-1.41V5c0-1.1-.9-2-2-2zm4 0v12h4V3h-4z"/></svg></button>
+      <button onclick="closeShortsFeed();openP(${v.id})"><svg viewBox="0 0 24 24" width="27" height="27" fill="currentColor"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H6l-2 2V4h16v12z"/></svg><span>${(v.comments||[]).length}</span></button>
+      <button onclick="shareShort(${v.id})"><svg viewBox="0 0 24 24" width="26" height="26" fill="currentColor"><path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L7.04 9.81C6.5 9.31 5.79 9 5 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92s2.92-1.31 2.92-2.92-1.31-2.92-2.92-2.92z"/></svg></button>
+    </div>
+  </div>`;
+}
+function toggleShortMute(el){
+  const vid=el.parentElement.querySelector('video');
+  if(!vid)return;
+  vid.muted=!vid.muted;
+  const ind=el.nextElementSibling;
+  ind.textContent=vid.muted?'🔇':'🔊';
+  ind.classList.add('show');
+  setTimeout(()=>ind.classList.remove('show'),500);
+}
+async function toggleShortLike(id,btn){
+  const v=videos.find(x=>x.id===id);if(!v)return;
+  const liked=likedSet.has(id);
+  if(liked){likedSet.delete(id);v.likes=Math.max(0,(v.likes||0)-1);}
+  else{likedSet.add(id);v.likes=(v.likes||0)+1;if(dislikedSet.has(id)){dislikedSet.delete(id);v.dislikes=Math.max(0,(v.dislikes||0)-1);}}
+  localStorage.setItem('liked_videos',JSON.stringify([...likedSet]));
+  localStorage.setItem('disliked_videos',JSON.stringify([...dislikedSet]));
+  btn.classList.toggle('liked',likedSet.has(id));
+  btn.querySelector('.short-like-count').textContent=v.likes||0;
+  const item=btn.closest('.short-item');
+  const dbtn=item?.querySelector('.short-sidebar button:nth-child(2)');
+  if(dbtn)dbtn.classList.toggle('liked',dislikedSet.has(id));
+  await updateVideo(id,{likes:v.likes,dislikes:v.dislikes});
+}
+async function toggleShortDislike(id,btn){
+  const v=videos.find(x=>x.id===id);if(!v)return;
+  const disliked=dislikedSet.has(id);
+  if(disliked){dislikedSet.delete(id);v.dislikes=Math.max(0,(v.dislikes||0)-1);}
+  else{dislikedSet.add(id);v.dislikes=(v.dislikes||0)+1;if(likedSet.has(id)){likedSet.delete(id);v.likes=Math.max(0,(v.likes||0)-1);}}
+  localStorage.setItem('liked_videos',JSON.stringify([...likedSet]));
+  localStorage.setItem('disliked_videos',JSON.stringify([...dislikedSet]));
+  btn.classList.toggle('liked',dislikedSet.has(id));
+  const item=btn.closest('.short-item');
+  const lbtn=item?.querySelector('.short-sidebar button:nth-child(1)');
+  if(lbtn){lbtn.classList.toggle('liked',likedSet.has(id));lbtn.querySelector('.short-like-count').textContent=v.likes||0;}
+  await updateVideo(id,{likes:v.likes,dislikes:v.dislikes});
+}
+function shareShort(id){
+  const url=location.origin+location.pathname+'#v='+id;
+  if(navigator.share)navigator.share({url}).catch(()=>{});
+  else{navigator.clipboard?.writeText(url);toast('Link skopiowany!');}
+}
+function openShortsFeed(startId){
+  const shorts=videos.filter(v=>v.is_short===true&&isDiscoverable(v));
+  if(!shorts.length)return;
+  const scroll=document.getElementById('shorts-feed-scroll');
+  scroll.innerHTML=shorts.map(shortItemHtml).join('');
+  document.getElementById('shorts-feed').classList.add('open');
+  document.body.style.overflow='hidden';
+  const startEl=scroll.querySelector(`[data-id="${startId}"]`);
+  if(startEl)startEl.scrollIntoView({block:'start'});
+  if(shortsFeedObserver)shortsFeedObserver.disconnect();
+  shortsFeedObserver=new IntersectionObserver((entries)=>{
+    entries.forEach(entry=>{
+      const vid=entry.target.querySelector('video');
+      const v=videos.find(x=>x.id===Number(entry.target.dataset.id));
+      if(entry.isIntersecting&&entry.intersectionRatio>0.6){
+        if(vid){vid.currentTime=0;vid.muted=true;vid.play().catch(()=>{});}
+        if(v&&shouldCountView(v.id)){updateVideo(v.id,{views:(v.views||0)+1});v.views=(v.views||0)+1;}
+      }else if(vid){vid.pause();}
+    });
+  },{threshold:[0,0.6,1]});
+  scroll.querySelectorAll('.short-item').forEach(el=>shortsFeedObserver.observe(el));
+}
+function closeShortsFeed(){
+  document.getElementById('shorts-feed').classList.remove('open');
+  document.body.style.overflow='';
+  if(shortsFeedObserver)shortsFeedObserver.disconnect();
+  document.getElementById('shorts-feed-scroll').innerHTML='';
+}
+
 async function openP(id){
   const v=videos.find(x=>x.id===id);if(!v)return;
   if(!canViewVideo(v)){toast('Ten film jest prywatny 🔒');return;}

@@ -1009,7 +1009,7 @@ function showShortsPage(){
         <div style="font-size:11px;color:rgba(255,255,255,.7);margin-top:3px">${v.likes||0} ${likeIcon()} · ${viewsLabel(v)}</div>
       </div>
     </div>`;
-    el.onclick=()=>openP(v.id);
+    el.onclick=()=>openShortsFeed(v.id);
     wrap.appendChild(el);
   });
   g.appendChild(wrap);
