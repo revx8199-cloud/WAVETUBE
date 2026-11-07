@@ -3,6 +3,7 @@
 // ── JĘZYK / i18n ─────────────────────────────────────────────────────────
 const TRANSLATIONS={
   pl:{
+    theme_label:'Motyw',theme_dark:'Ciemny',theme_light:'Jasny',
     nav_home:'Strona główna',nav_shorts:'Shorts',nav_trending:'Popularne',nav_you:'Ty',
     nav_mychannel:'Mój kanał',nav_subs:'Moje subskrypcje',nav_history:'Historia oglądania',
     nav_messages:'Wiadomości',nav_subscriptions:'Subskrypcje',nav_announcements:'Ogłoszenia',nav_saved:'Zapisane filmy',nav_watchlater:'Obejrzę później',
@@ -141,6 +142,7 @@ const TRANSLATIONS={
     announce_load_error:'Nie udało się wczytać ogłoszeń',announce_empty:'Brak ogłoszeń',announce_empty_sub:'Tutaj pojawią się wiadomości od twórcy WaveTube'
   },
   en:{
+    theme_label:'Theme',theme_dark:'Dark',theme_light:'Light',
     nav_home:'Home',nav_shorts:'Shorts',nav_trending:'Trending',nav_you:'You',
     nav_mychannel:'My channel',nav_subs:'My subscriptions',nav_history:'Watch history',
     nav_messages:'Messages',nav_subscriptions:'Subscriptions',nav_announcements:'Announcements',nav_saved:'Saved videos',nav_watchlater:'Watch later',
@@ -279,6 +281,7 @@ const TRANSLATIONS={
     announce_load_error:'Failed to load announcements',announce_empty:'No announcements',announce_empty_sub:'Messages from the WaveTube creator will appear here'
   },
   es:{
+    theme_label:'Tema',theme_dark:'Oscuro',theme_light:'Claro',
     nav_home:'Inicio',nav_shorts:'Shorts',nav_trending:'Tendencias',nav_you:'Tú',
     nav_mychannel:'Mi canal',nav_subs:'Mis suscripciones',nav_history:'Historial',
     nav_messages:'Mensajes',nav_subscriptions:'Suscripciones',nav_announcements:'Anuncios',nav_saved:'Vídeos guardados',nav_watchlater:'Ver más tarde',
@@ -332,9 +335,14 @@ const TRANSLATIONS={
     stats_sub_growth:'📈 Crecimiento de suscriptores (acumulado)',stats_top_videos:'🏆 Vídeos más populares',stats_no_videos:'Sin vídeos',
     stats_longs_vs_shorts:'🎞️ Vídeos vs Shorts',stats_by_category:'📂 Visualizaciones por categoría',stats_no_data:'Sin datos',
     stats_by_month:'🗓️ Publicaciones por mes',stats_posts_section:'📝 Publicaciones',stats_posts:'Publicaciones',stats_post_likes:'Me gusta en publicaciones',stats_post_comments:'Comentarios en publicaciones',
-    stats_no_title:'Sin título',stats_no_category:'Sin categoría'
+    stats_no_title:'Sin título',stats_no_category:'Sin categoría',
+
+    ch_add_desc:'+ Añadir descripción del canal',ch_change_banner:'Cambiar banner',ch_comments_off:'Comentarios desactivados',ch_comments_suffix:'comentarios',
+    ch_default_name:'Canal',ch_joined:'Se unió el:',ch_message:'Mensaje',ch_no_shorts:'Sin Shorts en este canal',ch_no_videos:'Este canal todavía no tiene vídeos',
+    ch_premiere:'Estreno',ch_set_country:'Establecer país del canal',ch_stats:'Estadísticas'
   },
   ru:{
+    theme_label:'Тема',theme_dark:'Тёмная',theme_light:'Светлая',
     nav_home:'Главная',nav_shorts:'Shorts',nav_trending:'В тренде',nav_you:'Вы',
     nav_mychannel:'Мой канал',nav_subs:'Мои подписки',nav_history:'История просмотров',
     nav_messages:'Сообщения',nav_subscriptions:'Подписки',nav_announcements:'Объявления',nav_saved:'Сохранённые',nav_watchlater:'Посмотреть позже',
