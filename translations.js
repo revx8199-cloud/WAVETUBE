@@ -321,7 +321,18 @@ const TRANSLATIONS={
     settings_allow_notif:'Notificaciones',settings_allow_notif_desc:'Si está desactivado, no recibirás nuevas notificaciones (me gusta, comentarios, suscripciones, etc.).',
     settings_rules:'Normas de WaveTube',settings_rules_btn:'Leer las normas',settings_rules_desc:'El reglamento que aceptaste al iniciar sesión por primera vez.',
     settings_data:'Tus datos',settings_data_desc:'Descarga una copia de tus datos de WaveTube (perfil, vídeos, publicaciones, mensajes, suscripciones y más) en formato JSON.',settings_data_btn:'Descargar mis datos',
-    settings_danger:'Zona de peligro',settings_delete_desc:'Eliminar la cuenta es permanente e irreversible — perderás tu perfil, vídeos, publicaciones, mensajes, suscripciones y todo el acceso. Considera descargar antes tus datos (arriba).',settings_delete_btn:'Eliminar cuenta permanentemente'
+    settings_danger:'Zona de peligro',settings_delete_desc:'Eliminar la cuenta es permanente e irreversible — perderás tu perfil, vídeos, publicaciones, mensajes, suscripciones y todo el acceso. Considera descargar antes tus datos (arriba).',settings_delete_btn:'Eliminar cuenta permanentemente',
+
+    terms_welcome_title:'👋 Bienvenido a WaveTube',terms_welcome_sub:'Antes de empezar a usar la aplicación, lee y acepta las normas.',terms_agree_prefix:'Acepto las',terms_agree_link:'normas de WaveTube',terms_continue:'Continuar',terms_modal_title:'📜 Normas de WaveTube',
+    dd_shortcuts:'Atajos de teclado',shortcuts_title:'⌨️ Atajos de teclado',sc_player:'Reproductor de vídeo',sc_playpause:'Reproducir / pausar',sc_seek:'Avanzar/retroceder 5 segundos',sc_volume:'Volumen +/- 5%',sc_mute:'Silenciar / activar sonido',sc_fullscreen:'Pantalla completa',sc_general:'General',sc_close:'Cerrar ventana / reproductor',sc_lightbox:'Foto anterior / siguiente en el visor',sc_shortcuts:'Mostrar atajos de teclado',sc_messages:'Mensajes',sc_send:'Enviar mensaje',sc_newline:'Nueva línea',dd_logout:'Cerrar sesión',
+
+    stats_title:'Estadísticas del canal',stats_sub:'Vista solo para ti — visible únicamente en tu cuenta.',
+    stats_views:'Visualizaciones',stats_likes:'Me gusta',stats_subs:'Suscriptores',stats_videos:'Vídeos',stats_comments:'Comentarios',
+    stats_avg_views:'Vis. media/vídeo',stats_engagement:'Interacción',stats_dislikes:'No me gusta',stats_saved:'Guardado',stats_watchlater:'Ver más tarde',
+    stats_sub_growth:'📈 Crecimiento de suscriptores (acumulado)',stats_top_videos:'🏆 Vídeos más populares',stats_no_videos:'Sin vídeos',
+    stats_longs_vs_shorts:'🎞️ Vídeos vs Shorts',stats_by_category:'📂 Visualizaciones por categoría',stats_no_data:'Sin datos',
+    stats_by_month:'🗓️ Publicaciones por mes',stats_posts_section:'📝 Publicaciones',stats_posts:'Publicaciones',stats_post_likes:'Me gusta en publicaciones',stats_post_comments:'Comentarios en publicaciones',
+    stats_no_title:'Sin título',stats_no_category:'Sin categoría'
   },
   ru:{
     nav_home:'Главная',nav_shorts:'Shorts',nav_trending:'В тренде',nav_you:'Вы',
@@ -464,6 +475,31 @@ const TRANSLATIONS={
 };
 
 const TERMS_CONTENT={
+  es:`<h4>1. Disposiciones generales</h4>
+<p>Al usar WaveTube aceptas este reglamento. Si no estás de acuerdo, no puedes usar la aplicación. El administrador se reserva el derecho de modificar el reglamento — te informaremos en la app sobre cambios importantes.</p>
+<h4>2. Cuenta</h4>
+<p>Inicias sesión con una cuenta de Google. Eres responsable de todo lo que ocurra en tu cuenta y de mantenerla segura.</p>
+<h4>3. Contenido y comportamiento</h4>
+<p>Está prohibido publicar contenido: ilegal, que incite al odio o la violencia, pornográfico o que sexualice a menores, que infrinja derechos de autor, spam, o que suplante la identidad de otra persona. Esto aplica a vídeos, publicaciones, comentarios, mensajes y contenido compartido durante llamadas (incluida la pantalla compartida). En los vídeos está prohibido anunciar casinos, apuestas deportivas, juegos de azar online y contenido relacionado (incluidos enlaces de afiliados/códigos promocionales de dichos servicios).</p>
+<h4>4. Publicidad y promoción</h4>
+<p>En la plataforma está prohibido mostrar anuncios que interrumpan la reproducción del vídeo (p. ej. anuncios emergentes automáticos, como en YouTube) — WaveTube no admite ese mecanismo publicitario. Sí está permitido incluir promoción o publicidad como parte del propio contenido del vídeo, a decisión del creador (p. ej. mención de un patrocinador). Está prohibido anunciar productos, servicios u otras páginas/canales en publicaciones, comentarios y mensajes sin autorización del administrador.</p>
+<h4>5. Respeto al creador y a la administración</h4>
+<p>Está prohibido insultar, ofender o acosar al creador, los administradores y las personas que trabajan en el proyecto. Se permite la crítica normal y objetiva de la aplicación y su funcionamiento — sin insultos, agresividad ni difamación.</p>
+<h4>6. Moderación</h4>
+<p>El administrador puede eliminar contenido que infrinja el reglamento e imponer baneos o silenciamientos a las cuentas que lo incumplan — de forma temporal o permanente, sin aviso previo en caso de infracciones graves.</p>
+<h4>7. Reportes</h4>
+<p>Puedes reportar publicaciones y otro contenido que infrinja el reglamento usando la función de reportes de la aplicación. El abuso de esta función (reportes falsos) puede dar lugar a sanciones.</p>
+<h4>8. Panel VIP</h4>
+<p>Las funciones VIP son un complemento de la cuenta estándar y no eximen de cumplir este reglamento. El panel VIP se obtiene mediante una aportación única a WaveTube de 18 PLN — tras realizar el pago, el estado VIP se concede de forma permanente. Es condición indicar en el campo de mensaje/nota del pago la dirección de correo con la que has iniciado sesión en WaveTube — sin esto, el administrador no sabrá a quién otorgar el VIP. El pago es una aportación voluntaria y no reembolsable — el estado VIP se concede indefinidamente y no es posible "revertirlo" a cambio de la devolución del importe.</p>
+<h4>9. Privacidad y datos personales</h4>
+<p>Tu dirección de correo electrónico y otros datos personales (incluida la IP) son visibles únicamente para el administrador — el resto de usuarios no los ven. Procesamos los datos necesarios para el funcionamiento de la app (perfil, contenido que publicas, dirección IP con fines de seguridad).</p>
+<h4>10. Responsabilidad</h4>
+<p>La aplicación se ofrece "tal cual". El administrador no se hace responsable del contenido publicado por los usuarios ni de las interrupciones del servicio.</p>
+<h4>11. Edad</h4>
+<p>La aplicación puede usarse por personas mayores de 13 años. Si no cumples este requisito, no crees una cuenta.</p>
+<h4>12. Contacto</h4>
+<p>Para asuntos del reglamento, reportes o apelaciones de baneo, contacta con el administrador por mensajes en la app o por correo: wavetubebuisness@gmail.com. El administrador no tiene acceso al contenido de los mensajes privados entre usuarios — si tu reporte está relacionado con mensajes, descríbelo tú mismo al administrador.</p>
+`,
   pl:`<h4>1. Postanowienia ogólne</h4>
 <p>Korzystając z WaveTube akceptujesz niniejszy regulamin. Jeśli się z nim nie zgadzasz, nie możesz korzystać z aplikacji. Administrator zastrzega sobie prawo do zmiany regulaminu — o istotnych zmianach poinformujemy w aplikacji.</p>
 <h4>2. Konto</h4>
