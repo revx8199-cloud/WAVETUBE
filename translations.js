@@ -339,7 +339,117 @@ const TRANSLATIONS={
 
     ch_add_desc:'+ Añadir descripción del canal',ch_change_banner:'Cambiar banner',ch_comments_off:'Comentarios desactivados',ch_comments_suffix:'comentarios',
     ch_default_name:'Canal',ch_joined:'Se unió el:',ch_message:'Mensaje',ch_no_shorts:'Sin Shorts en este canal',ch_no_videos:'Este canal todavía no tiene vídeos',
-    ch_premiere:'Estreno',ch_set_country:'Establecer país del canal',ch_stats:'Estadísticas'
+    ch_premiere:'Estreno',ch_set_country:'Establecer país del canal',ch_stats:'Estadísticas',
+
+    notifications_title:'Notificaciones',notif_empty:'Sin notificaciones',notif_delete_one:'Eliminar notificación',notif_clear_empty_toast:'No hay notificaciones que borrar',
+    confirm_clear_notifications:'¿Borrar notificaciones?',confirm_clear_notifications_sub:'Se eliminarán todas las notificaciones.',
+
+    save_label:'Guardar',save_added_label:'Guardado',saved_empty:'Sin vídeos guardados',saved_empty_sub:'Haz clic en ⋮ junto al vídeo y elige "Guardar"',saved_login:'Inicia sesión para guardar vídeos',page_saved:'Vídeos guardados',
+    wl_label:'Ver más tarde',wl_added_label:'En la lista',wl_added_toast:'Añadido a ver más tarde ⏰',wl_empty:'Sin vídeos para ver más tarde',wl_empty_sub:'Haz clic en ⋮ junto al vídeo y elige "Ver más tarde"',wl_login:'Inicia sesión para usar "Ver más tarde"',wl_login_toast:'¡Inicia sesión para añadir a "Ver más tarde"!',wl_removed_toast:'Eliminado de "Ver más tarde"',page_watchlater:'Ver más tarde',
+
+    report_title:'Reportar vídeo',report_title_post:'Reportar publicación',report_title_post_menu:'Reportar publicación',report_sub:'El reporte llegará a la moderación de WaveTube',
+    report_reason_label:'Motivo',report_reason_spam:'Spam o contenido engañoso',report_reason_hate:'Discurso de odio o acoso',report_reason_adult:'Contenido para adultos',report_reason_violence:'Violencia o contenido explícito',report_reason_copyright:'Infracción de derechos de autor',report_reason_other:'Otro',
+    report_details_label:'Detalles (opcional)',report_details_ph:'Describe el problema...',btn_send_report:'Enviar reporte',
+
+    announce_empty:'Sin anuncios',announce_empty_sub:'Aquí aparecerán los mensajes del creador de WaveTube',announce_load_error:'No se pudieron cargar los anuncios',page_announcements:'Anuncios del creador',
+
+    anonim:'Anónimo',autoplay_next_video:'Siguiente vídeo',autoplay_play_now:'Reproducir ahora',
+    banner_crop_title:'Vista previa del banner',banner_crop_sub:'Así se verá tu banner. Arrastra la imagen para ajustar el encuadre.',
+    btn_buy_vip_coffee:'☕ Ir a Buy Me a Coffee',btn_clear:'Borrar',btn_detect_dur:'🔍 Detectar',btn_less:'menos',btn_more:'...más',
+
+    buy_vip_title:'Comprar panel VIP',buy_vip_desc:'El panel VIP desbloquea el color del nick, el marco del avatar, partículas alrededor del avatar, la insignia VIP y otros adornos en tu canal.',
+    buy_vip_email_label:'Tu correo:',
+    buy_vip_feat_name_color:'🎨 Color del nick',buy_vip_feat_name_color_desc:'Tu nombre en el color que elijas — visible en toda la página.',
+    buy_vip_feat_name_font:'🔤 Tipografía del nick',buy_vip_feat_name_font_desc:'Elige una de las 37 fuentes de Google Fonts para tu nombre.',
+    buy_vip_feat_banner_frame:'🖼️ Marco del banner',buy_vip_feat_banner_frame_desc:'Borde decorativo alrededor del banner del canal.',
+    buy_vip_instructions:'☕ Apoya a través de Buy Me a Coffee y en el campo de mensaje/nota del pago escribe obligatoriamente el correo con el que iniciaste sesión en WaveTube — de lo contrario no sabremos a quién otorgar el VIP.',
+    buy_vip_no_refund:'El pago no es reembolsable y el VIP se otorga de forma permanente.',
+
+    call_accept:'Responder',call_reject:'Rechazar',call_hangup:'Colgar',call_mute:'Silenciar micrófono',call_boost:'Más volumen (amplificación)',
+    call_screenshare:'Compartir pantalla',call_screenshare_stop:'Dejar de compartir',
+    call_status_calling:'Llamando...',call_status_incoming:'Llamada entrante...',
+    call_quality_good:'Buena conexión',call_quality_medium:'Conexión media',call_quality_bad:'Conexión débil',call_quality_checking:'Comprobando conexión...',
+    call_busy_toast:'El usuario está ocupado',call_busy_self_toast:'Ya tienes una llamada activa',call_disabled_toast:'Este usuario ha desactivado las llamadas',
+    call_ended_toast:'Llamada finalizada',call_rejected_toast:'Llamada rechazada',call_mic_denied_toast:'Sin acceso al micrófono',
+
+    comments_label_zero:'Comentarios (0)',
+    confirm_cancel:'Cancelar',confirm_delete_default:'Eliminar',confirm_irreversible:'Esta acción no se puede deshacer.',
+    confirm_clear_history:'¿Borrar el historial de visualización?',confirm_clear_history_sub:'Se eliminará todo el historial de vídeos vistos.',
+    confirm_delete_account:'¿Eliminar la cuenta permanentemente?',confirm_delete_account_sub:'Perderás el perfil, vídeos, publicaciones, comentarios, mensajes y suscripciones. Esta acción no se puede deshacer.',
+    confirm_delete_account_2:'¿Seguro? Es tu última oportunidad.',confirm_delete_account_2_sub:'Al hacer clic, tu cuenta se eliminará de inmediato y de forma permanente.',confirm_delete_account_final_btn:'Sí, eliminar para siempre',
+    confirm_delete_conv:'¿Eliminar esta conversación?',confirm_delete_conv_sub:'Todos los mensajes se eliminarán permanentemente.',
+    confirm_delete_msg:'¿Eliminar el mensaje?',confirm_delete_msg_sub:'Este mensaje desaparecerá de la conversación para ambas partes.',
+    confirm_delete_post:'¿Eliminar la publicación?',
+
+    desc_placeholder:'Descripción del canal...',desc_saved_toast:'¡Descripción guardada! ✅',edit_dur_label:'Duración',
+
+    feed_all_videos:'Todos los vídeos',feed_no_results:'Sin resultados',feed_no_videos:'Sin vídeos',feed_results_for:'Resultados',
+    filter_all_categories:'Todas las categorías',filter_any_length:'Cualquier duración',
+    filter_newest:'Más recientes',filter_oldest:'Más antiguos',filter_popular:'Más populares',filter_liked:'Con más "me gusta"',
+    filter_tiny:'Muy cortos (hasta 1 min)',filter_short:'Cortos (1–3 min)',filter_medium:'Medios (3–20 min)',filter_long:'Largos (más de 20 min)',
+
+    findbug_desc:'¿Encontraste un error o una vulnerabilidad de seguridad? ¡Escríbenos!',findbug_reward:'Describe el error o vulnerabilidad encontrada y envíanos un correo. Si el reporte resulta válido, ¡recibirás una recompensa! 🎁',findbug_copy_btn:'Copiar dirección de correo',findbug_copied_toast:'¡Dirección de correo copiada!',
+
+    form_need_title_url:'¡Indica el título y el enlace!',form_publishing_btn:'Publicando...',form_moderating_btn:'Comprobando...',
+    hint_paste_link:'Pega el enlace — se reconocerá automáticamente',hint_unknown_format:'⚠️ Formato no reconocido',
+    hint_gdrive:'✅ <b style="color:#1a73e8">Google Drive</b> — asegúrate de que el archivo sea público',
+    hint_mp4_detecting:'✅ <b style="color:#188038">MP4</b> — detectando duración...',hint_mp4_detected:'✅ <b style="color:#188038">MP4</b> — duración detectada automáticamente',
+
+    history_empty:'Sin historial de visualización',history_empty_sub:'Los vídeos que veas aparecerán aquí',history_login:'Inicia sesión para ver tu historial de visualización',page_history:'Historial de visualización',
+
+    menu_vip_panel:'Panel VIP',menu_buy_vip:'Comprar panel VIP 💎',
+
+    msg_conversations:'Conversaciones',msg_pick_conv:'Elige una conversación o inicia una nueva',msg_placeholder:'Escribe un mensaje...',
+    msg_no_convs:'Sin conversaciones.',msg_no_convs_sub:'Entra en el canal de alguien y pulsa ✉️ Mensaje',msg_new_btn:'+ Nueva',msg_new_hint:'¡Entra en el canal de alguien y pulsa ✉️ Mensaje para empezar una conversación!',
+    msg_delete_one:'Eliminar mensaje',msg_retention_note:'🕒 El chat se borra cada 30 días',msg_retention_note_vip:'🕒 El chat se borra cada 60 días (VIP)',
+
+    nav_playlists:'Listas de reproducción',page_playlists:'Listas de reproducción',page_my_subs:'Mis suscripciones',page_shorts:'Shorts',page_trending:'Tendencias',
+
+    playlist_add_label:'Añadir a lista de reproducción',playlist_picker_title:'Añadir a lista de reproducción',playlist_added_toast:'Añadido a la lista de reproducción',playlist_removed_toast:'Eliminado de la lista de reproducción',
+    playlist_created_toast:'Lista de reproducción creada',playlist_deleted_toast:'Lista de reproducción eliminada',playlist_delete_confirm:'¿Eliminar esta lista de reproducción?',
+    playlist_empty:'Todavía no tienes ninguna lista de reproducción',playlist_empty_sub:'Añade un vídeo a una nueva lista con el botón ➕ debajo del vídeo',playlist_login:'Inicia sesión para ver tus listas de reproducción',
+    playlist_new_name_needed:'Indica el nombre de la lista',playlist_new_ph:'Nombre de la nueva lista',playlist_videos_count:'vídeos',
+
+    posts_add_btn:'+ Añadir publicación',posts_loading:'⏳ Cargando publicaciones...',posts_none:'Sin publicaciones en este canal',
+    post_modal_title:'📝 Nueva publicación',post_text_label:'Texto',post_text_placeholder:'¿Qué quieres escribir?',post_images_label:'Fotos (opcional, máx. 6)',
+    post_add_poll:'📊 Añadir encuesta',post_add_option:'+ Añadir opción',post_poll_question_ph:'Haz una pregunta...',post_poll_question_missing:'¡Escribe la pregunta de la encuesta!',post_poll_option_ph:'Opción',post_poll_min_options:'¡Añade al menos 2 opciones!',post_poll_max_options:'Máximo 4 opciones',
+    post_empty_error:'¡Escribe algo, añade una foto o una encuesta!',post_publishing:'Publicando...',post_published_toast:'¡Publicación añadida! 📝',post_rate_limit:'Demasiadas publicaciones seguidas — espera un momento 🐢',
+    post_delete_title:'Eliminar publicación',post_comment_ph:'Comentario...',post_login_comment:'Inicia sesión para comentar',post_login_vote:'Inicia sesión para votar',post_login_vote_toast:'¡Inicia sesión para votar!',
+    post_new_notification:'añadió una nueva publicación 📝',
+
+    settings_data_loading:'Preparando...',settings_data_done:'¡Tus datos han sido descargados! 📦',settings_delete_loading:'Eliminando cuenta...',settings_delete_done:'La cuenta ha sido eliminada. ¡Hasta pronto! 👋',
+
+    subs_empty:'¡Todavía no sigues a nadie!',subs_empty_sub:'Entra en el canal de alguien y pulsa Suscribirse',subs_no_videos:'Sin vídeos de los canales suscritos',
+
+    support_title:'Apoya al creador de WaveTube',support_desc:'¿Te gusta la aplicación? Puedes invitar al autor a algo.',support_steam_btn:'🎮 Enviar intercambio en Steam',support_steam_desc:'🎮 Envía una oferta de intercambio en Steam — ¡cualquier apoyo anima a seguir mejorando WaveTube!',
+
+    time_today:'Hoy',time_yesterday:'Ayer',
+
+    toast_chat_deleted:'Chat eliminado 🗑',toast_history_cleared:'¡Historial borrado!',toast_login_generic:'¡Inicia sesión!',toast_max_images:'Máximo 6 fotos por publicación',
+    toast_msg_disabled:'Este usuario ha desactivado los mensajes',toast_subscribing:'Suscrito',toast_unsubscribed:'Suscripción cancelada',
+    toast_nsfw_blocked:'⚠️ La miniatura parece contenido inapropiado (18+/desnudez) y no puede publicarse.',
+    toast_dur_detected:'Duración detectada ✅',toast_dur_not_detected:'No se pudo detectar (para TikTok/Mega hay que escribirlo a mano)',
+    toast_dur_fail_yt:'No se pudo detectar desde YouTube (revisa la consola F12 — puede que un adblock lo esté bloqueando)',toast_dur_fail_gd:'No se pudo — el archivo de Google Drive puede no ser público',
+
+    vip_panel_title:'⭐ Panel VIP',vip_panel_sub:'Tu estado especial — personaliza tu aspecto en la aplicación.',vip_preview_label:'Vista previa',vip_reset_btn:'Restablecer',vip_no_frame:'Sin marco',vip_since_label:'desde',
+    vip_nick_color_title:'🎨 Color del nick',vip_nick_color_desc:'Color de tu nombre en comentarios, vídeos y publicaciones.',vip_save_color_btn:'Guardar color',
+    vip_nick_font_title:'🔤 Tipografía del nick',vip_nick_font_desc:'Elige un estilo de fuente para tu nick.',
+    vip_text_color_title:'✏️ Color del texto de los comentarios',vip_text_color_desc:'Color del contenido de tus comentarios en vídeos, publicaciones y anuncios.',vip_text_color_preview:'Así se verá el contenido del comentario.',
+    vip_text_font_title:'🔡 Tipografía del texto de los comentarios',vip_text_font_desc:'Estilo de fuente del contenido de tus comentarios (no del nick).',vip_text_font_preview:'Así se ve el contenido del comentario',
+    vip_badge_title:'🏅 Color de la insignia VIP',vip_badge_desc:'Elige el color de tu insignia visible junto al nick (el azul está reservado para el administrador).',
+    vip_avatar_frame_title:'🖼️ Marco del avatar',vip_avatar_frame_desc:'Borde de color alrededor de tu foto de perfil, visible en tu canal.',
+    vip_banner_frame_title:'🖼️ Marco del banner',vip_banner_frame_desc:'Borde de color alrededor del banner del canal',
+    vip_particles_label:'Efecto de partículas',vip_particles_desc:'Destellos sutiles alrededor del avatar en tu canal',
+    vip_emoji_style_title:'🙂 Estilo de emojis',vip_emoji_style_desc:'Cómo se verán los emojis en tus comentarios y mensajes para los demás.',
+    vip_emoji_style_native:'Predeterminado (del sistema)',vip_emoji_style_flat:'Plano (como en YouTube)',vip_emoji_style_app:'Iconos (como en la app)',
+    vip_footer_note:'Los cambios afectarán a los nuevos comentarios, vídeos y publicaciones — las entradas antiguas conservarán su aspecto actual.',
+    vip_toast_nick_color_saved:'¡Color del nick guardado! 🎨',vip_toast_color_reset:'Color restablecido',vip_toast_font_saved:'¡Fuente guardada! 🔤',
+    vip_toast_text_color_saved:'Color del texto guardado',vip_toast_text_color_reset:'Color del texto restablecido',vip_toast_text_font_saved:'¡Fuente de comentarios guardada! 🔡',
+    vip_toast_badge_saved:'¡Color de insignia guardado! 🏅',vip_toast_frame_saved:'¡Marco del avatar guardado! 🖼️',vip_toast_frame_removed:'Marco eliminado',
+    vip_toast_banner_frame_saved:'¡Marco del banner guardado! 🖼️',vip_toast_banner_frame_removed:'Marco del banner eliminado',
+    vip_toast_particles_on:'Partículas activadas ✨',vip_toast_particles_off:'Partículas desactivadas',vip_toast_emoji_style_saved:'¡Estilo de emojis guardado! 🙂',
+
+    voice_play:'Reproducir',vote_singular:'voto',vote_plural:'votos',watched_at_label:'Visto'
   },
   ru:{
     theme_label:'Тема',theme_dark:'Тёмная',theme_light:'Светлая',
