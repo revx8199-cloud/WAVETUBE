@@ -774,9 +774,17 @@ function thumbFor(v){
   const gdid=gdId(v.url);if(gdid)return`https://lh3.googleusercontent.com/d/${gdid}`;
   return'';
 }
-function viewsLabel(v,suffix){
-  suffix=suffix||' wyśw.';
-  if(v.hide_views&&!(currentUser&&(currentUser.id===v.user_id||isAdmin())))return'Wyświetlenia ukryte';
+function viewsLabel(v,long){
+  const lang=getLang();
+  const isRu=lang==='ru',isEn=lang==='en',isEs=lang==='es';
+  if(v.hide_views&&!(currentUser&&(currentUser.id===v.user_id||isAdmin()))){
+    return isRu?'Просмотры скрыты':isEn?'Views hidden':isEs?'Visualizaciones ocultas':'Wyświetlenia ukryte';
+  }
+  let suffix;
+  if(isRu)suffix=long?' просмотров':' просм.';
+  else if(isEn)suffix=' views';
+  else if(isEs)suffix=long?' visualizaciones':' vis.';
+  else suffix=long?' wyświetleń':' wyśw.';
   return(v.views||0)+suffix;
 }
 
@@ -1140,7 +1148,7 @@ function appendVideoCards(list,g){
       <div class="card-info">
         <h3>${esc(v.title)}</h3>
         <div class="channel-name" style="${v.user_color?`color:${esc(v.user_color)};font-weight:700;`:''}${v.user_font?`font-family:${fontCssFor(v.user_font)};`:''}" onclick="event.stopPropagation();showChannel('${jsesc(v.user_id||'')}','${jsesc(uname)}','${jsesc(v.user_avatar||'')}','${jsesc(v.user_email||'')}')">${esc(uname)}</div>
-        <p>${viewsLabel(v,' wyśw.')} · ${v.likes||0} ${likeIcon()} · ${relativeDate(v.created_at)}</p>
+        <p>${viewsLabel(v)} · ${v.likes||0} ${likeIcon()} · ${relativeDate(v.created_at)}</p>
       </div>
     </div>`;
     el.onclick=()=>openP(v.id);
@@ -1604,7 +1612,7 @@ function showTrending(){
         ?`<img src="${esc(avatarUrl)}" style="width:36px;height:36px;border-radius:50%;object-fit:cover;flex-shrink:0;cursor:pointer" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'" onclick="event.stopPropagation();showChannel('${jsesc(v.user_id||'')}','${jsesc(uname)}','${jsesc(avatarUrl)}','${jsesc(v.user_email||'')}')"><div class="card-avatar-placeholder" style="background:${ucol};display:none;cursor:pointer" onclick="event.stopPropagation();showChannel('${jsesc(v.user_id||'')}','${jsesc(uname)}','','${jsesc(v.user_email||'')}')">${uname[0].toUpperCase()}</div>`
         :`<div class="card-avatar-placeholder" style="background:${ucol};cursor:pointer" onclick="event.stopPropagation();showChannel('${jsesc(v.user_id||'')}','${jsesc(uname)}','','${jsesc(v.user_email||'')}')">${uname[0].toUpperCase()}</div>`
       }
-      <div class="card-info"><h3>${esc(v.title)}</h3><div class="channel-name">${esc(uname)}</div><p>${viewsLabel(v,' wyśw.')} · ${v.likes||0} ${likeIcon()} · ${relativeDate(v.created_at)}</p></div>
+      <div class="card-info"><h3>${esc(v.title)}</h3><div class="channel-name">${esc(uname)}</div><p>${viewsLabel(v)} · ${v.likes||0} ${likeIcon()} · ${relativeDate(v.created_at)}</p></div>
     </div>`;
     el.onclick=()=>openP(v.id);
     g.appendChild(el);
