@@ -898,7 +898,7 @@ async function showChannel(userId,nameIn,avatar,email){
     </div>
     <div class="card-info" style="padding:10px 4px">
       <h3>${esc(v.title)}</h3>
-      <p>${v.category?`<span style="color:var(--text-secondary);font-size:11px">${esc(v.category)} · </span>`:''} ${v.likes_enabled!==false?(v.likes||0)+' '+likeIcon()+' · ':''} ${v.comments_enabled!==false?(v.comments||[]).length+' '+t('ch_comments_suffix'):' 🔒 '+t('ch_comments_off')}</p>
+      <p>${v.category?`<span style="color:var(--text-secondary);font-size:11px">${esc(v.category)} · </span>`:''}${viewsLabel(v)} · ${v.likes_enabled!==false?(v.likes||0)+' '+likeIcon()+' · ':''}${relativeDate(v.created_at)}</p>
       ${v.tags&&v.tags.length?`<div style="margin-top:4px;display:flex;flex-wrap:wrap;gap:4px">${v.tags.slice(0,3).map(t=>`<span style="background:var(--bg-card);color:var(--text-secondary);font-size:10px;padding:2px 6px;border-radius:8px">#${t}</span>`).join('')}</div>`:''
       }
       ${v.premiere&&new Date(v.premiere)>new Date()?`<div style="margin-top:4px;font-size:11px;color:#ff0000;font-weight:600">🔴 ${t('ch_premiere')}: ${new Date(v.premiere).toLocaleString('pl-PL',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'})}</div>`:''
