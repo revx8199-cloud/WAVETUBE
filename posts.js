@@ -56,7 +56,7 @@ function renderChannelHome(){
           ${v.dur?`<div style="position:absolute;bottom:5px;right:7px;background:rgba(0,0,0,.85);font-size:11px;padding:2px 6px;border-radius:4px">${v.dur}</div>`:''}
         </div>
         <div style="font-size:13px;font-weight:500;margin-top:7px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden">${esc(v.title)}</div>
-        <div style="font-size:12px;color:var(--text-secondary)">${viewsLabel(v)}</div>
+        <div style="font-size:12px;color:var(--text-secondary)">${viewsLabel(v)} · ${v.likes||0} ${likeIcon()} · ${relativeDate(v.created_at)}</div>
       </div>`;
     });
     html+='</div>';
