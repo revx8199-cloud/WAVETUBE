@@ -800,9 +800,9 @@ function makeNick(name,email){
   return '@'+(base||email?.split('@')[0]||'user');
 }
 
-let vipEmailsMap=new Map(); // email -> vip_badge_color, wypełniane z profiles.is_vip=true
-let vipSinceMap=new Map(); // email -> vip_since (data nadania VIP-a)
-function isVIP(){return!!(currentUser&&vipEmailsMap.has(currentUser.email));}
+let vipEmailsMap=new Map(); // user_id -> vip_badge_color, wypełniane z profiles.is_vip=true
+let vipSinceMap=new Map(); // user_id -> vip_since (data nadania VIP-a)
+function isVIP(){return!!(currentUser&&vipEmailsMap.has(currentUser.id));}
 
 async function adminSetVip(userId,email,makeVip){
   if(!isAdmin())return;
@@ -816,14 +816,14 @@ async function adminSetVip(userId,email,makeVip){
   toast(makeVip?'Nadano status VIP ⭐':'Odebrano status VIP');
 }
 
-function verifiedBadge(email){
+function verifiedBadge(email,userId){
   if(email===ADMIN_EMAIL){
     const badgeColor=adminBadgeColor||'#3ea6ff';
     return`<span title="Administrator" style="display:inline-flex;align-items:center;gap:3px;margin-left:5px;flex-shrink:0"><span style="display:inline-flex;align-items:center;justify-content:center;background:${esc(badgeColor)};border-radius:50%;width:16px;height:16px;flex-shrink:0"><svg viewBox="0 0 24 24" width="10" height="10" fill="#fff"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/></svg></span><span style="font-size:10px;font-weight:800;color:${esc(badgeColor)};letter-spacing:.5px">ADMIN</span></span>`;
   }
-  if(email&&vipEmailsMap.has(email)){
-    const badgeColor=vipEmailsMap.get(email)||'#ffd700';
-    const since=vipSinceMap.get(email);
+  if(userId&&vipEmailsMap.has(userId)){
+    const badgeColor=vipEmailsMap.get(userId)||'#ffd700';
+    const since=vipSinceMap.get(userId);
     const sinceTitle=since?` · VIP ${t('vip_since_label')} ${new Date(since).toLocaleDateString(getLang()==='ru'?'ru-RU':getLang()==='en'?'en-US':'pl-PL',{day:'numeric',month:'long',year:'numeric'})}`:'';
     return`<span title="VIP${sinceTitle}" style="display:inline-flex;align-items:center;gap:3px;margin-left:5px;flex-shrink:0"><span style="display:inline-flex;align-items:center;justify-content:center;background:${esc(badgeColor)};border-radius:50%;width:16px;height:16px;flex-shrink:0"><svg viewBox="0 0 24 24" width="10" height="10" fill="#000"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/></svg></span><span style="font-size:10px;font-weight:800;color:${esc(badgeColor)};letter-spacing:.5px">VIP</span></span>`;
   }
@@ -1708,7 +1708,7 @@ async function renderC(){
       <div class="cbody" style="flex:1;min-width:0">
         <div class="cname" style="display:flex;align-items:center;gap:4px;flex-wrap:wrap;justify-content:space-between;margin-bottom:4px">
           <div style="display:flex;align-items:center;gap:4px;flex-wrap:wrap">
-            <span style="cursor:pointer;font-weight:600;font-size:14px${c.name_color?`;color:${esc(c.name_color)}`:''}${c.name_font?`;font-family:${fontCssFor(c.name_font)}`:''}" onclick="closeP();showChannel('${jsesc(uid)}','${jsesc(c.user)}','${jsesc(uavatar)}','${jsesc(uemail)}')">${esc(c.user)}</span>${verifiedBadge(uemail||'')}
+            <span style="cursor:pointer;font-weight:600;font-size:14px${c.name_color?`;color:${esc(c.name_color)}`:''}${c.name_font?`;font-family:${fontCssFor(c.name_font)}`:''}" onclick="closeP();showChannel('${jsesc(uid)}','${jsesc(c.user)}','${jsesc(uavatar)}','${jsesc(uemail)}')">${esc(c.user)}</span>${verifiedBadge(uemail||'',uid)}
             <span style="color:var(--text-secondary);font-weight:400;font-size:11px">${displayTime}${c.edited?' <span style=\"color:var(--text-tertiary)\">(edytowano)</span>':''}</span>
           </div>
           <div style="display:flex;gap:4px;position:relative">
@@ -1780,7 +1780,7 @@ async function renderC(){
               ${r.avatar?`<img src="${esc(r.avatar)}" style="width:28px;height:28px;border-radius:50%;object-fit:cover;flex-shrink:0${r.avatar_frame?`;border:2px solid ${esc(r.avatar_frame)};box-sizing:border-box`:''}">`:`<div style="width:28px;height:28px;border-radius:50%;background:#cc0000;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:var(--text-primary);flex-shrink:0">${(r.user||'?')[0]}</div>`}
               <div style="flex:1">
                 <div style="font-size:12px;font-weight:600;display:flex;align-items:center;gap:4px;justify-content:space-between">
-                  <span style="display:flex;align-items:center;gap:4px"><span style="${r.name_color?`color:${esc(r.name_color)};`:''}${r.name_font?`font-family:${fontCssFor(r.name_font)};`:''}">${esc(r.user)}</span>${verifiedBadge(r.user_email||'')} <span style="color:var(--text-secondary);font-weight:400;font-size:11px">${r.ts?timeAgo(r.ts):(r.time||'')}</span></span>
+                  <span style="display:flex;align-items:center;gap:4px"><span style="${r.name_color?`color:${esc(r.name_color)};`:''}${r.name_font?`font-family:${fontCssFor(r.name_font)};`:''}">${esc(r.user)}</span>${verifiedBadge(r.user_email||'',r.user_id)} <span style="color:var(--text-secondary);font-weight:400;font-size:11px">${r.ts?timeAgo(r.ts):(r.time||'')}</span></span>
                   <span style="display:flex;gap:2px">
                     ${isAdmin()&&!replyIsAuthor&&r.user_id?`<button onclick="event.stopPropagation();toggleMuteMenu('${jsesc(r.user_id)}',this)" title="Wycisz użytkownika" class="cmt-icon-btn" style="width:26px;height:26px;font-size:12px">🔇</button>`:''}
                     ${replyCanDelete?`<button onclick="deleteReply(${i},${ri})" title="Usuń" class="cmt-icon-btn" style="width:26px;height:26px;font-size:12px">🗑</button>`:''}

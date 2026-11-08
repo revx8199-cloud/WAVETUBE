@@ -171,7 +171,7 @@ function postCardHtml(p,isOwner,likedPosts){
         <div class="post-header">
           ${avHtml}
           <div>
-            <div class="post-user" style="${p.user_color?`color:${esc(p.user_color)};`:''}${p.user_font?`font-family:${fontCssFor(p.user_font)};`:''}">${esc(uname)}${verifiedBadge(p.user_email||'')}</div>
+            <div class="post-user" style="${p.user_color?`color:${esc(p.user_color)};`:''}${p.user_font?`font-family:${fontCssFor(p.user_font)};`:''}">${esc(uname)}${verifiedBadge(p.user_email||'',p.user_id)}</div>
             <div class="post-time">${p.created_at?new Date(p.created_at).toLocaleString('pl-PL',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'}):p.time||''}</div>
           </div>
           <div style="margin-left:auto;display:flex;align-items:center;gap:2px">
@@ -202,7 +202,7 @@ function postCardHtml(p,isOwner,likedPosts){
             <div style="display:flex;gap:8px;margin-bottom:10px">
               ${c.avatar?`<img src="${esc(c.avatar)}" style="width:28px;height:28px;border-radius:50%;object-fit:cover;flex-shrink:0${c.avatar_frame?`;border:2px solid ${esc(c.avatar_frame)};box-sizing:border-box`:''}">`:`<div style="width:28px;height:28px;border-radius:50%;background:${esc(c.col||'#cc0000')};display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0">${(c.user||'?')[0]}</div>`}
               <div style="flex:1">
-                <div style="font-size:12px;font-weight:600;display:flex;align-items:center">${esc(c.user)}${verifiedBadge(c.email||'')} <span style="color:var(--text-tertiary);font-weight:400;margin-left:6px">${c.time||''}</span></div>
+                <div style="font-size:12px;font-weight:600;display:flex;align-items:center">${esc(c.user)}${verifiedBadge(c.email||'',c.user_id)} <span style="color:var(--text-tertiary);font-weight:400;margin-left:6px">${c.time||''}</span></div>
                 <div id="ptext-${p.id}-${ci}" style="font-size:13px${c.text_color?`;color:${esc(c.text_color)}`:';color:var(--text-secondary)'}${c.text_font?`;font-family:${fontCssFor(c.text_font)}`:''}">${esc(c.text)}</div>
                 ${currentUser?`<button onclick="togglePostReplyForm('${jsesc(p.id)}',${ci})" style="background:none;border:none;color:var(--text-secondary);cursor:pointer;font-size:11px;font-weight:600;padding:3px 0;margin-top:2px">${t('reply_btn')||'Odpowiedz'}</button>`:''}
                 <div id="preply-form-${p.id}-${ci}" style="display:none;margin-top:6px;gap:6px;align-items:center">
@@ -216,7 +216,7 @@ function postCardHtml(p,isOwner,likedPosts){
                 <div id="preplies-${p.id}-${ci}" style="display:none;margin-top:6px;padding-left:8px;border-left:2px solid var(--border-soft)">
                   ${replies.map((r,ri)=>`<div style="display:flex;gap:6px;margin-bottom:8px">
                     ${r.avatar?`<img src="${esc(r.avatar)}" style="width:22px;height:22px;border-radius:50%;object-fit:cover;flex-shrink:0">`:`<div style="width:22px;height:22px;border-radius:50%;background:#cc0000;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;flex-shrink:0">${(r.user||'?')[0]}</div>`}
-                    <div><div style="font-size:11px;font-weight:600">${esc(r.user)}${verifiedBadge(r.email||'')}</div><div id="prtext-${p.id}-${ci}-${ri}" style="font-size:12px;color:var(--text-secondary)">${esc(r.text)}</div></div>
+                    <div><div style="font-size:11px;font-weight:600">${esc(r.user)}${verifiedBadge(r.email||'',r.user_id)}</div><div id="prtext-${p.id}-${ci}-${ri}" style="font-size:12px;color:var(--text-secondary)">${esc(r.text)}</div></div>
                   </div>`).join('')}
                 </div>`:''}
               </div>

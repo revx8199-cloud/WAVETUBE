@@ -279,7 +279,7 @@ async function loadConvList(){
       ${avatar?`<img class="msg-conv-av" src="${esc(avatar)}" style="cursor:pointer" onclick="event.stopPropagation();closeMessages();showChannel('${jsesc(otherId)}','${jsesc(name)}','${jsesc(avatar)}','${jsesc(email)}')" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">`:''}
       <div class="msg-conv-av-ph" style="background:#cc0000;cursor:pointer;${avatar?'display:none':''}" onclick="event.stopPropagation();closeMessages();showChannel('${jsesc(otherId)}','${jsesc(name)}','${jsesc(avatar)}','${jsesc(email)}')">${(name||'?')[0].toUpperCase()}</div>
       <div class="msg-conv-info">
-        <div class="msg-conv-name" style="cursor:pointer" onclick="event.stopPropagation();closeMessages();showChannel('${jsesc(otherId)}','${jsesc(name)}','${jsesc(avatar)}','${jsesc(email)}')">${esc(name)}${verifiedBadge(email)}${isBlocked?' <span style="color:#cc0000;font-size:11px">🚫 zablokowany</span>':''}</div>
+        <div class="msg-conv-name" style="cursor:pointer" onclick="event.stopPropagation();closeMessages();showChannel('${jsesc(otherId)}','${jsesc(name)}','${jsesc(avatar)}','${jsesc(email)}')">${esc(name)}${verifiedBadge(email,otherId)}${isBlocked?' <span style="color:#cc0000;font-size:11px">🚫 zablokowany</span>':''}</div>
         <div class="msg-conv-last">${m.image_url?'📷 Zdjęcie':m.audio_url?'🎤 Wiadomość głosowa':esc(m.text.substring(0,40))}</div>
       </div>
       <div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px">
@@ -318,7 +318,7 @@ function renderChatHeader(){
     <div class="msg-chat-header" style="position:relative">
       ${avatar?`<img class="msg-conv-av" src="${esc(avatar)}" style="width:36px;height:36px;cursor:pointer" onclick="closeMessages();showChannel('${jsesc(o.id)}','${jsesc(name)}','${jsesc(avatar)}','${jsesc(email)}')" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">`:''}
       <div class="msg-conv-av-ph" style="background:#cc0000;width:36px;height:36px;font-size:14px;cursor:pointer;${avatar?'display:none':''}" onclick="closeMessages();showChannel('${jsesc(o.id)}','${jsesc(name)}','${jsesc(avatar)}','${jsesc(email)}')">${(name||'?')[0].toUpperCase()}</div>
-      <div class="msg-chat-name" style="flex:1;cursor:pointer" onclick="closeMessages();showChannel('${jsesc(o.id)}','${jsesc(name)}','${jsesc(avatar)}','${jsesc(email)}')">${esc(name)}${verifiedBadge(email)}</div>
+      <div class="msg-chat-name" style="flex:1;cursor:pointer" onclick="closeMessages();showChannel('${jsesc(o.id)}','${jsesc(name)}','${jsesc(avatar)}','${jsesc(email)}')">${esc(name)}${verifiedBadge(email,o.id)}</div>
       <button onclick="startCall('${jsesc(o.id)}','${jsesc(name)}','${jsesc(avatar)}')" title="Zadzwoń" style="background:none;border:none;color:#ccc;cursor:pointer;font-size:19px;padding:6px 10px;border-radius:50%" onmouseover="this.style.background='rgba(255,255,255,.1)'" onmouseout="this.style.background='none'">📞</button>
       <button onclick="toggleChatMenu()" style="background:none;border:none;color:#fff;cursor:pointer;font-size:20px;padding:4px 10px;border-radius:50%" onmouseover="this.style.background='rgba(255,255,255,.1)'" onmouseout="this.style.background='none'">⋮</button>
       <div id="chat-menu" style="display:none;position:absolute;top:44px;right:0;background:var(--bg-panel);border:1px solid var(--border);border-radius:10px;min-width:210px;z-index:80;overflow:hidden;color:var(--text-primary)">

@@ -272,7 +272,7 @@ function renderVipPanel(){
       </div>
       <div style="display:flex;align-items:center;gap:8px;font-size:14px;font-weight:700">
         <span>${myDisplayName}</span>
-        ${verifiedBadge(currentUser.email)}
+        ${verifiedBadge(currentUser.email,currentUser.id)}
       </div>
     </div>
 
@@ -413,7 +413,7 @@ async function saveVipBadgeColor(color){
   const{error}=await sb.from('profiles').upsert([{id:currentUser.id,email:currentUser.email,vip_badge_color:color}],{onConflict:'id'});
   if(error){toast('Błąd: '+error.message);return;}
   vipBadgeColor=color;
-  vipEmailsMap.set(currentUser.email,color);
+  vipEmailsMap.set(currentUser.id,color);
   renderVipPanel();
   toast(t('vip_toast_badge_saved'));
 }
@@ -530,9 +530,9 @@ let adminBadgeColor='';
 
 async function loadVipEmails(){
   const{data}=await sb.rpc('get_vip_badges');
-  vipEmailsMap=new Map((data||[]).map(p=>[p.email,p.vip_badge_color||'#ffd700']));
-  vipSinceMap=new Map((data||[]).map(p=>[p.email,p.vip_since]).filter(([,s])=>s));
-  vipBadgeColor=currentUser?(vipEmailsMap.get(currentUser.email)||'#ffd700'):'';
+  vipEmailsMap=new Map((data||[]).map(p=>[p.id,p.vip_badge_color||'#ffd700']));
+  vipSinceMap=new Map((data||[]).map(p=>[p.id,p.vip_since]).filter(([,s])=>s));
+  vipBadgeColor=currentUser?(vipEmailsMap.get(currentUser.id)||'#ffd700'):'';
   const vipItem=document.getElementById('vip-dropdown-item');
   if(vipItem)vipItem.style.display=isVIP()?'flex':'none';
   const buyVipItem=document.getElementById('buy-vip-dropdown-item');
@@ -853,7 +853,7 @@ async function showChannel(userId,nameIn,avatar,email){
     <div class="channel-header">
       ${avBlockHtml}
       <div class="channel-big-info" style="flex:1">
-        <h2 style="margin-bottom:2px;display:flex;align-items:center;${chNameColor?`color:${esc(chNameColor)};`:''}${chNameFont?`font-family:${fontCssFor(chNameFont)};`:''}">${esc(name)}${verifiedBadge(email)}</h2>
+        <h2 style="margin-bottom:2px;display:flex;align-items:center;${chNameColor?`color:${esc(chNameColor)};`:''}${chNameFont?`font-family:${fontCssFor(chNameFont)};`:''}">${esc(name)}${verifiedBadge(email,userId)}</h2>
         <div style="font-size:12px;color:var(--text-secondary);margin-bottom:6px">${makeNick(name,email)}</div>
         <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:4px">
           <span style="font-size:13px;color:var(--text-secondary)"><span id="sub-count-big">${subCount}</span> ${t('subscribers_label')} · ${userVideos.length} ${t('videos_label')}</span>
@@ -1052,7 +1052,7 @@ function showSubscriptions(){
         ?`<img src="${esc(ch.avatar)}" style="width:80px;height:80px;border-radius:50%;object-fit:cover;margin-bottom:12px">`
         :`<div style="width:80px;height:80px;border-radius:50%;background:#cc0000;display:flex;align-items:center;justify-content:center;font-size:28px;font-weight:700;color:var(--text-primary);margin:0 auto 12px">${ch.name[0].toUpperCase()}</div>`
       }
-      <div style="font-size:15px;font-weight:600;margin-bottom:4px;display:flex;align-items:center;justify-content:center;gap:4px">${esc(ch.name)}${verifiedBadge(ch.email)}</div>
+      <div style="font-size:15px;font-weight:600;margin-bottom:4px;display:flex;align-items:center;justify-content:center;gap:4px">${esc(ch.name)}${verifiedBadge(ch.email,ch.userId)}</div>
       <div style="font-size:12px;color:var(--text-secondary)">${chVideos.length} filmów</div>
       <button style="margin-top:12px;background:#cc0000;border:none;color:var(--text-primary);padding:6px 20px;border-radius:16px;cursor:pointer;font-size:13px;font-weight:600" onclick="event.stopPropagation();toggleSub('${jsesc(ch.userId)}','${jsesc(ch.name)}')">✓ Subskrybujesz</button>
     </div>`;
