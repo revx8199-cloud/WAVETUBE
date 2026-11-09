@@ -340,7 +340,7 @@ function shortItemHtml(v){
     <div class="short-sidebar">
       <button class="${isLiked?'liked':''}" onclick="toggleShortLike(${v.id},this)"><svg viewBox="0 0 24 24" width="28" height="28" fill="currentColor"><path d="M1 21h4V9H1v12zm22-11c0-1.1-.9-2-2-2h-6.31l.95-4.57.03-.32c0-.41-.17-.79-.44-1.06L14.17 1 7.59 7.59C7.22 7.95 7 8.45 7 9v10c0 1.1.9 2 2 2h9c.83 0 1.54-.5 1.84-1.22l3.02-7.05c.09-.23.14-.47.14-.73v-2z"/></svg><span class="short-like-count">${v.likes||0}</span></button>
       <button class="${isDisliked?'liked':''}" onclick="toggleShortDislike(${v.id},this)"><svg viewBox="0 0 24 24" width="26" height="26" fill="currentColor"><path d="M15 3H6c-.83 0-1.54.5-1.84 1.22l-3.02 7.05c-.09.23-.14.47-.14.73v2c0 1.1.9 2 2 2h6.31l-.95 4.57-.03.32c0 .41.17.79.44 1.06L9.83 23l6.59-6.59c.36-.36.58-.86.58-1.41V5c0-1.1-.9-2-2-2zm4 0v12h4V3h-4z"/></svg></button>
-      <button onclick="closeShortsFeed();openP(${v.id})"><svg viewBox="0 0 24 24" width="27" height="27" fill="currentColor"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H6l-2 2V4h16v12z"/></svg><span>${(v.comments||[]).length}</span></button>
+      <button onclick="openShortComments(${v.id})"><svg viewBox="0 0 24 24" width="27" height="27" fill="currentColor"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H6l-2 2V4h16v12z"/></svg><span class="short-cmt-count">${(v.comments||[]).length}</span></button>
       <button onclick="shareShort(${v.id})"><svg viewBox="0 0 24 24" width="26" height="26" fill="currentColor"><path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L7.04 9.81C6.5 9.31 5.79 9 5 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92s2.92-1.31 2.92-2.92-1.31-2.92-2.92-2.92z"/></svg></button>
     </div>
   </div>`;
@@ -409,10 +409,32 @@ function openShortsFeed(startId){
   scroll.querySelectorAll('.short-item').forEach(el=>shortsFeedObserver.observe(el));
 }
 function closeShortsFeed(){
+  closeShortComments();
   document.getElementById('shorts-feed').classList.remove('open');
   document.body.style.overflow='';
   if(shortsFeedObserver)shortsFeedObserver.disconnect();
   document.getElementById('shorts-feed-scroll').innerHTML='';
+}
+function openShortComments(id){
+  const v=videos.find(x=>x.id===id);if(!v)return;
+  cur=v;
+  const item=document.querySelector(`#shorts-feed-scroll .short-item[data-id="${id}"]`);
+  item?.querySelector('video')?.pause();
+  document.getElementById('sc-mount').appendChild(document.getElementById('comments-section'));
+  document.getElementById('sc-overlay').classList.add('open');
+  renderC();
+}
+function closeShortComments(){
+  const overlay=document.getElementById('sc-overlay');
+  if(!overlay||!overlay.classList.contains('open'))return;
+  overlay.classList.remove('open');
+  document.querySelector('#pm .minner')?.appendChild(document.getElementById('comments-section'));
+  if(cur){
+    const item=document.querySelector(`#shorts-feed-scroll .short-item[data-id="${cur.id}"]`);
+    item?.querySelector('video')?.play().catch(()=>{});
+    const badge=item?.querySelector('.short-cmt-count');
+    if(badge)badge.textContent=(cur.comments||[]).length;
+  }
 }
 
 async function openP(id){

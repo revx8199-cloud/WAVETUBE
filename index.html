@@ -1085,6 +1085,12 @@
 <div id="shorts-feed" class="shorts-feed">
   <button class="shorts-close" onclick="closeShortsFeed()">✕</button>
   <div id="shorts-feed-scroll" class="shorts-feed-scroll"></div>
+  <div id="sc-overlay" class="sc-overlay" onclick="if(event.target===this)closeShortComments()">
+    <div class="sc-sheet">
+      <div class="sc-sheet-head"><div class="sc-sheet-handle"></div><button class="sc-close" onclick="closeShortComments()">✕</button></div>
+      <div id="sc-mount"></div>
+    </div>
+  </div>
 </div>
 <script src="messages.js"></script>
 <script src="admin.js"></script>

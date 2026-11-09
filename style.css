@@ -477,6 +477,16 @@ body.blur-mode #main-content,body.blur-mode header,body.blur-mode .sidebar-left{
 .short-sidebar svg{filter:drop-shadow(0 1px 3px rgba(0,0,0,.5))}
 .short-sidebar .liked svg{color:#3ea6ff}
 .shorts-close{position:fixed;top:14px;right:16px;z-index:9001;background:rgba(0,0,0,.5);border:none;color:#fff;width:38px;height:38px;border-radius:50%;cursor:pointer;font-size:18px}
+.sc-overlay{display:none;position:fixed;inset:0;z-index:9050;background:rgba(0,0,0,.6)}
+.sc-overlay.open{display:flex;align-items:flex-end}
+.sc-sheet{width:100%;max-height:78vh;margin:0 auto;background:var(--bg-panel);border-radius:16px 16px 0 0;display:flex;flex-direction:column;overflow:hidden;animation:sc-slide-up .22s ease}
+.sc-sheet-head{position:relative;display:flex;justify-content:center;padding:10px 0 2px;flex-shrink:0}
+.sc-sheet-handle{width:36px;height:4px;border-radius:2px;background:var(--border)}
+.sc-close{position:absolute;right:10px;top:4px;background:none;border:none;color:var(--text-primary);font-size:16px;cursor:pointer;width:30px;height:30px;border-radius:50%}
+.sc-close:hover{background:var(--border)}
+#sc-mount{overflow-y:auto;padding:0 16px 16px}
+@keyframes sc-slide-up{from{transform:translateY(100%)}to{transform:translateY(0)}}
+@media(min-width:720px){.sc-sheet{max-width:480px}}
 @media(min-width:720px){
   .short-item video{max-width:420px}
 }
