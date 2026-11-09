@@ -41,6 +41,7 @@ function renderChannelHome(){
           ${th?`<img src="${esc(th)}" style="width:100%;height:100%;object-fit:cover">`:'<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;color:#333;font-size:28px">📱</div>'}
         </div>
         <div style="font-size:12px;font-weight:500;margin-top:6px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden">${esc(v.title)}</div>
+        <div style="font-size:11px;color:var(--text-secondary);margin-top:2px">${viewsLabel(v)} · ${v.likes||0} ${likeIcon()} · ${relativeDate(v.created_at)}</div>
       </div>`;
     });
     html+='</div>';
