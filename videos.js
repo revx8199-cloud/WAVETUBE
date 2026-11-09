@@ -423,6 +423,31 @@ function openShortComments(id){
   document.getElementById('sc-mount').appendChild(document.getElementById('comments-section'));
   document.getElementById('sc-overlay').classList.add('open');
   renderC();
+  initScSheetDrag();
+}
+function initScSheetDrag(){
+  const sheet=document.querySelector('.sc-sheet'),handleArea=document.querySelector('.sc-sheet-head');
+  if(!sheet||!handleArea||sheet.dataset.dragInit)return;
+  sheet.dataset.dragInit='1';
+  let startY=0,dragging=false;
+  handleArea.addEventListener('pointerdown',e=>{
+    dragging=true;startY=e.clientY;sheet.style.transition='none';
+    handleArea.setPointerCapture(e.pointerId);
+  });
+  handleArea.addEventListener('pointermove',e=>{
+    if(!dragging)return;
+    const dy=e.clientY-startY;
+    if(dy>0)sheet.style.transform=`translateY(${dy}px)`;
+  });
+  function endDrag(e){
+    if(!dragging)return;
+    dragging=false;sheet.style.transition='';
+    const dy=e.clientY-startY;
+    sheet.style.transform='';
+    if(dy>80)closeShortComments();
+  }
+  handleArea.addEventListener('pointerup',endDrag);
+  handleArea.addEventListener('pointercancel',endDrag);
 }
 function closeShortComments(){
   const overlay=document.getElementById('sc-overlay');
