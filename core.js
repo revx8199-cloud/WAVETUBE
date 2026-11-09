@@ -1711,35 +1711,35 @@ async function renderC(){
     const replies=c.replies||[];
     const displayTime=c.ts?timeAgo(c.ts):(c.time||'');
     return`<div class="citem" id="citem-${i}" style="${isPinned?'background:#1a2a1a;border-radius:8px;padding:8px 8px 4px;margin-bottom:8px':'margin-bottom:16px'}">
-      ${isPinned?`<div style="color:#3ea6ff;font-size:11px;margin-bottom:6px;display:flex;align-items:center;gap:4px"><svg viewBox="0 0 24 24" width="12" height="12" fill="currentColor"><path d="M17 4v7l2 3H5l2-3V4h10m0-2H7c-.55 0-1 .45-1 1v1H5v2h1v5.5L4 14v2h7v5h2v-5h7v-2l-2-2.5V6h1V4h-1V3c0-.55-.45-1-1-1z"/></svg> Przypięty komentarz</div>`:''}
+      ${isPinned?`<div style="color:#3ea6ff;font-size:11px;margin-bottom:6px;display:flex;align-items:center;gap:4px"><svg viewBox="0 0 24 24" width="12" height="12" fill="currentColor"><path d="M17 4v7l2 3H5l2-3V4h10m0-2H7c-.55 0-1 .45-1 1v1H5v2h1v5.5L4 14v2h7v5h2v-5h7v-2l-2-2.5V6h1V4h-1V3c0-.55-.45-1-1-1z"/></svg> ${t('cmt_pinned_badge')}</div>`:''}
       <div class="cav" style="${c.avatar?'':'background:'+( c.col||colors[i%colors.length])};cursor:pointer;flex-shrink:0${c.avatar_frame?`;border:2px solid ${esc(c.avatar_frame)};box-sizing:border-box`:''}" onclick="closeP();showChannel('${jsesc(uid)}','${jsesc(c.user)}','${jsesc(uavatar)}','${jsesc(uemail)}')">${av}</div>
       <div class="cbody" style="flex:1;min-width:0">
         <div class="cname" style="display:flex;align-items:center;gap:4px;flex-wrap:wrap;justify-content:space-between;margin-bottom:4px">
           <div style="display:flex;align-items:center;gap:4px;flex-wrap:wrap">
             <span style="cursor:pointer;font-weight:600;font-size:14px${c.name_color?`;color:${esc(c.name_color)}`:''}${c.name_font?`;font-family:${fontCssFor(c.name_font)}`:''}" onclick="closeP();showChannel('${jsesc(uid)}','${jsesc(c.user)}','${jsesc(uavatar)}','${jsesc(uemail)}')">${esc(c.user)}</span>${verifiedBadge(uemail||'',uid)}
-            <span style="color:var(--text-secondary);font-weight:400;font-size:11px">${displayTime}${c.edited?' <span style=\"color:var(--text-tertiary)\">(edytowano)</span>':''}</span>
+            <span style="color:var(--text-secondary);font-weight:400;font-size:11px">${displayTime}${c.edited?` <span style=\"color:var(--text-tertiary)\">${t('cmt_edited')}</span>`:''}</span>
           </div>
           <div style="display:flex;gap:4px;position:relative">
             ${(isVideoOwner||canEdit||canDelete||(isAdmin()&&!isAuthor&&uid))?`
-            <button id="cmtdots-${i}" onclick="event.stopPropagation();toggleCmtMenu(this,'cmenu-${i}')" class="cmt-icon-btn" title="Więcej">
+            <button id="cmtdots-${i}" onclick="event.stopPropagation();toggleCmtMenu(this,'cmenu-${i}')" class="cmt-icon-btn" title="${t('cmt_more_title')}">
               <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><circle cx="12" cy="6" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="12" cy="18" r="2"/></svg>
             </button>
             <div id="cmenu-${i}" class="cmt-dropdown" style="display:none">
               ${isVideoOwner?`<div class="cmt-dropdown-item" onclick="closeCmtMenu();togglePinComment(${i})">
                 <svg viewBox="0 0 24 24" width="17" height="17" fill="currentColor"><path d="M17 4v7l2 3H5l2-3V4h10m0-2H7c-.55 0-1 .45-1 1v1H5v2h1v5.5L4 14v2h7v5h2v-5h7v-2l-2-2.5V6h1V4h-1V3c0-.55-.45-1-1-1z"/></svg>
-                ${isPinned?'Odepnij komentarz':'Przypnij komentarz'}
+                ${isPinned?t('cmt_unpin'):t('cmt_pin')}
               </div>`:''}
               ${canEdit?`<div class="cmt-dropdown-item" onclick="closeCmtMenu();toggleEditComment(${i})">
                 <svg viewBox="0 0 24 24" width="17" height="17" fill="currentColor"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>
-                Edytuj
+                ${t('cmt_edit')}
               </div>`:''}
               ${isAdmin()&&!isAuthor&&uid?`<div class="cmt-dropdown-item" onclick="closeCmtMenu();toggleMuteMenu('${jsesc(uid)}',document.getElementById('cmtdots-${i}'))">
                 <svg viewBox="0 0 24 24" width="17" height="17" fill="currentColor"><path d="M16.5 12c0-1.77-1.02-3.29-2.5-4.03v2.21l2.45 2.45c.03-.2.05-.42.05-.63zm2.5 0c0 .94-.2 1.82-.54 2.64l1.51 1.51C20.63 14.91 21 13.5 21 12c0-4.28-2.99-7.86-7-8.77v2.06c2.89.86 5 3.54 5 6.71zM4.27 3L3 4.27 7.73 9H3v6h4l5 5v-6.73l4.25 4.25c-.67.52-1.42.93-2.25 1.18v2.06c1.38-.31 2.63-.95 3.69-1.81L19.73 21 21 19.73l-9-9L4.27 3zM12 4L9.91 6.09 12 8.18V4z"/></svg>
-                Wycisz użytkownika
+                ${t('cmt_mute_user')}
               </div>`:''}
               ${canDelete?`<div class="cmt-dropdown-item cmt-dropdown-item-red" onclick="closeCmtMenu();deleteComment(${i})">
                 <svg viewBox="0 0 24 24" width="17" height="17" fill="currentColor"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>
-                Usuń
+                ${t('confirm_delete_default')}
               </div>`:''}
             </div>`:''}
           </div>
@@ -1748,8 +1748,8 @@ async function renderC(){
         <div id="cedit-${i}" style="display:none;margin-bottom:8px">
           <input id="cedit-inp-${i}" value="${(c.text||'').replace(/"/g,'&quot;')}" style="width:100%;background:transparent;border:none;border-bottom:1px solid #444;color:var(--text-primary);padding:6px 0;font-size:14px;outline:none">
           <div style="display:flex;justify-content:flex-end;gap:8px;margin-top:6px">
-            <button onclick="toggleEditComment(${i})" style="background:none;border:none;color:var(--text-secondary);padding:6px 12px;border-radius:16px;cursor:pointer;font-size:12px">Anuluj</button>
-            <button onclick="saveEditComment(${i})" style="background:#3ea6ff;border:none;color:#0f0f0f;padding:6px 14px;border-radius:16px;cursor:pointer;font-size:12px;font-weight:700">Zapisz</button>
+            <button onclick="toggleEditComment(${i})" style="background:none;border:none;color:var(--text-secondary);padding:6px 12px;border-radius:16px;cursor:pointer;font-size:12px">${t('btn_cancel')}</button>
+            <button onclick="saveEditComment(${i})" style="background:#3ea6ff;border:none;color:#0f0f0f;padding:6px 14px;border-radius:16px;cursor:pointer;font-size:12px;font-weight:700">${t('btn_save')}</button>
           </div>
         </div>
         <div style="display:flex;align-items:center;gap:4px;flex-wrap:wrap">
@@ -1760,17 +1760,17 @@ async function renderC(){
           <button onclick="dislikeComment(${i})" style="display:flex;align-items:center;gap:4px;background:none;border:none;color:${disliked?'var(--text-primary)':'#aaa'};cursor:pointer;font-size:12px;padding:4px 8px;border-radius:16px;transition:background .1s" onmouseover="this.style.background='var(--border-soft)'" onmouseout="this.style.background='none'">
             <svg viewBox="0 0 24 24" width="14" height="14" fill="${disliked?'currentColor':'none'}" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"><path d="M15 3H6c-.83 0-1.54.5-1.84 1.22l-3.02 7.05c-.09.23-.14.47-.14.73v2c0 1.1.9 2 2 2h6.31l-.95 4.57-.03.32c0 .41.17.79.44 1.06L9.83 23l6.59-6.59c.36-.36.58-.86.58-1.41V5c0-1.1-.9-2-2-2zm4 0v12h4V3h-4z"/></svg>
           </button>
-          <button onclick="toggleReplyForm(${i})" style="background:none;border:none;color:var(--text-secondary);cursor:pointer;font-size:12px;font-weight:600;padding:4px 8px;border-radius:16px" onmouseover="this.style.background='var(--border-soft)';this.style.color='#fff'" onmouseout="this.style.background='none';this.style.color='#aaa'">Odpowiedz</button>
+          <button onclick="toggleReplyForm(${i})" style="background:none;border:none;color:var(--text-secondary);cursor:pointer;font-size:12px;font-weight:600;padding:4px 8px;border-radius:16px" onmouseover="this.style.background='var(--border-soft)';this.style.color='#fff'" onmouseout="this.style.background='none';this.style.color='#aaa'">${t('btn_reply')}</button>
         </div>
         <div id="reply-form-${i}" style="display:none;margin-top:10px;display:none">
           <div style="display:flex;gap:8px;align-items:flex-start">
             ${currentUser&&currentUser.user_metadata?.avatar_url?`<img src="${esc(currentUser.user_metadata.avatar_url)}" style="width:28px;height:28px;border-radius:50%;object-fit:cover;flex-shrink:0">`:`<div style="width:28px;height:28px;border-radius:50%;background:#cc0000;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:var(--text-primary);flex-shrink:0">${currentUser?(currentUser.user_metadata?.full_name||currentUser.email||'?')[0].toUpperCase():'?'}</div>`}
             <div style="flex:1">
-              <input id="reply-inp-${i}" placeholder="Odpowiedz..." style="width:100%;background:transparent;border:none;border-bottom:1px solid #444;color:var(--text-primary);padding:6px 0;font-size:13px;outline:none">
+              <input id="reply-inp-${i}" placeholder="${t('cmt_reply_placeholder')}" style="width:100%;background:transparent;border:none;border-bottom:1px solid #444;color:var(--text-primary);padding:6px 0;font-size:13px;outline:none">
               <div style="display:flex;justify-content:flex-end;gap:8px;margin-top:6px">
                 <button onclick="toggleEmojiPicker('reply-inp-${i}',this)" style="background:none;border:none;color:var(--text-secondary);cursor:pointer;font-size:16px;margin-right:auto" title="Emotki">😊</button>
-                <button onclick="toggleReplyForm(${i})" style="background:none;border:none;color:var(--text-secondary);padding:6px 12px;border-radius:16px;cursor:pointer;font-size:12px">Anuluj</button>
-                <button onclick="postReply(${i})" style="background:#3ea6ff;border:none;color:#0f0f0f;padding:6px 14px;border-radius:16px;cursor:pointer;font-size:12px;font-weight:700">Odpowiedz</button>
+                <button onclick="toggleReplyForm(${i})" style="background:none;border:none;color:var(--text-secondary);padding:6px 12px;border-radius:16px;cursor:pointer;font-size:12px">${t('btn_cancel')}</button>
+                <button onclick="postReply(${i})" style="background:#3ea6ff;border:none;color:#0f0f0f;padding:6px 14px;border-radius:16px;cursor:pointer;font-size:12px;font-weight:700">${t('btn_reply')}</button>
               </div>
             </div>
           </div>
@@ -1778,7 +1778,7 @@ async function renderC(){
         ${replies.length?`<div style="margin-top:10px">
           <button onclick="toggleReplies(${i})" style="background:none;border:none;color:#3ea6ff;cursor:pointer;font-size:13px;font-weight:600;padding:4px 0;display:flex;align-items:center;gap:4px">
             <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor"><path d="M7 10l5 5 5-5z"/></svg>
-            ${replies.length} ${replies.length===1?'odpowiedź':'odpowiedzi'}
+            ${replies.length} ${t('cmt_replies_label')}
           </button>
           <div id="replies-${i}" style="display:none;margin-top:8px;padding-left:4px;border-left:2px solid var(--border-soft)">
             ${replies.map((r,ri)=>{
@@ -1790,8 +1790,8 @@ async function renderC(){
                 <div style="font-size:12px;font-weight:600;display:flex;align-items:center;gap:4px;justify-content:space-between">
                   <span style="display:flex;align-items:center;gap:4px"><span style="${r.name_color?`color:${esc(r.name_color)};`:''}${r.name_font?`font-family:${fontCssFor(r.name_font)};`:''}">${esc(r.user)}</span>${verifiedBadge(r.user_email||'',r.user_id)} <span style="color:var(--text-secondary);font-weight:400;font-size:11px">${r.ts?timeAgo(r.ts):(r.time||'')}</span></span>
                   <span style="display:flex;gap:2px">
-                    ${isAdmin()&&!replyIsAuthor&&r.user_id?`<button onclick="event.stopPropagation();toggleMuteMenu('${jsesc(r.user_id)}',this)" title="Wycisz użytkownika" class="cmt-icon-btn" style="width:26px;height:26px;font-size:12px">🔇</button>`:''}
-                    ${replyCanDelete?`<button onclick="deleteReply(${i},${ri})" title="Usuń" class="cmt-icon-btn" style="width:26px;height:26px;font-size:12px">🗑</button>`:''}
+                    ${isAdmin()&&!replyIsAuthor&&r.user_id?`<button onclick="event.stopPropagation();toggleMuteMenu('${jsesc(r.user_id)}',this)" title="${t('cmt_mute_user')}" class="cmt-icon-btn" style="width:26px;height:26px;font-size:12px">🔇</button>`:''}
+                    ${replyCanDelete?`<button onclick="deleteReply(${i},${ri})" title="${t('confirm_delete_default')}" class="cmt-icon-btn" style="width:26px;height:26px;font-size:12px">🗑</button>`:''}
                   </span>
                 </div>
                 <div id="rtext-${i}-${ri}" style="font-size:13px;margin-top:2px${r.text_color?`;color:${esc(r.text_color)}`:';color:var(--text-secondary)'}${r.text_font?`;font-family:${fontCssFor(r.text_font)}`:''}">${esc(r.text)}</div>
