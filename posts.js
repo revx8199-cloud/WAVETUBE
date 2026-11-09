@@ -36,7 +36,7 @@ function renderChannelHome(){
     <div style="display:flex;gap:12px;overflow-x:auto;padding-bottom:16px;margin-bottom:20px">`;
     userShorts.forEach(v=>{
       const th=thumbFor(v);
-      html+=`<div onclick="openP(${v.id})" style="flex-shrink:0;width:130px;cursor:pointer">
+      html+=`<div onclick="openShortsFeed(${v.id})" style="flex-shrink:0;width:130px;cursor:pointer">
         <div style="position:relative;width:130px;height:231px;background:var(--bg-card);border-radius:10px;overflow:hidden">
           ${th?`<img src="${esc(th)}" style="width:100%;height:100%;object-fit:cover">`:'<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;color:#333;font-size:28px">📱</div>'}
         </div>
@@ -75,7 +75,7 @@ function renderChannelShorts(){
   let html='<div style="display:flex;flex-wrap:wrap;gap:12px;padding:0 24px">';
   userShorts.forEach(v=>{
     const th=thumbFor(v);
-    html+=`<div onclick="openP(${v.id})" style="width:160px;cursor:pointer">
+    html+=`<div onclick="openShortsFeed(${v.id})" style="width:160px;cursor:pointer">
       <div style="position:relative;width:160px;height:284px;background:var(--bg-card);border-radius:12px;overflow:hidden">
         ${th?`<img src="${esc(th)}" style="width:100%;height:100%;object-fit:cover">`:'<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;color:#333;font-size:36px">📱</div>'}
         <div style="position:absolute;top:8px;left:8px;background:#ff0000;color:var(--text-primary);font-size:10px;font-weight:700;padding:2px 6px;border-radius:4px">SHORT</div>
