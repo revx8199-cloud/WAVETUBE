@@ -431,6 +431,7 @@ function initScSheetDrag(){
   sheet.dataset.dragInit='1';
   let startY=0,dragging=false;
   handleArea.addEventListener('pointerdown',e=>{
+    if(e.target.closest('.sc-close'))return;
     dragging=true;startY=e.clientY;sheet.style.transition='none';
     handleArea.setPointerCapture(e.pointerId);
   });
