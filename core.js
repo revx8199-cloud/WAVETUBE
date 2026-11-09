@@ -115,6 +115,7 @@ function setLanguage(lang){
   localStorage.setItem('wt_lang',lang);
   applyTranslations();
   updateLangButtons();
+  if(currentUser&&document.getElementById('settings-country-sel'))loadMyCountryIntoSettings();
   toast(lang==='ru'?'Язык изменён 🌐':lang==='en'?'Language changed 🌐':lang==='es'?'Idioma cambiado 🌐':'Język zmieniony 🌐');
 }
 

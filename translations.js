@@ -19,7 +19,7 @@ const TRANSLATIONS={
     comments_label:'Komentarze',comment_placeholder:'Napisz komentarz...',comments_label_zero:'Komentarze (0)',
     btn_send:'Wyślij',btn_cancel:'Anuluj',btn_reply:'Odpowiedz',
     sort_top:'Najtrafniejsze',sort_newest:'Najnowsze',
-    cmt_pin:'Przypnij komentarz',cmt_unpin:'Odepnij komentarz',cmt_edit:'Edytuj',cmt_mute_user:'Wycisz użytkownika',cmt_pinned_badge:'Przypięty komentarz',cmt_edited:'(edytowano)',cmt_reply_placeholder:'Odpowiedz...',cmt_replies_label:'odpowiedzi',cmt_more_title:'Więcej',
+    cmt_pin:'Przypnij komentarz',cmt_unpin:'Odepnij komentarz',cmt_edit:'Edytuj',cmt_mute_user:'Wycisz użytkownika',cmt_pinned_badge:'Przypięty komentarz',cmt_edited:'(edytowano)',cmt_reply_placeholder:'Odpowiedz...',cmt_replies_label:'odpowiedzi',cmt_more_title:'Więcej',country_not_set:'nie podano',
     settings_title:'Ustawienia',settings_nick:'Twój nick',settings_lang:'Język',
     btn_save:'Zapisz',btn_close:'Zamknij',btn_publish:'Opublikuj',btn_add:'Dodaj',btn_copy:'Kopiuj',menu_buy_vip:'Kup panel VIP 💎',buy_vip_title:'Kup panel VIP',buy_vip_desc:'Panel VIP odblokowuje kolor nicku, ramkę avatara, cząsteczki wokół avatara, plakietkę VIP i inne ozdobniki na Twoim kanale.',buy_vip_instructions:'☕ Wesprzyj przez Buy Me a Coffee, a w polu wiadomości/notatki przy wpłacie koniecznie wpisz e-mail, na który jesteś zalogowany/a w WaveTube — inaczej nie będziemy wiedzieć, komu przyznać VIP.',buy_vip_email_label:'Twój e-mail:',buy_vip_preview_label:'Podgląd wyglądu VIP',buy_vip_no_refund:'Wpłata jest bezzwrotna, a VIP przyznawany na stałe.',btn_buy_vip_coffee:'☕ Przejdź do Buy Me a Coffee',
     menu_vip_panel:'Panel VIP',vip_panel_title:'⭐ Panel VIP',vip_panel_sub:'Twój specjalny status — dostosuj swój wygląd w aplikacji.',
@@ -159,7 +159,7 @@ const TRANSLATIONS={
     comments_label:'Comments',comment_placeholder:'Add a comment...',comments_label_zero:'Comments (0)',
     btn_send:'Send',btn_cancel:'Cancel',btn_reply:'Reply',
     sort_top:'Top comments',sort_newest:'Newest first',
-    cmt_pin:'Pin comment',cmt_unpin:'Unpin comment',cmt_edit:'Edit',cmt_mute_user:'Mute user',cmt_pinned_badge:'Pinned comment',cmt_edited:'(edited)',cmt_reply_placeholder:'Reply...',cmt_replies_label:'replies',cmt_more_title:'More',
+    cmt_pin:'Pin comment',cmt_unpin:'Unpin comment',cmt_edit:'Edit',cmt_mute_user:'Mute user',cmt_pinned_badge:'Pinned comment',cmt_edited:'(edited)',cmt_reply_placeholder:'Reply...',cmt_replies_label:'replies',cmt_more_title:'More',country_not_set:'not specified',
     settings_title:'Settings',settings_nick:'Your nickname',settings_lang:'Language',
     btn_save:'Save',btn_close:'Close',btn_publish:'Publish',btn_add:'Add',btn_copy:'Copy',menu_buy_vip:'Buy VIP panel 💎',buy_vip_title:'Buy VIP panel',buy_vip_desc:'The VIP panel unlocks a name color, avatar frame, particle effects around your avatar, VIP badge and other cosmetics on your channel.',buy_vip_instructions:'☕ Support us on Buy Me a Coffee, and in the message/note field please write the email you use to log in to WaveTube — otherwise we won\'t know who to grant VIP to.',buy_vip_email_label:'Your email:',buy_vip_preview_label:'Preview of the VIP look',buy_vip_no_refund:'The payment is non-refundable, and VIP is granted permanently.',btn_buy_vip_coffee:'☕ Go to Buy Me a Coffee',
     menu_vip_panel:'VIP panel',vip_panel_title:'⭐ VIP panel',vip_panel_sub:'Your special status — customize your look in the app.',
@@ -295,7 +295,7 @@ const TRANSLATIONS={
     comments_label:'Comentarios',comment_placeholder:'Escribe un comentario...',
     btn_send:'Enviar',btn_cancel:'Cancelar',btn_reply:'Responder',
     sort_top:'Más relevantes',sort_newest:'Más recientes',
-    cmt_pin:'Fijar comentario',cmt_unpin:'Dejar de fijar',cmt_edit:'Editar',cmt_mute_user:'Silenciar usuario',cmt_pinned_badge:'Comentario fijado',cmt_edited:'(editado)',cmt_reply_placeholder:'Responder...',cmt_replies_label:'respuestas',cmt_more_title:'Más',
+    cmt_pin:'Fijar comentario',cmt_unpin:'Dejar de fijar',cmt_edit:'Editar',cmt_mute_user:'Silenciar usuario',cmt_pinned_badge:'Comentario fijado',cmt_edited:'(editado)',cmt_reply_placeholder:'Responder...',cmt_replies_label:'respuestas',cmt_more_title:'Más',country_not_set:'no especificado',
     settings_title:'Ajustes',settings_nick:'Tu nombre',settings_lang:'Idioma',
     btn_save:'Guardar',btn_close:'Cerrar',btn_publish:'Publicar',btn_add:'Añadir',btn_copy:'Copiar',
     login_google:'Iniciar sesión',logged_in_as:'Sesión iniciada como',
@@ -471,7 +471,7 @@ const TRANSLATIONS={
     comments_label:'Комментарии',comment_placeholder:'Напишите комментарий...',comments_label_zero:'Комментарии (0)',
     btn_send:'Отправить',btn_cancel:'Отмена',btn_reply:'Ответить',
     sort_top:'По значимости',sort_newest:'Сначала новые',
-    cmt_pin:'Закрепить комментарий',cmt_unpin:'Открепить комментарий',cmt_edit:'Редактировать',cmt_mute_user:'Заглушить пользователя',cmt_pinned_badge:'Закреплённый комментарий',cmt_edited:'(изменено)',cmt_reply_placeholder:'Ответить...',cmt_replies_label:'ответов',cmt_more_title:'Ещё',
+    cmt_pin:'Закрепить комментарий',cmt_unpin:'Открепить комментарий',cmt_edit:'Редактировать',cmt_mute_user:'Заглушить пользователя',cmt_pinned_badge:'Закреплённый комментарий',cmt_edited:'(изменено)',cmt_reply_placeholder:'Ответить...',cmt_replies_label:'ответов',cmt_more_title:'Ещё',country_not_set:'не указано',
     settings_title:'Настройки',settings_nick:'Ваш никнейм',settings_lang:'Язык',
     btn_save:'Сохранить',btn_close:'Закрыть',btn_publish:'Опубликовать',btn_add:'Добавить',btn_copy:'Копировать',menu_buy_vip:'Купить VIP-панель 💎',buy_vip_title:'Купить VIP-панель',buy_vip_desc:'VIP-панель открывает цвет ника, рамку аватара, эффект частиц вокруг аватара, значок VIP и другие украшения на твоём канале.',buy_vip_instructions:'☕ Поддержи через Buy Me a Coffee и обязательно укажи в поле сообщения/заметки email, на который ты зарегистрирован(а) в WaveTube — иначе мы не будем знать, кому выдать VIP.',buy_vip_email_label:'Твой email:',buy_vip_preview_label:'Предпросмотр внешнего вида VIP',buy_vip_no_refund:'Платёж не подлежит возврату, VIP предоставляется навсегда.',btn_buy_vip_coffee:'☕ Перейти на Buy Me a Coffee',
     menu_vip_panel:'VIP-панель',vip_panel_title:'⭐ VIP-панель',vip_panel_sub:'Твой особый статус — настрой свой вид в приложении.',
@@ -747,8 +747,8 @@ function openSettingsModal(){
 async function loadMyCountryIntoSettings(){
   const sel=document.getElementById('settings-country-sel');
   if(!sel)return;
-  const sorted=[...COUNTRIES].sort((a,b)=>countryName(a[0]).localeCompare(countryName(b[0]),getLang()==='ru'?'ru':'pl'));
-  sel.innerHTML=`<option value="">— ${getLang()==='ru'?'не указано':'nie podano'} —</option>`+
+  const sorted=[...COUNTRIES].sort((a,b)=>countryName(a[0]).localeCompare(countryName(b[0]),getLang()));
+  sel.innerHTML=`<option value="">— ${t('country_not_set')} —</option>`+
     sorted.map(c=>`<option value="${c[0]}">${flagEmoji(c[0])} ${countryName(c[0])}</option>`).join('');
   const{data}=await sb.from('profiles').select('country').eq('id',currentUser.id).single();
   sel.value=data?.country||'';
