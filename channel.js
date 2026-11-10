@@ -883,7 +883,7 @@ async function showChannel(userId,nameIn,avatar,email){
     <div class="channel-grid" id="channel-grid" style="display:none"></div>
     <div id="channel-shorts-container" style="display:none"></div>
     <div id="posts-container" style="display:none"></div>
-    <div style="padding:0 24px 20px"><button class="abtn" onclick="showHome()">← Wróć</button></div>`;
+    <div style="padding:0 24px 20px"><button class="abtn" onclick="showHome()">← ${t('btn_back')}</button></div>`;
 
   renderChannelHome();
   const cg=document.getElementById('channel-grid');

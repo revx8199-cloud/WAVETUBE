@@ -205,15 +205,15 @@ function postCardHtml(p,isOwner,likedPosts){
               <div style="flex:1">
                 <div style="font-size:12px;font-weight:600;display:flex;align-items:center">${esc(c.user)}${verifiedBadge(c.email||'',c.user_id)} <span style="color:var(--text-tertiary);font-weight:400;margin-left:6px">${c.time||''}</span></div>
                 <div id="ptext-${p.id}-${ci}" style="font-size:13px${c.text_color?`;color:${esc(c.text_color)}`:';color:var(--text-secondary)'}${c.text_font?`;font-family:${fontCssFor(c.text_font)}`:''}">${esc(c.text)}</div>
-                ${currentUser?`<button onclick="togglePostReplyForm('${jsesc(p.id)}',${ci})" style="background:none;border:none;color:var(--text-secondary);cursor:pointer;font-size:11px;font-weight:600;padding:3px 0;margin-top:2px">${t('reply_btn')||'Odpowiedz'}</button>`:''}
+                ${currentUser?`<button onclick="togglePostReplyForm('${jsesc(p.id)}',${ci})" style="background:none;border:none;color:var(--text-secondary);cursor:pointer;font-size:11px;font-weight:600;padding:3px 0;margin-top:2px">${t('btn_reply')}</button>`:''}
                 <div id="preply-form-${p.id}-${ci}" style="display:none;margin-top:6px;gap:6px;align-items:center">
                   <input id="preply-inp-${p.id}-${ci}" placeholder="${t('post_comment_ph')}" style="width:100%;background:transparent;border:none;border-bottom:1px solid #444;color:var(--text-primary);padding:5px 0;font-size:12px;outline:none">
                   <div style="display:flex;gap:6px;margin-top:4px">
-                    <button onclick="togglePostReplyForm('${jsesc(p.id)}',${ci})" style="background:none;border:none;color:var(--text-secondary);padding:4px 10px;border-radius:16px;cursor:pointer;font-size:11px">Anuluj</button>
+                    <button onclick="togglePostReplyForm('${jsesc(p.id)}',${ci})" style="background:none;border:none;color:var(--text-secondary);padding:4px 10px;border-radius:16px;cursor:pointer;font-size:11px">${t('btn_cancel')}</button>
                     <button onclick="postPostReply('${jsesc(p.id)}',${ci})" style="background:#3ea6ff;border:none;color:#0f0f0f;padding:4px 12px;border-radius:16px;cursor:pointer;font-size:11px;font-weight:700">${t('btn_send')}</button>
                   </div>
                 </div>
-                ${replies.length?`<button onclick="togglePostReplies('${jsesc(p.id)}',${ci})" style="background:none;border:none;color:#3ea6ff;cursor:pointer;font-size:11px;font-weight:600;padding:4px 0;margin-top:4px;display:block">${replies.length} ${replies.length===1?'odpowiedź':'odpowiedzi'}</button>
+                ${replies.length?`<button onclick="togglePostReplies('${jsesc(p.id)}',${ci})" style="background:none;border:none;color:#3ea6ff;cursor:pointer;font-size:11px;font-weight:600;padding:4px 0;margin-top:4px;display:block">${replies.length} ${t('cmt_replies_label')}</button>
                 <div id="preplies-${p.id}-${ci}" style="display:none;margin-top:6px;padding-left:8px;border-left:2px solid var(--border-soft)">
                   ${replies.map((r,ri)=>`<div style="display:flex;gap:6px;margin-bottom:8px">
                     ${r.avatar?`<img src="${esc(r.avatar)}" style="width:22px;height:22px;border-radius:50%;object-fit:cover;flex-shrink:0">`:`<div style="width:22px;height:22px;border-radius:50%;background:#cc0000;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;flex-shrink:0">${(r.user||'?')[0]}</div>`}
