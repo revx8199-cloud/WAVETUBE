@@ -2202,9 +2202,11 @@ async function toggleNotifications(){
 }
 
 function notifText(n){
-  if(n.type==='subscribe')return`<b>${esc(n.sender_name||'')}</b> ${t('notif_subscribed')}`;
-  if(n.type==='new_post')return`<b>${esc(n.sender_name||'')}</b> ${t('post_new_notification')}`;
-  if(n.type==='new_video')return`<b>${esc(n.sender_name||'')}</b> ${t('notif_new_video')}`;
+  const ic=s=>`<span style="display:inline-flex;vertical-align:-2px;margin-left:4px;color:#3ea6ff">${s}</span>`;
+  const strip=s=>s.replace(/\s*[\u{1F300}-\u{1FAFF}\u{2600}-\u{27BF}]\s*$/u,'');
+  if(n.type==='subscribe')return`<b>${esc(n.sender_name||'')}</b> ${strip(t('notif_subscribed'))}${ic(subsIcon(14))}`;
+  if(n.type==='new_post')return`<b>${esc(n.sender_name||'')}</b> ${strip(t('post_new_notification'))}${ic(postIcon(14))}`;
+  if(n.type==='new_video')return`<b>${esc(n.sender_name||'')}</b> ${strip(t('notif_new_video'))}${ic(videosIcon(14))}`;
   return safeNotifHtml(n.message);
 }
 function renderNotifications(){
