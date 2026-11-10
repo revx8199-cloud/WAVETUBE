@@ -680,7 +680,7 @@
 <!-- DODAJ POST -->
 <div class="fmbg" id="add-post-modal">
   <div class="fbox">
-    <h3 data-i18n="post_modal_title">📝 Nowy post</h3>
+    <h3 style="display:flex;align-items:center;gap:8px"><svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg><span data-i18n="post_modal_title">Nowy post</span></h3>
     <div class="field">
       <label data-i18n="post_text_label">Tekst</label>
       <textarea id="post-text-inp" style="width:100%;background:var(--bg-sunken);border:1px solid var(--border);border-radius:8px;color:var(--text-primary);padding:10px 14px;font-size:14px;outline:none;resize:none;height:120px" placeholder="Co chcesz napisać?" data-i18n-placeholder="post_text_placeholder"></textarea>
@@ -692,7 +692,7 @@
     </div>
     <div class="field">
       <label style="display:flex;align-items:center;gap:8px;cursor:pointer;text-transform:none;font-size:13px;color:var(--text-secondary)">
-        <input type="checkbox" id="poll-toggle" onchange="togglePollFields()" style="width:auto"> <span data-i18n="post_add_poll">📊 Dodaj ankietę</span>
+        <input type="checkbox" id="poll-toggle" onchange="togglePollFields()" style="width:auto"> <svg viewBox="0 0 24 24" width="15" height="15" fill="currentColor" style="vertical-align:-2px"><path d="M5 9.2h3V19H5V9.2zM10.6 5h2.8v14h-2.8V5zm5.6 8H19v6h-2.8v-6z"/></svg> <span data-i18n="post_add_poll">Dodaj ankietę</span>
       </label>
       <div id="poll-fields" style="display:none;margin-top:12px">
         <input id="poll-question" placeholder="Zadaj pytanie..." data-i18n-placeholder="post_poll_question_ph" style="width:100%;background:var(--bg-sunken);border:1px solid var(--border);border-radius:8px;color:var(--text-primary);padding:10px 14px;font-size:14px;outline:none;margin-bottom:10px">
