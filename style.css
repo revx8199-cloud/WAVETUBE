@@ -319,7 +319,7 @@ hr{border:none;border-top:1px solid var(--border-soft);margin:20px 0}
 .notif-badge{position:absolute;top:2px;right:2px;background:#ff0000;color:var(--text-primary);font-size:9px;font-weight:700;min-width:16px;height:16px;padding:0 3px;border-radius:8px;display:flex;align-items:center;justify-content:center;border:2px solid var(--bg-sunken);box-sizing:content-box}
 .notif-dropdown{display:none;position:absolute;right:0;top:46px;background:var(--bg-panel);border:1px solid var(--border);border-radius:12px;width:340px;z-index:200;overflow:hidden;max-height:420px;overflow-y:auto;box-shadow:0 8px 28px rgba(0,0,0,.5)}
 .notif-dropdown.open{display:block}
-.notif-item{padding:12px 16px;border-bottom:1px solid var(--border-soft);cursor:pointer;display:flex;gap:12px;align-items:flex-start;position:relative}
+.notif-item{padding:12px 30px 12px 16px;border-bottom:1px solid var(--border-soft);cursor:pointer;display:flex;gap:12px;align-items:flex-start;position:relative}
 .notif-item:hover{background:var(--border-soft)}
 .notif-item.unread{background:rgba(62,166,255,.06);padding-left:26px}
 .notif-item.unread::before{content:'';position:absolute;left:8px;top:20px;width:8px;height:8px;border-radius:50%;background:#3ea6ff}
