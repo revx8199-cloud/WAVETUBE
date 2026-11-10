@@ -484,18 +484,18 @@ async function loadAdminEmail(){
 
 // ── KRAJ KANAŁU ───────────────────────────────────────────────────────────
 const COUNTRIES=[
-  ['PL','Polska','Польша'],['RU','Rosja','Россия'],['UA','Ukraina','Украина'],['BY','Białoruś','Беларусь'],
-  ['DE','Niemcy','Германия'],['US','Stany Zjednoczone','США'],['GB','Wielka Brytania','Великобритания'],
-  ['FR','Francja','Франция'],['ES','Hiszpania','Испания'],['IT','Włochy','Италия'],['CZ','Czechy','Чехия'],
-  ['SK','Słowacja','Словакия'],['LT','Litwa','Литва'],['LV','Łotwa','Латвия'],['EE','Estonia','Эстония'],
-  ['KZ','Kazachstan','Казахстан'],['CA','Kanada','Канада'],['AU','Australia','Австралия'],
-  ['NL','Holandia','Нидерланды'],['SE','Szwecja','Швеция'],['NO','Norwegia','Норвегия'],['FI','Finlandia','Финляндия'],
-  ['TR','Turcja','Турция'],['IN','Indie','Индия'],['CN','Chiny','Китай'],['JP','Japonia','Япония'],
-  ['KR','Korea Południowa','Южная Корея'],['BR','Brazylia','Бразилия'],['MX','Meksyk','Мексика'],
-  ['AR','Argentyna','Аргентина'],['ZA','RPA','ЮАР'],['EG','Egipt','Египет'],['IL','Izrael','Израиль'],
-  ['AE','ZEA','ОАЭ'],['IE','Irlandia','Ирландия'],['PT','Portugalia','Португалия'],['GR','Grecja','Греция'],
-  ['RO','Rumunia','Румыния'],['HU','Węgry','Венгрия'],['CH','Szwajcaria','Швейцария'],['AT','Austria','Австрия'],
-  ['BE','Belgia','Бельгия']
+  ['PL','Polska','Польша','Poland','Polonia'],['RU','Rosja','Россия','Russia','Rusia'],['UA','Ukraina','Украина','Ukraine','Ucrania'],['BY','Białoruś','Беларусь','Belarus','Bielorrusia'],
+  ['DE','Niemcy','Германия','Germany','Alemania'],['US','Stany Zjednoczone','США','United States','Estados Unidos'],['GB','Wielka Brytania','Великобритания','United Kingdom','Reino Unido'],
+  ['FR','Francja','Франция','France','Francia'],['ES','Hiszpania','Испания','Spain','España'],['IT','Włochy','Италия','Italy','Italia'],['CZ','Czechy','Чехия','Czechia','Chequia'],
+  ['SK','Słowacja','Словакия','Slovakia','Eslovaquia'],['LT','Litwa','Литва','Lithuania','Lituania'],['LV','Łotwa','Латвия','Latvia','Letonia'],['EE','Estonia','Эстония','Estonia','Estonia'],
+  ['KZ','Kazachstan','Казахстан','Kazakhstan','Kazajistán'],['CA','Kanada','Канада','Canada','Canadá'],['AU','Australia','Австралия','Australia','Australia'],
+  ['NL','Holandia','Нидерланды','Netherlands','Países Bajos'],['SE','Szwecja','Швеция','Sweden','Suecia'],['NO','Norwegia','Норвегия','Norway','Noruega'],['FI','Finlandia','Финляндия','Finland','Finlandia'],
+  ['TR','Turcja','Турция','Turkey','Turquía'],['IN','Indie','Индия','India','India'],['CN','Chiny','Китай','China','China'],['JP','Japonia','Япония','Japan','Japón'],
+  ['KR','Korea Południowa','Южная Корея','South Korea','Corea del Sur'],['BR','Brazylia','Бразилия','Brazil','Brasil'],['MX','Meksyk','Мексика','Mexico','México'],
+  ['AR','Argentyna','Аргентина','Argentina','Argentina'],['ZA','RPA','ЮАР','South Africa','Sudáfrica'],['EG','Egipt','Египет','Egypt','Egipto'],['IL','Izrael','Израиль','Israel','Israel'],
+  ['AE','ZEA','ОАЭ','United Arab Emirates','EAU'],['IE','Irlandia','Ирландия','Ireland','Irlanda'],['PT','Portugalia','Португалия','Portugal','Portugal'],['GR','Grecja','Греция','Greece','Grecia'],
+  ['RO','Rumunia','Румыния','Romania','Rumania'],['HU','Węgry','Венгрия','Hungary','Hungría'],['CH','Szwajcaria','Швейцария','Switzerland','Suiza'],['AT','Austria','Австрия','Austria','Austria'],
+  ['BE','Belgia','Бельгия','Belgium','Bélgica']
 ];
 function flagEmoji(code){
   if(!code)return'';
@@ -504,7 +504,8 @@ function flagEmoji(code){
 function countryName(code){
   const c=COUNTRIES.find(x=>x[0]===code);
   if(!c)return code;
-  return getLang()==='ru'?c[2]:c[1];
+  const lang=getLang();
+  return lang==='ru'?c[2]:lang==='en'?c[3]:lang==='es'?c[4]:c[1];
 }
 function isAdmin(){return!!(currentUser&&currentUser.email===ADMIN_EMAIL);}
 
