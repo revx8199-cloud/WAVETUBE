@@ -67,6 +67,7 @@ const TRANSLATIONS={
     post_poll_question_missing:'Wpisz pytanie ankiety!',post_poll_min_options:'Dodaj przynajmniej 2 opcje!',
     post_empty_error:'Napisz coś, dodaj zdjęcie lub ankietę!',post_publishing:'Publikowanie...',
     post_rate_limit:'Za dużo postów naraz — odczekaj chwilę 🐢',post_new_notification:'dodał nowy post 📝',
+    notif_subscribed:'zasubskrybował Twój kanał 🔔',notif_new_video:'dodał nowy film 🎬',
     post_published_toast:'Post dodany! 📝',
     post_modal_title:'📝 Nowy post',post_text_label:'Tekst',post_text_placeholder:'Co chcesz napisać?',
     post_images_label:'Zdjęcia (opcjonalnie, max 6)',post_add_poll:'📊 Dodaj ankietę',
@@ -207,6 +208,7 @@ const TRANSLATIONS={
     post_poll_question_missing:'Enter a poll question!',post_poll_min_options:'Add at least 2 options!',
     post_empty_error:'Write something, add an image or a poll!',post_publishing:'Publishing...',
     post_rate_limit:'Too many posts at once — slow down a bit 🐢',post_new_notification:'posted something new 📝',
+    notif_subscribed:'subscribed to your channel 🔔',notif_new_video:'added a new video 🎬',
     post_published_toast:'Post published! 📝',
     post_modal_title:'📝 New post',post_text_label:'Text',post_text_placeholder:'What do you want to say?',
     post_images_label:'Images (optional, max 6)',post_add_poll:'📊 Add poll',
@@ -419,6 +421,7 @@ const TRANSLATIONS={
     post_empty_error:'¡Escribe algo, añade una foto o una encuesta!',post_publishing:'Publicando...',post_published_toast:'¡Publicación añadida! 📝',post_rate_limit:'Demasiadas publicaciones seguidas — espera un momento 🐢',
     post_delete_title:'Eliminar publicación',post_comment_ph:'Comentario...',post_login_comment:'Inicia sesión para comentar',post_login_vote:'Inicia sesión para votar',post_login_vote_toast:'¡Inicia sesión para votar!',
     post_new_notification:'añadió una nueva publicación 📝',
+    notif_subscribed:'se suscribió a tu canal 🔔',notif_new_video:'añadió un nuevo video 🎬',
 
     settings_data_loading:'Preparando...',settings_data_done:'¡Tus datos han sido descargados! 📦',settings_delete_loading:'Eliminando cuenta...',settings_delete_done:'La cuenta ha sido eliminada. ¡Hasta pronto! 👋',
 
@@ -519,6 +522,7 @@ const TRANSLATIONS={
     post_poll_question_missing:'Введите вопрос опроса!',post_poll_min_options:'Добавьте минимум 2 варианта!',
     post_empty_error:'Напишите что-нибудь, добавьте фото или опрос!',post_publishing:'Публикация...',
     post_rate_limit:'Слишком много постов подряд — подождите немного 🐢',post_new_notification:'опубликовал новый пост 📝',
+    notif_subscribed:'подписался на твой канал 🔔',notif_new_video:'добавил новое видео 🎬',
     post_published_toast:'Пост опубликован! 📝',
     post_modal_title:'📝 Новый пост',post_text_label:'Текст',post_text_placeholder:'Что хотите написать?',
     post_images_label:'Фото (необязательно, макс. 6)',post_add_poll:'📊 Добавить опрос',
@@ -805,7 +809,7 @@ async function downloadMyData(){
       sb.from('messages').select('conv_id,sender_id,sender_name,text,created_at').eq('receiver_id',uid),
       sb.from('subscriptions').select('channel_id,channel_name,created_at').eq('subscriber_id',uid),
       sb.from('subscriptions').select('subscriber_id,created_at').eq('channel_id',uid),
-      sb.from('notifications').select('message,sender_name,created_at').eq('user_id',uid),
+      sb.from('notifications').select('message,type,sender_name,created_at').eq('user_id',uid),
       sb.from('saved_videos').select('video_id,created_at').eq('user_id',uid),
       sb.from('watch_later').select('video_id,created_at').eq('user_id',uid),
       sb.from('watch_history').select('video_id,watched_at').eq('user_id',uid)
