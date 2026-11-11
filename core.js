@@ -1349,7 +1349,7 @@ async function showAnnouncementsPage(){
   setSlabel('megaphone',t('page_announcements'));
   const g=document.getElementById('grid');
   g.style.display='block';
-  g.innerHTML='<p style="color:var(--text-tertiary);padding:20px;text-align:center">Ładowanie...</p>';
+  g.innerHTML=`<p style="color:var(--text-tertiary);padding:20px;text-align:center">${t('loading_generic')}</p>`;
 
   localStorage.setItem('wt_last_seen_announcement',new Date().toISOString());
   const dot=document.getElementById('announce-dot');
@@ -1543,7 +1543,7 @@ async function showHistory(){
     g.innerHTML=emptyStateHtml('history',t('history_login'));
     return;
   }
-  g.innerHTML='<p style="color:var(--text-tertiary);padding:20px;text-align:center">Ładowanie...</p>';
+  g.innerHTML=`<p style="color:var(--text-tertiary);padding:20px;text-align:center">${t('loading_generic')}</p>`;
   const{data}=await sb.from('watch_history').select('*').eq('user_id',currentUser.id).order('watched_at',{ascending:false}).limit(100);
   const hist=(data||[]).map(h=>{
     const v=videos.find(x=>x.id===h.video_id);

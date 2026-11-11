@@ -242,7 +242,7 @@ function convListTimeLabel(dateStr){
 
 async function loadConvList(){
   const list=document.getElementById('conv-list');
-  list.innerHTML='<div style="padding:20px;text-align:center;color:#555;font-size:13px">⏳ Ładowanie...</div>';
+  list.innerHTML=`<div style="padding:20px;text-align:center;color:#555;font-size:13px">⏳ ${t('loading_generic')}</div>`;
   const{data}=await sb.from('messages').select('*')
     .or(`sender_id.eq.${currentUser.id},receiver_id.eq.${currentUser.id}`)
     .order('created_at',{ascending:false});

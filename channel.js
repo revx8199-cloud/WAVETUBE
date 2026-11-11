@@ -145,7 +145,7 @@ async function openStatsPanel(){
   if(!currentUser)return;
   document.getElementById('stats-modal').classList.add('open');
   const body=document.getElementById('stats-body');
-  body.innerHTML='<p style="color:var(--text-tertiary);padding:30px 0;text-align:center">Ładowanie statystyk...</p>';
+  body.innerHTML=`<p style="color:var(--text-tertiary);padding:30px 0;text-align:center">${t('loading_stats')}</p>`;
 
   const ownVideos=videos.filter(v=>v.user_id===currentUser.id);
   const ownVideoIds=ownVideos.map(v=>String(v.id));
