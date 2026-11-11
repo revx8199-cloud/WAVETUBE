@@ -72,7 +72,7 @@ function toggleCardMenu(videoId,btnEl){
 function shareVideoCard(videoId){
   const v=videos.find(x=>String(x.id)===String(videoId));
   if(!v)return;
-  navigator.clipboard?navigator.clipboard.writeText(v.url).then(()=>toast('Link skopiowany! 🔗')):prompt('Skopiuj:',v.url);
+  navigator.clipboard?navigator.clipboard.writeText(v.url).then(()=>toast(t('toast_link_copied'))):prompt(t('prompt_copy_link'),v.url);
 }
 
 async function downloadVideo(videoId){
@@ -384,7 +384,7 @@ async function toggleShortDislike(id,btn){
 function shareShort(id){
   const url=location.origin+location.pathname+'#v='+id;
   if(navigator.share)navigator.share({url}).catch(()=>{});
-  else{navigator.clipboard?.writeText(url);toast('Link skopiowany!');}
+  else{navigator.clipboard?.writeText(url);toast(t('toast_link_copied'));}
 }
 function openShortsFeed(startId){
   const shorts=videos.filter(v=>v.is_short===true&&isDiscoverable(v));
@@ -668,7 +668,7 @@ function toggleDislike(){
 
 function shareV(){
   if(!cur)return;
-  navigator.clipboard?navigator.clipboard.writeText(cur.url).then(()=>toast('Link skopiowany! 🔗')):prompt('Skopiuj:',cur.url);
+  navigator.clipboard?navigator.clipboard.writeText(cur.url).then(()=>toast(t('toast_link_copied'))):prompt(t('prompt_copy_link'),cur.url);
 }
 
 
