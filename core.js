@@ -2183,7 +2183,7 @@ async function clearAllNotifications(){
   notificationsList=[];
   updateNotifBadge();
   renderNotifications();
-  toast('Powiadomienia wyczyszczone 🔔');
+  toast(t('notif_cleared_toast'));
 }
 
 async function toggleNotifications(){

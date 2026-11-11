@@ -945,7 +945,7 @@ async function toggleSub(key,name){
     await sb.from('subscriptions').insert([{subscriber_id:currentUser.id,subscriber_email:currentUser.email,channel_id:key,channel_name:chName,channel_avatar:chAvatar}]);
     // send notification to channel owner
     await sb.from('notifications').insert([{user_id:key,type:'subscribe',avatar:currentUser.user_metadata?.avatar_url||'',sender_id:currentUser.id,sender_name:getMyDisplayName(),sender_avatar:currentUser.user_metadata?.avatar_url||'',sender_email:currentUser.email}]);
-    toast(`${t('toast_subscribing')}: ${name} 🔔`);
+    toast(`${t('toast_subscribing')}: ${name}`);
   }
   const count=await getSubCount(key);
   const btn=document.getElementById('sub-big-btn');

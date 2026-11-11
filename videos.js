@@ -617,7 +617,7 @@ async function toggleSubInPlayer(key,name){
     if(!chName)chName=name;
     await sb.from('subscriptions').insert([{subscriber_id:currentUser.id,subscriber_email:currentUser.email,channel_id:key,channel_name:chName,channel_avatar:chAvatar}]);
     await sb.from('notifications').insert([{user_id:key,type:'subscribe',avatar:currentUser.user_metadata?.avatar_url||'',sender_id:currentUser.id,sender_name:getMyDisplayName(),sender_avatar:currentUser.user_metadata?.avatar_url||'',sender_email:currentUser.email}]);
-    toast(`${t('toast_subscribing')}: ${name} 🔔`);
+    toast(`${t('toast_subscribing')}: ${name}`);
   }
   const btn=document.getElementById('sub-btn');
   if(btn){btn.className='btn-sub'+(subscribedSet.has(key)?' subscribed':'');btn.textContent=subscribedSet.has(key)?'✓ '+t('btn_subscribed'):t('btn_subscribe');}
