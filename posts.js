@@ -226,7 +226,7 @@ function postCardHtml(p,isOwner,likedPosts){
           ${currentUser?`<div style="display:flex;gap:8px;margin-top:8px;align-items:center">
             ${currentUser.user_metadata?.avatar_url?`<img src="${esc(currentUser.user_metadata.avatar_url)}" style="width:28px;height:28px;border-radius:50%;object-fit:cover;flex-shrink:0">`:`<div style="width:28px;height:28px;border-radius:50%;background:#cc0000;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0">${(currentUser.user_metadata?.full_name||currentUser.email||'?')[0].toUpperCase()}</div>`}
             <input id="pci-${p.id}" placeholder="${t('post_comment_ph')}" style="flex:1;background:transparent;border:none;border-bottom:1px solid #444;color:var(--text-primary);padding:5px 0;font-size:13px;outline:none">
-            <button onclick="toggleEmojiPicker('pci-${p.id}',this)" style="background:none;border:none;color:var(--text-secondary);cursor:pointer;font-size:16px" title="Emotki">😊</button>
+            <button onclick="toggleEmojiPicker('pci-${p.id}',this)" style="background:none;border:none;color:var(--text-secondary);cursor:pointer;font-size:16px" title="${t('emoji_tooltip')}">😊</button>
             <button onclick="addPostComment(${p.id})" style="background:#cc0000;border:none;color:var(--text-primary);padding:5px 12px;border-radius:16px;cursor:pointer;font-size:12px">${t('btn_send')}</button>
           </div>`:`<div style="font-size:12px;color:#555">${t('post_login_comment')}</div>`}
         </div>

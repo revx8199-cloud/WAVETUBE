@@ -1650,7 +1650,7 @@ if(adminTab==='users'){
         <div class="field" style="margin-bottom:14px;position:relative">
           <label style="text-transform:none;font-size:12px;color:var(--text-tertiary);display:block;margin-bottom:6px">Wiadomość</label>
           <textarea id="admin-announce-text" placeholder="Np. Dodaliśmy nowe funkcje! Sprawdź co nowego" style="width:100%;background:var(--bg-sunken);border:1px solid var(--border);border-radius:8px;color:var(--text-primary);padding:10px 14px;font-size:13px;outline:none;resize:none;height:220px"></textarea>
-          <button onclick="toggleEmojiPicker('admin-announce-text',this)" style="position:absolute;right:8px;bottom:8px;background:none;border:none;color:var(--text-secondary);cursor:pointer;font-size:18px" title="Emotki">😊</button>
+          <button onclick="toggleEmojiPicker('admin-announce-text',this)" style="position:absolute;right:8px;bottom:8px;background:none;border:none;color:var(--text-secondary);cursor:pointer;font-size:18px" title="${t('emoji_tooltip')}">😊</button>
         </div>
         <div class="field" style="margin-bottom:14px">
           <label style="text-transform:none;font-size:12px;color:var(--text-tertiary);display:block;margin-bottom:6px">Zdjęcie (opcjonalnie)</label>

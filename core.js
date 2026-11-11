@@ -1418,7 +1418,7 @@ function renderAnnouncementCard(a){
       </div>
       ${currentUser?`<div style="display:flex;gap:8px">
         <input id="ann-cinp-${a.id}" placeholder="Napisz komentarz..." style="flex:1;background:var(--bg-sunken);border:1px solid var(--border);border-radius:8px;color:var(--text-primary);padding:8px 12px;font-size:13px;outline:none" onkeydown="if(event.key==='Enter')addAnnouncementComment(${a.id})">
-        <button onclick="toggleEmojiPicker('ann-cinp-${a.id}',this)" style="background:none;border:none;color:var(--text-secondary);cursor:pointer;font-size:16px" title="Emotki">😊</button>
+        <button onclick="toggleEmojiPicker('ann-cinp-${a.id}',this)" style="background:none;border:none;color:var(--text-secondary);cursor:pointer;font-size:16px" title="${t('emoji_tooltip')}">😊</button>
         <button onclick="addAnnouncementComment(${a.id})" style="background:#3ea6ff;border:none;color:#0f0f0f;padding:8px 16px;border-radius:8px;cursor:pointer;font-size:12px;font-weight:700">Wyślij</button>
       </div>`:'<p style="color:var(--text-tertiary);font-size:12px">Zaloguj się żeby komentować</p>'}
     </div>
@@ -1769,7 +1769,7 @@ async function renderC(){
             <div style="flex:1">
               <input id="reply-inp-${i}" placeholder="${t('cmt_reply_placeholder')}" style="width:100%;background:transparent;border:none;border-bottom:1px solid #444;color:var(--text-primary);padding:6px 0;font-size:13px;outline:none">
               <div style="display:flex;justify-content:flex-end;gap:8px;margin-top:6px">
-                <button onclick="toggleEmojiPicker('reply-inp-${i}',this)" style="background:none;border:none;color:var(--text-secondary);cursor:pointer;font-size:16px;margin-right:auto" title="Emotki">😊</button>
+                <button onclick="toggleEmojiPicker('reply-inp-${i}',this)" style="background:none;border:none;color:var(--text-secondary);cursor:pointer;font-size:16px;margin-right:auto" title="${t('emoji_tooltip')}">😊</button>
                 <button onclick="toggleReplyForm(${i})" style="background:none;border:none;color:var(--text-secondary);padding:6px 12px;border-radius:16px;cursor:pointer;font-size:12px">${t('btn_cancel')}</button>
                 <button onclick="postReply(${i})" style="background:#3ea6ff;border:none;color:#0f0f0f;padding:6px 14px;border-radius:16px;cursor:pointer;font-size:12px;font-weight:700">${t('btn_reply')}</button>
               </div>

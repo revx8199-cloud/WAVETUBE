@@ -280,7 +280,7 @@ async function loadConvList(){
       <div class="msg-conv-av-ph" style="background:#cc0000;cursor:pointer;${avatar?'display:none':''}" onclick="event.stopPropagation();closeMessages();showChannel('${jsesc(otherId)}','${jsesc(name)}','${jsesc(avatar)}','${jsesc(email)}')">${(name||'?')[0].toUpperCase()}</div>
       <div class="msg-conv-info">
         <div class="msg-conv-name" style="cursor:pointer" onclick="event.stopPropagation();closeMessages();showChannel('${jsesc(otherId)}','${jsesc(name)}','${jsesc(avatar)}','${jsesc(email)}')">${esc(name)}${verifiedBadge(email,otherId)}${isBlocked?' <span style="color:#cc0000;font-size:11px">🚫 zablokowany</span>':''}</div>
-        <div class="msg-conv-last">${m.image_url?'📷 Zdjęcie':m.audio_url?'🎤 Wiadomość głosowa':esc(m.text.substring(0,40))}</div>
+        <div class="msg-conv-last">${m.image_url?'📷 '+t('photo_label'):m.audio_url?'🎤 '+t('voice_msg_preview'):esc(m.text.substring(0,40))}</div>
       </div>
       <div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px">
         <div class="msg-conv-time">${time}</div>
@@ -319,7 +319,7 @@ function renderChatHeader(){
       ${avatar?`<img class="msg-conv-av" src="${esc(avatar)}" style="width:36px;height:36px;cursor:pointer" onclick="closeMessages();showChannel('${jsesc(o.id)}','${jsesc(name)}','${jsesc(avatar)}','${jsesc(email)}')" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">`:''}
       <div class="msg-conv-av-ph" style="background:#cc0000;width:36px;height:36px;font-size:14px;cursor:pointer;${avatar?'display:none':''}" onclick="closeMessages();showChannel('${jsesc(o.id)}','${jsesc(name)}','${jsesc(avatar)}','${jsesc(email)}')">${(name||'?')[0].toUpperCase()}</div>
       <div class="msg-chat-name" style="flex:1;cursor:pointer" onclick="closeMessages();showChannel('${jsesc(o.id)}','${jsesc(name)}','${jsesc(avatar)}','${jsesc(email)}')">${esc(name)}${verifiedBadge(email,o.id)}</div>
-      <button onclick="startCall('${jsesc(o.id)}','${jsesc(name)}','${jsesc(avatar)}')" title="Zadzwoń" style="background:none;border:none;color:#ccc;cursor:pointer;font-size:19px;padding:6px 10px;border-radius:50%" onmouseover="this.style.background='rgba(255,255,255,.1)'" onmouseout="this.style.background='none'">📞</button>
+      <button onclick="startCall('${jsesc(o.id)}','${jsesc(name)}','${jsesc(avatar)}')" title="${t('call_btn_tooltip')}" style="background:none;border:none;color:#ccc;cursor:pointer;font-size:19px;padding:6px 10px;border-radius:50%" onmouseover="this.style.background='rgba(255,255,255,.1)'" onmouseout="this.style.background='none'">📞</button>
       <button onclick="toggleChatMenu()" style="background:none;border:none;color:#fff;cursor:pointer;font-size:20px;padding:4px 10px;border-radius:50%" onmouseover="this.style.background='rgba(255,255,255,.1)'" onmouseout="this.style.background='none'">⋮</button>
       <div id="chat-menu" style="display:none;position:absolute;top:44px;right:0;background:var(--bg-panel);border:1px solid var(--border);border-radius:10px;min-width:210px;z-index:80;overflow:hidden;color:var(--text-primary)">
         <div onclick="deleteConversation()" style="padding:12px 16px;cursor:pointer;font-size:13px;display:flex;align-items:center;gap:10px;color:#ff6b6b" onmouseover="this.style.background='var(--border)'" onmouseout="this.style.background='none'">🗑 ${t('msg_delete_chat')}</div>
@@ -341,10 +341,10 @@ function renderChatHeader(){
       </div>`
       :`<div class="msg-chat-messages" id="msg-msgs-list"></div>
     <div class="msg-input-area" style="position:relative">
-      <button onclick="toggleEmojiPicker('msg-inp',this)" style="background:none;border:none;color:var(--text-secondary);cursor:pointer;font-size:20px;padding:6px;flex-shrink:0" title="Emotki">😊</button>
-      <button onclick="document.getElementById('chat-img-inp').click()" style="background:none;border:none;color:var(--text-secondary);cursor:pointer;font-size:20px;padding:6px;flex-shrink:0" title="Wyślij zdjęcie">📷</button>
+      <button onclick="toggleEmojiPicker('msg-inp',this)" style="background:none;border:none;color:var(--text-secondary);cursor:pointer;font-size:20px;padding:6px;flex-shrink:0" title="${t('emoji_tooltip')}">😊</button>
+      <button onclick="document.getElementById('chat-img-inp').click()" style="background:none;border:none;color:var(--text-secondary);cursor:pointer;font-size:20px;padding:6px;flex-shrink:0" title="${t('send_photo_tooltip')}">📷</button>
       <input type="file" id="chat-img-inp" accept="image/*" style="display:none" onchange="sendChatImage(this.files[0]);this.value=''">
-      <button id="chat-mic-btn" onclick="toggleVoiceRecording()" style="background:none;border:none;color:var(--text-secondary);cursor:pointer;font-size:20px;padding:6px;flex-shrink:0" title="Wiadomość głosowa">🎤</button>
+      <button id="chat-mic-btn" onclick="toggleVoiceRecording()" style="background:none;border:none;color:var(--text-secondary);cursor:pointer;font-size:20px;padding:6px;flex-shrink:0" title="${t('voice_msg_btn')}">🎤</button>
       <span id="chat-rec-timer" style="display:none;color:#cc0000;font-size:12px;font-weight:600;align-self:center;flex-shrink:0">0:00</span>
       <textarea class="msg-input" id="msg-inp" placeholder="${t('msg_placeholder')}" rows="1" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendChatMsg();}"></textarea>
       <button class="msg-send-btn" onclick="sendChatMsg()">
