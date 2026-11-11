@@ -322,22 +322,22 @@ function renderChatHeader(){
       <button onclick="startCall('${jsesc(o.id)}','${jsesc(name)}','${jsesc(avatar)}')" title="Zadzwoń" style="background:none;border:none;color:#ccc;cursor:pointer;font-size:19px;padding:6px 10px;border-radius:50%" onmouseover="this.style.background='rgba(255,255,255,.1)'" onmouseout="this.style.background='none'">📞</button>
       <button onclick="toggleChatMenu()" style="background:none;border:none;color:#fff;cursor:pointer;font-size:20px;padding:4px 10px;border-radius:50%" onmouseover="this.style.background='rgba(255,255,255,.1)'" onmouseout="this.style.background='none'">⋮</button>
       <div id="chat-menu" style="display:none;position:absolute;top:44px;right:0;background:var(--bg-panel);border:1px solid var(--border);border-radius:10px;min-width:210px;z-index:80;overflow:hidden;color:var(--text-primary)">
-        <div onclick="deleteConversation()" style="padding:12px 16px;cursor:pointer;font-size:13px;display:flex;align-items:center;gap:10px;color:#ff6b6b" onmouseover="this.style.background='var(--border)'" onmouseout="this.style.background='none'">🗑 Usuń czat</div>
+        <div onclick="deleteConversation()" style="padding:12px 16px;cursor:pointer;font-size:13px;display:flex;align-items:center;gap:10px;color:#ff6b6b" onmouseover="this.style.background='var(--border)'" onmouseout="this.style.background='none'">🗑 ${t('msg_delete_chat')}</div>
         <div class="dropdown-divider"></div>
         ${isBlocked?
-          `<div onclick="unblockUser()" style="padding:12px 16px;cursor:pointer;font-size:13px;display:flex;align-items:center;gap:10px" onmouseover="this.style.background='var(--border)'" onmouseout="this.style.background='none'">✅ Odblokuj użytkownika</div>`
-          :`<div style="padding:10px 16px 4px;font-size:11px;color:var(--text-tertiary);text-transform:uppercase">Zablokuj na</div>
-          <div onclick="blockUser(24)" style="padding:11px 16px;cursor:pointer;font-size:13px" onmouseover="this.style.background='var(--border)'" onmouseout="this.style.background='none'">24 godziny</div>
-          <div onclick="blockUser(168)" style="padding:11px 16px;cursor:pointer;font-size:13px" onmouseover="this.style.background='var(--border)'" onmouseout="this.style.background='none'">7 dni</div>
-          <div onclick="blockUser(720)" style="padding:11px 16px;cursor:pointer;font-size:13px" onmouseover="this.style.background='var(--border)'" onmouseout="this.style.background='none'">30 dni</div>
-          <div onclick="blockUser(null)" style="padding:11px 16px;cursor:pointer;font-size:13px;color:#ff6b6b" onmouseover="this.style.background='var(--border)'" onmouseout="this.style.background='none'">Na zawsze</div>`
+          `<div onclick="unblockUser()" style="padding:12px 16px;cursor:pointer;font-size:13px;display:flex;align-items:center;gap:10px" onmouseover="this.style.background='var(--border)'" onmouseout="this.style.background='none'">✅ ${t('msg_unblock_user')}</div>`
+          :`<div style="padding:10px 16px 4px;font-size:11px;color:var(--text-tertiary);text-transform:uppercase">${t('msg_block_for')}</div>
+          <div onclick="blockUser(24)" style="padding:11px 16px;cursor:pointer;font-size:13px" onmouseover="this.style.background='var(--border)'" onmouseout="this.style.background='none'">${t('msg_block_24h')}</div>
+          <div onclick="blockUser(168)" style="padding:11px 16px;cursor:pointer;font-size:13px" onmouseover="this.style.background='var(--border)'" onmouseout="this.style.background='none'">${t('msg_block_7d')}</div>
+          <div onclick="blockUser(720)" style="padding:11px 16px;cursor:pointer;font-size:13px" onmouseover="this.style.background='var(--border)'" onmouseout="this.style.background='none'">${t('msg_block_30d')}</div>
+          <div onclick="blockUser(null)" style="padding:11px 16px;cursor:pointer;font-size:13px;color:#ff6b6b" onmouseover="this.style.background='var(--border)'" onmouseout="this.style.background='none'">${t('msg_block_forever')}</div>`
         }
       </div>
     </div>
     ${isBlocked?`<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;flex:1;padding:30px;text-align:center;color:var(--text-tertiary);gap:10px">
         <div style="font-size:32px">🚫</div>
-        <div>Zablokowałeś tego użytkownika<br><span style="font-size:12px;color:var(--text-tertiary)">${blockTimeLeft(expiresAt)}</span></div>
-        <button onclick="unblockUser()" style="margin-top:6px;background:var(--border-soft);border:none;color:var(--text-primary);padding:8px 18px;border-radius:20px;cursor:pointer;font-size:13px">Odblokuj</button>
+        <div>${t('msg_you_blocked')}<br><span style="font-size:12px;color:var(--text-tertiary)">${blockTimeLeft(expiresAt)}</span></div>
+        <button onclick="unblockUser()" style="margin-top:6px;background:var(--border-soft);border:none;color:var(--text-primary);padding:8px 18px;border-radius:20px;cursor:pointer;font-size:13px">${t('msg_unblock_btn')}</button>
       </div>`
       :`<div class="msg-chat-messages" id="msg-msgs-list"></div>
     <div class="msg-input-area" style="position:relative">
