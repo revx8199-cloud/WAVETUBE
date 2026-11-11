@@ -601,7 +601,7 @@ async function toggleSubInPlayer(key,name){
   if(isSub){
     subscribedSet.delete(key);
     await sb.from('subscriptions').delete().match({subscriber_id:currentUser.id,channel_id:key});
-    toast(`Anulowano subskrypcję`);
+    toast(t('toast_unsubscribed'));
   } else {
     subscribedSet.add(key);
     const chVideos=videos.filter(v=>v.user_id===key);
