@@ -1134,7 +1134,7 @@ function updateCallUI(){
   }else if(callState==='active'){
     ctrlEl.innerHTML=
       callBtnHtml(callMuted?'#ea4335':'rgba(255,255,255,.16)','toggleCallMute()',callMuted?'🔇':'🎤',t('call_mute'))+
-      (callHasCamera?callBtnHtml(callVideoOn?'rgba(255,255,255,.16)':'#3c4043','toggleCallVideo()',callVideoOn?'📹':'📷','Kamera'):'')+
+      (callHasCamera?callBtnHtml(callVideoOn?'rgba(255,255,255,.16)':'#3c4043','toggleCallVideo()',callVideoOn?'📹':'📷',t('call_camera_tooltip')):'')+
       (callHasCamera?callBtnHtml(callScreenSharing?'#1a73e8':'rgba(255,255,255,.16)','toggleScreenShare()','🖥️',callScreenSharing?t('call_screenshare_stop'):t('call_screenshare')):'')+
       callBtnHtml(callBoostOn?'#f5a623':'rgba(255,255,255,.16)','toggleCallBoost()','🔊',t('call_boost'))+
       callBtnHtml('#ea4335','hangupCall()','📵',t('call_hangup'),true);

@@ -97,7 +97,7 @@ const TRANSLATIONS={
     confirm_cancel:'Anuluj',confirm_delete_default:'Usuń',btn_more:'...więcej',btn_less:'mniej',
     form_moderating_btn:'Sprawdzanie...',toast_nsfw_blocked:'⚠️ Miniaturka wygląda na nieodpowiednią (18+/nagość) i nie może zostać opublikowana.',
     confirm_clear_notifications:'Wyczyścić powiadomienia?',confirm_clear_notifications_sub:'Wszystkie powiadomienia zostaną usunięte.',
-    confirm_delete_msg:'Usunąć wiadomość?',confirm_delete_msg_sub:'Ta wiadomość zniknie z rozmowy u obu stron.',msg_delete_one:'Usuń wiadomość',voice_play:'Odtwórz',voice_msg_btn:'Wiadomość głosowa',voice_msg_preview:'Wiadomość głosowa',photo_label:'Zdjęcie',call_btn_tooltip:'Zadzwoń',emoji_tooltip:'Emotki',send_photo_tooltip:'Wyślij zdjęcie',
+    confirm_delete_msg:'Usunąć wiadomość?',confirm_delete_msg_sub:'Ta wiadomość zniknie z rozmowy u obu stron.',msg_delete_one:'Usuń wiadomość',voice_play:'Odtwórz',voice_msg_btn:'Wiadomość głosowa',voice_msg_preview:'Wiadomość głosowa',photo_label:'Zdjęcie',call_btn_tooltip:'Zadzwoń',emoji_tooltip:'Emotki',send_photo_tooltip:'Wyślij zdjęcie',call_camera_tooltip:'Kamera',
     toast_history_cleared:'Historia wyczyszczona!',
     subs_empty:'Nie subskrybujesz jeszcze nikogo!',subs_empty_sub:'Wejdź na czyjś kanał i kliknij Subskrybuj',
     subs_no_videos:'Brak filmów od subskrybowanych kanałów',
@@ -241,7 +241,7 @@ const TRANSLATIONS={
     confirm_cancel:'Cancel',confirm_delete_default:'Delete',btn_more:'...more',btn_less:'less',
     form_moderating_btn:'Checking...',toast_nsfw_blocked:'⚠️ This thumbnail looks inappropriate (18+/nudity) and can\'t be published.',
     confirm_clear_notifications:'Clear notifications?',confirm_clear_notifications_sub:'All notifications will be deleted.',
-    confirm_delete_msg:'Delete message?',confirm_delete_msg_sub:'This message will disappear from the conversation for both sides.',msg_delete_one:'Delete message',voice_play:'Play',voice_msg_btn:'Voice message',voice_msg_preview:'Voice message',photo_label:'Photo',call_btn_tooltip:'Call',emoji_tooltip:'Emoji',send_photo_tooltip:'Send photo',
+    confirm_delete_msg:'Delete message?',confirm_delete_msg_sub:'This message will disappear from the conversation for both sides.',msg_delete_one:'Delete message',voice_play:'Play',voice_msg_btn:'Voice message',voice_msg_preview:'Voice message',photo_label:'Photo',call_btn_tooltip:'Call',emoji_tooltip:'Emoji',send_photo_tooltip:'Send photo',call_camera_tooltip:'Camera',
     toast_history_cleared:'History cleared!',
     subs_empty:'You\'re not subscribed to anyone yet!',subs_empty_sub:'Visit a channel and click Subscribe',
     subs_no_videos:'No videos from your subscribed channels',
@@ -464,7 +464,7 @@ const TRANSLATIONS={
     vip_toast_banner_frame_saved:'¡Marco del banner guardado! 🖼️',vip_toast_banner_frame_removed:'Marco del banner eliminado',
     vip_toast_particles_on:'Partículas activadas ✨',vip_toast_particles_off:'Partículas desactivadas',vip_toast_emoji_style_saved:'¡Estilo de emojis guardado! 🙂',
 
-    voice_play:'Reproducir',voice_msg_btn:'Mensaje de voz',voice_msg_preview:'Mensaje de voz',photo_label:'Foto',call_btn_tooltip:'Llamar',emoji_tooltip:'Emojis',send_photo_tooltip:'Enviar foto',vote_singular:'voto',vote_plural:'votos',watched_at_label:'Visto'
+    voice_play:'Reproducir',voice_msg_btn:'Mensaje de voz',voice_msg_preview:'Mensaje de voz',photo_label:'Foto',call_btn_tooltip:'Llamar',emoji_tooltip:'Emojis',send_photo_tooltip:'Enviar foto',call_camera_tooltip:'Cámara',vote_singular:'voto',vote_plural:'votos',watched_at_label:'Visto'
   },
   ru:{
     theme_label:'Тема',theme_dark:'Тёмная',theme_light:'Светлая',
@@ -561,7 +561,7 @@ const TRANSLATIONS={
     confirm_cancel:'Отмена',confirm_delete_default:'Удалить',btn_more:'...ещё',btn_less:'скрыть',
     form_moderating_btn:'Проверка...',toast_nsfw_blocked:'⚠️ Эта миниатюра выглядит неприемлемой (18+/нагота) и не может быть опубликована.',
     confirm_clear_notifications:'Очистить уведомления?',confirm_clear_notifications_sub:'Все уведомления будут удалены.',
-    confirm_delete_msg:'Удалить сообщение?',confirm_delete_msg_sub:'Это сообщение исчезнет из переписки у обеих сторон.',msg_delete_one:'Удалить сообщение',voice_play:'Воспроизвести',voice_msg_btn:'Голосовое сообщение',voice_msg_preview:'Голосовое сообщение',photo_label:'Фото',call_btn_tooltip:'Позвонить',emoji_tooltip:'Эмодзи',send_photo_tooltip:'Отправить фото',
+    confirm_delete_msg:'Удалить сообщение?',confirm_delete_msg_sub:'Это сообщение исчезнет из переписки у обеих сторон.',msg_delete_one:'Удалить сообщение',voice_play:'Воспроизвести',voice_msg_btn:'Голосовое сообщение',voice_msg_preview:'Голосовое сообщение',photo_label:'Фото',call_btn_tooltip:'Позвонить',emoji_tooltip:'Эмодзи',send_photo_tooltip:'Отправить фото',call_camera_tooltip:'Камера',
     toast_history_cleared:'История очищена!',
     subs_empty:'Вы пока ни на кого не подписаны!',subs_empty_sub:'Зайдите на чей-нибудь канал и нажмите Подписаться',
     subs_no_videos:'Нет видео от каналов, на которые вы подписаны',
