@@ -72,6 +72,7 @@ function toggleCardMenu(videoId,btnEl){
 function shareVideoCard(videoId){
   const v=videos.find(x=>String(x.id)===String(videoId));
   if(!v)return;
+  if(navigator.share){navigator.share({title:v.title||'',url:v.url}).catch(()=>{});return;}
   navigator.clipboard?navigator.clipboard.writeText(v.url).then(()=>toast(t('toast_link_copied'))):prompt(t('prompt_copy_link'),v.url);
 }
 
@@ -668,6 +669,7 @@ function toggleDislike(){
 
 function shareV(){
   if(!cur)return;
+  if(navigator.share){navigator.share({title:cur.title||'',url:cur.url}).catch(()=>{});return;}
   navigator.clipboard?navigator.clipboard.writeText(cur.url).then(()=>toast(t('toast_link_copied'))):prompt(t('prompt_copy_link'),cur.url);
 }
 
