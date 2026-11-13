@@ -589,7 +589,7 @@ function isMutedNow(){
 
 function muteToastMsg(){
   if(myMuteUntil===undefined)return'Zostałeś wyciszony przez administratora na zawsze — nie możesz pisać.';
-  return`Zostałeś wyciszony przez administratora do ${new Date(myMuteUntil).toLocaleString('pl-PL')} — nie możesz pisać.`;
+  return`Zostałeś wyciszony przez administratora do ${new Date(myMuteUntil).toLocaleString(localeCode())} — nie możesz pisać.`;
 }
 
 let currentCmtMenu=null;
@@ -834,7 +834,7 @@ function verifiedBadge(email,userId){
   if(userId&&vipEmailsMap.has(userId)){
     const badgeColor=vipEmailsMap.get(userId)||'#ffd700';
     const since=vipSinceMap.get(userId);
-    const sinceTitle=since?` · VIP ${t('vip_since_label')} ${new Date(since).toLocaleDateString(getLang()==='ru'?'ru-RU':getLang()==='en'?'en-US':'pl-PL',{day:'numeric',month:'long',year:'numeric'})}`:'';
+    const sinceTitle=since?` · VIP ${t('vip_since_label')} ${new Date(since).toLocaleDateString(localeCode(),{day:'numeric',month:'long',year:'numeric'})}`:'';
     return`<span title="VIP${sinceTitle}" style="display:inline-flex;align-items:center;gap:3px;margin-left:5px;flex-shrink:0"><span style="display:inline-flex;align-items:center;justify-content:center;background:${esc(badgeColor)};border-radius:50%;width:16px;height:16px;flex-shrink:0"><svg viewBox="0 0 24 24" width="10" height="10" fill="#000"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/></svg></span><span style="font-size:10px;font-weight:800;color:${esc(badgeColor)};letter-spacing:.5px">VIP</span></span>`;
   }
   return'';
@@ -1387,7 +1387,7 @@ function renderAnnouncementCard(a){
       <svg width="30" height="22" viewBox="0 0 45 32" fill="none"><rect width="45" height="32" rx="9" fill="#3ea6ff"/><polygon points="18,10 31,16 18,22" fill="#fff"/></svg>
       <div style="flex:1">
         <div style="font-size:13px;font-weight:700">WaveTube · Twórca</div>
-        <div style="font-size:11px;color:var(--text-tertiary)">${new Date(a.created_at).toLocaleString('pl-PL')}</div>
+        <div style="font-size:11px;color:var(--text-tertiary)">${new Date(a.created_at).toLocaleString(localeCode())}</div>
       </div>
       ${isAdmin()?`<button onclick="deleteAnnouncement(${a.id})" title="Usuń ogłoszenie" style="background:none;border:none;color:var(--text-tertiary);cursor:pointer;width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px" onmouseover="this.style.background='#3a1414';this.style.color='#ff6b6b'" onmouseout="this.style.background='none';this.style.color='#666'">🗑</button>`:''}
     </div>
@@ -1570,7 +1570,7 @@ async function showHistory(){
       <div class="card-info">
         <h3>${esc(v.title)}</h3>
         <div class="channel-name">${esc(getUserName(v)||'Anonim')}</div>
-        <p style="font-size:11px;color:var(--text-tertiary)">${t('watched_at_label')}: ${new Date(v.watched_at).toLocaleString(getLang()==='ru'?'ru-RU':'pl-PL',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'})}</p>
+        <p style="font-size:11px;color:var(--text-tertiary)">${t('watched_at_label')}: ${new Date(v.watched_at).toLocaleString(localeCode(),{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'})}</p>
       </div>
     </div>`;
     el.onclick=()=>openP(v.id);
@@ -1876,7 +1876,7 @@ async function postReply(index){
   if(!txt)return;
   if(!commentCooldownOk())return;
   const meta=currentUser.user_metadata;
-  const now=new Date().toLocaleString('pl-PL',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'});
+  const now=new Date().toLocaleString(localeCode(),{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'});
   const sortedList=getSortedComments();
   const c=sortedList[index];
   if(!c)return;
@@ -2001,7 +2001,7 @@ async function postC(){
   if(!t)return;
   if(!commentCooldownOk())return;
   const meta=currentUser.user_metadata;
-  const now=new Date().toLocaleString('pl-PL',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'});
+  const now=new Date().toLocaleString(localeCode(),{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'});
   const newC={user:getMyDisplayName(),text:t,time:now,ts:Date.now(),col:'#cc0000',avatar:meta?.avatar_url||'',user_id:currentUser.id||'',user_email:currentUser.email||'',name_color:myNameColor||'',name_font:myNameFont||'',avatar_frame:myAvatarFrame||'',text_color:myTextColor||'',text_font:myTextFont||'',emoji_style:myEmojiStyle||''};
   document.getElementById('cinp').value='';
   const{error}=await sb.rpc('add_video_comment',{p_id:cur.id,c:newC});
@@ -2218,7 +2218,7 @@ function renderNotifications(){
       ${(n.sender_avatar||n.avatar)?`<img class="notif-av" src="${esc(n.sender_avatar||n.avatar)}">`:`<div class="notif-av-ph" style="background:#cc0000;display:flex;align-items:center;justify-content:center"><svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.89 2 2 2zm6-6v-5c0-3.07-1.64-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.63 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z"/></svg></div>`}
       <div>
         <div class="notif-text">${notifText(n)}</div>
-        <div class="notif-time">${new Date(n.created_at).toLocaleString(getLang()==='en'?'en-GB':getLang()==='ru'?'ru-RU':'pl-PL',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'})}</div>
+        <div class="notif-time">${new Date(n.created_at).toLocaleString(localeCode(),{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'})}</div>
       </div>
       <button type="button" onclick="event.stopPropagation();event.preventDefault();deleteNotification('${jsesc(n.id)}')" aria-label="${t('notif_delete_one')}" style="position:absolute;top:8px;right:8px;background:none;border:none;color:var(--text-tertiary);cursor:pointer;font-size:16px;line-height:1;padding:6px;z-index:5">✕</button>
     </div>`).join('');

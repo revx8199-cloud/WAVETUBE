@@ -721,6 +721,7 @@ function t(key){
 }
 
 function getLang(){return localStorage.getItem('wt_lang')||'en';}
+function localeCode(){const l=getLang();return l==='ru'?'ru-RU':l==='en'?'en-US':l==='es'?'es-ES':'pl-PL';}
 
 function applyTranslations(){
   const lang=getLang();

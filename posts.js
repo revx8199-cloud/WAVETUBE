@@ -173,7 +173,7 @@ function postCardHtml(p,isOwner,likedPosts){
           ${avHtml}
           <div>
             <div class="post-user" style="${p.user_color?`color:${esc(p.user_color)};`:''}${p.user_font?`font-family:${fontCssFor(p.user_font)};`:''}">${esc(uname)}${verifiedBadge(p.user_email||'',p.user_id)}</div>
-            <div class="post-time">${p.created_at?new Date(p.created_at).toLocaleString('pl-PL',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'}):p.time||''}</div>
+            <div class="post-time">${p.created_at?new Date(p.created_at).toLocaleString(localeCode(),{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'}):p.time||''}</div>
           </div>
           <div style="margin-left:auto;display:flex;align-items:center;gap:2px">
             <button onclick="event.stopPropagation();togglePostMenu(${p.id},this)" style="background:none;border:none;color:#555;cursor:pointer;font-size:18px;padding:4px 8px" title="Więcej">⋮</button>
