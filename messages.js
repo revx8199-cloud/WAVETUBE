@@ -252,7 +252,7 @@ async function loadConvList(){
     await Promise.all(otherIds.map(id=>getProfile(id)));
   }
   if(!data||!data.length){
-    list.innerHTML=`<div style="padding:20px;text-align:center;color:#555;font-size:13px">${t('msg_no_convs')}<br>${t('msg_no_convs_sub')}</div>`;
+    list.innerHTML=`<div style="padding:20px;text-align:center;color:#555;font-size:13px">${t('msg_no_convs')}<br>${t('msg_no_convs_sub').replace('{ic}',msgIcon())}</div>`;
     return;
   }
   // Group by conv_id
@@ -407,6 +407,7 @@ function msgDayLabel(d){
   return d.toLocaleString(locale,sameYear?{day:'numeric',month:'long'}:{day:'numeric',month:'long',year:'numeric'});
 }
 
+function msgIcon(){return'<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;display:inline-block"><path d="M4 4h16v14H7l-3 3V4z"/></svg>';}
 async function loadMessages(){
   if(!currentConvId)return;
   const{data}=await sb.from('messages').select('*').eq('conv_id',currentConvId).order('created_at',{ascending:true});
@@ -667,7 +668,7 @@ async function onVoiceRecordingStop(){
 }
 
 function showNewMsgForm(){
-  toast(t('msg_new_hint'));
+  toast(t('msg_new_hint').replace('{ic}',msgIcon()),true);
 }
 
 async function openMsg(name,email,userId){

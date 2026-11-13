@@ -263,9 +263,10 @@ function jsesc(str){
     .replace(/>/g,'&gt;');
 }
 
-function toast(msg){
+function toast(msg,isHtml){
   const t=document.getElementById('toast');
-  t.textContent=msg;t.style.display='block';
+  if(isHtml)t.innerHTML=msg;else t.textContent=msg;
+  t.style.display='block';
   setTimeout(()=>t.style.display='none',2500);
 }
 
