@@ -412,6 +412,11 @@ function micIconSvg(size){size=size||20;return`<svg viewBox="0 0 24 24" width="$
 function stopIconSvg(size){size=size||20;return`<svg viewBox="0 0 24 24" width="${size}" height="${size}" fill="currentColor"><rect x="6" y="6" width="12" height="12" rx="2"/></svg>`;}
 function cameraIconSvg(size){size=size||20;return`<svg viewBox="0 0 24 24" width="${size}" height="${size}" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z"/><circle cx="12" cy="13" r="4"/></svg>`;}
 function phoneIconSvg(size){size=size||19;return`<svg viewBox="0 0 24 24" width="${size}" height="${size}" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/></svg>`;}
+function phoneOffIconSvg(size){size=size||19;return`<svg viewBox="0 0 24 24" width="${size}" height="${size}" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.68 13.31a16 16 0 003.41 2.6l1.27-1.27a2 2 0 012.11-.45c.86.3 1.76.52 2.69.65A2 2 0 0122 17.72v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6A19.79 19.79 0 012.12 4.18 2 2 0 014.11 2h3a2 2 0 012 1.72c.13.96.36 1.9.7 2.81a2 2 0 01-.45 2.11L8.09 9.91"/><path d="M23 1L1 23"/></svg>`;}
+function micOffIconSvg(size){size=size||20;return`<svg viewBox="0 0 24 24" width="${size}" height="${size}" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 1l22 22"/><path d="M9 9v3a3 3 0 005.12 2.12M15 9.34V4a3 3 0 00-5.94-.6"/><path d="M17 16.95A7 7 0 015 12v-2"/><path d="M19 10v2a7 7 0 01-.11 1.23"/><path d="M12 19v4"/><path d="M8 23h8"/></svg>`;}
+function cameraOffIconSvg(size){size=size||20;return`<svg viewBox="0 0 24 24" width="${size}" height="${size}" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 1l22 22"/><path d="M21 21H3a2 2 0 01-2-2V8a2 2 0 012-2h3m3-3h6l2 3h4a2 2 0 012 2v9.34"/><path d="M14.12 14.12A4 4 0 018 13"/></svg>`;}
+function screenShareIconSvg(size){size=size||20;return`<svg viewBox="0 0 24 24" width="${size}" height="${size}" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>`;}
+function speakerIconSvg(size){size=size||20;return`<svg viewBox="0 0 24 24" width="${size}" height="${size}" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5L6 9H2v6h4l5 4V5z"/><path d="M19.07 4.93a10 10 0 010 14.14M15.54 8.46a5 5 0 010 7.07"/></svg>`;}
 async function loadMessages(){
   if(!currentConvId)return;
   const{data}=await sb.from('messages').select('*').eq('conv_id',currentConvId).order('created_at',{ascending:true});
@@ -1132,17 +1137,17 @@ function updateCallUI(){
   nameEl.textContent=callOtherUser.name||'';
   if(callState==='calling'){
     statusEl.textContent=t('call_status_calling');
-    ctrlEl.innerHTML=callBtnHtml('#cc0000','hangupCall()','📵',t('call_hangup'));
+    ctrlEl.innerHTML=callBtnHtml('#cc0000','hangupCall()',phoneOffIconSvg(22),t('call_hangup'));
   }else if(callState==='ringing'){
     statusEl.textContent=t('call_status_incoming');
-    ctrlEl.innerHTML=callBtnHtml('#cc0000','rejectCall()','📵',t('call_reject'))+callBtnHtml('#2ecc71','acceptCall()','📞',t('call_accept'));
+    ctrlEl.innerHTML=callBtnHtml('#cc0000','rejectCall()',phoneOffIconSvg(22),t('call_reject'))+callBtnHtml('#2ecc71','acceptCall()',phoneIconSvg(22),t('call_accept'));
   }else if(callState==='active'){
     ctrlEl.innerHTML=
-      callBtnHtml(callMuted?'#ea4335':'rgba(255,255,255,.16)','toggleCallMute()',callMuted?'🔇':'🎤',t('call_mute'))+
-      (callHasCamera?callBtnHtml(callVideoOn?'rgba(255,255,255,.16)':'#3c4043','toggleCallVideo()',callVideoOn?'📹':'📷',t('call_camera_tooltip')):'')+
-      (callHasCamera?callBtnHtml(callScreenSharing?'#1a73e8':'rgba(255,255,255,.16)','toggleScreenShare()','🖥️',callScreenSharing?t('call_screenshare_stop'):t('call_screenshare')):'')+
-      callBtnHtml(callBoostOn?'#f5a623':'rgba(255,255,255,.16)','toggleCallBoost()','🔊',t('call_boost'))+
-      callBtnHtml('#ea4335','hangupCall()','📵',t('call_hangup'),true);
+      callBtnHtml(callMuted?'#ea4335':'rgba(255,255,255,.16)','toggleCallMute()',callMuted?micOffIconSvg(20):micIconSvg(20),t('call_mute'))+
+      (callHasCamera?callBtnHtml(callVideoOn?'rgba(255,255,255,.16)':'#3c4043','toggleCallVideo()',callVideoOn?cameraIconSvg(20):cameraOffIconSvg(20),t('call_camera_tooltip')):'')+
+      (callHasCamera?callBtnHtml(callScreenSharing?'#1a73e8':'rgba(255,255,255,.16)','toggleScreenShare()',screenShareIconSvg(20),callScreenSharing?t('call_screenshare_stop'):t('call_screenshare')):'')+
+      callBtnHtml(callBoostOn?'#f5a623':'rgba(255,255,255,.16)','toggleCallBoost()',speakerIconSvg(20),t('call_boost'))+
+      callBtnHtml('#ea4335','hangupCall()',phoneOffIconSvg(26),t('call_hangup'),true);
   }
 }
 
