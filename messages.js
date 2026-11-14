@@ -638,7 +638,7 @@ function stopVoiceRecording(){
   if(voiceStream){voiceStream.getTracks().forEach(tr=>tr.stop());voiceStream=null;}
   clearInterval(voiceTimerInt);
   const btn=document.getElementById('chat-mic-btn');
-  if(btn){btn.innerHTML=micIconSvg();btn.style.color='';}
+  if(btn){btn.innerHTML=micIconSvg();btn.style.color='var(--text-secondary)';}
   const timerEl=document.getElementById('chat-rec-timer');
   if(timerEl){timerEl.style.display='none';timerEl.textContent='0:00';}
 }
