@@ -319,7 +319,7 @@ function renderChatHeader(){
       ${avatar?`<img class="msg-conv-av" src="${esc(avatar)}" style="width:36px;height:36px;cursor:pointer" onclick="closeMessages();showChannel('${jsesc(o.id)}','${jsesc(name)}','${jsesc(avatar)}','${jsesc(email)}')" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">`:''}
       <div class="msg-conv-av-ph" style="background:#cc0000;width:36px;height:36px;font-size:14px;cursor:pointer;${avatar?'display:none':''}" onclick="closeMessages();showChannel('${jsesc(o.id)}','${jsesc(name)}','${jsesc(avatar)}','${jsesc(email)}')">${(name||'?')[0].toUpperCase()}</div>
       <div class="msg-chat-name" style="flex:1;cursor:pointer" onclick="closeMessages();showChannel('${jsesc(o.id)}','${jsesc(name)}','${jsesc(avatar)}','${jsesc(email)}')">${esc(name)}${verifiedBadge(email,o.id)}</div>
-      <button onclick="startCall('${jsesc(o.id)}','${jsesc(name)}','${jsesc(avatar)}')" title="${t('call_btn_tooltip')}" style="background:none;border:none;color:#ccc;cursor:pointer;font-size:19px;padding:6px 10px;border-radius:50%" onmouseover="this.style.background='rgba(255,255,255,.1)'" onmouseout="this.style.background='none'">📞</button>
+      <button onclick="startCall('${jsesc(o.id)}','${jsesc(name)}','${jsesc(avatar)}')" title="${t('call_btn_tooltip')}" style="background:none;border:none;color:#ccc;cursor:pointer;padding:6px 10px;border-radius:50%;display:inline-flex" onmouseover="this.style.background='rgba(255,255,255,.1)'" onmouseout="this.style.background='none'">${phoneIconSvg()}</button>
       <button onclick="toggleChatMenu()" style="background:none;border:none;color:#fff;cursor:pointer;font-size:20px;padding:4px 10px;border-radius:50%" onmouseover="this.style.background='rgba(255,255,255,.1)'" onmouseout="this.style.background='none'">⋮</button>
       <div id="chat-menu" style="display:none;position:absolute;top:44px;right:0;background:var(--bg-panel);border:1px solid var(--border);border-radius:10px;min-width:210px;z-index:80;overflow:hidden;color:var(--text-primary)">
         <div onclick="deleteConversation()" style="padding:12px 16px;cursor:pointer;font-size:13px;display:flex;align-items:center;gap:10px;color:#ff6b6b" onmouseover="this.style.background='var(--border)'" onmouseout="this.style.background='none'">🗑 ${t('msg_delete_chat')}</div>
@@ -342,9 +342,9 @@ function renderChatHeader(){
       :`<div class="msg-chat-messages" id="msg-msgs-list"></div>
     <div class="msg-input-area" style="position:relative">
       <button onclick="toggleEmojiPicker('msg-inp',this)" style="background:none;border:none;color:var(--text-secondary);cursor:pointer;font-size:20px;padding:6px;flex-shrink:0" title="${t('emoji_tooltip')}">😊</button>
-      <button onclick="document.getElementById('chat-img-inp').click()" style="background:none;border:none;color:var(--text-secondary);cursor:pointer;font-size:20px;padding:6px;flex-shrink:0" title="${t('send_photo_tooltip')}">📷</button>
+      <button onclick="document.getElementById('chat-img-inp').click()" style="background:none;border:none;color:var(--text-secondary);cursor:pointer;padding:6px;flex-shrink:0;display:inline-flex" title="${t('send_photo_tooltip')}">${cameraIconSvg()}</button>
       <input type="file" id="chat-img-inp" accept="image/*" style="display:none" onchange="sendChatImage(this.files[0]);this.value=''">
-      <button id="chat-mic-btn" onclick="toggleVoiceRecording()" style="background:none;border:none;color:var(--text-secondary);cursor:pointer;font-size:20px;padding:6px;flex-shrink:0" title="${t('voice_msg_btn')}">🎤</button>
+      <button id="chat-mic-btn" onclick="toggleVoiceRecording()" style="background:none;border:none;color:var(--text-secondary);cursor:pointer;padding:6px;flex-shrink:0;display:inline-flex" title="${t('voice_msg_btn')}">${micIconSvg()}</button>
       <span id="chat-rec-timer" style="display:none;color:#cc0000;font-size:12px;font-weight:600;align-self:center;flex-shrink:0">0:00</span>
       <textarea class="msg-input" id="msg-inp" placeholder="${t('msg_placeholder')}" rows="1" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendChatMsg();}"></textarea>
       <button class="msg-send-btn" onclick="sendChatMsg()">
@@ -408,6 +408,10 @@ function msgDayLabel(d){
 }
 
 function msgIcon(){return'<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;display:inline-block"><path d="M4 4h16v14H7l-3 3V4z"/></svg>';}
+function micIconSvg(size){size=size||20;return`<svg viewBox="0 0 24 24" width="${size}" height="${size}" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1a3 3 0 00-3 3v8a3 3 0 006 0V4a3 3 0 00-3-3z"/><path d="M19 10v2a7 7 0 01-14 0v-2"/><path d="M12 19v4"/><path d="M8 23h8"/></svg>`;}
+function stopIconSvg(size){size=size||20;return`<svg viewBox="0 0 24 24" width="${size}" height="${size}" fill="currentColor"><rect x="6" y="6" width="12" height="12" rx="2"/></svg>`;}
+function cameraIconSvg(size){size=size||20;return`<svg viewBox="0 0 24 24" width="${size}" height="${size}" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z"/><circle cx="12" cy="13" r="4"/></svg>`;}
+function phoneIconSvg(size){size=size||19;return`<svg viewBox="0 0 24 24" width="${size}" height="${size}" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/></svg>`;}
 async function loadMessages(){
   if(!currentConvId)return;
   const{data}=await sb.from('messages').select('*').eq('conv_id',currentConvId).order('created_at',{ascending:true});
@@ -614,7 +618,7 @@ async function toggleVoiceRecording(){
   voiceRecorder.start();
   voiceStartTs=Date.now();
   const btn=document.getElementById('chat-mic-btn');
-  if(btn){btn.textContent='⏹';btn.style.color='#cc0000';}
+  if(btn){btn.innerHTML=stopIconSvg();btn.style.color='#cc0000';}
   const timerEl=document.getElementById('chat-rec-timer');
   if(timerEl)timerEl.style.display='inline';
   voiceTimerInt=setInterval(()=>{
@@ -629,7 +633,7 @@ function stopVoiceRecording(){
   if(voiceStream){voiceStream.getTracks().forEach(tr=>tr.stop());voiceStream=null;}
   clearInterval(voiceTimerInt);
   const btn=document.getElementById('chat-mic-btn');
-  if(btn){btn.textContent='🎤';btn.style.color='';}
+  if(btn){btn.innerHTML=micIconSvg();btn.style.color='';}
   const timerEl=document.getElementById('chat-rec-timer');
   if(timerEl){timerEl.style.display='none';timerEl.textContent='0:00';}
 }
