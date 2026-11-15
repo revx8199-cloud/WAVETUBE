@@ -476,6 +476,7 @@ async function loadMessages(){
     setTimeout(()=>{list.scrollTop=list.scrollHeight;},50);
   }
   if(reactStyleUids.size){
+    emojiStyleCache[currentUser.id]=myEmojiStyle;
     await loadEmojiStylesFor([...reactStyleUids]);
     list.querySelectorAll('.msg-reaction-pill').forEach(el=>{
       const st=emojiStyleCache[el.dataset.styleUid];
@@ -491,18 +492,35 @@ function closeReactionPicker(){
   document.removeEventListener('keydown',reactionPickerEsc);
 }
 function reactionPickerEsc(e){if(e.key==='Escape')closeReactionPicker();}
+function placeReactionPicker(el,x,y){
+  const vw=window.innerWidth,vh=window.innerHeight;
+  const w=el.offsetWidth||260,h=el.offsetHeight||44;
+  el.style.left=Math.max(8,Math.min(x,vw-w-8))+'px';
+  el.style.top=Math.max(8,Math.min(y,vh-h-8))+'px';
+}
+function reactionPickerQuickHtml(msgId){
+  return QUICK_REACTIONS.map(em=>`<button onclick="event.stopPropagation();closeReactionPicker();toggleOwnReaction('${jsesc(msgId)}','${em}')">${em}</button>`).join('')
+    +`<button class="msg-reaction-expand" onclick="event.stopPropagation();expandReactionPicker('${jsesc(msgId)}')" title="${t('msg_reaction_more')||''}"><svg viewBox="0 0 24 24" width="16" height="16"><path d="M7 10l5 5 5-5z" fill="currentColor"/></svg></button>`;
+}
+function expandReactionPicker(msgId){
+  const el=document.getElementById('msg-reaction-picker-el');
+  if(!el)return;
+  const x=parseFloat(el.style.left),y=parseFloat(el.style.top);
+  el.classList.add('expanded');
+  el.innerHTML=EMOJI_LIST.map(e=>`<span onclick="event.stopPropagation();closeReactionPicker();toggleOwnReaction('${jsesc(msgId)}','${jsesc(e)}')">${e}</span>`).join('');
+  if(myEmojiStyle==='flat')applyEmojiStyleToEl(el);
+  else if(myEmojiStyle==='app')applyAppEmojiStyleToEl(el);
+  placeReactionPicker(el,x,y);
+}
 function openReactionPicker(e,msgId){
   e.preventDefault();
   closeReactionPicker();
   const el=document.createElement('div');
   el.id='msg-reaction-picker-el';
   el.className='msg-reaction-picker';
-  el.innerHTML=QUICK_REACTIONS.map(em=>`<button onclick="event.stopPropagation();closeReactionPicker();toggleOwnReaction('${jsesc(msgId)}','${em}')">${em}</button>`).join('');
+  el.innerHTML=reactionPickerQuickHtml(msgId);
   document.body.appendChild(el);
-  const vw=window.innerWidth,vh=window.innerHeight;
-  const w=el.offsetWidth||260,h=el.offsetHeight||44;
-  el.style.left=Math.min(e.clientX,vw-w-8)+'px';
-  el.style.top=Math.min(e.clientY,vh-h-8)+'px';
+  placeReactionPicker(el,e.clientX,e.clientY);
   setTimeout(()=>{
     document.addEventListener('click',closeReactionPicker);
     document.addEventListener('keydown',reactionPickerEsc);
