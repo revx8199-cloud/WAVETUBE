@@ -847,7 +847,7 @@ async function showChannel(userId,nameIn,avatar,email){
               <span id="ch-banner-label">${t('ch_change_banner')}</span>
               <input type="file" accept="image/*" style="display:none" onchange="changeBanner(event,'${bannerKey}')" />
             </label>
-            ${isVIP()?`<button onclick="openVipBannerGallery('${jsesc(bannerKey)}')" style="background:rgba(0,0,0,0.7);color:#ffd700;padding:10px 20px;border-radius:24px;cursor:pointer;font-size:14px;font-weight:600;display:flex;align-items:center;gap:8px;border:2px solid rgba(255,215,0,0.5)">🎨 Gotowe bannery</button>`:''}
+            ${isVIP()?`<button onclick="openVipBannerGallery('${jsesc(bannerKey)}')" style="background:rgba(0,0,0,0.7);color:#ffd700;padding:10px 20px;border-radius:24px;cursor:pointer;font-size:14px;font-weight:600;display:flex;align-items:center;gap:8px;border:2px solid rgba(255,215,0,0.5)">🎨 ${t('vip_banner_gallery_btn')}</button>`:''}
           </div>`:''}
       </div>
     </div>
