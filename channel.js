@@ -113,8 +113,8 @@ function hBarChart(items,opts){
     const pct=Math.max(2,Math.round((i.value/max)*100));
     return`<div style="margin-bottom:10px">
       <div style="display:flex;justify-content:space-between;gap:10px;font-size:12px;color:var(--text-secondary);margin-bottom:4px">
-        <span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(i.label)}</span>
-        <span style="font-weight:600;color:var(--text-primary);flex-shrink:0">${(i.value||0).toLocaleString('pl-PL')}</span>
+        <span style="display:inline-flex;align-items:center;gap:5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${i.icon||''}${esc(i.label)}</span>
+        <span style="font-weight:600;color:var(--text-primary);flex-shrink:0">${(i.value||0).toLocaleString(localeCode())}</span>
       </div>
       <div style="background:var(--bg-sunken);border-radius:6px;height:8px;overflow:hidden">
         <div style="background:${color};height:100%;width:${pct}%;border-radius:6px"></div>
@@ -230,7 +230,7 @@ async function openStatsPanel(){
 
     <div style="margin-bottom:24px">
       <div style="display:flex;align-items:center;gap:6px;font-size:13px;font-weight:700;margin-bottom:10px">${videosIcon(16)}${t('stats_longs_vs_shorts')}</div>
-      ${hBarChart([{label:`🎬 ${t('stats_videos')} (${longCount})`,value:longViews},{label:`📱 Shorts (${shortsCount})`,value:shortsViews}],{color:'#a78bfa'})}
+      ${hBarChart([{label:`${t('stats_videos')} (${longCount})`,value:longViews,icon:videosIcon(14)},{label:`Shorts (${shortsCount})`,value:shortsViews,icon:statIconSvg(APP_ICON_PATHS.mobile,14)}],{color:'#a78bfa'})}
     </div>
 
     <div style="margin-bottom:24px">
