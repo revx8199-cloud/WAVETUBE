@@ -154,6 +154,8 @@ function dismissBroadcastText(){
 // ── CHAT SYSTEM (Supabase) ────────────────────────────────────────────────────
 let currentConvId=null;
 let currentOtherUser=null;
+let lastMsgsData=[];
+const QUICK_REACTIONS=['👍','❤️','😂','😮','😢','🙏'];
 let msgRealtimeChannel=null;
 let notifRealtimeChannel=null;
 
@@ -429,6 +431,8 @@ async function loadMessages(){
   const wasAtBottom=list.scrollHeight-list.scrollTop-list.clientHeight<60;
   const otherAvatar=profileCache[currentOtherUser?.id]?.avatar||currentOtherUser?.avatar||'';
   const otherInitial=((profileCache[currentOtherUser?.id]?.name||currentOtherUser?.name||'?')[0]||'?').toUpperCase();
+  lastMsgsData=data;
+  const reactStyleUids=new Set();
   list.innerHTML=data.map((m,idx)=>{
     const isSent=m.sender_id===currentUser.id;
     const time=new Date(m.created_at).toLocaleString('pl-PL',{hour:'2-digit',minute:'2-digit'});
@@ -448,14 +452,21 @@ async function loadMessages(){
         <span class="voice-time">0:00</span>
       </div>`:'';
     const txtHtml=m.text?`<div class="msg-bubble ${isSent?'sent':'received'}">${esc(m.text)}</div>`:'';
+    const rGroups={};
+    Object.entries(m.reactions||{}).forEach(([uid,em])=>{(rGroups[em]=rGroups[em]||[]).push(uid);});
+    const reactsHtml=Object.keys(rGroups).length?`<div class="msg-reactions">${Object.entries(rGroups).map(([em,uids])=>{
+      reactStyleUids.add(uids[0]);
+      return`<span class="msg-reaction-pill${uids.includes(currentUser.id)?' mine':''}" data-style-uid="${esc(uids[0])}" onclick="event.stopPropagation();toggleOwnReaction('${jsesc(m.id)}','${jsesc(em)}')">${em}${uids.length>1?` ${uids.length}`:''}</span>`;
+    }).join('')}</div>`:'';
     // Avatar nadawcy pokazujemy tylko przy ostatniej wiadomości w serii od tej osoby (jak w Messengerze)
     const nextIsSameSender=data[idx+1]&&data[idx+1].sender_id===m.sender_id;
     const avHtml=!isSent?(nextIsSameSender?'<div class="msg-bubble-av-spacer"></div>':
       (otherAvatar?`<img class="msg-bubble-av" src="${esc(otherAvatar)}">`:`<div class="msg-bubble-av-ph">${esc(otherInitial)}</div>`)):'';
     return`${dayLabel}<div class="msg-bubble-wrap ${isSent?'sent':'received'}">
       ${avHtml}
-      <div class="msg-bubble-col" style="position:relative">
+      <div class="msg-bubble-col" style="position:relative" oncontextmenu="openReactionPicker(event,'${jsesc(m.id)}')">
         ${imgHtml}${audioHtml}${txtHtml}
+        ${reactsHtml}
         <div class="msg-bubble-time">${time}</div>
         ${isSent?`<button onclick="deleteChatMsg('${jsesc(m.id)}')" aria-label="${t('msg_delete_one')}" style="position:absolute;top:50%;left:-38px;transform:translateY(-50%);width:28px;height:28px;border-radius:50%;background:var(--bg-sunken);border:1px solid var(--border);color:var(--text-primary);cursor:pointer;font-size:14px;display:flex;align-items:center;justify-content:center">🗑</button>`:''}
       </div>
@@ -464,6 +475,46 @@ async function loadMessages(){
   if(wasAtBottom||data[data.length-1]?.sender_id===currentUser.id){
     setTimeout(()=>{list.scrollTop=list.scrollHeight;},50);
   }
+  if(reactStyleUids.size){
+    await loadEmojiStylesFor([...reactStyleUids]);
+    list.querySelectorAll('.msg-reaction-pill').forEach(el=>{
+      const st=emojiStyleCache[el.dataset.styleUid];
+      if(st==='flat')applyEmojiStyleToEl(el);
+      else if(st==='app')applyAppEmojiStyleToEl(el);
+    });
+  }
+}
+
+function closeReactionPicker(){
+  document.getElementById('msg-reaction-picker-el')?.remove();
+  document.removeEventListener('click',closeReactionPicker);
+  document.removeEventListener('keydown',reactionPickerEsc);
+}
+function reactionPickerEsc(e){if(e.key==='Escape')closeReactionPicker();}
+function openReactionPicker(e,msgId){
+  e.preventDefault();
+  closeReactionPicker();
+  const el=document.createElement('div');
+  el.id='msg-reaction-picker-el';
+  el.className='msg-reaction-picker';
+  el.innerHTML=QUICK_REACTIONS.map(em=>`<button onclick="event.stopPropagation();closeReactionPicker();toggleOwnReaction('${jsesc(msgId)}','${em}')">${em}</button>`).join('');
+  document.body.appendChild(el);
+  const vw=window.innerWidth,vh=window.innerHeight;
+  const w=el.offsetWidth||260,h=el.offsetHeight||44;
+  el.style.left=Math.min(e.clientX,vw-w-8)+'px';
+  el.style.top=Math.min(e.clientY,vh-h-8)+'px';
+  setTimeout(()=>{
+    document.addEventListener('click',closeReactionPicker);
+    document.addEventListener('keydown',reactionPickerEsc);
+  },0);
+}
+async function toggleOwnReaction(msgId,emoji){
+  const m=lastMsgsData.find(x=>String(x.id)===String(msgId));
+  const cur={...(m?.reactions||{})};
+  if(cur[currentUser.id]===emoji)delete cur[currentUser.id];
+  else cur[currentUser.id]=emoji;
+  await sb.from('messages').update({reactions:cur}).eq('id',msgId);
+  loadMessages();
 }
 
 function fmtVoiceTime(s){
