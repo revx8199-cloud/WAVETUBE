@@ -500,7 +500,7 @@ function placeReactionPicker(el,x,y){
 }
 function reactionPickerQuickHtml(msgId){
   return QUICK_REACTIONS.map(em=>`<button onclick="event.stopPropagation();closeReactionPicker();toggleOwnReaction('${jsesc(msgId)}','${em}')">${em}</button>`).join('')
-    +`<button class="msg-reaction-expand" onclick="event.stopPropagation();expandReactionPicker('${jsesc(msgId)}')" title="${t('msg_reaction_more')||''}"><svg viewBox="0 0 24 24" width="16" height="16"><path d="M7 10l5 5 5-5z" fill="currentColor"/></svg></button>`;
+    +`<button class="msg-reaction-expand" onclick="event.stopPropagation();expandReactionPicker('${jsesc(msgId)}')" title="${t('msg_reaction_more')||''}"><svg viewBox="0 0 24 24" width="18" height="18"><path d="M6 9l6 6 6-6" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></button>`;
 }
 function expandReactionPicker(msgId){
   const el=document.getElementById('msg-reaction-picker-el');
@@ -519,6 +519,8 @@ function openReactionPicker(e,msgId){
   el.id='msg-reaction-picker-el';
   el.className='msg-reaction-picker';
   el.innerHTML=reactionPickerQuickHtml(msgId);
+  if(myEmojiStyle==='flat')applyEmojiStyleToEl(el);
+  else if(myEmojiStyle==='app')applyAppEmojiStyleToEl(el);
   document.body.appendChild(el);
   placeReactionPicker(el,e.clientX,e.clientY);
   setTimeout(()=>{

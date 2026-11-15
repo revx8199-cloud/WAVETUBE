@@ -423,7 +423,11 @@ body.blur-mode #main-content,body.blur-mode header,body.blur-mode .sidebar-left{
 .msg-reaction-picker{position:fixed;z-index:9999;display:flex;align-items:center;gap:2px;background:#1c1c1c;border:1px solid var(--border-soft);border-radius:24px;padding:6px 8px;box-shadow:0 4px 16px rgba(0,0,0,.4)}
 .msg-reaction-picker button{background:none;border:none;font-size:20px;cursor:pointer;padding:4px 6px;border-radius:50%;transition:background .12s;color:var(--text-secondary);display:flex;align-items:center;justify-content:center}
 .msg-reaction-picker button:hover{background:rgba(255,255,255,.1)}
-.msg-reaction-expand{margin-left:2px;border-left:1px solid var(--border-soft);border-radius:0!important;padding-left:10px!important}
+.msg-reaction-picker{position:relative}
+.msg-reaction-expand{position:relative;margin-left:10px;width:30px;height:30px;padding:0!important;border-radius:50%!important;color:var(--text-secondary);transition:background .12s,color .12s,transform .15s}
+.msg-reaction-expand::before{content:'';position:absolute;left:-7px;top:50%;transform:translateY(-50%);width:1px;height:18px;background:var(--border-soft)}
+.msg-reaction-expand:hover{background:rgba(255,255,255,.14)!important;color:#fff;transform:translateY(1px)}
+.msg-reaction-expand svg{width:18px;height:18px}
 .msg-reaction-picker.expanded{display:grid;grid-template-columns:repeat(8,minmax(0,1fr));gap:2px;width:320px;max-height:280px;overflow-y:auto;border-radius:12px;padding:10px}
 .msg-reaction-picker.expanded span{cursor:pointer;font-size:20px;padding:5px 2px;border-radius:6px;text-align:center;display:flex;align-items:center;justify-content:center}
 .msg-reaction-picker.expanded span:hover{background:rgba(255,255,255,.1)}
