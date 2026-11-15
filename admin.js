@@ -252,27 +252,27 @@ function renderAdminUsersList(banMap,muteMap){
       return`<div style="display:flex;align-items:center;gap:12px;padding:10px 14px;border-bottom:1px solid var(--border-soft);flex-wrap:wrap">
         ${u.avatar?`<img src="${esc(u.avatar)}" style="width:34px;height:34px;border-radius:50%;object-fit:cover;flex-shrink:0;cursor:pointer" onclick="closeAdminPanel();showChannel('${jsesc(u.id)}','${jsesc(u.name)}','${jsesc(u.avatar)}','${jsesc(u.email||'')}')">`:`<div style="width:34px;height:34px;border-radius:50%;background:#cc0000;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;flex-shrink:0;cursor:pointer" onclick="closeAdminPanel();showChannel('${jsesc(u.id)}','${jsesc(u.name)}','','${jsesc(u.email||'')}')">${esc((u.name||'?')[0].toUpperCase())}</div>`}
         <div style="flex:1;min-width:0;cursor:pointer" onclick="closeAdminPanel();showChannel('${jsesc(u.id)}','${jsesc(u.name)}','${jsesc(u.avatar||'')}','${jsesc(u.email||'')}')">
-          <div style="font-size:13px;font-weight:600" id="uname-${u.id}">${esc(u.name)}${ban?' <span style="color:#ff6b6b;font-size:11px">🚫 zablokowany</span>':''}${mute?' <span style="color:#f5c242;font-size:11px">🔇 wyciszony</span>':''}</div>
+          <div style="font-size:13px;font-weight:600" id="uname-${u.id}">${esc(u.name)}${ban?` <span style="color:#ff6b6b;font-size:11px;display:inline-flex;align-items:center;gap:3px;vertical-align:middle">${statIconSvg(APP_ICON_PATHS.block,12)} zablokowany</span>`:''}${mute?` <span style="color:#f5c242;font-size:11px;display:inline-flex;align-items:center;gap:3px;vertical-align:middle">${statIconSvg(APP_ICON_PATHS.muteIcon,12)} wyciszony</span>`:''}</div>
           <div style="font-size:11px;color:var(--text-tertiary)">${esc(u.email)}${u.last_ip?` · IP: ${esc(u.last_ip)}`:''}</div>
         </div>
-        <button onclick="event.stopPropagation();toggleRenameUser('${jsesc(u.id)}',this)" title="Zmień nick" style="background:var(--border-soft);border:none;color:var(--text-primary);padding:6px 10px;border-radius:8px;cursor:pointer;font-size:12px;flex-shrink:0">✏️</button>
-        ${u.last_ip?`<button onclick="event.stopPropagation();adminBanUserIp('${jsesc(u.id)}')" title="Zbanuj adres IP tego użytkownika (jak ban bota)" style="background:#3a1414;border:1px solid #5c1f1f;color:#ff6b6b;padding:6px 10px;border-radius:8px;cursor:pointer;font-size:12px;flex-shrink:0">🌐 IP</button>`:''}
+        <button onclick="event.stopPropagation();toggleRenameUser('${jsesc(u.id)}',this)" title="Zmień nick" style="background:var(--border-soft);border:none;color:var(--text-primary);padding:6px 10px;border-radius:8px;cursor:pointer;font-size:12px;flex-shrink:0;display:inline-flex;align-items:center">${statIconSvg(APP_ICON_PATHS.pencil,14)}</button>
+        ${u.last_ip?`<button onclick="event.stopPropagation();adminBanUserIp('${jsesc(u.id)}')" title="Zbanuj adres IP tego użytkownika (jak ban bota)" style="background:#3a1414;border:1px solid #5c1f1f;color:#ff6b6b;padding:6px 10px;border-radius:8px;cursor:pointer;font-size:12px;flex-shrink:0;display:inline-flex;align-items:center;gap:5px">${statIconSvg(APP_ICON_PATHS.globe,14)} IP</button>`:''}
         ${u.is_vip?
-          `<button onclick="event.stopPropagation();adminSetVip('${jsesc(u.id)}','${jsesc(u.email||'')}',false)" style="background:#332a0a;border:1px solid #5c4a0f;color:#ffd700;padding:6px 12px;border-radius:8px;cursor:pointer;font-size:12px;flex-shrink:0">⭐ Odbierz VIP</button>`
-          :`<button onclick="event.stopPropagation();adminSetVip('${jsesc(u.id)}','${jsesc(u.email||'')}',true)" style="background:var(--border-soft);border:1px solid #3a3a3a;color:var(--text-secondary);padding:6px 12px;border-radius:8px;cursor:pointer;font-size:12px;flex-shrink:0">⭐ Nadaj VIP</button>`}
+          `<button onclick="event.stopPropagation();adminSetVip('${jsesc(u.id)}','${jsesc(u.email||'')}',false)" style="background:#332a0a;border:1px solid #5c4a0f;color:#ffd700;padding:6px 12px;border-radius:8px;cursor:pointer;font-size:12px;flex-shrink:0;display:inline-flex;align-items:center;gap:5px">${statIconSvg(APP_ICON_PATHS.star,14)} Odbierz VIP</button>`
+          :`<button onclick="event.stopPropagation();adminSetVip('${jsesc(u.id)}','${jsesc(u.email||'')}',true)" style="background:var(--border-soft);border:1px solid #3a3a3a;color:var(--text-secondary);padding:6px 12px;border-radius:8px;cursor:pointer;font-size:12px;flex-shrink:0;display:inline-flex;align-items:center;gap:5px">${statIconSvg(APP_ICON_PATHS.star,14)} Nadaj VIP</button>`}
         ${mute?
-          `<button onclick="event.stopPropagation();unmuteUser('${jsesc(u.id)}')" style="background:#14301a;border:1px solid #1f5c2a;color:#7fe08a;padding:6px 12px;border-radius:8px;cursor:pointer;font-size:12px;flex-shrink:0">🔊 Odcisz</button>`
-          :`<button onclick="event.stopPropagation();toggleMuteMenu('${jsesc(u.id)}',this)" title="Wycisz użytkownika" style="background:#3a2a0a;border:1px solid #5c4a0f;color:#f5c242;padding:6px 12px;border-radius:8px;cursor:pointer;font-size:12px;flex-shrink:0">🔇 Wycisz</button>`}
+          `<button onclick="event.stopPropagation();unmuteUser('${jsesc(u.id)}')" style="background:#14301a;border:1px solid #1f5c2a;color:#7fe08a;padding:6px 12px;border-radius:8px;cursor:pointer;font-size:12px;flex-shrink:0;display:inline-flex;align-items:center;gap:5px">${statIconSvg(APP_ICON_PATHS.volumeIcon,14)} Odcisz</button>`
+          :`<button onclick="event.stopPropagation();toggleMuteMenu('${jsesc(u.id)}',this)" title="Wycisz użytkownika" style="background:#3a2a0a;border:1px solid #5c4a0f;color:#f5c242;padding:6px 12px;border-radius:8px;cursor:pointer;font-size:12px;flex-shrink:0;display:inline-flex;align-items:center;gap:5px">${statIconSvg(APP_ICON_PATHS.muteIcon,14)} Wycisz</button>`}
         ${ban?
           `<button onclick="event.stopPropagation();adminUnbanUser('${jsesc(u.id)}')" style="background:#14301a;border:1px solid #1f5c2a;color:#7fe08a;padding:6px 12px;border-radius:8px;cursor:pointer;font-size:12px;flex-shrink:0">Odblokuj</button>`
           :`<div style="position:relative;flex-shrink:0">
-            <button onclick="event.stopPropagation();toggleAdminBanMenu('${jsesc(u.id)}',this)" style="background:#3a1414;border:1px solid #5c1f1f;color:#ff6b6b;padding:6px 12px;border-radius:8px;cursor:pointer;font-size:12px">🚫 Zablokuj</button>
+            <button onclick="event.stopPropagation();toggleAdminBanMenu('${jsesc(u.id)}',this)" style="background:#3a1414;border:1px solid #5c1f1f;color:#ff6b6b;padding:6px 12px;border-radius:8px;cursor:pointer;font-size:12px;display:inline-flex;align-items:center;gap:5px">${statIconSvg(APP_ICON_PATHS.block,14)} Zablokuj</button>
           </div>`}
       </div>`;
     }).join('');
   body.innerHTML=`
     <div style="padding:12px 14px;position:sticky;top:0;background:var(--bg-panel);z-index:5">
-      <input id="admin-user-search" type="text" placeholder="🔍 Szukaj po nicku lub e-mailu..." value="${q}" oninput="renderAdminUsersList()" style="width:100%;background:var(--bg-sunken);border:1px solid var(--border);border-radius:8px;color:var(--text-primary);padding:10px 14px;font-size:13px;outline:none">
+      <input id="admin-user-search" type="text" placeholder="Szukaj po nicku lub e-mailu..." value="${q}" oninput="renderAdminUsersList()" style="width:100%;background:var(--bg-sunken);border:1px solid var(--border);border-radius:8px;color:var(--text-primary);padding:10px 14px;font-size:13px;outline:none">
     </div>
     <div>${listHtml}</div>`;
   const inp=document.getElementById('admin-user-search');
@@ -1679,16 +1679,16 @@ if(adminTab==='users'){
     body.innerHTML='<p style="color:var(--text-tertiary);padding:30px 20px;text-align:center">Ładowanie logów...</p>';
     const{data:logs}=await sb.from('admin_logs').select('*').order('created_at',{ascending:false}).limit(200);
     const clearBtnHtml=`<div style="padding:14px 20px;border-bottom:1px solid var(--border-soft);display:flex;justify-content:flex-end">
-      <button onclick="clearAdminLogs()" style="background:#3a1414;border:1px solid #5c1f1f;color:#ff6b6b;padding:8px 16px;border-radius:8px;cursor:pointer;font-size:12px;font-weight:600">🗑 Wyczyść logi</button>
+      <button onclick="clearAdminLogs()" style="background:#3a1414;border:1px solid #5c1f1f;color:#ff6b6b;padding:8px 16px;border-radius:8px;cursor:pointer;font-size:12px;font-weight:600;display:inline-flex;align-items:center;gap:6px">${statIconSvg(APP_ICON_PATHS.trash,14)} Wyczyść logi</button>
     </div>`;
     if(!logs||!logs.length){body.innerHTML=clearBtnHtml+'<p style="color:var(--text-tertiary);padding:30px 20px;text-align:center">Brak zapisanych akcji</p>';return;}
-    const ACTION_ICONS={ban:'🚫',unban:'✅',mute:'🔇',unmute:'🔊',delete_video:'🗑',edit_video:'✏️',delete_report:'🚩',rename_user:'✏️',delete_announcement:'📢'};
+    const ACTION_ICONS={ban:APP_ICON_PATHS.block,unban:APP_ICON_PATHS.check,mute:APP_ICON_PATHS.muteIcon,unmute:APP_ICON_PATHS.volumeIcon,delete_video:APP_ICON_PATHS.trash,edit_video:APP_ICON_PATHS.pencil,delete_report:APP_ICON_PATHS.flag,rename_user:APP_ICON_PATHS.pencil,delete_announcement:APP_ICON_PATHS.megaphone};
     body.innerHTML=clearBtnHtml+logs.map(l=>`
       <div class="admin-row" style="align-items:flex-start">
-        <div style="font-size:16px;flex-shrink:0">${ACTION_ICONS[l.action]||'📝'}</div>
+        <div style="flex-shrink:0;color:var(--text-secondary)">${statIconSvg(ACTION_ICONS[l.action]||APP_ICON_PATHS.rules,18)}</div>
         <div style="flex:1;min-width:0">
           <div style="font-size:13px;color:var(--text-primary)">${esc(l.details)}</div>
-          <div style="font-size:11px;color:var(--text-tertiary);margin-top:2px">${new Date(l.created_at).toLocaleString('pl-PL')}</div>
+          <div style="font-size:11px;color:var(--text-tertiary);margin-top:2px">${new Date(l.created_at).toLocaleString(localeCode())}</div>
         </div>
       </div>`).join('');
   }
@@ -1715,12 +1715,12 @@ function renderAdminVideosList(){
           <div style="font-size:13px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(v.title)}</div>
           <div style="font-size:11px;color:var(--text-tertiary)">${esc(getUserName(v))} · ${esc(v.user_email)}</div>
         </div>
-        <button onclick="closeAdminPanel();openEditModal(${v.id})" style="background:#142a3a;border:1px solid #1f4a5c;color:#7fd3ff;padding:6px 12px;border-radius:8px;cursor:pointer;font-size:12px;flex-shrink:0">✏️ Edytuj</button>
-        <button onclick="adminDeleteVideo(${v.id})" style="background:#3a1414;border:1px solid #5c1f1f;color:#ff6b6b;padding:6px 12px;border-radius:8px;cursor:pointer;font-size:12px;flex-shrink:0">🗑 Usuń</button>
+        <button onclick="closeAdminPanel();openEditModal(${v.id})" style="background:#142a3a;border:1px solid #1f4a5c;color:#7fd3ff;padding:6px 12px;border-radius:8px;cursor:pointer;font-size:12px;flex-shrink:0;display:inline-flex;align-items:center;gap:5px">${statIconSvg(APP_ICON_PATHS.pencil,14)} Edytuj</button>
+        <button onclick="adminDeleteVideo(${v.id})" style="background:#3a1414;border:1px solid #5c1f1f;color:#ff6b6b;padding:6px 12px;border-radius:8px;cursor:pointer;font-size:12px;flex-shrink:0;display:inline-flex;align-items:center;gap:5px">${statIconSvg(APP_ICON_PATHS.trash,14)} Usuń</button>
       </div>`).join('');
   body.innerHTML=`
     <div style="padding:12px 14px;position:sticky;top:0;background:var(--bg-panel);z-index:5">
-      <input id="admin-video-search" type="text" placeholder="🔍 Szukaj po tytule, autorze lub e-mailu..." value="${esc(q)}" oninput="renderAdminVideosList()" style="width:100%;background:var(--bg-sunken);border:1px solid var(--border);border-radius:8px;color:var(--text-primary);padding:10px 14px;font-size:13px;outline:none">
+      <input id="admin-video-search" type="text" placeholder="Szukaj po tytule, autorze lub e-mailu..." value="${esc(q)}" oninput="renderAdminVideosList()" style="width:100%;background:var(--bg-sunken);border:1px solid var(--border);border-radius:8px;color:var(--text-primary);padding:10px 14px;font-size:13px;outline:none">
     </div>
     <div>${listHtml}</div>`;
   const inp=document.getElementById('admin-video-search');
