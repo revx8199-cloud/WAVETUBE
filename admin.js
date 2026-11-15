@@ -1570,12 +1570,12 @@ if(adminTab==='users'){
     body.innerHTML=reports.map(r=>`
       <div class="admin-row" style="align-items:flex-start">
         <div style="flex:1;min-width:0">
-          <div style="font-size:13px;font-weight:600">${r.post_id!=null?'📝 Post: '+esc(r.post_text||'(usunięty post)'):esc(r.video_title)||'(usunięty film)'}</div>
+          <div style="font-size:13px;font-weight:600;display:flex;align-items:center;gap:5px">${r.post_id!=null?statIconSvg(APP_ICON_PATHS.rules,13)+' Post: '+esc(r.post_text||'(usunięty post)'):esc(r.video_title)||'(usunięty film)'}</div>
           <div style="font-size:12px;color:#ff8a8a;margin:3px 0">${esc(r.reason)}</div>
           ${r.details?`<div style="font-size:12px;color:var(--text-secondary);margin-bottom:4px">${esc(r.details)}</div>`:''}
-          <div style="font-size:11px;color:var(--text-tertiary)">Zgłosił: ${esc(r.reporter_email)} · ${new Date(r.created_at).toLocaleString('pl-PL')}</div>
+          <div style="font-size:11px;color:var(--text-tertiary)">Zgłosił: ${esc(r.reporter_email)} · ${new Date(r.created_at).toLocaleString(localeCode())}</div>
         </div>
-        <button onclick="deleteReport(${r.id})" title="Usuń zgłoszenie" class="admin-btn admin-btn-red">🗑 Usuń</button>
+        <button onclick="deleteReport(${r.id})" title="Usuń zgłoszenie" class="admin-btn admin-btn-red" style="display:inline-flex;align-items:center;gap:5px">${statIconSvg(APP_ICON_PATHS.trash,14)} Usuń</button>
       </div>`).join('');
   }
 
