@@ -219,32 +219,32 @@ async function openStatsPanel(){
     </div>
 
     <div style="margin-bottom:24px">
-      <div style="font-size:13px;font-weight:700;margin-bottom:10px">${t('stats_sub_growth')}</div>
+      <div style="display:flex;align-items:center;gap:6px;font-size:13px;font-weight:700;margin-bottom:10px">${trendingIcon(16)}${t('stats_sub_growth')}</div>
       ${svgLineChart(subPoints)}
     </div>
 
     <div style="margin-bottom:24px">
-      <div style="font-size:13px;font-weight:700;margin-bottom:10px">${t('stats_top_videos')}</div>
+      <div style="display:flex;align-items:center;gap:6px;font-size:13px;font-weight:700;margin-bottom:10px">${statIconSvg(APP_ICON_PATHS.trophy,16)}${t('stats_top_videos')}</div>
       ${topVideos.length?hBarChart(topVideos):`<div style="color:var(--text-tertiary);font-size:12px">${t('stats_no_videos')}</div>`}
     </div>
 
     <div style="margin-bottom:24px">
-      <div style="font-size:13px;font-weight:700;margin-bottom:10px">${t('stats_longs_vs_shorts')}</div>
+      <div style="display:flex;align-items:center;gap:6px;font-size:13px;font-weight:700;margin-bottom:10px">${videosIcon(16)}${t('stats_longs_vs_shorts')}</div>
       ${hBarChart([{label:`🎬 ${t('stats_videos')} (${longCount})`,value:longViews},{label:`📱 Shorts (${shortsCount})`,value:shortsViews}],{color:'#a78bfa'})}
     </div>
 
     <div style="margin-bottom:24px">
-      <div style="font-size:13px;font-weight:700;margin-bottom:10px">${t('stats_by_category')}</div>
+      <div style="display:flex;align-items:center;gap:6px;font-size:13px;font-weight:700;margin-bottom:10px">${statIconSvg(APP_ICON_PATHS.folder,16)}${t('stats_by_category')}</div>
       ${catData.length?hBarChart(catData,{color:'#3ea6ff'}):`<div style="color:var(--text-tertiary);font-size:12px">${t('stats_no_data')}</div>`}
     </div>
 
     <div style="margin-bottom:24px">
-      <div style="font-size:13px;font-weight:700;margin-bottom:10px">${t('stats_by_month')}</div>
+      <div style="display:flex;align-items:center;gap:6px;font-size:13px;font-weight:700;margin-bottom:10px">${statIconSvg(APP_ICON_PATHS.calendar,16)}${t('stats_by_month')}</div>
       ${uploadPoints.length?hBarChart(uploadPoints.map(p=>({label:p.label,value:p.y})),{color:'#4ade80'}):`<div style="color:var(--text-tertiary);font-size:12px">${t('stats_no_data')}</div>`}
     </div>
 
     <div style="padding-top:20px;border-top:1px solid var(--border)">
-      <div style="font-size:13px;font-weight:700;margin-bottom:10px">${t('stats_posts_section')}</div>
+      <div style="display:flex;align-items:center;gap:6px;font-size:13px;font-weight:700;margin-bottom:10px">${postIcon(16)}${t('stats_posts_section')}</div>
       <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:10px">
         ${statCard(postIcon(20),t('stats_posts'),postCount)}
         ${statCard(likeIcon(20),t('stats_post_likes'),postLikes)}
