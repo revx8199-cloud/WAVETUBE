@@ -150,6 +150,8 @@ const APP_ICON_PATHS={
   clock:'M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z',
   folder:'M10 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2h-8l-2-2z',
   calendar:'M19 3h-1V1h-2v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11zM7 10h5v5H7z',
+  keyboard:'M20 5H4c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zM11 8h2v2h-2V8zM8 8h2v2H8V8zM5 8h2v2H5V8zm0 3h2v2H5v-2zm3 0h2v2H8v-2zm3 0h2v2h-2v-2zm3-3h2v2h-2V8zm3 0h2v2h-2V8zm0 3h2v2h-2v-2zM6 16h12v2H6v-2zm8-5h2v2h-2v-2z',
+  rules:'M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z',
   cup:'M2 21h18v-2H2v2zM20 8h-2V5H4v10c0 1.1.9 2 2 2h10c1.1 0 2-.9 2-2v-3h2c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm0 4h-2v-2h2v2z',
   burger:'M4 11h16c0-3.5-3.5-6-8-6s-8 2.5-8 6zm-1 3h18v1a2 2 0 01-2 2H5a2 2 0 01-2-2v-1zm0 5h18v1H3z',
   fruit:'M12 4c-.5-1-1.5-2-3-2 .3 1.2 1 2 2 2.5A7 7 0 005 12c0 4 3 8 7 8s7-4 7-8a7 7 0 00-6-7.5z',
@@ -526,7 +528,8 @@ async function acceptTerms(){
 function openTermsModal(){
   const lang=getLang();
   const content=TERMS_CONTENT[lang]||TERMS_CONTENT.pl;
-  const title=(TRANSLATIONS[lang]&&TRANSLATIONS[lang].terms_modal_title)||'📜 Zasady WaveTube';
+  const title=(TRANSLATIONS[lang]&&TRANSLATIONS[lang].terms_modal_title)||'Zasady WaveTube';
+  const rulesIconSvg='<svg viewBox="0 0 24 24" width="22" height="22"><path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z" fill="currentColor"/></svg>';
   const html=`<!DOCTYPE html><html lang="${lang}"><head><meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>${title.replace(/[<>]/g,'')} — WaveTube</title>
@@ -535,12 +538,13 @@ function openTermsModal(){
   *{box-sizing:border-box}
   body{margin:0;background:#0f0f0f;color:#aaa;font-family:Roboto,Arial,sans-serif;line-height:1.7}
   .wrap{max-width:760px;margin:0 auto;padding:40px 24px 80px;position:relative}
-  h1{color:#fff;font-size:22px;margin:0 0 28px}
+  h1{color:#fff;font-size:22px;margin:0 0 28px;display:flex;align-items:center;gap:10px}
+  h1 svg{flex-shrink:0}
   h4{color:#fff;font-size:16px;margin:26px 0 8px}
   p{font-size:14px;margin:0 0 4px}
   .close-x{position:fixed;top:16px;right:20px;background:#1f1f1f;border:1px solid #333;color:#fff;width:36px;height:36px;border-radius:50%;cursor:pointer;font-size:18px;line-height:1}
 </style>
-</head><body><button class="close-x" onclick="window.close()">✕</button><div class="wrap"><h1>${title}</h1>${content}</div></body></html>`;
+</head><body><button class="close-x" onclick="window.close()">✕</button><div class="wrap"><h1>${rulesIconSvg}${title}</h1>${content}</div></body></html>`;
   const blob=new Blob([html],{type:'text/html'});
   const url=URL.createObjectURL(blob);
   const w=window.open(url,'_blank');
