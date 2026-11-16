@@ -8,7 +8,7 @@ const TRANSLATIONS={
     nav_mychannel:'Mój kanał',nav_subs:'Moje subskrypcje',nav_history:'Historia oglądania',
     nav_messages:'Wiadomości',nav_subscriptions:'Subskrypcje',nav_announcements:'Ogłoszenia',nav_saved:'Zapisane filmy',nav_watchlater:'Obejrzę później',
     nav_findbug:'Znajdź bug',nav_support:'Wesprzyj WaveTube',findbug_title:'Znajdź bug',
-    support_title:'Wesprzyj autora WaveTube',support_desc:'Podoba Ci się aplikacja? Możesz postawić autorowi coś fajnego.',support_steam_desc:'🎮 Wyślij ofertę wymiany (trade) na Steam — każde wsparcie motywuje do dalszej rozbudowy WaveTube!',support_steam_btn:'🎮 Wyślij trade na Steam',findbug_desc:'Znalazłeś błąd albo dziurę w bezpieczeństwie? Napisz do nas!',findbug_reward:'Opisz znaleziony bug lub lukę bezpieczeństwa i wyślij nam maila. Jeśli zgłoszenie okaże się prawdziwe — dostaniesz nagrodę!',findbug_copy_btn:'Kopiuj adres e-mail',findbug_copied_toast:'Skopiowano adres e-mail!',
+    support_title:'Wesprzyj autora WaveTube',support_desc:'Podoba Ci się aplikacja? Możesz postawić autorowi coś fajnego.',support_steam_desc:'Wyślij ofertę wymiany (trade) na Steam — każde wsparcie motywuje do dalszej rozbudowy WaveTube!',support_steam_btn:'Wyślij trade na Steam',findbug_desc:'Znalazłeś błąd albo dziurę w bezpieczeństwie? Napisz do nas!',findbug_reward:'Opisz znaleziony bug lub lukę bezpieczeństwa i wyślij nam maila. Jeśli zgłoszenie okaże się prawdziwe — dostaniesz nagrodę!',findbug_copy_btn:'Kopiuj adres e-mail',findbug_copied_toast:'Skopiowano adres e-mail!',
     credits_code_label:'Kod',credits_lead_label:'Prowadzi projekt',vip_since_label:'od',
     banner_crop_title:'Podgląd banera',banner_crop_sub:'Tak będzie wyglądać Twój baner. Przeciągnij zdjęcie żeby ustawić kadr.',
     search_placeholder:'Szukaj filmów...',btn_add_video:'+ Dodaj film',
@@ -24,7 +24,7 @@ const TRANSLATIONS={
     msg_delete_chat:'Usuń czat',msg_unblock_user:'Odblokuj użytkownika',msg_block_for:'Zablokuj na',msg_block_24h:'24 godziny',msg_block_7d:'7 dni',msg_block_30d:'30 dni',msg_block_forever:'Na zawsze',msg_you_blocked:'Zablokowałeś tego użytkownika',msg_unblock_btn:'Odblokuj',
     settings_title:'Ustawienia',settings_nick:'Twój nick',settings_lang:'Język',
     settings_lang_note:'Zmienia język interfejsu (menu, przyciski, nagłówki). Treści dodane przez użytkowników (komentarze, tytuły filmów) pozostają w oryginalnym języku.',
-    btn_save:'Zapisz',btn_close:'Zamknij',btn_publish:'Opublikuj',btn_add:'Dodaj',btn_copy:'Kopiuj',menu_buy_vip:'Kup panel VIP 💎',buy_vip_title:'Kup panel VIP',buy_vip_desc:'Panel VIP odblokowuje kolor nicku, ramkę avatara, cząsteczki wokół avatara, plakietkę VIP i inne ozdobniki na Twoim kanale.',buy_vip_instructions:'☕ Wesprzyj przez Buy Me a Coffee, a w polu wiadomości/notatki przy wpłacie koniecznie wpisz e-mail, na który jesteś zalogowany/a w WaveTube — inaczej nie będziemy wiedzieć, komu przyznać VIP.',buy_vip_email_label:'Twój e-mail:',buy_vip_preview_label:'Podgląd wyglądu VIP',buy_vip_no_refund:'Wpłata jest bezzwrotna, a VIP przyznawany na stałe.',btn_buy_vip_coffee:'☕ Przejdź do Buy Me a Coffee',
+    btn_save:'Zapisz',btn_close:'Zamknij',btn_publish:'Opublikuj',btn_add:'Dodaj',btn_copy:'Kopiuj',menu_buy_vip:'Kup panel VIP 💎',buy_vip_title:'Kup panel VIP',buy_vip_desc:'Panel VIP odblokowuje kolor nicku, ramkę avatara, cząsteczki wokół avatara, plakietkę VIP i inne ozdobniki na Twoim kanale.',buy_vip_instructions:'☕ Wesprzyj przez Buy Me a Coffee, a w polu wiadomości/notatki przy wpłacie koniecznie wpisz e-mail, na który jesteś zalogowany/a w WaveTube — inaczej nie będziemy wiedzieć, komu przyznać VIP.',buy_vip_email_label:'Twój e-mail:',buy_vip_preview_label:'Podgląd wyglądu VIP',buy_vip_no_refund:'Wpłata jest bezzwrotna, a VIP przyznawany na stałe.',btn_buy_vip_coffee:'Przejdź do Buy Me a Coffee',
     menu_vip_panel:'Panel VIP',vip_panel_title:'⭐ Panel VIP',vip_panel_sub:'Twój specjalny status — dostosuj swój wygląd w aplikacji.',
     vip_badge_title:'🏅 Kolor plakietki VIP',vip_badge_desc:'Wybierz kolor swojej plakietki widocznej obok nicku (niebieski zarezerwowany dla administratora).',
     vip_nick_color_title:'🎨 Kolor nicku',vip_nick_color_desc:'Kolor Twojej nazwy w komentarzach, na filmach i postach.',
@@ -152,7 +152,7 @@ const TRANSLATIONS={
     nav_mychannel:'My channel',nav_subs:'My subscriptions',nav_history:'Watch history',
     nav_messages:'Messages',nav_subscriptions:'Subscriptions',nav_announcements:'Announcements',nav_saved:'Saved videos',nav_watchlater:'Watch later',
     nav_findbug:'Find a bug',nav_support:'Support WaveTube',findbug_title:'Find a bug',
-    support_title:'Support the WaveTube creator',support_desc:'Like the app? You can treat the creator to something nice.',support_steam_desc:'🎮 Send a Steam trade offer — every bit of support motivates further development of WaveTube!',support_steam_btn:'🎮 Send a Steam trade',findbug_desc:'Found a bug or a security hole? Write to us!',findbug_reward:'Describe the bug or security issue you found and send us an email. If it turns out to be real — you\'ll get a reward!',findbug_copy_btn:'Copy email address',findbug_copied_toast:'Email address copied!',
+    support_title:'Support the WaveTube creator',support_desc:'Like the app? You can treat the creator to something nice.',support_steam_desc:'Send a Steam trade offer — every bit of support motivates further development of WaveTube!',support_steam_btn:'Send a Steam trade',findbug_desc:'Found a bug or a security hole? Write to us!',findbug_reward:'Describe the bug or security issue you found and send us an email. If it turns out to be real — you\'ll get a reward!',findbug_copy_btn:'Copy email address',findbug_copied_toast:'Email address copied!',
     credits_code_label:'Code',credits_lead_label:'Leads the project',vip_since_label:'since',
     banner_crop_title:'Banner preview',banner_crop_sub:'This is how your banner will look. Drag the image to set the crop.',
     search_placeholder:'Search videos...',btn_add_video:'+ Add video',
@@ -168,7 +168,7 @@ const TRANSLATIONS={
     msg_delete_chat:'Delete chat',msg_unblock_user:'Unblock user',msg_block_for:'Block for',msg_block_24h:'24 hours',msg_block_7d:'7 days',msg_block_30d:'30 days',msg_block_forever:'Forever',msg_you_blocked:'You blocked this user',msg_unblock_btn:'Unblock',
     settings_title:'Settings',settings_nick:'Your nickname',settings_lang:'Language',
     settings_lang_note:'Changes the interface language (menus, buttons, headers). User-generated content (comments, video titles) stays in its original language.',
-    btn_save:'Save',btn_close:'Close',btn_publish:'Publish',btn_add:'Add',btn_copy:'Copy',menu_buy_vip:'Buy VIP panel 💎',buy_vip_title:'Buy VIP panel',buy_vip_desc:'The VIP panel unlocks a name color, avatar frame, particle effects around your avatar, VIP badge and other cosmetics on your channel.',buy_vip_instructions:'☕ Support us on Buy Me a Coffee, and in the message/note field please write the email you use to log in to WaveTube — otherwise we won\'t know who to grant VIP to.',buy_vip_email_label:'Your email:',buy_vip_preview_label:'Preview of the VIP look',buy_vip_no_refund:'The payment is non-refundable, and VIP is granted permanently.',btn_buy_vip_coffee:'☕ Go to Buy Me a Coffee',
+    btn_save:'Save',btn_close:'Close',btn_publish:'Publish',btn_add:'Add',btn_copy:'Copy',menu_buy_vip:'Buy VIP panel 💎',buy_vip_title:'Buy VIP panel',buy_vip_desc:'The VIP panel unlocks a name color, avatar frame, particle effects around your avatar, VIP badge and other cosmetics on your channel.',buy_vip_instructions:'☕ Support us on Buy Me a Coffee, and in the message/note field please write the email you use to log in to WaveTube — otherwise we won\'t know who to grant VIP to.',buy_vip_email_label:'Your email:',buy_vip_preview_label:'Preview of the VIP look',buy_vip_no_refund:'The payment is non-refundable, and VIP is granted permanently.',btn_buy_vip_coffee:'Go to Buy Me a Coffee',
     menu_vip_panel:'VIP panel',vip_panel_title:'⭐ VIP panel',vip_panel_sub:'Your special status — customize your look in the app.',
     vip_badge_title:'🏅 VIP badge color',vip_badge_desc:'Choose the color of your badge shown next to your name (blue is reserved for the administrator).',
     vip_nick_color_title:'🎨 Name color',vip_nick_color_desc:'The color of your name in comments, videos and posts.',
@@ -369,7 +369,7 @@ const TRANSLATIONS={
 
     anonim:'Anónimo',autoplay_next_video:'Siguiente vídeo',autoplay_play_now:'Reproducir ahora',
     banner_crop_title:'Vista previa del banner',banner_crop_sub:'Así se verá tu banner. Arrastra la imagen para ajustar el encuadre.',
-    btn_buy_vip_coffee:'☕ Ir a Buy Me a Coffee',btn_clear:'Borrar',btn_detect_dur:'🔍 Detectar',btn_less:'menos',btn_more:'...más',
+    btn_buy_vip_coffee:'Ir a Buy Me a Coffee',btn_clear:'Borrar',btn_detect_dur:'🔍 Detectar',btn_less:'menos',btn_more:'...más',
 
     buy_vip_title:'Comprar panel VIP',buy_vip_desc:'El panel VIP desbloquea el color del nick, el marco del avatar, partículas alrededor del avatar, la insignia VIP y otros adornos en tu canal.',
     buy_vip_email_label:'Tu correo:',
@@ -436,7 +436,7 @@ const TRANSLATIONS={
 
     subs_empty:'¡Todavía no sigues a nadie!',subs_empty_sub:'Entra en el canal de alguien y pulsa Suscribirse',subs_no_videos:'Sin vídeos de los canales suscritos',
 
-    support_title:'Apoya al creador de WaveTube',support_desc:'¿Te gusta la aplicación? Puedes invitar al autor a algo.',support_steam_btn:'🎮 Enviar intercambio en Steam',support_steam_desc:'🎮 Envía una oferta de intercambio en Steam — ¡cualquier apoyo anima a seguir mejorando WaveTube!',
+    support_title:'Apoya al creador de WaveTube',support_desc:'¿Te gusta la aplicación? Puedes invitar al autor a algo.',support_steam_btn:'Enviar intercambio en Steam',support_steam_desc:'Envía una oferta de intercambio en Steam — ¡cualquier apoyo anima a seguir mejorando WaveTube!',
 
     time_today:'Hoy',time_yesterday:'Ayer',
 
@@ -472,7 +472,7 @@ const TRANSLATIONS={
     nav_mychannel:'Мой канал',nav_subs:'Мои подписки',nav_history:'История просмотров',
     nav_messages:'Сообщения',nav_subscriptions:'Подписки',nav_announcements:'Объявления',nav_saved:'Сохранённые',nav_watchlater:'Посмотреть позже',
     nav_findbug:'Найти баг',nav_support:'Поддержать WaveTube',findbug_title:'Найти баг',
-    support_title:'Поддержать автора WaveTube',support_desc:'Нравится приложение? Можешь угостить автора чем-нибудь приятным.',support_steam_desc:'🎮 Отправь обмен (trade) в Steam — любая поддержка мотивирует развивать WaveTube дальше!',support_steam_btn:'🎮 Отправить trade в Steam',findbug_desc:'Нашли баг или дыру в безопасности? Напишите нам!',findbug_reward:'Опишите найденный баг или уязвимость и отправьте нам письмо. Если сообщение окажется реальным — вы получите награду!',findbug_copy_btn:'Копировать адрес почты',findbug_copied_toast:'Адрес почты скопирован!',
+    support_title:'Поддержать автора WaveTube',support_desc:'Нравится приложение? Можешь угостить автора чем-нибудь приятным.',support_steam_desc:'Отправь обмен (trade) в Steam — любая поддержка мотивирует развивать WaveTube дальше!',support_steam_btn:'Отправить trade в Steam',findbug_desc:'Нашли баг или дыру в безопасности? Напишите нам!',findbug_reward:'Опишите найденный баг или уязвимость и отправьте нам письмо. Если сообщение окажется реальным — вы получите награду!',findbug_copy_btn:'Копировать адрес почты',findbug_copied_toast:'Адрес почты скопирован!',
     credits_code_label:'Код',credits_lead_label:'Руководит проектом',vip_since_label:'с',
     banner_crop_title:'Предпросмотр баннера',banner_crop_sub:'Так будет выглядеть ваш баннер. Перетащите изображение, чтобы задать кадр.',
     search_placeholder:'Поиск видео...',btn_add_video:'+ Добавить видео',
@@ -488,7 +488,7 @@ const TRANSLATIONS={
     msg_delete_chat:'Удалить чат',msg_unblock_user:'Разблокировать пользователя',msg_block_for:'Заблокировать на',msg_block_24h:'24 часа',msg_block_7d:'7 дней',msg_block_30d:'30 дней',msg_block_forever:'Навсегда',msg_you_blocked:'Вы заблокировали этого пользователя',msg_unblock_btn:'Разблокировать',
     settings_title:'Настройки',settings_nick:'Ваш никнейм',settings_lang:'Язык',
     settings_lang_note:'Меняет язык интерфейса (меню, кнопки, заголовки). Пользовательский контент (комментарии, названия видео) остаётся на исходном языке.',
-    btn_save:'Сохранить',btn_close:'Закрыть',btn_publish:'Опубликовать',btn_add:'Добавить',btn_copy:'Копировать',menu_buy_vip:'Купить VIP-панель 💎',buy_vip_title:'Купить VIP-панель',buy_vip_desc:'VIP-панель открывает цвет ника, рамку аватара, эффект частиц вокруг аватара, значок VIP и другие украшения на твоём канале.',buy_vip_instructions:'☕ Поддержи через Buy Me a Coffee и обязательно укажи в поле сообщения/заметки email, на который ты зарегистрирован(а) в WaveTube — иначе мы не будем знать, кому выдать VIP.',buy_vip_email_label:'Твой email:',buy_vip_preview_label:'Предпросмотр внешнего вида VIP',buy_vip_no_refund:'Платёж не подлежит возврату, VIP предоставляется навсегда.',btn_buy_vip_coffee:'☕ Перейти на Buy Me a Coffee',
+    btn_save:'Сохранить',btn_close:'Закрыть',btn_publish:'Опубликовать',btn_add:'Добавить',btn_copy:'Копировать',menu_buy_vip:'Купить VIP-панель 💎',buy_vip_title:'Купить VIP-панель',buy_vip_desc:'VIP-панель открывает цвет ника, рамку аватара, эффект частиц вокруг аватара, значок VIP и другие украшения на твоём канале.',buy_vip_instructions:'☕ Поддержи через Buy Me a Coffee и обязательно укажи в поле сообщения/заметки email, на который ты зарегистрирован(а) в WaveTube — иначе мы не будем знать, кому выдать VIP.',buy_vip_email_label:'Твой email:',buy_vip_preview_label:'Предпросмотр внешнего вида VIP',buy_vip_no_refund:'Платёж не подлежит возврату, VIP предоставляется навсегда.',btn_buy_vip_coffee:'Перейти на Buy Me a Coffee',
     menu_vip_panel:'VIP-панель',vip_panel_title:'⭐ VIP-панель',vip_panel_sub:'Твой особый статус — настрой свой вид в приложении.',
     vip_badge_title:'🏅 Цвет значка VIP',vip_badge_desc:'Выберите цвет своего значка рядом с ником (синий зарезервирован для администратора).',
     vip_nick_color_title:'🎨 Цвет ника',vip_nick_color_desc:'Цвет вашего имени в комментариях, видео и постах.',
