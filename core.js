@@ -524,7 +524,7 @@ async function saveProfile(user){
   profileCache[user.id]={...(profileCache[user.id]||{}),...profile};
   // nie uzywamy .upsert() - ON CONFLICT DO UPDATE wymaga SELECT na kolumnach (w tym email),
   // ktorego zwykli userzy celowo nie maja (F-013). insert+ignore dla nowych, zwykly update dla istniejacych.
-  await sb.from('profiles').insert([profile],{onConflict:'id',ignoreDuplicates:true});
+  await sb.from('profiles').upsert([profile],{onConflict:'id',ignoreDuplicates:true});
   await sb.from('profiles').update(profile).eq('id',user.id);
   if(myDetectedIp)sb.rpc('set_my_last_ip',{p_ip:myDetectedIp});
 }
