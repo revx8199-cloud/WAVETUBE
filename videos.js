@@ -942,6 +942,6 @@ async function submitEdit(){
   btn.textContent='Zapisz zmiany';btn.disabled=false;
   closeEditModal();
   render();
-  toast('Film zaktualizowany! ✅');
+  toast(t('toast_video_updated'));
 }
 
