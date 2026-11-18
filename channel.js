@@ -410,7 +410,7 @@ function applyEmojiStyleToEl(el){
 
 async function saveVipBadgeColor(color){
   if(!isVIP())return;
-  const{error}=await sb.from('profiles').upsert([{id:currentUser.id,email:currentUser.email,vip_badge_color:color}],{onConflict:'id'});
+  const{error}=await sb.from('profiles').upsert([{id:currentUser.id,vip_badge_color:color}],{onConflict:'id'});
   if(error){toast('Błąd: '+error.message);return;}
   vipBadgeColor=color;
   vipEmailsMap.set(currentUser.id,color);

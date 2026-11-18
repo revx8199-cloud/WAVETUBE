@@ -522,7 +522,10 @@ async function saveProfile(user){
     last_seen_at:new Date().toISOString()
   };
   profileCache[user.id]={...(profileCache[user.id]||{}),...profile};
-  await sb.from('profiles').upsert([profile],{onConflict:'id'});
+  // nie uzywamy .upsert() - ON CONFLICT DO UPDATE wymaga SELECT na kolumnach (w tym email),
+  // ktorego zwykli userzy celowo nie maja (F-013). insert+ignore dla nowych, zwykly update dla istniejacych.
+  await sb.from('profiles').insert([profile],{onConflict:'id',ignoreDuplicates:true});
+  await sb.from('profiles').update(profile).eq('id',user.id);
   if(myDetectedIp)sb.rpc('set_my_last_ip',{p_ip:myDetectedIp});
 }
 
@@ -590,7 +593,7 @@ const VIP_BADGE_COLORS_ADMIN=['#3ea6ff','#ffd700','#ff6b35','#c084fc','#4ade80',
 
 async function saveAdminBadgeColor(color){
   if(!isAdmin())return;
-  const{error}=await sb.from('profiles').upsert([{id:currentUser.id,email:currentUser.email,vip_badge_color:color}],{onConflict:'id'});
+  const{error}=await sb.from('profiles').upsert([{id:currentUser.id,vip_badge_color:color}],{onConflict:'id'});
   if(error){toast('Błąd: '+error.message);return;}
   adminBadgeColor=color;
   renderAdminPanel();
