@@ -475,10 +475,10 @@ async function saveVipFont(fontId){
 
 
 // ── ADMIN ────────────────────────────────────────────────────────────────
-let ADMIN_EMAIL='';
+let ADMIN_USER_ID='';
 async function loadAdminEmail(){
-  const{data}=await sb.from('site_state').select('admin_email').eq('id',1).single();
-  ADMIN_EMAIL=data?.admin_email||'';
+  const{data}=await sb.from('profiles').select('id').eq('is_admin',true).limit(1).maybeSingle();
+  ADMIN_USER_ID=data?.id||'';
   updateAuthUI();
 }
 
@@ -507,7 +507,7 @@ function countryName(code){
   const lang=getLang();
   return lang==='ru'?c[2]:lang==='en'?c[3]:lang==='es'?c[4]:c[1];
 }
-function isAdmin(){return!!(currentUser&&currentUser.email===ADMIN_EMAIL);}
+function isAdmin(){return!!(currentUser&&currentUser.id===ADMIN_USER_ID);}
 
 let myNameColor='';
 let myTextColor='';

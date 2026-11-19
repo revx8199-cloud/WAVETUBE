@@ -858,7 +858,7 @@ async function adminSetVip(userId,email,makeVip){
 }
 
 function verifiedBadge(email,userId){
-  if(email===ADMIN_EMAIL){
+  if(userId&&userId===ADMIN_USER_ID){
     const badgeColor=adminBadgeColor||'#3ea6ff';
     return`<span title="Administrator" style="display:inline-flex;align-items:center;gap:3px;margin-left:5px;flex-shrink:0"><span style="display:inline-flex;align-items:center;justify-content:center;background:${esc(badgeColor)};border-radius:50%;width:16px;height:16px;flex-shrink:0"><svg viewBox="0 0 24 24" width="10" height="10" fill="#fff"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/></svg></span><span style="font-size:10px;font-weight:800;color:${esc(badgeColor)};letter-spacing:.5px">ADMIN</span></span>`;
   }
@@ -1164,7 +1164,7 @@ function appendVideoCards(list,g){
   list.forEach(v=>{
     const th=thumbFor(v);
     const uname=getUserName(v);
-    const ucol=getUserColor(v.user_email);
+    const ucol=getUserColor(v.user_id||v.user_email);
     const uav=v.user_avatar?`<img src="${esc(v.user_avatar)}" style="width:36px;height:36px;border-radius:50%;object-fit:cover;cursor:pointer" onclick="event.stopPropagation();showChannel('${jsesc(v.user_id||'')}','${jsesc(uname)}','${jsesc(v.user_avatar||'')}','${jsesc(v.user_email||'')}')">`:`<div class="card-avatar-placeholder" style="background:${ucol}" onclick="event.stopPropagation();showChannel('${jsesc(v.user_id||'')}','${jsesc(uname)}','','${jsesc(v.user_email||'')}')">${uname[0].toUpperCase()}</div>`;
     const el=document.createElement('div');
     el.className='card';
@@ -1597,7 +1597,7 @@ async function showHistory(){
     </div>
     <div class="card-bottom">
       ${v.user_avatar?`<img src="${esc(v.user_avatar)}" class="card-avatar" style="width:36px;height:36px" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">`:''}
-      <div class="card-avatar-placeholder" style="background:${getUserColor(v.user_email)};width:36px;height:36px;border-radius:50%;display:${v.user_avatar?'none':'flex'};align-items:center;justify-content:center;font-size:13px;font-weight:700;color:var(--text-primary);flex-shrink:0">${esc((getUserName(v)||'?')[0])}</div>
+      <div class="card-avatar-placeholder" style="background:${getUserColor(v.user_id||v.user_email)};width:36px;height:36px;border-radius:50%;display:${v.user_avatar?'none':'flex'};align-items:center;justify-content:center;font-size:13px;font-weight:700;color:var(--text-primary);flex-shrink:0">${esc((getUserName(v)||'?')[0])}</div>
       <div class="card-info">
         <h3>${esc(v.title)}</h3>
         <div class="channel-name">${esc(getUserName(v)||'Anonim')}</div>
@@ -1630,7 +1630,7 @@ function showTrending(){
   sorted.forEach(v=>{
     const th=thumbFor(v);
     const uname=getUserName(v);
-    const ucol=getUserColor(v.user_email||'');
+    const ucol=getUserColor(v.user_id||v.user_email||'');
     const cachedProfile=profileCache[v.user_id||''];
     const avatarUrl=v.user_avatar||cachedProfile?.avatar||'';
     const el=document.createElement('div');

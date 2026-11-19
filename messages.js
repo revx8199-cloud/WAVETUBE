@@ -140,7 +140,7 @@ function syncBroadcastText(text,byName){
   bar.id='broadcast-bar';
   bar.style.cssText='position:fixed;top:66px;left:50%;transform:translateX(-50%);z-index:9000;background:var(--bg-card);color:var(--text-primary);border:1px solid var(--border);border-left:4px solid #cc0000;border-radius:12px;padding:12px 16px;font-size:13px;display:flex;align-items:center;gap:12px;max-width:min(560px,90vw);box-shadow:0 4px 20px rgba(0,0,0,.35);animation:broadcastSlideIn .3s ease-out';
   bar.innerHTML=`<span style="font-size:20px;flex-shrink:0">📢</span>
-    <span style="line-height:1.4"><b style="color:#cc0000">${esc(byName||'Admin')}</b>${verifiedBadge(ADMIN_EMAIL)}<span style="color:var(--text-tertiary)">:</span> ${esc(text)}</span>
+    <span style="line-height:1.4"><b style="color:#cc0000">${esc(byName||'Admin')}</b>${verifiedBadge('',ADMIN_USER_ID)}<span style="color:var(--text-tertiary)">:</span> ${esc(text)}</span>
     <button onclick="dismissBroadcastText()" style="background:var(--border-soft);border:none;color:var(--text-secondary);width:22px;height:22px;border-radius:50%;cursor:pointer;font-size:12px;line-height:1;flex-shrink:0;margin-left:4px">✕</button>`;
   document.body.appendChild(bar);
 }

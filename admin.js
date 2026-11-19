@@ -358,7 +358,7 @@ function stopDiscoMusic(){
 }
 
 async function checkDiscoState(){
-  const{data,error}=await sb.from('site_state').select('*').eq('id',1).single();
+  const{data,error}=await sb.from('site_state').select('active_effect,music_url,music_active,broadcast_text,broadcast_by,last_burst,last_burst_at').eq('id',1).single();
   if(error||!data)return; // nie zmieniamy stanu przy przejściowym błędzie - to psuło disco po ~4s
   const overlay=document.getElementById('disco-overlay');
   if(overlay){
@@ -1536,7 +1536,7 @@ if(adminTab==='users'){
     const{data:mutes}=await sb.from('muted_users').select('*');
     const muteMap={};
     if(mutes)mutes.forEach(m=>{if(!m.expires_at||new Date(m.expires_at)>new Date())muteMap[m.user_id]=m;});
-    adminUsersCache=Object.values(usersMap).filter(u=>u.email!==ADMIN_EMAIL);
+    adminUsersCache=Object.values(usersMap).filter(u=>u.id!==ADMIN_USER_ID);
     renderAdminUsersList(banMap,muteMap);
   }
 
@@ -1603,7 +1603,7 @@ if(adminTab==='users'){
           </div>
           <div style="display:flex;align-items:center;gap:8px;font-size:14px;font-weight:700">
             <span>${myDisplayName}</span>
-            ${verifiedBadge(ADMIN_EMAIL)}
+            ${verifiedBadge('',ADMIN_USER_ID)}
           </div>
         </div>
 
