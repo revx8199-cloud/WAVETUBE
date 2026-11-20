@@ -208,7 +208,7 @@ async function getProfile(userId){
 
 const VIDEOS_FIRST_PAGE=30;
 async function loadVideos(){
-  const{data,error}=await sb.from('videos').select('*').is('deleted_at',null).order('created_at',{ascending:false}).range(0,VIDEOS_FIRST_PAGE-1);
+  const{data,error}=await sb.from('videos').select('id,title,url,thumb,dur,likes,views,date,comments,created_at,dislikes,user_id,user_name,user_avatar,description,category,visibility,comments_enabled,likes_enabled,is_short,tags,premiere,user_color,user_font,language,license,hide_views,made_for_kids,age_restricted,deleted_at,deleted_by').is('deleted_at',null).order('created_at',{ascending:false}).range(0,VIDEOS_FIRST_PAGE-1);
   if(error){document.getElementById('grid').innerHTML='<div class="loading" style="color:#cc0000">Błąd połączenia :(</div>';return;}
   videos=data||[];
   // Preload profiles for pierwszej partii autorów
@@ -222,7 +222,7 @@ async function loadVideos(){
 
 async function loadRemainingVideosInBackground(offset){
   while(true){
-    const{data,error}=await sb.from('videos').select('*').is('deleted_at',null).order('created_at',{ascending:false}).range(offset,offset+VIDEOS_FIRST_PAGE-1);
+    const{data,error}=await sb.from('videos').select('id,title,url,thumb,dur,likes,views,date,comments,created_at,dislikes,user_id,user_name,user_avatar,description,category,visibility,comments_enabled,likes_enabled,is_short,tags,premiere,user_color,user_font,language,license,hide_views,made_for_kids,age_restricted,deleted_at,deleted_by').is('deleted_at',null).order('created_at',{ascending:false}).range(offset,offset+VIDEOS_FIRST_PAGE-1);
     if(error||!data||!data.length)break;
     videos=videos.concat(data);
     const authorIds=[...new Set(data.map(v=>v.user_id).filter(Boolean))];
@@ -326,7 +326,7 @@ function shortItemHtml(v){
   else if(type==='yt'||type==='tt'||type==='gd'||type==='od'||type==='mega')media=`<iframe src="${esc(src)}" allow="autoplay;encrypted-media;fullscreen" allowfullscreen></iframe>`;
   else media=`<div style="color:#777;font-size:13px;text-align:center;padding:20px">Nie można odtworzyć</div>`;
   const uname=getUserName(v);
-  const avHtml=v.user_avatar?`<img class="ch-av" src="${esc(v.user_avatar)}">`:`<div class="ch-av" style="background:${getUserColor(v.user_email)};display:flex;align-items:center;justify-content:center;font-weight:700">${esc(uname[0].toUpperCase())}</div>`;
+  const avHtml=v.user_avatar?`<img class="ch-av" src="${esc(v.user_avatar)}">`:`<div class="ch-av" style="background:${getUserColor(v.user_id||v.user_email)};display:flex;align-items:center;justify-content:center;font-weight:700">${esc(uname[0].toUpperCase())}</div>`;
   const isLiked=likedSet.has(v.id),isDisliked=dislikedSet.has(v.id);
   return `<div class="short-item" data-id="${v.id}" data-type="${type}">
     ${media}
@@ -532,7 +532,7 @@ async function openP(id){
 
   // channel row
   const uname=getUserName(v);
-  const ucol=getUserColor(v.user_email);
+  const ucol=getUserColor(v.user_id||v.user_email);
   const isSub=subscribedSet.has(v.user_id||v.user_email);
   const isOwnVideo=currentUser&&(currentUser.id===v.user_id||currentUser.email===v.user_email);
   const avHtml=v.user_avatar?`<img src="${esc(v.user_avatar)}" style="width:40px;height:40px;border-radius:50%;object-fit:cover">`:`<div class="ch-av" style="background:${ucol}">${uname[0].toUpperCase()}</div>`;
