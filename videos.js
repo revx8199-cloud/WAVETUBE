@@ -323,7 +323,7 @@ function shortItemHtml(v){
   const{type,src}=getPlayer(v.url);
   let media='';
   if(type==='mp4')media=`<video src="${esc(src)}" loop playsinline preload="metadata" poster="${esc(v.thumb||'')}"></video>`;
-  else if(type==='yt'||type==='tt'||type==='gd'||type==='od'||type==='mega')media=`<iframe src="${esc(src)}" allow="autoplay;encrypted-media;fullscreen" allowfullscreen></iframe>`;
+  else if(type==='yt'||type==='tt'||type==='gd'||type==='od'||type==='mega')media=`<iframe src="${esc(src)}" allow="autoplay;encrypted-media;fullscreen"></iframe>`;
   else media=`<div style="color:#777;font-size:13px;text-align:center;padding:20px">Nie można odtworzyć</div>`;
   const uname=getUserName(v);
   const avHtml=v.user_avatar?`<img class="ch-av" src="${esc(v.user_avatar)}">`:`<div class="ch-av" style="background:${getUserColor(v.user_id||v.user_email)};display:flex;align-items:center;justify-content:center;font-weight:700">${esc(uname[0].toUpperCase())}</div>`;
@@ -506,8 +506,8 @@ async function openP(id){
     </div>`;
   } else {
     const{type,src}=getPlayer(v.url);
-    if(type==='yt'||type==='gd'||type==='od'||type==='mega')html=`<iframe id="${type==='yt'?'yt-player-iframe':''}" src="${esc(src)}" allow="autoplay;encrypted-media;fullscreen" allowfullscreen></iframe>`;
-    else if(type==='tt')html=`<iframe src="${esc(src)}" allow="encrypted-media" allowfullscreen style="border:none;width:100%;height:100%"></iframe>`;
+    if(type==='yt'||type==='gd'||type==='od'||type==='mega')html=`<iframe id="${type==='yt'?'yt-player-iframe':''}" src="${esc(src)}" allow="autoplay;encrypted-media;fullscreen"></iframe>`;
+    else if(type==='tt')html=`<iframe src="${esc(src)}" allow="encrypted-media;fullscreen" style="border:none;width:100%;height:100%"></iframe>`;
     else if(type==='mp4')html=`<video src="${esc(src)}" controls autoplay preload="metadata" poster="${esc(v.thumb||'')}"></video>`;
     else if(type==='resolve')html=`<div style="display:flex;align-items:center;justify-content:center;height:100%;flex-direction:column;gap:12px;color:#aaa;background:#000"><div style="font-size:40px">⏳</div><p style="font-size:13px">Łączenie z chmurą...</p></div>`;
     else{const safeSrc=safeUrl(src);html=`<div style="display:flex;align-items:center;justify-content:center;height:100%;flex-direction:column;gap:12px;color:#555;padding:20px;text-align:center"><div style="font-size:48px">⚠️</div><p>Nie można odtworzyć</p>${safeSrc?`<a href="${esc(safeSrc)}" target="_blank" style="color:#3ea6ff;font-size:13px">Otwórz zewnętrznie ↗</a>`:''}</div>`;}
