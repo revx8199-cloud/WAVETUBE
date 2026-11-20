@@ -816,7 +816,7 @@ async function showChannel(userId,nameIn,avatar,email){
   const bannerKey=userId||email;
   let chBannerUrl=localStorage.getItem('banner_'+bannerKey)||'';
   const savedDescFallback=localStorage.getItem('desc_'+(userId||email))||'';
-  const{count:subCount}=await sb.from('subscriptions').select('*',{count:'exact',head:true}).eq('channel_id',userId||email);
+  const{count:subCount}=await sb.from('subscriptions').select('id',{count:'exact',head:true}).eq('channel_id',userId||email);
   let chNameColor='',chNameFont='',savedDesc=savedDescFallback,joinedAt='',country='',chAvatarFrame='',chAvatarParticles=false,chAvatarParticleType='✨',chBannerFrame='';
   if(userId){
     const{data:profStyle}=await sb.from('profiles').select('name_color,name_font,description,created_at,country,banner_url,avatar_frame,avatar_particles,avatar_particle_type,banner_frame').eq('id',userId).single();
@@ -955,7 +955,7 @@ async function toggleSub(key,name){
 }
 
 async function getSubCount(key){
-  const{count}=await sb.from('subscriptions').select('*',{count:'exact',head:true}).eq('channel_id',key);
+  const{count}=await sb.from('subscriptions').select('id',{count:'exact',head:true}).eq('channel_id',key);
   return count||0;
 }
 

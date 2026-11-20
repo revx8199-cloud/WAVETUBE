@@ -2,8 +2,8 @@
 
 // ── POSTY ─────────────────────────────────────────────────────────────────────
 const POSTS_PAGE_SIZE=5;
-async function getPosts(userId,email){
-  const{data}=await sb.from('posts').select('*').or(`user_id.eq.${userId||'null'},user_email.eq.${email||'null'}`).is('deleted_at',null).order('created_at',{ascending:false});
+async function getPosts(userId){
+  const{data}=await sb.from('posts').select('id,user_id,user_name,user_avatar,user_avatar_frame,user_color,user_font,text,image,images,likes,dislikes,comments,created_at,poll,deleted_at,deleted_by').eq('user_id',userId||'').is('deleted_at',null).order('created_at',{ascending:false});
   return data||[];
 }
 
@@ -98,7 +98,7 @@ async function renderPosts(){
   const pc=document.getElementById('posts-container');
   if(!pc)return;
   pc.innerHTML=`<div style="padding:20px;color:#555;font-size:14px">${t('posts_loading')}</div>`;
-  const posts=await getPosts(userId,email); // jedno zapytanie - dane postów są małe, nie ma co dzielić na strony sieciowo
+  const posts=await getPosts(userId); // jedno zapytanie - dane postów są małe, nie ma co dzielić na strony sieciowo
   currentPostsCache=posts;
   postsPageState={list:posts,shown:0,isOwner};
   let html='<div class="posts-grid" id="posts-grid">';
@@ -167,7 +167,7 @@ function postCardHtml(p,isOwner,likedPosts){
       const isLiked=likedPosts.has(String(p.id));
       const dislikedPosts=new Set(JSON.parse(localStorage.getItem('disliked_posts')||'[]'));
       const isDisliked=dislikedPosts.has(String(p.id));
-      const uname=p.user_name||p.user||t('anonim');const avHtml=p.user_avatar?`<img class="post-av" src="${esc(p.user_avatar)}" style="${p.user_avatar_frame?`border:2px solid ${esc(p.user_avatar_frame)};box-sizing:border-box`:''}">`:`<div class="post-av-ph" style="background:${getUserColor(p.user_email)}">${uname[0]}</div>`;
+      const uname=p.user_name||p.user||t('anonim');const avHtml=p.user_avatar?`<img class="post-av" src="${esc(p.user_avatar)}" style="${p.user_avatar_frame?`border:2px solid ${esc(p.user_avatar_frame)};box-sizing:border-box`:''}">`:`<div class="post-av-ph" style="background:${getUserColor(p.user_id||p.user_email)}">${uname[0]}</div>`;
       return`<div class="post-card" id="post-${p.id}">
         <div class="post-header">
           ${avHtml}
