@@ -842,6 +842,15 @@ async function askDelete(id){
 
 
 // ── EDYCJA FILMU ──────────────────────────────────────────────────────────────
+function selectEditVisibility(val){
+  document.getElementById('edit-vis').value=val;
+  document.querySelectorAll('.edit-vis-opt').forEach(el=>{
+    const active=el.dataset.val===val;
+    el.style.borderColor=active?'#cc0000':'var(--border)';
+    el.style.background=active?'rgba(204,0,0,.08)':'transparent';
+  });
+}
+
 function openEditModal(id){
   const v=videos.find(x=>x.id===id);if(!v)return;
   if(!currentUser||(currentUser.id!==v.user_id&&!isAdmin())){toast('Możesz edytować tylko swoje filmy!');return;}
@@ -857,6 +866,12 @@ function openEditModal(id){
   document.getElementById('edit-tags').value=(v.tags||[]).join(', ');
   document.getElementById('edit-comments').checked=v.comments_enabled!==false;
   document.getElementById('edit-likes').checked=v.likes_enabled!==false;
+  document.getElementById('edit-lang').value=v.language||'pl';
+  document.getElementById('edit-license').value=v.license||'standard';
+  document.getElementById('edit-hideviews').checked=!!v.hide_views;
+  document.getElementById('edit-kids').checked=!!v.made_for_kids;
+  document.getElementById('edit-age').checked=!!v.age_restricted;
+  selectEditVisibility(v.visibility||'public');
   document.getElementById('edit-modal').classList.add('open');
 }
 
@@ -924,6 +939,12 @@ async function submitEdit(){
     tags:document.getElementById('edit-tags').value.trim().split(',').map(t=>t.trim().slice(0,25)).filter(Boolean).slice(0,15),
     comments_enabled:document.getElementById('edit-comments').checked,
     likes_enabled:document.getElementById('edit-likes').checked,
+    language:document.getElementById('edit-lang').value,
+    license:document.getElementById('edit-license').value,
+    visibility:document.getElementById('edit-vis').value,
+    hide_views:document.getElementById('edit-hideviews').checked,
+    made_for_kids:document.getElementById('edit-kids').checked,
+    age_restricted:document.getElementById('edit-age').checked,
   };
   const btn=document.querySelector('#edit-modal .fsubmit');
   btn.textContent='Zapisywanie...';btn.disabled=true;
