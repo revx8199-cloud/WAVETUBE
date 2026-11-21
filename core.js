@@ -1446,13 +1446,13 @@ function renderAnnouncementCard(a){
             <div style="font-size:12px;font-weight:600;cursor:pointer${c.name_color?`;color:${esc(c.name_color)}`:''}${c.name_font?`;font-family:${fontCssFor(c.name_font)}`:''}" onclick="showChannel('${jsesc(c.user_id||'')}','${jsesc(c.user)}','${jsesc(c.avatar||'')}','')">${esc(c.user)}</div>
             <div style="font-size:13px${c.text_color?`;color:${esc(c.text_color)}`:';color:var(--text-secondary)'}${c.text_font?`;font-family:${fontCssFor(c.text_font)}`:''}">${esc(c.text)}</div>
           </div>
-        </div>`).join('')||'<p style="color:var(--text-tertiary);font-size:12px">Brak komentarzy — bądź pierwszy!</p>'}
+        </div>`).join('')||`<p style="color:var(--text-tertiary);font-size:12px">${t('ann_no_comments')}</p>`}
       </div>
       ${currentUser?`<div style="display:flex;gap:8px">
-        <input id="ann-cinp-${a.id}" placeholder="Napisz komentarz..." style="flex:1;background:var(--bg-sunken);border:1px solid var(--border);border-radius:8px;color:var(--text-primary);padding:8px 12px;font-size:13px;outline:none" onkeydown="if(event.key==='Enter')addAnnouncementComment(${a.id})">
+        <input id="ann-cinp-${a.id}" placeholder="${t('comment_placeholder')}" style="flex:1;background:var(--bg-sunken);border:1px solid var(--border);border-radius:8px;color:var(--text-primary);padding:8px 12px;font-size:13px;outline:none" onkeydown="if(event.key==='Enter')addAnnouncementComment(${a.id})">
         <button onclick="toggleEmojiPicker('ann-cinp-${a.id}',this)" style="background:none;border:none;color:var(--text-secondary);cursor:pointer;font-size:16px" title="${t('emoji_tooltip')}">😊</button>
-        <button onclick="addAnnouncementComment(${a.id})" style="background:#3ea6ff;border:none;color:#0f0f0f;padding:8px 16px;border-radius:8px;cursor:pointer;font-size:12px;font-weight:700">Wyślij</button>
-      </div>`:'<p style="color:var(--text-tertiary);font-size:12px">Zaloguj się żeby komentować</p>'}
+        <button onclick="addAnnouncementComment(${a.id})" style="background:#3ea6ff;border:none;color:#0f0f0f;padding:8px 16px;border-radius:8px;cursor:pointer;font-size:12px;font-weight:700">${t('btn_send')}</button>
+      </div>`:`<p style="color:var(--text-tertiary);font-size:12px">${t('post_login_comment')}</p>`}
     </div>
   </div>`;
 }
