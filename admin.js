@@ -98,8 +98,10 @@ async function renderActivityList(){
 async function renderTrashList(){
   const body=document.getElementById('admin-panel-body');
   body.innerHTML='<p style="color:var(--text-tertiary);padding:30px 20px;text-align:center">Ładowanie...</p>';
-  const{data:trashVideos}=await sb.from('videos').select('id,title,user_email,user_id,deleted_at').not('deleted_at','is',null).order('deleted_at',{ascending:false});
-  const{data:trashPosts}=await sb.from('posts').select('id,text,user_email,user_id,deleted_at').not('deleted_at','is',null).order('deleted_at',{ascending:false});
+  const{data:trashVideos}=await sb.from('videos').select('id,title,user_id,deleted_at').not('deleted_at','is',null).order('deleted_at',{ascending:false});
+  const{data:trashPosts}=await sb.from('posts').select('id,text,user_id,deleted_at').not('deleted_at','is',null).order('deleted_at',{ascending:false});
+  const{data:emRowsTrash}=await sb.rpc('admin_list_profile_emails');
+  const emMapTrash={};(emRowsTrash||[]).forEach(r=>{emMapTrash[r.id]=r.email;});
   const items=[
     ...(trashVideos||[]).map(v=>({...v,type:'video',label:v.title||'Bez tytułu'})),
     ...(trashPosts||[]).map(p=>({...p,type:'post',label:p.text?(p.text.slice(0,60)+(p.text.length>60?'…':'')):'(post bez tekstu)'}))
@@ -120,7 +122,7 @@ async function renderTrashList(){
       <div style="font-size:18px;flex-shrink:0">${it.type==='video'?'🎬':'📝'}</div>
       <div style="flex:1;min-width:0">
         <div style="font-size:13px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(it.label)}</div>
-        <div style="font-size:11px;color:var(--text-tertiary)">${esc(it.user_email||it.user_id||'')} · usunięte ${relativeDate(it.deleted_at)} · ${expired?'<span style="color:#ff6b6b">wygasło</span>':`wygasa za ${hoursLeft}h`}</div>
+        <div style="font-size:11px;color:var(--text-tertiary)">${esc(emMapTrash[it.user_id]||it.user_id||'')} · usunięte ${relativeDate(it.deleted_at)} · ${expired?'<span style="color:#ff6b6b">wygasło</span>':`wygasa za ${hoursLeft}h`}</div>
       </div>
       <button onclick="restoreFromTrash('${jsesc(it.type)}','${jsesc(it.id)}')" style="background:#14301a;border:1px solid #1f5c2a;color:#7fe08a;padding:6px 12px;border-radius:8px;cursor:pointer;font-size:12px;flex-shrink:0">↩️ Przywróć</button>
       <button onclick="hardDeleteFromTrash('${jsesc(it.type)}','${jsesc(it.id)}')" style="background:#3a1414;border:1px solid #5c1f1f;color:#ff6b6b;padding:6px 12px;border-radius:8px;cursor:pointer;font-size:12px;flex-shrink:0">Usuń na stałe</button>
@@ -1705,7 +1707,8 @@ async function clearAdminLogs(){
 function renderAdminVideosList(){
   const body=document.getElementById('admin-panel-body');
   const q=(document.getElementById('admin-video-search')?.value||'').trim().toLowerCase();
-  const filtered=q?videos.filter(v=>(v.title||'').toLowerCase().includes(q)||(getUserName(v)||'').toLowerCase().includes(q)||(v.user_email||'').toLowerCase().includes(q)):videos;
+  const emailOf=uid=>adminUsersCache.find(u=>u.id===uid)?.email||'';
+  const filtered=q?videos.filter(v=>(v.title||'').toLowerCase().includes(q)||(getUserName(v)||'').toLowerCase().includes(q)||emailOf(v.user_id).toLowerCase().includes(q)):videos;
   const listHtml=!filtered.length
     ?`<p style="color:var(--text-tertiary);padding:20px;text-align:center">${q?'Brak wyników dla "'+esc(q)+'"':'Brak filmów'}</p>`
     :filtered.map(v=>`
@@ -1713,7 +1716,7 @@ function renderAdminVideosList(){
         <div style="width:64px;height:38px;background:var(--bg-card);border-radius:6px;overflow:hidden;flex-shrink:0">${thumbFor(v)?`<img src="${esc(thumbFor(v))}" style="width:100%;height:100%;object-fit:cover">`:''}</div>
         <div style="flex:1;min-width:0">
           <div style="font-size:13px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(v.title)}</div>
-          <div style="font-size:11px;color:var(--text-tertiary)">${esc(getUserName(v))} · ${esc(v.user_email)}</div>
+          <div style="font-size:11px;color:var(--text-tertiary)">${esc(getUserName(v))} · ${esc(emailOf(v.user_id))}</div>
         </div>
         <button onclick="closeAdminPanel();openEditModal(${v.id})" style="background:#142a3a;border:1px solid #1f4a5c;color:#7fd3ff;padding:6px 12px;border-radius:8px;cursor:pointer;font-size:12px;flex-shrink:0;display:inline-flex;align-items:center;gap:5px">${statIconSvg(APP_ICON_PATHS.pencil,14)} Edytuj</button>
         <button onclick="adminDeleteVideo(${v.id})" style="background:#3a1414;border:1px solid #5c1f1f;color:#ff6b6b;padding:6px 12px;border-radius:8px;cursor:pointer;font-size:12px;flex-shrink:0;display:inline-flex;align-items:center;gap:5px">${statIconSvg(APP_ICON_PATHS.trash,14)} Usuń</button>
