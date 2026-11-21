@@ -603,8 +603,8 @@
 
 <!-- EDYCJA FILMU -->
 <div class="fmbg" id="edit-modal">
-  <div class="fbox" style="max-width:520px;max-height:90vh;overflow-y:auto">
-    <h3 data-i18n="edit_video_title">✏️ Edytuj film</h3>
+  <div class="fbox" style="max-width:720px;max-height:90vh;overflow-y:auto">
+    <h3 style="display:flex;align-items:center;gap:8px"><svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg><span data-i18n="edit_video_title">Edytuj film</span></h3>
     <div class="field">
       <label data-i18n="form_title_label">Tytuł *</label>
       <input type="text" id="edit-title" placeholder="Tytuł filmu" data-i18n-placeholder="form_title_ph">
@@ -627,31 +627,33 @@
         <div id="edit-thumb-preview" style="margin-top:8px;display:none"><img id="edit-thumb-img-preview" style="width:100%;border-radius:8px;max-height:150px;object-fit:cover"></div>
       </div>
     </div>
-    <div class="field">
-      <label data-i18n="edit_dur_label">Czas trwania</label>
-      <div style="display:flex;gap:8px">
-        <input type="text" id="edit-dur" placeholder="np. 5:42" style="flex:1">
-        <button type="button" onclick="detectEditDuration()" style="white-space:nowrap;background:var(--border-soft);border:1px solid var(--border);color:var(--text-primary);padding:0 14px;border-radius:8px;cursor:pointer;font-size:13px" data-i18n="btn_detect_dur">🔍 Wykryj</button>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+      <div class="field">
+        <label data-i18n="edit_dur_label">Czas trwania</label>
+        <div style="display:flex;gap:8px">
+          <input type="text" id="edit-dur" placeholder="np. 5:42" style="flex:1">
+          <button type="button" onclick="detectEditDuration()" style="white-space:nowrap;background:var(--border-soft);border:1px solid var(--border);color:var(--text-primary);padding:0 14px;border-radius:8px;cursor:pointer;font-size:13px;display:inline-flex;align-items:center;gap:5px"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg><span data-i18n="btn_detect_dur">Wykryj</span></button>
+        </div>
       </div>
-    </div>
-    <div class="field">
-      <label data-i18n="form_category_label">Kategoria</label>
-      <select id="edit-cat" style="width:100%;background:var(--bg-sunken);border:1px solid var(--border);border-radius:8px;color:var(--text-primary);padding:10px 14px;font-size:14px;outline:none">
-        <option value="" data-i18n="cat_none">Brak kategorii</option>
-        <option value="Gaming" data-i18n="cat_gaming">Gaming</option>
-        <option value="Music" data-i18n="cat_music">Muzyka</option>
-        <option value="Sport" data-i18n="cat_sport">Sport</option>
-        <option value="Vlog" data-i18n="cat_vlog">Vlog</option>
-        <option value="Tutorial" data-i18n="cat_tutorial">Tutorial</option>
-        <option value="Comedy" data-i18n="cat_humor">Humor</option>
-        <option value="Travel" data-i18n="cat_travel">Podróże</option>
-        <option value="Education" data-i18n="cat_education">Edukacja</option>
-        <option value="News" data-i18n="cat_news">Wiadomości</option>
-        <option value="Technology" data-i18n="cat_tech">Technologia</option>
-        <option value="Lifestyle" data-i18n="cat_lifestyle">Lifestyle</option>
-        <option value="Food" data-i18n="cat_food">Jedzenie</option>
-        <option value="Other" data-i18n="cat_other">Inne</option>
-      </select>
+      <div class="field">
+        <label data-i18n="form_category_label">Kategoria</label>
+        <select id="edit-cat" style="width:100%;background:var(--bg-sunken);border:1px solid var(--border);border-radius:8px;color:var(--text-primary);padding:10px 14px;font-size:14px;outline:none">
+          <option value="" data-i18n="cat_none">Brak kategorii</option>
+          <option value="Gaming" data-i18n="cat_gaming">Gaming</option>
+          <option value="Music" data-i18n="cat_music">Muzyka</option>
+          <option value="Sport" data-i18n="cat_sport">Sport</option>
+          <option value="Vlog" data-i18n="cat_vlog">Vlog</option>
+          <option value="Tutorial" data-i18n="cat_tutorial">Tutorial</option>
+          <option value="Comedy" data-i18n="cat_humor">Humor</option>
+          <option value="Travel" data-i18n="cat_travel">Podróże</option>
+          <option value="Education" data-i18n="cat_education">Edukacja</option>
+          <option value="News" data-i18n="cat_news">Wiadomości</option>
+          <option value="Technology" data-i18n="cat_tech">Technologia</option>
+          <option value="Lifestyle" data-i18n="cat_lifestyle">Lifestyle</option>
+          <option value="Food" data-i18n="cat_food">Jedzenie</option>
+          <option value="Other" data-i18n="cat_other">Inne</option>
+        </select>
+      </div>
     </div>
     <div class="field">
       <label data-i18n="form_tags_label">Tagi (opcjonalnie)</label>
@@ -703,31 +705,23 @@
         <input type="hidden" id="edit-vis" value="public">
       </div>
     </div>
-    <div class="field">
+    <div class="field" style="display:grid;grid-template-columns:1fr 1fr;gap:10px 16px">
       <label style="display:flex;align-items:center;gap:10px;cursor:pointer">
         <input type="checkbox" id="edit-comments" style="width:16px;height:16px;accent-color:#cc0000">
         <span data-i18n="form_comments_label">Włącz komentarze</span>
       </label>
-    </div>
-    <div class="field">
       <label style="display:flex;align-items:center;gap:10px;cursor:pointer">
         <input type="checkbox" id="edit-likes" style="width:16px;height:16px;accent-color:#cc0000">
         <span data-i18n="form_likes_label">Pokazuj liczbę polubień</span>
       </label>
-    </div>
-    <div class="field">
       <label style="display:flex;align-items:center;gap:10px;cursor:pointer">
         <input type="checkbox" id="edit-hideviews" style="width:16px;height:16px;accent-color:#cc0000">
         <span data-i18n="form_hideviews_label">Ukryj liczbę wyświetleń (publicznie)</span>
       </label>
-    </div>
-    <div class="field">
       <label style="display:flex;align-items:center;gap:10px;cursor:pointer">
         <input type="checkbox" id="edit-kids" onchange="if(this.checked)document.getElementById('edit-age').checked=false" style="width:16px;height:16px;accent-color:#cc0000">
         <span data-i18n="form_kids_label">Treść przeznaczona dla dzieci</span>
       </label>
-    </div>
-    <div class="field">
       <label style="display:flex;align-items:center;gap:10px;cursor:pointer">
         <input type="checkbox" id="edit-age" onchange="if(this.checked)document.getElementById('edit-kids').checked=false" style="width:16px;height:16px;accent-color:#cc0000">
         <span data-i18n="form_age_label">Ograniczenie wiekowe (18+)</span>
