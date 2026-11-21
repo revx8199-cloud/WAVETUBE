@@ -1056,7 +1056,7 @@ function showSubscriptions(){
         ?`<img src="${esc(ch.avatar)}" style="width:80px;height:80px;border-radius:50%;object-fit:cover;margin-bottom:12px">`
         :`<div style="width:80px;height:80px;border-radius:50%;background:#cc0000;display:flex;align-items:center;justify-content:center;font-size:28px;font-weight:700;color:var(--text-primary);margin:0 auto 12px">${ch.name[0].toUpperCase()}</div>`
       }
-      <div style="font-size:15px;font-weight:600;margin-bottom:4px;display:flex;align-items:center;justify-content:center;gap:4px">${esc(ch.name)}${verifiedBadge(ch.email,ch.userId)}</div>
+      <div style="font-size:15px;font-weight:600;margin-bottom:4px;min-height:40px;display:flex;align-items:center;justify-content:center;gap:4px;line-height:1.3">${esc(ch.name)}${verifiedBadge(ch.email,ch.userId)}</div>
       <div style="font-size:12px;color:var(--text-secondary)">${chVideos.length} filmów</div>
       <button data-sub-key="${jsesc(ch.userId)}" style="margin-top:12px;background:#cc0000;border:none;color:var(--text-primary);padding:6px 20px;border-radius:16px;cursor:pointer;font-size:13px;font-weight:600" onclick="event.stopPropagation();toggleSub('${jsesc(ch.userId)}','${jsesc(ch.name)}')">✓ ${t('btn_subscribed')}</button>
     </div>`;
