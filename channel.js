@@ -952,6 +952,9 @@ async function toggleSub(key,name){
   if(btn){btn.className='btn-sub-big'+(subscribedSet.has(key)?' subscribed':'');btn.textContent=subscribedSet.has(key)?'✓ '+t('btn_subscribed'):t('btn_subscribe');}
   const sc=document.getElementById('sub-count-big');
   if(sc)sc.textContent=count;
+  document.querySelectorAll(`[data-sub-key="${CSS.escape(key)}"]`).forEach(b=>{
+    b.textContent=subscribedSet.has(key)?'✓ '+t('btn_subscribed'):t('btn_subscribe');
+  });
 }
 
 async function getSubCount(key){
@@ -1055,7 +1058,7 @@ function showSubscriptions(){
       }
       <div style="font-size:15px;font-weight:600;margin-bottom:4px;display:flex;align-items:center;justify-content:center;gap:4px">${esc(ch.name)}${verifiedBadge(ch.email,ch.userId)}</div>
       <div style="font-size:12px;color:var(--text-secondary)">${chVideos.length} filmów</div>
-      <button style="margin-top:12px;background:#cc0000;border:none;color:var(--text-primary);padding:6px 20px;border-radius:16px;cursor:pointer;font-size:13px;font-weight:600" onclick="event.stopPropagation();toggleSub('${jsesc(ch.userId)}','${jsesc(ch.name)}')">✓ Subskrybujesz</button>
+      <button data-sub-key="${jsesc(ch.userId)}" style="margin-top:12px;background:#cc0000;border:none;color:var(--text-primary);padding:6px 20px;border-radius:16px;cursor:pointer;font-size:13px;font-weight:600" onclick="event.stopPropagation();toggleSub('${jsesc(ch.userId)}','${jsesc(ch.name)}')">✓ ${t('btn_subscribed')}</button>
     </div>`;
     el.onclick=()=>showChannel(ch.userId,ch.name,ch.avatar,ch.email);
     g.appendChild(el);
