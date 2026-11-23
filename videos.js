@@ -481,6 +481,12 @@ async function openP(id){
     updateSaveButtonUI(v.id);
     updateWatchLaterButtonUI(v.id);
     addToWatchHistory(v);
+    clearInterval(watchHeartbeat);
+    if(currentUser){
+      watchHeartbeat=setInterval(()=>{
+        if(cur&&!document.hidden)sb.rpc('log_watch_time',{p_video_id:cur.id,p_seconds:15}).catch(()=>{});
+      },15000);
+    }
   }
   const isShort=v.is_short===true;
   if(isShort){
@@ -625,6 +631,7 @@ async function toggleSubInPlayer(key,name){
 }
 
 function closeP(){
+  clearInterval(watchHeartbeat);watchHeartbeat=null;
   layoutActsForShorts(false); // przywróć pasek akcji na miejsce, zanim wyczyścimy zawartość playera
   cancelAutoplayCountdown();
   document.getElementById('pm').classList.remove('open');

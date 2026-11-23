@@ -21,6 +21,7 @@ async function checkBotGuard(){
 
 let videos=[];
 let cur=null;
+let watchHeartbeat=null;
 let currentUser=null;
 let pendingDeleteId=null;
 const colors=['#cc0000','#1a73e8','#188038','#e37400','#7b1fa2','#c2185b'];

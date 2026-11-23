@@ -163,13 +163,16 @@ async function openStatsPanel(){
   const{data:subs}=await sb.from('subscriptions').select('created_at').eq('channel_id',currentUser.id).order('created_at',{ascending:true});
   const subCount=(subs||[]).length;
 
-  let savedCount=0,wlCount=0;
+  let savedCount=0,wlCount=0,watchSeconds=0;
   if(ownVideoIds.length){
     const savedCounts=await Promise.all(ownVideoIds.map(vid=>sb.rpc('count_saved_video',{p_video_id:vid})));
     savedCount=savedCounts.reduce((s,r)=>s+(r.data||0),0);
     const wlCounts=await Promise.all(ownVideoIds.map(vid=>sb.rpc('count_watch_later',{p_video_id:vid})));
     wlCount=wlCounts.reduce((s,r)=>s+(r.data||0),0);
+    const watchCounts=await Promise.all(ownVideoIds.map(vid=>sb.rpc('sum_watch_seconds',{p_video_id:vid})));
+    watchSeconds=watchCounts.reduce((s,r)=>s+Number(r.data||0),0);
   }
+  const watchHours=(watchSeconds/3600).toFixed(1);
 
   const{data:ownPosts}=await sb.from('posts').select('likes,comments').eq('user_id',currentUser.id);
   const postCount=(ownPosts||[]).length;
@@ -216,6 +219,7 @@ async function openStatsPanel(){
       ${statCard(dislikeIcon(20),t('stats_dislikes'),totalDislikes)}
       ${statCard(saveIcon(20),t('stats_saved'),savedCount)}
       ${statCard(watchLaterIcon(20),t('stats_watchlater'),wlCount)}
+      ${statCard(statIconSvg(APP_ICON_PATHS.clock,20),t('stats_watchtime'),watchHours+' h')}
     </div>
 
     <div style="margin-bottom:24px">
